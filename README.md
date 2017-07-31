@@ -1,4 +1,4 @@
-# thistle 1.3
+# thistle 1.0
 * Java common library for private use
 * https://github.com/shepherdviolet/thistle
 
