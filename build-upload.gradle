@@ -1,0 +1,21 @@
+apply plugin: 'maven'
+
+//编译时产生源代码jar
+task generateSourcesJar(type: Jar) {
+    from sourceSets.main.java.srcDirs
+    classifier 'sources'
+}
+
+//将源代码jar加入artifacts
+artifacts {
+    archives generateSourcesJar
+}
+
+uploadArchives {
+    repositories.mavenDeployer {
+        pom.groupId = project.group
+        pom.artifactId = project.name
+        pom.version = project.version
+        repository(url: uri(mvn_local_repo))
+    }
+}

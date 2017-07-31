@@ -1,0 +1,20 @@
+
+//构建脚本配置
+buildscript {
+
+    //构建脚本依赖仓库
+    repositories {
+        jcenter()
+        maven { url 'https://jitpack.io' }
+    }
+
+    //构建脚本依赖
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$version_kotlinVersion"
+    }
+
+}
+
+//工程配置
+apply from: 'build-project.gradle'
+apply from: 'build-upload.gradle'
