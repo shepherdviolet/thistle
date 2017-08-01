@@ -21,6 +21,20 @@ javadoc {
     }
 }
 
+//kotlin compile
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.6"
+    }
+}
+
+//kotlin test compile
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.6"
+    }
+}
+
 repositories {
     jcenter()
     maven { url 'https://jitpack.io' }

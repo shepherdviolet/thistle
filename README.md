@@ -1,4 +1,4 @@
-# thistle 6.0
+# thistle 6.1
 * Java common library for private use
 * https://github.com/shepherdviolet/thistle
 
