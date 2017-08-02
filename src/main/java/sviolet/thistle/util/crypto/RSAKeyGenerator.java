@@ -150,7 +150,7 @@ public class RSAKeyGenerator {
         private RSAPublicKey publicKey = null;
         private RSAPrivateKey privateKey = null;
 
-        private RSAKeyPair(RSAPublicKey publicKey, RSAPrivateKey privateKey) {
+        protected RSAKeyPair(RSAPublicKey publicKey, RSAPrivateKey privateKey) {
             this.publicKey = publicKey;
             this.privateKey = privateKey;
         }
