@@ -19,8 +19,6 @@
 
 package sviolet.thistle.util.crypto;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -106,7 +104,6 @@ public class RSACipher {
      * @throws NoSuchAlgorithmException 无效的signAlgorithm
      * @throws InvalidKeyException 无效的私钥
      */
-    @NotNull
     public static Signature generateSignatureInstance(RSAPrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException {
         Signature signature = Signature.getInstance(signAlgorithm);
         signature.initSign(privateKey);
