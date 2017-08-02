@@ -19,6 +19,8 @@
 
 package sviolet.thistle.util.crypto;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -67,8 +69,7 @@ public class RSACipher {
      * @throws SignatureException 签名异常
      */  
     public static byte[] sign(byte[] data, RSAPrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException{
-        Signature signature = Signature.getInstance(signAlgorithm);
-        signature.initSign(privateKey);
+        Signature signature = generateSignatureInstance(privateKey, signAlgorithm);
         signature.update(data);
         return signature.sign();
     }
@@ -94,10 +95,22 @@ public class RSACipher {
      * @throws SignatureException 签名异常
      */
     public static byte[] sign(ByteBuffer data, RSAPrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException{
-        Signature signature = Signature.getInstance(signAlgorithm);
-        signature.initSign(privateKey);
+        Signature signature = generateSignatureInstance(privateKey, signAlgorithm);
         signature.update(data);
         return signature.sign();
+    }
+
+    /**
+     * @param privateKey 私钥
+     * @param signAlgorithm 签名逻辑: RSACipher.SIGN_ALGORITHM_RSA_MD5 / RSACipher.SIGN_ALGORITHM_RSA_SHA1
+     * @throws NoSuchAlgorithmException 无效的signAlgorithm
+     * @throws InvalidKeyException 无效的私钥
+     */
+    @NotNull
+    public static Signature generateSignatureInstance(RSAPrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException {
+        Signature signature = Signature.getInstance(signAlgorithm);
+        signature.initSign(privateKey);
+        return signature;
     }
 
     /**
