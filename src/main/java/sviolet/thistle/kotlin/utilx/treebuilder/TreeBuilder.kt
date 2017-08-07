@@ -28,6 +28,9 @@ import sviolet.thistle.kotlin.utilx.treebuilder.json.JsonObjectBuilder
 
 object TreeBuilder {
 
+    /**
+     * 构造json
+     */
     fun json(block: JsonObjectBuilder.() -> Unit) : String {
         val obj = JsonObjectBuilder()
         obj.block()
