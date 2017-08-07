@@ -43,10 +43,6 @@ internal constructor() {
     val list: JsonArrayList
         get() = JsonArrayList(bean)
 
-    override fun toString(): String {
-        return bean.toString()
-    }
-
     fun build(): String {
         return bean.toString()
     }
