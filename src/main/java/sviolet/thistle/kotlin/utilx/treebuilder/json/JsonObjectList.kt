@@ -42,7 +42,7 @@ internal constructor(
      */
     infix fun v(block: JsonArrayBuilder.(Any?) -> Unit) {
         if (key == null){
-            throw IllegalArgumentException("[TJson]You should invoke method \"k\" to set key before set value")
+            throw IllegalArgumentException("You should invoke method \"k\" to set key before set value")
         }
         val array = JsonArrayBuilder()
         if (hasIterable) {
@@ -56,7 +56,7 @@ internal constructor(
                     array.block(it)
                 }
             } else {
-                throw IllegalArgumentException("[TJson]The \"iterable\" argument cannot be iterate")
+                throw IllegalArgumentException("The \"iterable\" argument cannot be iterate")
             }
         } else {
             array.block(null)

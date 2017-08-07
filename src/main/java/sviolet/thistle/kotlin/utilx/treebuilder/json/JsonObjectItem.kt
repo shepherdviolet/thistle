@@ -22,7 +22,7 @@ internal constructor(
      */
     infix fun v(value: Any?) {
         if (key == null){
-            throw IllegalArgumentException("[TJson]You should invoke method \"k\" to set key before set value")
+            throw IllegalArgumentException("You should invoke method \"k\" to set key before set value")
         }
         bean.addProperty(key, value?.toString() ?: "")
     }
@@ -32,7 +32,7 @@ internal constructor(
      */
     infix fun v(block: JsonObjectBuilder.() -> Unit) {
         if (key == null){
-            throw IllegalArgumentException("[TJson]You should invoke method \"k\" to set key before set value")
+            throw IllegalArgumentException("You should invoke method \"k\" to set key before set value")
         }
         val obj = JsonObjectBuilder()
         obj.block()

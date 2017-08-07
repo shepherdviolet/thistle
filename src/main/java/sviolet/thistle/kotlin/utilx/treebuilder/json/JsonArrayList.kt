@@ -44,7 +44,7 @@ internal constructor(
                     array.block(it)
                 }
             } else {
-                throw IllegalArgumentException("[TJson]The \"iterable\" argument cannot be iterate")
+                throw IllegalArgumentException("The \"iterable\" argument cannot be iterate")
             }
         } else {
             array.block(null)
