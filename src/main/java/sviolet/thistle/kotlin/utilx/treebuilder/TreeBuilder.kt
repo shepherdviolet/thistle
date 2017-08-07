@@ -17,15 +17,21 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.kotlin.utilx.tjson
+package sviolet.thistle.kotlin.utilx.treebuilder
+
+import sviolet.thistle.kotlin.utilx.treebuilder.json.JsonObjectBuilder
 
 /**
- * Kotlin json 工具
+ * Kotlin 树结构对象构造工具
  * Created by S.Violet on 2017/7/31.
  */
 
-fun Any?.jsonBuild (block: TJsonObjectBuilder.() -> Unit) : TJsonObjectBuilder {
-    val obj = TJsonObjectBuilder()
-    obj.block()
-    return obj
+object TreeBuilder {
+
+    fun json(block: JsonObjectBuilder.() -> Unit) : String {
+        val obj = JsonObjectBuilder()
+        obj.block()
+        return obj.build()
+    }
+
 }
