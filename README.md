@@ -10,7 +10,7 @@ repositories {
     maven { url 'https://jitpack.io' }
 }
 dependencies {
-    classpath 'com.github.shepherdviolet:thistle:6.0'
+    classpath 'com.github.shepherdviolet:thistle:6.1'
 }
 
 ```
