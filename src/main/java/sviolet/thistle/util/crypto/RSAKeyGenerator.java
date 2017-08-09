@@ -41,12 +41,12 @@ public class RSAKeyGenerator {
     public static final String RSA_KEY_ALGORITHM = "RSA";
 
     /**
-     * 随机生成RSA密钥对(1024位)
+     * 随机生成RSA密钥对(2048位)
      *
      * @return 密钥对
      */
     public static RSAKeyPair generateKeyPair() {
-        return generateKeyPair(1024);
+        return generateKeyPair(2048);
     }
 
     /**
