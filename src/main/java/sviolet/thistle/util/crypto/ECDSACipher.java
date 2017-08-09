@@ -34,6 +34,13 @@ import java.security.interfaces.ECPublicKey;
 
 /**
  * <p>ECDSA签名验签工具</p>
+ *
+ * <p>
+ * 性能测试:
+ * 安卓单线程/secp256r1
+ * 密钥产生:0.3ms 签名:0.8ms 验签:1.7ms
+ * </p>
+ *
  */
 public class ECDSACipher {
 
