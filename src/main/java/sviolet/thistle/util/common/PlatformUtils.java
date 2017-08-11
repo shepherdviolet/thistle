@@ -1,0 +1,129 @@
+package sviolet.thistle.util.common;
+
+import java.lang.reflect.Field;
+
+/**
+ * JAVA运行环境信息
+ */
+public class PlatformUtils {
+
+    public enum Platform{
+
+        HOTSPOT("Java HotSpot"),
+        OPENJDK("OpenJDK"),
+        DALVIK("Dalvik"),
+        JROCKIT("BEA"),
+        GNU("GNU libgcj"),
+        PERC("PERC"),
+        UNKNOWN("UNKNOWN");
+
+        private String prefix;
+
+        Platform(String prefix) {
+            this.prefix = prefix;
+        }
+
+        public String getPrefix() {
+            return prefix;
+        }
+    }
+
+    public static final String VM_NAME = System.getProperty("java.vm.name");
+    public static final String VM_VERSION = System.getProperty("java.vm.version");
+    public static final String VM_VENDOR = System.getProperty("java.vm.vendor");
+    public static final String RUNTIME_VERSION = System.getProperty("java.runtime.version");
+    public static final String VM_INFO = System.getProperty("java.vm.info");
+    public static final String SPECIFICATION_VERSION = System.getProperty("java.specification.version");
+
+    public static final Platform PLATFORM = getPlatform();//platform
+
+    public static final int ANDROID_VERSION = getAndroidVersion();//Android version. Will be -1 for none android platform, and -2 for exception
+    public static final boolean ANDROID_IS_OPEN_JDK = getAndroidIsOpenJDK();//Flag telling if this version of Android is based on the OpenJDK
+
+    public static final String GAE_VERSION = getGaeRuntimeVersion();
+    public static final boolean GAE_IS_GOOGLE_APP_ENGINE = getGaeIsGoogleAppEngine();
+
+    private static Platform getPlatform(){
+        if (Platform.HOTSPOT.getPrefix().startsWith(VM_NAME)){
+            return Platform.HOTSPOT;
+        }
+        if (Platform.OPENJDK.getPrefix().startsWith(VM_NAME)){
+            return Platform.OPENJDK;
+        }
+        if (Platform.DALVIK.getPrefix().startsWith(VM_NAME)){
+            return Platform.DALVIK;
+        }
+        if (Platform.JROCKIT.getPrefix().startsWith(VM_NAME)){
+            return Platform.JROCKIT;
+        }
+        if (Platform.GNU.getPrefix().startsWith(VM_NAME)){
+            return Platform.GNU;
+        }
+        if (Platform.PERC.getPrefix().startsWith(VM_NAME)){
+            return Platform.PERC;
+        }
+        return Platform.UNKNOWN;
+    }
+
+    private static int getAndroidVersion() {
+        if (PLATFORM != Platform.DALVIK) {
+            return -1;
+        }
+        Class<?> clazz;
+        try {
+            clazz = Class.forName("android.os.Build$VERSION");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            return -2;
+        }
+        Field field;
+        try {
+            field = clazz.getField("SDK_INT");
+        } catch (NoSuchFieldException e) {
+            return getOldAndroidVersion(clazz);
+        }
+        int version;
+        try {
+            version = (Integer) field.get(null);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            return -2;
+        }
+        return version;
+    }
+
+    private static int getOldAndroidVersion(Class<?> versionClass) {
+        Field field;
+        try {
+            field = versionClass.getField("SDK");
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+            return -2;
+        }
+        String version;
+        try {
+            version = (String) field.get(null);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            return -2;
+        }
+        return Integer.parseInt(version);
+    }
+
+    private static boolean getAndroidIsOpenJDK() {
+        if(ANDROID_VERSION < 0) {
+            return false;
+        }
+        String bootClasspath = System.getProperty("java.boot.class.path");
+        return bootClasspath != null && bootClasspath.toLowerCase().contains("core-oj.jar");
+    }
+
+    private static boolean getGaeIsGoogleAppEngine() {
+        return GAE_VERSION != null;
+    }
+
+    private static String getGaeRuntimeVersion() {
+        return System.getProperty("com.google.appengine.runtime.version");
+    }
+
+}

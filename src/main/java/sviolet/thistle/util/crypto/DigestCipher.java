@@ -28,7 +28,9 @@ import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import sviolet.thistle.util.common.PlatformUtils;
 import sviolet.thistle.util.conversion.ByteUtils;
+import sviolet.thistle.util.file.FileUtils;
 
 /**
  * [国际算法]摘要工具
@@ -105,8 +107,36 @@ public class DigestCipher {
         return digest(ByteUtils.hexToBytes(hexStr), type);
 	}
 
+	/**
+	 * 摘要文件, 根据运行时环境选择使用NIO或IO方式
+	 * @param file 文件
+	 * @param type 摘要算法
+	 * @return 摘要bytes
+	 */
+	public static byte[] digestFile(File file, String type) throws IOException {
+		if (PlatformUtils.PLATFORM == PlatformUtils.Platform.DALVIK){
+			//安卓API11以上使用NIO, API10以下会很慢
+			if (PlatformUtils.ANDROID_VERSION < 11){
+				return digestFileIo(file, type);
+			} else {
+				return digestFileNio(file, type);
+			}
+		}
+		//能手动回收MappedByteBuffer则使用NIO
+		if (FileUtils.isMappedByteBufferCanClean()){
+			return digestFileNio(file, type);
+		} else {
+			return digestFileIo(file, type);
+		}
+	}
+
     /**
-     * 摘要文件(NIO方式, 较快, 安卓API11以上使用, API10以下会很慢)
+     * 摘要文件NIO方式, 较快<br/>
+	 *
+	 * 注意:非安卓平台使用该方法前, 请使用FileUtils.isMappedByteBufferCanClean()判断MappedByteBuffer是否能被手动回收,
+	 * 如果isMappedByteBufferCanClean返回false, 建议使用digestFileIo, 否则操作后, 文件将在一段时间内无法被读写删除<br/>
+	 *
+	 * 注意:安卓平台API11以上使用, API10以下会很慢<br/>
      *
      * @param file 文件
      * @param type 摘要算法
@@ -114,10 +144,12 @@ public class DigestCipher {
      */
     public static byte[] digestFileNio(File file, String type) throws IOException {
         FileInputStream inputStream = null;
+		FileChannel channel = null;
+		MappedByteBuffer byteBuffer = null;
         try {
             inputStream = new FileInputStream(file);
-            FileChannel channel = inputStream.getChannel();
-            MappedByteBuffer byteBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, file.length());
+            channel = inputStream.getChannel();
+            byteBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, file.length());
             MessageDigest cipher = MessageDigest.getInstance(type);
             cipher.update(byteBuffer);
             return cipher.digest();
@@ -132,11 +164,19 @@ public class DigestCipher {
                 } catch (IOException ignored) {
                 }
             }
+			if (channel != null){
+				try {
+					channel.close();
+				} catch (IOException ignored) {
+				}
+			}
+			//尝试将MappedByteBuffer回收, 解决后续文件无法被读写删除的问题
+			FileUtils.cleanMappedByteBuffer(byteBuffer);
         }
     }
 
     /**
-     * 摘要文件(普通方式, 阻塞较慢, 安卓API10以下用这个方法)
+     * 摘要文件普通方式, 阻塞较慢
      *
      * @param file 文件
      * @param type 摘要算法
