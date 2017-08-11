@@ -19,10 +19,11 @@
 
 package sviolet.thistle.util.crypto;
 
+import sviolet.thistle.util.file.FileUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.security.InvalidKeyException;
@@ -52,7 +53,7 @@ public class ECDSACipher {
      * @throws NoSuchAlgorithmException 无效的signAlgorithm
      * @throws InvalidKeyException 无效的私钥
      */
-    public static Signature generateSignatureInstance(ECPrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException {
+    public static Signature generateECDSASignatureInstance(ECPrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException {
         Signature signature = Signature.getInstance(signAlgorithm);
         signature.initSign(privateKey);
         return signature;
@@ -71,7 +72,7 @@ public class ECDSACipher {
      * @throws SignatureException 签名异常
      */  
     public static byte[] sign(byte[] data, ECPrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException{
-        Signature signature = generateSignatureInstance(privateKey, signAlgorithm);
+        Signature signature = generateECDSASignatureInstance(privateKey, signAlgorithm);
         signature.update(data);
         return signature.sign();
     }
@@ -88,13 +89,15 @@ public class ECDSACipher {
      * @throws InvalidKeyException 无效的私钥
      * @throws SignatureException 签名异常
      */
-    public static byte[] sign(File file, ECPrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
+    public static byte[] signNio(File file, ECPrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
         FileInputStream inputStream = null;
+        FileChannel channel = null;
+        MappedByteBuffer byteBuffer = null;
         try {
             inputStream = new FileInputStream(file);
-            FileChannel channel = inputStream.getChannel();
-            MappedByteBuffer byteBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, file.length());
-            Signature signature = generateSignatureInstance(privateKey, signAlgorithm);
+            channel = inputStream.getChannel();
+            byteBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, file.length());
+            Signature signature = generateECDSASignatureInstance(privateKey, signAlgorithm);
             signature.update(byteBuffer);
             return signature.sign();
         } finally {
@@ -104,6 +107,14 @@ public class ECDSACipher {
                 } catch (IOException ignored) {
                 }
             }
+            if (channel != null){
+                try {
+                    channel.close();
+                } catch (IOException ignored) {
+                }
+            }
+            //尝试将MappedByteBuffer回收, 解决后续文件无法被读写删除的问题
+            FileUtils.cleanMappedByteBuffer(byteBuffer);
         }
     }
 
@@ -142,12 +153,14 @@ public class ECDSACipher {
      * @throws SignatureException 签名异常
      *
      */
-    public static boolean verify(File file, byte[] sign, ECPublicKey publicKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
+    public static boolean verifyNio(File file, byte[] sign, ECPublicKey publicKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
         FileInputStream inputStream = null;
+        FileChannel channel = null;
+        MappedByteBuffer byteBuffer = null;
         try {
             inputStream = new FileInputStream(file);
-            FileChannel channel = inputStream.getChannel();
-            MappedByteBuffer byteBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, file.length());
+            channel = inputStream.getChannel();
+            byteBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, file.length());
             Signature signature = Signature.getInstance(signAlgorithm);
             signature.initVerify(publicKey);
             signature.update(byteBuffer);
@@ -159,6 +172,14 @@ public class ECDSACipher {
                 } catch (IOException ignored) {
                 }
             }
+            if (channel != null){
+                try {
+                    channel.close();
+                } catch (IOException ignored) {
+                }
+            }
+            //尝试将MappedByteBuffer回收, 解决后续文件无法被读写删除的问题
+            FileUtils.cleanMappedByteBuffer(byteBuffer);
         }
     }
 
