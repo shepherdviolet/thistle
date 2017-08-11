@@ -45,7 +45,19 @@ import java.security.interfaces.ECPublicKey;
 public class ECDSACipher {
 
     public static final String SIGN_ALGORITHM_ECDSA_SHA256 = "SHA256withECDSA";
-	  
+
+    /**
+     * @param privateKey 私钥
+     * @param signAlgorithm 签名逻辑: ECDSACipher.SIGN_ALGORITHM_ECDSA_SHA256
+     * @throws NoSuchAlgorithmException 无效的signAlgorithm
+     * @throws InvalidKeyException 无效的私钥
+     */
+    public static Signature generateSignatureInstance(ECPrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException {
+        Signature signature = Signature.getInstance(signAlgorithm);
+        signature.initSign(privateKey);
+        return signature;
+    }
+
     /**
      * 用私钥对信息生成数字签名<p>
      *  
@@ -67,44 +79,6 @@ public class ECDSACipher {
     /**
      * <p>用私钥对信息生成数字签名(NIO)</p>
      *
-     * <p>ByteBuffer示例:</p>
-     *
-     * <pre>{@code
-     *         FileInputStream inputStream = new FileInputStream(file);
-     *         FileChannel channel = inputStream.getChannel();
-     *         MappedByteBuffer byteBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, file.length());
-     * }</pre>
-     *
-     * @param data 需要签名的数据
-     * @param privateKey 私钥
-     * @param signAlgorithm 签名逻辑: ECDSACipher.SIGN_ALGORITHM_ECDSA_SHA256
-     *
-     * @return 数字签名
-     * @throws NoSuchAlgorithmException 无效的signAlgorithm
-     * @throws InvalidKeyException 无效的私钥
-     * @throws SignatureException 签名异常
-     */
-    public static byte[] sign(ByteBuffer data, ECPrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException{
-        Signature signature = generateSignatureInstance(privateKey, signAlgorithm);
-        signature.update(data);
-        return signature.sign();
-    }
-
-    /**
-     * @param privateKey 私钥
-     * @param signAlgorithm 签名逻辑: ECDSACipher.SIGN_ALGORITHM_ECDSA_SHA256
-     * @throws NoSuchAlgorithmException 无效的signAlgorithm
-     * @throws InvalidKeyException 无效的私钥
-     */
-    public static Signature generateSignatureInstance(ECPrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException {
-        Signature signature = Signature.getInstance(signAlgorithm);
-        signature.initSign(privateKey);
-        return signature;
-    }
-
-    /**
-     * <p>用私钥对信息生成数字签名(NIO)</p>
-     *
      * @param file 需要签名的文件
      * @param privateKey 私钥
      * @param signAlgorithm 签名逻辑: ECDSACipher.SIGN_ALGORITHM_ECDSA_SHA256
@@ -120,7 +94,9 @@ public class ECDSACipher {
             inputStream = new FileInputStream(file);
             FileChannel channel = inputStream.getChannel();
             MappedByteBuffer byteBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, file.length());
-            return sign(byteBuffer, privateKey, signAlgorithm);
+            Signature signature = generateSignatureInstance(privateKey, signAlgorithm);
+            signature.update(byteBuffer);
+            return signature.sign();
         } finally {
             if (inputStream != null){
                 try {
@@ -155,35 +131,6 @@ public class ECDSACipher {
     /**
      * <p>用公钥验证数字签名(NIO)</p>
      *
-     * <p>ByteBuffer示例:</p>
-     *
-     * <pre>{@code
-     *         FileInputStream inputStream = new FileInputStream(file);
-     *         FileChannel channel = inputStream.getChannel();
-     *         MappedByteBuffer byteBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, file.length());
-     * }</pre>
-     *
-     * @param data 被签名的数据
-     * @param sign 数字签名
-     * @param publicKey 公钥
-     * @param signAlgorithm 签名逻辑: ECDSACipher.SIGN_ALGORITHM_ECDSA_SHA256
-     *
-     * @return true:数字签名有效
-     * @throws NoSuchAlgorithmException 无效的signAlgorithm
-     * @throws InvalidKeyException 无效的私钥
-     * @throws SignatureException 签名异常
-     *
-     */
-    public static boolean verify(ByteBuffer data, byte[] sign, ECPublicKey publicKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException{
-        Signature signature = Signature.getInstance(signAlgorithm);
-        signature.initVerify(publicKey);
-        signature.update(data);
-        return signature.verify(sign);
-    }
-
-    /**
-     * <p>用公钥验证数字签名(NIO)</p>
-     *
      * @param file 被签名的文件
      * @param sign 数字签名
      * @param publicKey 公钥
@@ -201,7 +148,10 @@ public class ECDSACipher {
             inputStream = new FileInputStream(file);
             FileChannel channel = inputStream.getChannel();
             MappedByteBuffer byteBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, file.length());
-            return verify(byteBuffer, sign, publicKey, signAlgorithm);
+            Signature signature = Signature.getInstance(signAlgorithm);
+            signature.initVerify(publicKey);
+            signature.update(byteBuffer);
+            return signature.verify(sign);
         } finally {
             if (inputStream != null){
                 try {
