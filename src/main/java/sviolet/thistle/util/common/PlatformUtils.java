@@ -44,22 +44,22 @@ public class PlatformUtils {
     public static final boolean GAE_IS_GOOGLE_APP_ENGINE = getGaeIsGoogleAppEngine();
 
     private static Platform getPlatform(){
-        if (Platform.HOTSPOT.getPrefix().startsWith(VM_NAME)){
+        if (VM_NAME.startsWith(Platform.HOTSPOT.getPrefix())){
             return Platform.HOTSPOT;
         }
-        if (Platform.OPENJDK.getPrefix().startsWith(VM_NAME)){
+        if (VM_NAME.startsWith(Platform.OPENJDK.getPrefix())){
             return Platform.OPENJDK;
         }
-        if (Platform.DALVIK.getPrefix().startsWith(VM_NAME)){
+        if (VM_NAME.startsWith(Platform.DALVIK.getPrefix())){
             return Platform.DALVIK;
         }
-        if (Platform.JROCKIT.getPrefix().startsWith(VM_NAME)){
+        if (VM_NAME.startsWith(Platform.JROCKIT.getPrefix())){
             return Platform.JROCKIT;
         }
-        if (Platform.GNU.getPrefix().startsWith(VM_NAME)){
+        if (VM_NAME.startsWith(Platform.GNU.getPrefix())){
             return Platform.GNU;
         }
-        if (Platform.PERC.getPrefix().startsWith(VM_NAME)){
+        if (VM_NAME.startsWith(Platform.PERC.getPrefix())){
             return Platform.PERC;
         }
         return Platform.UNKNOWN;
