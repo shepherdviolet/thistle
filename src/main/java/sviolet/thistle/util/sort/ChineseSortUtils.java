@@ -29,7 +29,7 @@ import java.util.List;
  * 
  * 中文排序工具
  * 
- * @author S.Violet (ZhuQinChao)
+ * @author S.Violet ()
  *
  */
 public class ChineseSortUtils {

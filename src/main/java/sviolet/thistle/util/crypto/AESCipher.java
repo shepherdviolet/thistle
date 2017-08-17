@@ -33,7 +33,7 @@ import javax.crypto.spec.SecretKeySpec;
  * 
  * AES加密工具
  * 
- * @author S.Violet (ZhuQinChao)
+ * @author S.Violet ()
  *
  */
 

@@ -8,7 +8,7 @@ import java.util.Locale;
 /**
  * 时间工具
  * 
- * @author S.Violet (ZhuQinChao)
+ * @author S.Violet ()
  *
  */
 
