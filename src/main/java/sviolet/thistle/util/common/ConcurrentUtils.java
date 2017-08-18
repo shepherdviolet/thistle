@@ -34,6 +34,7 @@ public class ConcurrentUtils {
 
     /**
      * 复制一个Collection的快照, 防止并发处理时, 发生异常
+     * 需要加锁, 否则会报ConcurrentModificationException异常
      *
      * @param source 原数据
      * @param <T> 数据类型
@@ -52,6 +53,7 @@ public class ConcurrentUtils {
 
     /**
      * 复制一个Map的快照, 防止并发处理时, 发生异常
+     * 需要加锁, 否则会报ConcurrentModificationException异常
      *
      * @param source 原数据
      * @param <K> 键类型
