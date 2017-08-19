@@ -23,7 +23,7 @@ package sviolet.thistle.util.common;
  * Created by S.Violet on 2017/1/14.
  */
 
-public class LocationUtils {
+public class LatLonUtils {
 
     private static final double EARTH_RADIUS = 6378.137;
 
