@@ -19,8 +19,7 @@
 
 package sviolet.thistle.model.thread;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -135,7 +134,7 @@ public class LazySingleThreadPool {
             try{
                 locker.lock();
                 if (singleThreadPool == null) {
-                    singleThreadPool = Executors.newSingleThreadExecutor();
+                    singleThreadPool =  new ThreadPoolExecutor(0, 1, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
                 }
             }finally {
                 locker.unlock();
