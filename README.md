@@ -1,4 +1,4 @@
-# thistle 6.2
+# thistle 6.3
 * Java common library for private use
 * https://github.com/shepherdviolet/thistle
 
@@ -10,7 +10,7 @@ repositories {
     maven { url 'https://jitpack.io' }
 }
 dependencies {
-    classpath 'com.github.shepherdviolet:thistle:6.2'
+    classpath 'com.github.shepherdviolet:thistle:6.3'
 }
 
 ```
