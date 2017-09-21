@@ -21,10 +21,7 @@ package sviolet.thistle.util.file;
 
 import sviolet.thistle.util.common.PlatformUtils;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Method;
 import java.nio.MappedByteBuffer;
 import java.security.AccessController;
@@ -52,6 +49,32 @@ public class FileUtils {
         } finally {
             try { if (writer != null) writer.flush(); } catch (IOException ignored) { }
             try { if (writer != null) writer.close(); } catch (IOException ignored) { }
+        }
+    }
+
+    /**
+     * 读取文件的头部数据
+     * @param file 文件
+     * @param start 起始位置
+     * @param buffer 获取的数据
+     * @throws IOException exception
+     */
+    public static long readHead(File file, int start, byte[] buffer) throws IOException {
+        if (file == null || !file.exists()){
+            return 0;
+        }
+        RandomAccessFile randomAccessFile = null;
+        try{
+            randomAccessFile = new RandomAccessFile(file, "r");
+            randomAccessFile.seek(start);
+            return randomAccessFile.read(buffer);
+        } finally {
+            if (randomAccessFile != null){
+                try {
+                    randomAccessFile.close();
+                } catch (IOException ignored) {
+                }
+            }
         }
     }
 
