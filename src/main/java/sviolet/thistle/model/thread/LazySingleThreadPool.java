@@ -91,16 +91,7 @@ public class LazySingleThreadPool {
             return false;
         }
 
-        getPool().execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    runnable.run();
-                } finally {
-                    queueLength.decrementAndGet();
-                }
-            }
-        });
+        getPool().execute(runnable);
 
         return true;
     }
@@ -134,7 +125,18 @@ public class LazySingleThreadPool {
             try{
                 locker.lock();
                 if (singleThreadPool == null) {
-                    singleThreadPool =  new ThreadPoolExecutor(0, 1, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+                    singleThreadPool =  new ThreadPoolExecutor(
+                            0,
+                            1,
+                            60L,
+                            TimeUnit.SECONDS,
+                            new LinkedBlockingQueue<Runnable>()){
+                        @Override
+                        protected void afterExecute(Runnable runnable, Throwable t) {
+                            super.afterExecute(runnable, t);
+                            queueLength.decrementAndGet();
+                        }
+                    };
                 }
             }finally {
                 locker.unlock();
