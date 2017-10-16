@@ -14,3 +14,14 @@ dependencies {
 }
 
 ```
+
+### Import dependencies from local repository
+
+```gradle
+
+repositories {
+    //replace by your path
+    maven { url 'file:C:/m2repository/repository' }
+}
+
+```
