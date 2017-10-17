@@ -66,8 +66,9 @@ public class BufferedFileCopyer {
         //使目标文件修改时间与源文件保持一致
         long lastModified = source.lastModified();
         //解决有时候取出负数, 无法设置时间的问题
-        if(lastModified < 0L)
+        if(lastModified < 0L) {
             lastModified = 0L;
+        }
         target.setLastModified(lastModified);
     }
 }

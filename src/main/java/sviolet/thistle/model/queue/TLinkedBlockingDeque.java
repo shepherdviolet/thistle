@@ -80,7 +80,9 @@ public class TLinkedBlockingDeque<E> extends CompatLinkedBlockingDeque<E> {
 
     @Override
     public boolean offerFirst(E e) {
-        if (e == null) throw new NullPointerException();
+        if (e == null) {
+            throw new NullPointerException();
+        }
         Node<E> node = new Node<E>(e);
         final ReentrantLock lock = this.lock;
         boolean result;
@@ -108,7 +110,9 @@ public class TLinkedBlockingDeque<E> extends CompatLinkedBlockingDeque<E> {
 
     @Override
     public boolean offerLast(E e) {
-        if (e == null) throw new NullPointerException();
+        if (e == null) {
+            throw new NullPointerException();
+        }
         Node<E> node = new Node<E>(e);
         final ReentrantLock lock = this.lock;
         boolean result;
@@ -136,7 +140,9 @@ public class TLinkedBlockingDeque<E> extends CompatLinkedBlockingDeque<E> {
 
     @Override
     public void putFirst(E e) throws InterruptedException {
-        if (e == null) throw new NullPointerException();
+        if (e == null) {
+            throw new NullPointerException();
+        }
         Node<E> node = new Node<E>(e);
         final ReentrantLock lock = this.lock;
         Object unlinkedElement = null;
@@ -151,8 +157,9 @@ public class TLinkedBlockingDeque<E> extends CompatLinkedBlockingDeque<E> {
                     }
                 }
             }
-            while (!linkFirst(node))
+            while (!linkFirst(node)) {
                 notFull.await();
+            }
         } finally {
             lock.unlock();
         }
@@ -163,7 +170,9 @@ public class TLinkedBlockingDeque<E> extends CompatLinkedBlockingDeque<E> {
 
     @Override
     public void putLast(E e) throws InterruptedException {
-        if (e == null) throw new NullPointerException();
+        if (e == null) {
+            throw new NullPointerException();
+        }
         Node<E> node = new Node<E>(e);
         final ReentrantLock lock = this.lock;
         Object unlinkedElement = null;
@@ -178,8 +187,9 @@ public class TLinkedBlockingDeque<E> extends CompatLinkedBlockingDeque<E> {
                     }
                 }
             }
-            while (!linkLast(node))
+            while (!linkLast(node)) {
                 notFull.await();
+            }
         } finally {
             lock.unlock();
         }
@@ -190,7 +200,9 @@ public class TLinkedBlockingDeque<E> extends CompatLinkedBlockingDeque<E> {
 
     @Override
     public boolean offerFirst(E e, long timeout, TimeUnit unit) throws InterruptedException {
-        if (e == null) throw new NullPointerException();
+        if (e == null) {
+            throw new NullPointerException();
+        }
         Node<E> node = new Node<E>(e);
         long nanos = unit.toNanos(timeout);
         final ReentrantLock lock = this.lock;
@@ -226,7 +238,9 @@ public class TLinkedBlockingDeque<E> extends CompatLinkedBlockingDeque<E> {
 
     @Override
     public boolean offerLast(E e, long timeout, TimeUnit unit) throws InterruptedException {
-        if (e == null) throw new NullPointerException();
+        if (e == null) {
+            throw new NullPointerException();
+        }
         Node<E> node = new Node<E>(e);
         long nanos = unit.toNanos(timeout);
         final ReentrantLock lock = this.lock;
@@ -267,15 +281,18 @@ public class TLinkedBlockingDeque<E> extends CompatLinkedBlockingDeque<E> {
      * @param e
      */
     public void intrudeFirst(E e){
-        if (e == null) throw new NullPointerException();
+        if (e == null) {
+            throw new NullPointerException();
+        }
         Node<E> node = new Node<E>(e);
         final ReentrantLock lock = this.lock;
         List<Object> unlinkedElements = null;
         lock.lock();
         try {
             while(!linkFirst(node)){
-                if (unlinkedElements == null)
+                if (unlinkedElements == null) {
                     unlinkedElements = new ArrayList<>();
+                }
                 unlinkedElements.add(unlinkLast());
             }
         } finally {
@@ -295,15 +312,18 @@ public class TLinkedBlockingDeque<E> extends CompatLinkedBlockingDeque<E> {
      * @param e
      */
     public void intrudeLast(E e){
-        if (e == null) throw new NullPointerException();
+        if (e == null) {
+            throw new NullPointerException();
+        }
         Node<E> node = new Node<E>(e);
         final ReentrantLock lock = this.lock;
         List<Object> unlinkedElements = null;
         lock.lock();
         try {
             while(!linkLast(node)){
-                if (unlinkedElements == null)
+                if (unlinkedElements == null) {
                     unlinkedElements = new ArrayList<>();
+                }
                 unlinkedElements.add(unlinkLast());
             }
         } finally {
@@ -337,7 +357,9 @@ public class TLinkedBlockingDeque<E> extends CompatLinkedBlockingDeque<E> {
      * @return
      */
     public boolean removeAll(Object o){
-        if (o == null) return false;
+        if (o == null) {
+            return false;
+        }
         final ReentrantLock lock = this.lock;
         boolean result = false;
         lock.lock();

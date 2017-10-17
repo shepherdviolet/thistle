@@ -47,8 +47,8 @@ public class FileUtils {
             writer = new BufferedWriter(new FileWriter(file, append));
             writer.write(msg);
         } finally {
-            try { if (writer != null) writer.flush(); } catch (IOException ignored) { }
-            try { if (writer != null) writer.close(); } catch (IOException ignored) { }
+            try { if (writer != null) {writer.flush();} } catch (IOException ignored) { }
+            try { if (writer != null) {writer.close();} } catch (IOException ignored) { }
         }
     }
 
@@ -106,6 +106,7 @@ public class FileUtils {
             return false;
         }
         return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+            @Override
             public Boolean run() {
                 try {
                     directByteBufferClass = Class.forName("java.nio.DirectByteBuffer");
@@ -146,6 +147,7 @@ public class FileUtils {
         }
         if (isMappedByteBufferCanClean()){
             return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+                @Override
                 public Boolean run() {
                     try {
                         if (!directByteBufferClass.isAssignableFrom(mappedByteBuffer.getClass())){

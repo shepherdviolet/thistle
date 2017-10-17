@@ -40,8 +40,9 @@ public class StringUtils {
      * @return 变换后的字符串
      */
     public static String toUpperCase(String src, int... positions){
-        if (src == null)
+        if (src == null) {
             return null;
+        }
         char[] chars = src.toCharArray();
         for (int position : positions){
             if(position < chars.length && position > -1){
@@ -58,8 +59,9 @@ public class StringUtils {
      * @return 变换后的字符串
      */
     public static String toLowerCase(String src, int... positions){
-        if (src == null)
+        if (src == null) {
             return null;
+        }
         char[] chars = src.toCharArray();
         for (int position : positions){
             if(position < chars.length && position > -1){
@@ -75,8 +77,9 @@ public class StringUtils {
      * @return 全角字符串
      */
     public static String toSBCCase(String src) {
-        if (src == null)
+        if (src == null) {
             return null;
+        }
         char[] charArray = src.toCharArray();
         for (int i = 0; i< charArray.length; i++) {
             if (charArray[i] == 12288) {

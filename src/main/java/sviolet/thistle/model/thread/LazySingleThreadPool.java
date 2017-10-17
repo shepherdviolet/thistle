@@ -73,8 +73,9 @@ public class LazySingleThreadPool {
      * @param maxQueueLength 最大队列长度 [1, MAX_VALUE)
      */
     public LazySingleThreadPool(int maxQueueLength){
-        if (maxQueueLength < 1)
+        if (maxQueueLength < 1) {
             throw new RuntimeException("[LazySingleThreadPool]maxQueueLength must >= 1");
+        }
         this.maxQueueLength = maxQueueLength;
     }
 

@@ -79,10 +79,12 @@ public class ParasiticVars {
      */
     public static void set(Object host, String key, Object param){
 
-        if (host == null || param == null)
+        if (host == null || param == null) {
             return;
-        if (key == null)
+        }
+        if (key == null) {
             throw new NullPointerException("[ParasiticVars] key == null");
+        }
 
         init();//初始化
 
@@ -114,10 +116,12 @@ public class ParasiticVars {
      */
     public static Object get(Object host, String key){
 
-        if (host == null)
+        if (host == null) {
             return null;
-        if (key == null)
+        }
+        if (key == null) {
             throw new NullPointerException("[ParasiticVars] key == null");
+        }
 
         init();//初始化
 
@@ -147,10 +151,12 @@ public class ParasiticVars {
      */
     public static void remove(Object host, String key){
 
-        if (host == null)
+        if (host == null) {
             return;
-        if (key == null)
+        }
+        if (key == null) {
             throw new NullPointerException("[ParasiticVars] key == null");
+        }
 
         init();//初始化
 
@@ -166,8 +172,9 @@ public class ParasiticVars {
         }
 
         //宿主存在则从中移除变量
-        if (gcHostHolder != null)
+        if (gcHostHolder != null) {
             gcHostHolder.remove(key);
+        }
 
     }
 
@@ -178,8 +185,9 @@ public class ParasiticVars {
      */
     public static void removeAll(Object host){
 
-        if (host == null)
+        if (host == null) {
             return;
+        }
 
         init();//初始化
 
@@ -195,8 +203,9 @@ public class ParasiticVars {
         }
 
         //宿主存在则清空其中的变量
-        if (gcHostHolder != null)
+        if (gcHostHolder != null) {
             gcHostHolder.removeAll();
+        }
 
     }
 
@@ -348,8 +357,9 @@ public class ParasiticVars {
 
         void set(String key, Object param){
 
-            if (key == null || param == null)
+            if (key == null || param == null) {
                 throw new NullPointerException("[ParasiticVars] key == null || param == null");
+            }
 
             Object destroyable;
 
@@ -380,8 +390,9 @@ public class ParasiticVars {
 
         Object get(String key){
 
-            if (key == null)
+            if (key == null) {
                 throw new NullPointerException("[ParasiticVars] key == null");
+            }
 
             try{
                 lock.lock();
@@ -393,8 +404,9 @@ public class ParasiticVars {
 
         void remove(String key){
 
-            if (key == null)
+            if (key == null) {
                 throw new NullPointerException("[ParasiticVars] key == null");
+            }
 
             Object destroyable;
 
@@ -422,8 +434,9 @@ public class ParasiticVars {
                 lock.unlock();
             }
 
-            if (destroyables == null)
+            if (destroyables == null) {
                 return;
+            }
 
             //销毁所有变量
             for (Map.Entry<String, Object> entry : destroyables.entrySet()){
@@ -435,8 +448,9 @@ public class ParasiticVars {
         }
 
         Object getHost(){
-            if (host != null)
+            if (host != null) {
                 return host.get();
+            }
             return null;
         }
 
