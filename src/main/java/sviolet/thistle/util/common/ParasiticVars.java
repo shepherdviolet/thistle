@@ -68,7 +68,7 @@ public class ParasiticVars {
 
     private static LazySingleThreadPool gcTaskPool;//gc任务执行线程池
 
-    private final static ReentrantLock lock = new ReentrantLock();
+    private final static ReentrantLock LOCK = new ReentrantLock();
 
     /**
      * 设置寄生变量
@@ -91,7 +91,7 @@ public class ParasiticVars {
         String hostKey = calculateHostKey(host);//计算宿主Key
 
         try{
-            lock.lock();
+            LOCK.lock();
             //获取已存在的宿主
             HostHolder hostHolder = hosts.get(hostKey);
             //宿主不存在则加入
@@ -102,7 +102,7 @@ public class ParasiticVars {
             //变量存入宿主
             hostHolder.set(key, param);
         }finally {
-            lock.unlock();
+            LOCK.unlock();
         }
 
     }
@@ -128,7 +128,7 @@ public class ParasiticVars {
         String hostKey = calculateHostKey(host);//计算宿主Key
 
         try{
-            lock.lock();
+            LOCK.lock();
             //获取已存在的宿主
             HostHolder hostHolder = hosts.get(hostKey);
             //宿主存在则获取变量
@@ -136,7 +136,7 @@ public class ParasiticVars {
                 return hostHolder.get(key);
             }
         }finally {
-            lock.unlock();
+            LOCK.unlock();
         }
 
         //宿主不存在返回null
@@ -164,11 +164,11 @@ public class ParasiticVars {
         HostHolder gcHostHolder = null;
 
         try{
-            lock.lock();
+            LOCK.lock();
             //获取已存在的宿主
             gcHostHolder = hosts.get(hostKey);
         }finally {
-            lock.unlock();
+            LOCK.unlock();
         }
 
         //宿主存在则从中移除变量
@@ -195,11 +195,11 @@ public class ParasiticVars {
         HostHolder gcHostHolder = null;
 
         try{
-            lock.lock();
+            LOCK.lock();
             //移除已存在的宿主
             gcHostHolder = hosts.remove(hostKey);
         }finally {
-            lock.unlock();
+            LOCK.unlock();
         }
 
         //宿主存在则清空其中的变量
@@ -217,11 +217,11 @@ public class ParasiticVars {
         Map<String, HostHolder> gcHosts = null;
 
         try{
-            lock.lock();
+            LOCK.lock();
             gcHosts = hosts;
             hosts = null;
         }finally {
-            lock.unlock();
+            LOCK.unlock();
         }
 
         if (gcHosts != null) {
@@ -240,13 +240,13 @@ public class ParasiticVars {
         //宿主Map不存在则新建
         if (hosts == null){
             try{
-                lock.lock();
+                LOCK.lock();
                 if (hosts == null){
                     hosts = new HashMap<>();//新建宿主Map
                     gcHandler = new WeakReference<>(new GcHandler());//新建gc事件监听
                 }
             }finally {
-                lock.unlock();
+                LOCK.unlock();
             }
         }
     }
@@ -254,12 +254,12 @@ public class ParasiticVars {
     private static LazySingleThreadPool getGcTaskPool(){
         if (gcTaskPool == null){
             try{
-                lock.lock();
+                LOCK.lock();
                 if (gcTaskPool == null){
                     gcTaskPool = new LazySingleThreadPool();//新建gc任务执行线程池
                 }
             }finally {
-                lock.unlock();
+                LOCK.unlock();
             }
         }
 
@@ -280,7 +280,7 @@ public class ParasiticVars {
         Map<String, HostHolder> gcHosts = new HashMap<>();//被清理的宿主镜像
 
         try{
-            lock.lock();
+            LOCK.lock();
             //搜索无宿主的宿主镜像
             for (Map.Entry<String, HostHolder> entry : hosts.entrySet()){
                 if (!entry.getValue().isHostExists()){
@@ -292,7 +292,7 @@ public class ParasiticVars {
                 hosts.remove(entry.getKey());
             }
         }finally {
-            lock.unlock();
+            LOCK.unlock();
         }
 
         //清理无宿主的变量

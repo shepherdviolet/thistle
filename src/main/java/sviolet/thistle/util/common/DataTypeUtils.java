@@ -35,7 +35,7 @@ import sviolet.thistle.util.conversion.ByteUtils;
 public class DataTypeUtils {
 
     private static final int MAX_HEADER_LENGTH = 20;//最大截取文件头长度
-    private static final Map<String, Type> typesMapping = new HashMap<>();//映射表
+    private static final Map<String, Type> TYPES_MAPPING = new HashMap<>();//映射表
 
     /**
      * 数据类型
@@ -74,32 +74,32 @@ public class DataTypeUtils {
      * 填充文件头-文件类型映射表
      */
     static {
-        typesMapping.put("ffd8ff", Type.JPG);
-        typesMapping.put("89504e47", Type.PNG);
-        typesMapping.put("47494638", Type.GIF);
-        typesMapping.put("49492a00", Type.TIF);
-        typesMapping.put("424d", Type.BMP);
-        typesMapping.put("41433130", Type.DWG);
-        typesMapping.put("38425053", Type.PSD);
-        typesMapping.put("7b5c727466", Type.RTF);
-        typesMapping.put("3c3f786d6c", Type.XML);
-        typesMapping.put("68746d6c3e", Type.HTML);
-        typesMapping.put("44656c69766572792d646174653a", Type.EMAIL);
-        typesMapping.put("d0cf11e0", Type.DOC);
-        typesMapping.put("5374616e64617264204a", Type.MDB);
-        typesMapping.put("252150532d41646f6265", Type.PS);
-        typesMapping.put("255044462d312e", Type.PDF);
-        typesMapping.put("504b0304", Type.ZIP);
-        typesMapping.put("52617221", Type.RAR);
-        typesMapping.put("57415645", Type.WAV);
-        typesMapping.put("41564920", Type.AVI);
-        typesMapping.put("2e524d46", Type.RM);
-        typesMapping.put("000001ba", Type.MPG);
-        typesMapping.put("000001b3", Type.MPG);
-        typesMapping.put("6d6f6f76", Type.MOV);
-        typesMapping.put("3026b2758e66cf11", Type.ASF);
-        typesMapping.put("4d546864", Type.MID);
-        typesMapping.put("1f8b08", Type.GZ);
+        TYPES_MAPPING.put("ffd8ff", Type.JPG);
+        TYPES_MAPPING.put("89504e47", Type.PNG);
+        TYPES_MAPPING.put("47494638", Type.GIF);
+        TYPES_MAPPING.put("49492a00", Type.TIF);
+        TYPES_MAPPING.put("424d", Type.BMP);
+        TYPES_MAPPING.put("41433130", Type.DWG);
+        TYPES_MAPPING.put("38425053", Type.PSD);
+        TYPES_MAPPING.put("7b5c727466", Type.RTF);
+        TYPES_MAPPING.put("3c3f786d6c", Type.XML);
+        TYPES_MAPPING.put("68746d6c3e", Type.HTML);
+        TYPES_MAPPING.put("44656c69766572792d646174653a", Type.EMAIL);
+        TYPES_MAPPING.put("d0cf11e0", Type.DOC);
+        TYPES_MAPPING.put("5374616e64617264204a", Type.MDB);
+        TYPES_MAPPING.put("252150532d41646f6265", Type.PS);
+        TYPES_MAPPING.put("255044462d312e", Type.PDF);
+        TYPES_MAPPING.put("504b0304", Type.ZIP);
+        TYPES_MAPPING.put("52617221", Type.RAR);
+        TYPES_MAPPING.put("57415645", Type.WAV);
+        TYPES_MAPPING.put("41564920", Type.AVI);
+        TYPES_MAPPING.put("2e524d46", Type.RM);
+        TYPES_MAPPING.put("000001ba", Type.MPG);
+        TYPES_MAPPING.put("000001b3", Type.MPG);
+        TYPES_MAPPING.put("6d6f6f76", Type.MOV);
+        TYPES_MAPPING.put("3026b2758e66cf11", Type.ASF);
+        TYPES_MAPPING.put("4d546864", Type.MID);
+        TYPES_MAPPING.put("1f8b08", Type.GZ);
     }
 
     /**
@@ -115,7 +115,7 @@ public class DataTypeUtils {
         if (fileHeader == null){
             return Type.NULL;
         }
-        for (Map.Entry<String, Type> entry : typesMapping.entrySet()){
+        for (Map.Entry<String, Type> entry : TYPES_MAPPING.entrySet()){
             if (fileHeader.startsWith(entry.getKey())){
                 return entry.getValue();
             }
@@ -162,7 +162,7 @@ public class DataTypeUtils {
         if (header == null){
             return Type.NULL;
         }
-        for (Map.Entry<String, Type> entry : typesMapping.entrySet()){
+        for (Map.Entry<String, Type> entry : TYPES_MAPPING.entrySet()){
             if (header.startsWith(entry.getKey())){
                 return entry.getValue();
             }

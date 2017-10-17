@@ -14,7 +14,7 @@ import java.util.zip.InflaterOutputStream;
  */
 public class Base64Utils {
 
-    private static final byte[] encodingTable = {(byte) 'A', (byte) 'B',
+    private static final byte[] ENCODING_TABLE = {(byte) 'A', (byte) 'B',
             (byte) 'C', (byte) 'D', (byte) 'E', (byte) 'F', (byte) 'G',
             (byte) 'H', (byte) 'I', (byte) 'J', (byte) 'K', (byte) 'L',
             (byte) 'M', (byte) 'N', (byte) 'O', (byte) 'P', (byte) 'Q',
@@ -29,24 +29,24 @@ public class Base64Utils {
             (byte) '5', (byte) '6', (byte) '7', (byte) '8', (byte) '9',
             (byte) '+', (byte) '/'};
 
-    private static final byte[] decodingTable;
+    private static final byte[] DECODING_TABLE;
 
     static {
-        decodingTable = new byte[128];
+        DECODING_TABLE = new byte[128];
         for (int i = 0; i < 128; i++) {
-            decodingTable[i] = (byte) -1;
+            DECODING_TABLE[i] = (byte) -1;
         }
         for (int i = 'A'; i <= 'Z'; i++) {
-            decodingTable[i] = (byte) (i - 'A');
+            DECODING_TABLE[i] = (byte) (i - 'A');
         }
         for (int i = 'a'; i <= 'z'; i++) {
-            decodingTable[i] = (byte) (i - 'a' + 26);
+            DECODING_TABLE[i] = (byte) (i - 'a' + 26);
         }
         for (int i = '0'; i <= '9'; i++) {
-            decodingTable[i] = (byte) (i - '0' + 52);
+            DECODING_TABLE[i] = (byte) (i - '0' + 52);
         }
-        decodingTable['+'] = 62;
-        decodingTable['/'] = 63;
+        DECODING_TABLE['+'] = 62;
+        DECODING_TABLE['/'] = 63;
     }
 
     /**
@@ -96,10 +96,10 @@ public class Base64Utils {
             a1 = data[i] & 0xff;
             a2 = data[i + 1] & 0xff;
             a3 = data[i + 2] & 0xff;
-            bytes[j] = encodingTable[(a1 >>> 2) & 0x3f];
-            bytes[j + 1] = encodingTable[((a1 << 4) | (a2 >>> 4)) & 0x3f];
-            bytes[j + 2] = encodingTable[((a2 << 2) | (a3 >>> 6)) & 0x3f];
-            bytes[j + 3] = encodingTable[a3 & 0x3f];
+            bytes[j] = ENCODING_TABLE[(a1 >>> 2) & 0x3f];
+            bytes[j + 1] = ENCODING_TABLE[((a1 << 4) | (a2 >>> 4)) & 0x3f];
+            bytes[j + 2] = ENCODING_TABLE[((a2 << 2) | (a3 >>> 6)) & 0x3f];
+            bytes[j + 3] = ENCODING_TABLE[a3 & 0x3f];
         }
         int b1;
         int b2;
@@ -107,14 +107,14 @@ public class Base64Utils {
         int d1;
         int d2;
         switch (modulus) {
-            case 0: /* nothing left to do */
+            case 0:
                 break;
             case 1:
                 d1 = data[data.length - 1] & 0xff;
                 b1 = (d1 >>> 2) & 0x3f;
                 b2 = (d1 << 4) & 0x3f;
-                bytes[bytes.length - 4] = encodingTable[b1];
-                bytes[bytes.length - 3] = encodingTable[b2];
+                bytes[bytes.length - 4] = ENCODING_TABLE[b1];
+                bytes[bytes.length - 3] = ENCODING_TABLE[b2];
                 bytes[bytes.length - 2] = (byte) '=';
                 bytes[bytes.length - 1] = (byte) '=';
                 break;
@@ -124,10 +124,12 @@ public class Base64Utils {
                 b1 = (d1 >>> 2) & 0x3f;
                 b2 = ((d1 << 4) | (d2 >>> 4)) & 0x3f;
                 b3 = (d2 << 2) & 0x3f;
-                bytes[bytes.length - 4] = encodingTable[b1];
-                bytes[bytes.length - 3] = encodingTable[b2];
-                bytes[bytes.length - 2] = encodingTable[b3];
+                bytes[bytes.length - 4] = ENCODING_TABLE[b1];
+                bytes[bytes.length - 3] = ENCODING_TABLE[b2];
+                bytes[bytes.length - 2] = ENCODING_TABLE[b3];
                 bytes[bytes.length - 1] = (byte) '=';
+                break;
+            default:
                 break;
         }
         return bytes;
@@ -153,29 +155,29 @@ public class Base64Utils {
             bytes = new byte[((data.length / 4) * 3)];
         }
         for (int i = 0, j = 0; i < (data.length - 4); i += 4, j += 3) {
-            b1 = decodingTable[data[i]];
-            b2 = decodingTable[data[i + 1]];
-            b3 = decodingTable[data[i + 2]];
-            b4 = decodingTable[data[i + 3]];
+            b1 = DECODING_TABLE[data[i]];
+            b2 = DECODING_TABLE[data[i + 1]];
+            b3 = DECODING_TABLE[data[i + 2]];
+            b4 = DECODING_TABLE[data[i + 3]];
             bytes[j] = (byte) ((b1 << 2) | (b2 >> 4));
             bytes[j + 1] = (byte) ((b2 << 4) | (b3 >> 2));
             bytes[j + 2] = (byte) ((b3 << 6) | b4);
         }
         if (data[data.length - 2] == '=') {
-            b1 = decodingTable[data[data.length - 4]];
-            b2 = decodingTable[data[data.length - 3]];
+            b1 = DECODING_TABLE[data[data.length - 4]];
+            b2 = DECODING_TABLE[data[data.length - 3]];
             bytes[bytes.length - 1] = (byte) ((b1 << 2) | (b2 >> 4));
         } else if (data[data.length - 1] == '=') {
-            b1 = decodingTable[data[data.length - 4]];
-            b2 = decodingTable[data[data.length - 3]];
-            b3 = decodingTable[data[data.length - 2]];
+            b1 = DECODING_TABLE[data[data.length - 4]];
+            b2 = DECODING_TABLE[data[data.length - 3]];
+            b3 = DECODING_TABLE[data[data.length - 2]];
             bytes[bytes.length - 2] = (byte) ((b1 << 2) | (b2 >> 4));
             bytes[bytes.length - 1] = (byte) ((b2 << 4) | (b3 >> 2));
         } else {
-            b1 = decodingTable[data[data.length - 4]];
-            b2 = decodingTable[data[data.length - 3]];
-            b3 = decodingTable[data[data.length - 2]];
-            b4 = decodingTable[data[data.length - 1]];
+            b1 = DECODING_TABLE[data[data.length - 4]];
+            b2 = DECODING_TABLE[data[data.length - 3]];
+            b3 = DECODING_TABLE[data[data.length - 2]];
+            b4 = DECODING_TABLE[data[data.length - 1]];
             bytes[bytes.length - 3] = (byte) ((b1 << 2) | (b2 >> 4));
             bytes[bytes.length - 2] = (byte) ((b2 << 4) | (b3 >> 2));
             bytes[bytes.length - 1] = (byte) ((b3 << 6) | b4);
@@ -203,29 +205,29 @@ public class Base64Utils {
             bytes = new byte[((data.length() / 4) * 3)];
         }
         for (int i = 0, j = 0; i < (data.length() - 4); i += 4, j += 3) {
-            b1 = decodingTable[data.charAt(i)];
-            b2 = decodingTable[data.charAt(i + 1)];
-            b3 = decodingTable[data.charAt(i + 2)];
-            b4 = decodingTable[data.charAt(i + 3)];
+            b1 = DECODING_TABLE[data.charAt(i)];
+            b2 = DECODING_TABLE[data.charAt(i + 1)];
+            b3 = DECODING_TABLE[data.charAt(i + 2)];
+            b4 = DECODING_TABLE[data.charAt(i + 3)];
             bytes[j] = (byte) ((b1 << 2) | (b2 >> 4));
             bytes[j + 1] = (byte) ((b2 << 4) | (b3 >> 2));
             bytes[j + 2] = (byte) ((b3 << 6) | b4);
         }
         if (data.charAt(data.length() - 2) == '=') {
-            b1 = decodingTable[data.charAt(data.length() - 4)];
-            b2 = decodingTable[data.charAt(data.length() - 3)];
+            b1 = DECODING_TABLE[data.charAt(data.length() - 4)];
+            b2 = DECODING_TABLE[data.charAt(data.length() - 3)];
             bytes[bytes.length - 1] = (byte) ((b1 << 2) | (b2 >> 4));
         } else if (data.charAt(data.length() - 1) == '=') {
-            b1 = decodingTable[data.charAt(data.length() - 4)];
-            b2 = decodingTable[data.charAt(data.length() - 3)];
-            b3 = decodingTable[data.charAt(data.length() - 2)];
+            b1 = DECODING_TABLE[data.charAt(data.length() - 4)];
+            b2 = DECODING_TABLE[data.charAt(data.length() - 3)];
+            b3 = DECODING_TABLE[data.charAt(data.length() - 2)];
             bytes[bytes.length - 2] = (byte) ((b1 << 2) | (b2 >> 4));
             bytes[bytes.length - 1] = (byte) ((b2 << 4) | (b3 >> 2));
         } else {
-            b1 = decodingTable[data.charAt(data.length() - 4)];
-            b2 = decodingTable[data.charAt(data.length() - 3)];
-            b3 = decodingTable[data.charAt(data.length() - 2)];
-            b4 = decodingTable[data.charAt(data.length() - 1)];
+            b1 = DECODING_TABLE[data.charAt(data.length() - 4)];
+            b2 = DECODING_TABLE[data.charAt(data.length() - 3)];
+            b3 = DECODING_TABLE[data.charAt(data.length() - 2)];
+            b4 = DECODING_TABLE[data.charAt(data.length() - 1)];
             bytes[bytes.length - 3] = (byte) ((b1 << 2) | (b2 >> 4));
             bytes[bytes.length - 2] = (byte) ((b2 << 4) | (b3 >> 2));
             bytes[bytes.length - 1] = (byte) ((b3 << 6) | b4);
@@ -262,7 +264,7 @@ public class Base64Utils {
             return true;
         } else if ((b < 0) || (b >= 128)) {
             return false;
-        } else if (decodingTable[b] == -1) {
+        } else if (DECODING_TABLE[b] == -1) {
             return false;
         }
         return true;

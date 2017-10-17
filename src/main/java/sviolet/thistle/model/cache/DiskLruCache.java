@@ -98,6 +98,9 @@ import java.util.concurrent.TimeUnit;
  * responding appropriately.
  */
 public final class DiskLruCache implements Closeable {
+
+    static final int REDUNDANT_OP_COMPACT_THRESHOLD = 2000;
+
     static final String JOURNAL_FILE = "journal";
     static final String JOURNAL_FILE_TMP = "journal.tmp";
     static final String MAGIC = "libcore.io.DiskLruCache";
@@ -654,7 +657,6 @@ public final class DiskLruCache implements Closeable {
      * and eliminate at least 2000 ops.
      */
     private boolean journalRebuildRequired() {
-        final int REDUNDANT_OP_COMPACT_THRESHOLD = 2000;
         return redundantOpCount >= REDUNDANT_OP_COMPACT_THRESHOLD
                 && redundantOpCount >= lruEntries.size();
     }
