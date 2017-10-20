@@ -275,7 +275,7 @@ public class Base64Utils {
      * @param input
      * @return
      */
-    public static byte[] compressBytes(byte input[]) {
+    public static byte[] compressBytes(byte[] input) {
         int cachesize = 1024;
 
         Deflater compresser = new Deflater();
@@ -283,7 +283,7 @@ public class Base64Utils {
         compresser.reset();
         compresser.setInput(input);
         compresser.finish();
-        byte output[] = new byte[0];
+        byte[] output = new byte[0];
         ByteArrayOutputStream o = new ByteArrayOutputStream(input.length);
         try {
             byte[] buf = new byte[cachesize];
@@ -308,11 +308,11 @@ public class Base64Utils {
      * @param input
      * @return
      */
-    public static byte[] decompressBytes(byte input[]) {
+    public static byte[] decompressBytes(byte[] input) {
         int cachesize = 1024;
         Inflater decompresser = new Inflater();
 
-        byte output[] = new byte[0];
+        byte[] output = new byte[0];
         decompresser.reset();
         decompresser.setInput(input);
         ByteArrayOutputStream o = new ByteArrayOutputStream(input.length);
