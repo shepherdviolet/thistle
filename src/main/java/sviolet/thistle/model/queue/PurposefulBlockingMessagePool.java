@@ -183,7 +183,7 @@ public class PurposefulBlockingMessagePool <K, I> {
         setMessageDropListener(messageDropListener);
         if (this.unexpectedItemValidityPeriod > 0) {
             this.unexpectedItemLock = new ReentrantLock();
-            this.unexpectedItemFlushThreadPool = new LazySingleThreadPool();
+            this.unexpectedItemFlushThreadPool = new LazySingleThreadPool("PurposefulBlockingMessagePool-Flush-%d");
             this.unexpectedItemPool = new HashMap<>();
         }
     }

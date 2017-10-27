@@ -256,7 +256,7 @@ public class ParasiticVars {
             try{
                 LOCK.lock();
                 if (gcTaskPool == null){
-                    gcTaskPool = new LazySingleThreadPool();//新建gc任务执行线程池
+                    gcTaskPool = new LazySingleThreadPool("ParasiticVars-GC-%d");//新建gc任务执行线程池
                 }
             }finally {
                 LOCK.unlock();
