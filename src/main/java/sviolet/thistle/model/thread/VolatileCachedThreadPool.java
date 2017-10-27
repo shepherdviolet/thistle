@@ -19,11 +19,11 @@
 
 package sviolet.thistle.model.thread;
 
+import sviolet.thistle.util.common.ThreadPoolExecutorUtils;
+
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * <p>易失性缓存线程池</p>
@@ -37,21 +37,20 @@ public class VolatileCachedThreadPool {
     private ExecutorService executor;
 
     /**
-     * 核心线程数默认为0
-     * @param maximumThreads 最大并发线程数(最大线程数, 在60s闲置后会销毁)
-     * @param waitingQueueSize 等待队列长度, 等待队列满时, 新任务将被直接拒绝
-     */
-    public VolatileCachedThreadPool(int maximumThreads, int waitingQueueSize) {
-        this(0, maximumThreads, waitingQueueSize);
-    }
-
-    /**
      * @param coreThreads 核心线程数(即使闲置状态,也不会销毁的线程)
      * @param maximumThreads 最大并发线程数(最大线程数, 非核心线程在60s闲置后会销毁)
      * @param waitingQueueSize 等待队列长度, 等待队列满时, 新任务将被直接拒绝
+     * @param threadNameFormat 线程名称格式, VolatileCachedThreadPool-%d
      */
-    public VolatileCachedThreadPool(int coreThreads, int maximumThreads, int waitingQueueSize) {
-        executor = new ThreadPoolExecutor(coreThreads, maximumThreads, 60L, TimeUnit.SECONDS, new CustomLinkedBlockingQueue(waitingQueueSize));
+    public VolatileCachedThreadPool(int coreThreads, int maximumThreads, int waitingQueueSize, String threadNameFormat) {
+        executor = ThreadPoolExecutorUtils.newInstance(
+                coreThreads,
+                maximumThreads,
+                60L,
+                threadNameFormat != null ? threadNameFormat : "VolatileCachedThreadPool-%d",
+                new CustomLinkedBlockingQueue(waitingQueueSize),
+                null,
+                null);
     }
 
     /**

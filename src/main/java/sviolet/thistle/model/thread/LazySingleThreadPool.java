@@ -19,7 +19,11 @@
 
 package sviolet.thistle.model.thread;
 
-import java.util.concurrent.*;
+import sviolet.thistle.util.common.ThreadPoolExecutorUtils;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -43,40 +47,42 @@ public class LazySingleThreadPool {
 
     //最大队列长度
     private int maxQueueLength = DEFAULT_MAX_QUEUE_LENGTH;
+    //线程名称格式
+    private String threadNameFormat = "LazySingleThreadPool-%d";
     //队列长度
     private AtomicInteger queueLength = new AtomicInteger(0);
     //锁
     private final ReentrantLock locker = new ReentrantLock();
 
     /**
-     * 惰性单线程池<p/>
-     *
      * 1.内部维护一个单线程池, 同时只能执行一个任务(Runnable).<br/>
      * 2.设定一个最大队列长度(maxQueueLength, 默认2), 同时塞入多个任务时, 超过设定值的任务会被放弃执行.<p/>
      *
      * 可用于实现守护进程/调度进程/清扫进程.<br/>
      *
-     * Created by S.Violet on 2016/1/7.
+     * @param threadNameFormat 线程名称格式, LazySingleThreadPool-%d
      */
-    public LazySingleThreadPool(){
-        this(DEFAULT_MAX_QUEUE_LENGTH);
+    public LazySingleThreadPool(String threadNameFormat){
+        this(DEFAULT_MAX_QUEUE_LENGTH, threadNameFormat);
     }
 
     /**
-     * 惰性单线程池<p/>
-     *
      * 1.内部维护一个单线程池, 同时只能执行一个任务(Runnable).<br/>
      * 2.设定一个最大队列长度(maxQueueLength, 默认2), 同时塞入多个任务时, 超过设定值的任务会被放弃执行.<p/>
      *
      * 可用于实现守护进程/调度进程/清扫进程.<br/>
      *
      * @param maxQueueLength 最大队列长度 [1, MAX_VALUE)
+     * @param threadNameFormat 线程名称格式, LazySingleThreadPool-%d
      */
-    public LazySingleThreadPool(int maxQueueLength){
+    public LazySingleThreadPool(int maxQueueLength, String threadNameFormat){
         if (maxQueueLength < 1) {
             throw new RuntimeException("[LazySingleThreadPool]maxQueueLength must >= 1");
         }
         this.maxQueueLength = maxQueueLength;
+        if (threadNameFormat != null && threadNameFormat.length() > 0) {
+            this.threadNameFormat = threadNameFormat;
+        }
     }
 
     /**
@@ -126,18 +132,22 @@ public class LazySingleThreadPool {
             try{
                 locker.lock();
                 if (singleThreadPool == null) {
-                    singleThreadPool =  new ThreadPoolExecutor(
+                    singleThreadPool = ThreadPoolExecutorUtils.newInstance(
                             0,
                             1,
                             60L,
-                            TimeUnit.SECONDS,
-                            new LinkedBlockingQueue<Runnable>()){
-                        @Override
-                        protected void afterExecute(Runnable runnable, Throwable t) {
-                            super.afterExecute(runnable, t);
-                            queueLength.decrementAndGet();
-                        }
-                    };
+                            threadNameFormat,
+                            new LinkedBlockingQueue<Runnable>(),
+                            new ThreadPoolExecutor.AbortPolicy(),
+                            new ThreadPoolExecutorUtils.ExecuteListener() {
+                                @Override
+                                public void beforeExecute(Thread t, Runnable r) {
+                                }
+                                @Override
+                                public void afterExecute(Runnable r, Throwable t) {
+                                    queueLength.decrementAndGet();
+                                }
+                            });
                 }
             }finally {
                 locker.unlock();

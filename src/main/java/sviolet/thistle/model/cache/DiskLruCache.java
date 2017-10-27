@@ -16,36 +16,14 @@
 
 package sviolet.thistle.model.cache;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedWriter;
-import java.io.Closeable;
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.FilterOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
+import sviolet.thistle.util.common.ThreadPoolExecutorUtils;
+
+import java.io.*;
 import java.lang.reflect.Array;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  ******************************************************************************
@@ -268,8 +246,11 @@ public final class DiskLruCache implements Closeable {
     }
 
     /** This cache uses a single background thread to evict entries. */
-    private final ExecutorService executorService = new ThreadPoolExecutor(0, 1,
-            60L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+    private final ExecutorService executorService = ThreadPoolExecutorUtils.newInstance(
+            0,
+            1,
+            60L,
+            "DiskLruCache-%d");
     private final Callable<Void> cleanupCallable = new Callable<Void>() {
         @Override public Void call() throws Exception {
             synchronized (DiskLruCache.this) {
