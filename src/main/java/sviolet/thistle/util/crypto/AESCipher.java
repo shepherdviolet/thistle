@@ -20,6 +20,7 @@
 package sviolet.thistle.util.crypto;
 
 import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,7 +41,9 @@ public class AESCipher{
 	
 	public static final String CRYPTO_TRANSFORMATION_AES = "AES";
 	public static final String CRYPTO_TRANSFORMATION_AES_ECB_PKCS5PADDING = "AES/ECB/PKCS5Padding";
+
 	public static final String CRYPTO_TRANSFORMATION_AES_CBC_NOPADDING = "AES/CBC/NoPadding";
+	public static final String CRYPTO_TRANSFORMATION_AES_CBC_PKCS5PADDING = "AES/CBC/PKCS5Padding";
 
 	/**
 	 * 加密
@@ -104,6 +107,29 @@ public class AESCipher{
     }
 
 	/**
+	 * 加密(CBC填充需要用该方法并指定iv初始化向量)
+	 *
+	 * @param data 数据
+	 * @param key 秘钥(通常只支持128)
+	 * @param ivSeed iv初始化向量
+	 * @param cryptoTransformation 加密算法/填充算法
+	 *
+	 * @throws NoSuchAlgorithmException 加密算法无效
+	 * @throws NoSuchPaddingException 填充算法无效
+	 * @throws InvalidKeyException 秘钥无效
+	 * @throws IllegalBlockSizeException 块大小无效
+	 * @throws BadPaddingException 填充错误(密码错?)
+	 * @throws InvalidAlgorithmParameterException 算法参数无效
+	 */
+	public static byte[] encryptCBC(byte[] data, byte[] key, byte[] ivSeed, String cryptoTransformation) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException{
+		SecretKeySpec keySpec = new SecretKeySpec(key, AESKeyGenerator.AES_KEY_ALGORITHM);
+		Cipher cipher = Cipher.getInstance(cryptoTransformation);// 创建密码器
+		IvParameterSpec iv = new IvParameterSpec(ivSeed);
+		cipher.init(Cipher.ENCRYPT_MODE, keySpec, iv);// 初始化
+		return cipher.doFinal(data);
+	}
+
+	/**
 	 * 解密
 	 *
 	 * @param data 数据
@@ -163,5 +189,28 @@ public class AESCipher{
             out.close();
         }
     }
+
+	/**
+	 * 解密(CBC填充需要用该方法并指定iv初始化向量)
+	 *
+	 * @param data 数据
+	 * @param key 秘钥(通常只支持128)
+	 * @param ivSeed iv初始化向量
+	 * @param cryptoTransformation 加密算法/填充算法
+	 *
+	 * @throws NoSuchAlgorithmException 加密算法无效
+	 * @throws NoSuchPaddingException 填充算法无效
+	 * @throws InvalidKeyException 秘钥无效
+	 * @throws IllegalBlockSizeException 块大小无效
+	 * @throws BadPaddingException 填充错误(密码错?)
+	 * @throws InvalidAlgorithmParameterException 算法参数无效
+	 */
+	public static byte[] decrypt(byte[] data, byte[] key, byte[] ivSeed, String cryptoTransformation) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException{
+		SecretKeySpec keySpec = new SecretKeySpec(key, AESKeyGenerator.AES_KEY_ALGORITHM);
+		Cipher cipher = Cipher.getInstance(cryptoTransformation);// 创建密码器
+		IvParameterSpec iv = new IvParameterSpec(ivSeed);
+		cipher.init(Cipher.DECRYPT_MODE, keySpec, iv);// 初始化
+		return cipher.doFinal(data);
+	}
 
 }
