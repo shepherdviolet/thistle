@@ -40,6 +40,7 @@ public class AESCipher{
 	
 	public static final String CRYPTO_TRANSFORMATION_AES = "AES";
 	public static final String CRYPTO_TRANSFORMATION_AES_ECB_PKCS5PADDING = "AES/ECB/PKCS5Padding";
+	public static final String CRYPTO_TRANSFORMATION_AES_CBC_NOPADDING = "AES/CBC/NoPadding";
 
 	/**
 	 * 加密
