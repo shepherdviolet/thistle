@@ -205,7 +205,7 @@ public class AESCipher{
 	 * @throws BadPaddingException 填充错误(密码错?)
 	 * @throws InvalidAlgorithmParameterException 算法参数无效
 	 */
-	public static byte[] decrypt(byte[] data, byte[] key, byte[] ivSeed, String cryptoTransformation) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException{
+	public static byte[] decryptCBC(byte[] data, byte[] key, byte[] ivSeed, String cryptoTransformation) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException{
 		SecretKeySpec keySpec = new SecretKeySpec(key, AESKeyGenerator.AES_KEY_ALGORITHM);
 		Cipher cipher = Cipher.getInstance(cryptoTransformation);// 创建密码器
 		IvParameterSpec iv = new IvParameterSpec(ivSeed);
