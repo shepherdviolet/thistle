@@ -110,6 +110,9 @@ public class AsyncWaiter <T> implements Destroyable {
      * [原线程]获得异常
      */
     public Exception getException(){
+        if (exception == null){
+            return new Exception("empty exception from async task");
+        }
         return exception;
     }
 
