@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Project GitHub: https://github.com/shepherdviolet/turquoise
+ * Project GitHub: https://github.com/shepherdviolet/thistle
  * Email: shepherdviolet@163.com
  */
 
