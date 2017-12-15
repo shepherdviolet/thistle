@@ -37,6 +37,8 @@ import java.security.interfaces.ECPublicKey;
 /**
  * <p>ECDSA签名验签工具</p>
  *
+ * <p>Cipher/Signature/MessageDigest线程不安全!!!</p>
+ *
  * <p>
  * 性能测试:
  * 安卓单线程/secp256r1

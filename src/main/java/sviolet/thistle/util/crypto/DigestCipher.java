@@ -34,6 +34,9 @@ import sviolet.thistle.util.file.FileUtils;
 
 /**
  * [国际算法]摘要工具
+ *
+ * <p>Cipher/Signature/MessageDigest线程不安全!!!</p>
+ *
  */
 public class DigestCipher {
 	

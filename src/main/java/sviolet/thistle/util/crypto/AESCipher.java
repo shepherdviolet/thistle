@@ -31,9 +31,11 @@ import java.security.NoSuchAlgorithmException;
 
 /**
  * 
- * AES加密工具
+ * <p>AES加密工具</p>
+ *
+ * <p>Cipher/Signature/MessageDigest线程不安全!!!</p>
  * 
- * @author S.Violet ()
+ * @author S.Violet
  *
  */
 

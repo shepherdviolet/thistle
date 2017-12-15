@@ -43,6 +43,8 @@ import javax.crypto.NoSuchPaddingException;
 /**
  * <p>RSA加密工具</p>
  *
+ * <p>Cipher/Signature/MessageDigest线程不安全!!!</p>
+ *
  * <p>PC端JDK默认加密填充方式为RSA/None/PKCS1Padding，Android默认为RSA/None/NoPadding</p>
  *
  * <p>

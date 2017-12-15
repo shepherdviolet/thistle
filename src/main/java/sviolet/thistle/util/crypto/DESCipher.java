@@ -32,6 +32,8 @@ import javax.crypto.spec.SecretKeySpec;
 /**
  * DES加密工具
  *
+ * <p>Cipher/Signature/MessageDigest线程不安全!!!</p>
+ *
  * Created by S.Violet on 2016/12/20.
  */
 public class DESCipher {
