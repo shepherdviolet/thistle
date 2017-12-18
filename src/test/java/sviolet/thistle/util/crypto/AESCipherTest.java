@@ -2,6 +2,7 @@ package sviolet.thistle.util.crypto;
 
 import org.junit.Assert;
 import org.junit.Test;
+import sviolet.thistle.util.conversion.ByteUtils;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -9,22 +10,50 @@ import javax.crypto.NoSuchPaddingException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 
 public class AESCipherTest {
 
-    @Test
-    public void streamEncryptDecrypt() throws IOException, NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+    private static final String STRING = "English中文#$%@#$%@GSDFG654465rq43we5■☝▌▋卍¶¶¶☹ΥΥθΕサイけにケ◆♂‥√▒卍ЫПЬрпㅂㅝㅂ㉹㉯╠╕┚╜ㅛㅛ㉰㉯⑩⒅⑯413English中文#$%@#$%@GSDFG654465rq43we5■☝▌▋卍¶¶¶☹ΥΥθΕサイけにケ◆♂‥√▒卍ЫПЬрпㅂㅝㅂ㉹㉯╠╕┚╜ㅛㅛ㉰㉯⑩⒅⑯413English中文#$%@#$%@GSDFG654465rq43we5■☝▌▋卍¶¶¶☹ΥΥθΕサイけにケ◆♂‥√▒卍ЫПЬрпㅂㅝㅂ㉹㉯╠╕┚╜ㅛㅛ㉰㉯⑩⒅⑯413";
 
-        String data = "我是中国人呢";
-        byte[] dataBytes = data.getBytes("UTF-8");
+    @Test
+    public void bytesCrypto() throws UnsupportedEncodingException, NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchProviderException {
+
+        byte[] dataBytes = STRING.getBytes("UTF-8");
+        byte[] key = AESKeyGenerator.generate("lalala".getBytes(), 128);
+
+//        System.out.println(ByteUtils.bytesToHex(dataBytes));
+//        System.out.println(ByteUtils.bytesToHex(key));
+
+        byte[] encrypted = AESCipher.encrypt(dataBytes, key, AESCipher.CRYPTO_ALGORITHM_AES_ECB_PKCS5PADDING);
+
+//        System.out.println(ByteUtils.bytesToHex(encrypted));
+
+        byte[] decrypted = AESCipher.decrypt(encrypted, key, AESCipher.CRYPTO_ALGORITHM_AES_ECB_PKCS5PADDING);
+
+//        System.out.println(ByteUtils.bytesToHex(decrypted));
+
+        Assert.assertEquals(STRING, new String(decrypted, "UTF-8"));
+
+    }
+
+    /**
+     * 输入输出流加解密
+     */
+    @Test
+    public void streamCrypto() throws IOException, NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+
+        byte[] dataBytes = STRING.getBytes("UTF-8");
         byte[] key = AESKeyGenerator.generateShaKey128("key".getBytes());
 
 //        System.out.println(ByteUtils.bytesToHex(dataBytes));
+//        System.out.println(ByteUtils.bytesToHex(key));
 
-        ByteArrayInputStream in = new ByteArrayInputStream(data.getBytes("UTF-8"));
+        ByteArrayInputStream in = new ByteArrayInputStream(dataBytes);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         AESCipher.encrypt(in, out, key, AESCipher.CRYPTO_ALGORITHM_AES_ECB_PKCS5PADDING);
         byte[] encrypted = out.toByteArray();
@@ -38,7 +67,7 @@ public class AESCipherTest {
 
 //        System.out.println(ByteUtils.bytesToHex(decrypted));
 
-        Assert.assertEquals(data, new String(decrypted, "UTF-8"));
+        Assert.assertEquals(STRING, new String(decrypted, "UTF-8"));
 
     }
 

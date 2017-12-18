@@ -71,7 +71,7 @@ public class AESKeyGenerator {
 	public static byte[] generateShaKey128(byte[] seed){
 		byte[] sha = DigestCipher.digest(seed, DigestCipher.TYPE_SHA256);
 		byte[] password = new byte[16];
-		System.arraycopy(sha, 0, password, 0, 16);
+		System.arraycopy(sha, 0, password, 0, password.length);
 		return password;
 	}
 

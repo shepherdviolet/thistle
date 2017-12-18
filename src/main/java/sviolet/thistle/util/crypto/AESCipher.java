@@ -50,7 +50,7 @@ public class AESCipher{
 	 * 加密(byte[]数据)
 	 *
 	 * @param data 数据
-	 * @param key 秘钥(AES:128/256bit, DES:64/192bit)
+	 * @param key 秘钥(AES:128bit, DES:64/192bit)
 	 * @param cryptoAlgorithm 加密算法/填充算法
 	 *
 	 * @throws NoSuchAlgorithmException 加密算法无效
@@ -68,7 +68,7 @@ public class AESCipher{
 	 * 加密(byte[]数据, 使用CBC填充算法时需要用该方法并指定iv初始化向量)
 	 *
 	 * @param data 数据
-	 * @param key 秘钥(AES:128/256bit, DES:64/192bit)
+	 * @param key 秘钥(AES:128bit, DES:64/192bit)
 	 * @param ivSeed iv初始化向量, 例如:"1234567812345678".getBytes("UTF-8")
 	 * @param cryptoAlgorithm 加密算法/填充算法
 	 *
@@ -88,7 +88,7 @@ public class AESCipher{
 	 *
 	 * @param in 待加密数据流
 	 * @param out 加密后数据流
-	 * @param key 秘钥(AES:128/256bit, DES:64/192bit)
+	 * @param key 秘钥(AES:128bit, DES:64/192bit)
 	 * @param cryptoAlgorithm 加密算法/填充算法
 	 *
 	 * @throws NoSuchAlgorithmException 加密算法无效
@@ -107,7 +107,7 @@ public class AESCipher{
 	 *
 	 * @param in 待加密数据流
 	 * @param out 加密后数据流
-	 * @param key 秘钥(AES:128/256bit, DES:64/192bit)
+	 * @param key 秘钥(AES:128bit, DES:64/192bit)
 	 * @param ivSeed iv初始化向量, 例如:"1234567812345678".getBytes("UTF-8")
 	 * @param cryptoAlgorithm 加密算法/填充算法
 	 *
@@ -126,7 +126,7 @@ public class AESCipher{
 	 * 解密(byte[]数据)
 	 *
 	 * @param data 数据
-	 * @param key 秘钥(AES:128/256bit, DES:64/192bit)
+	 * @param key 秘钥(AES:128bit, DES:64/192bit)
 	 * @param cryptoAlgorithm 加密算法/填充算法
 	 *
 	 * @throws NoSuchAlgorithmException 加密算法无效
@@ -144,7 +144,7 @@ public class AESCipher{
 	 * 解密(byte[]数据, CBC填充需要用该方法并指定iv初始化向量)
 	 *
 	 * @param data 数据
-	 * @param key 秘钥(AES:128/256bit, DES:64/192bit)
+	 * @param key 秘钥(AES:128bit, DES:64/192bit)
 	 * @param ivSeed iv初始化向量, "1234567812345678".getBytes("UTF-8")
 	 * @param cryptoAlgorithm 加密算法/填充算法
 	 *
@@ -164,7 +164,7 @@ public class AESCipher{
 	 *
 	 * @param in 待解密数据流
 	 * @param out 解密后数据流
-	 * @param key 秘钥(AES:128/256bit, DES:64/192bit)
+	 * @param key 秘钥(AES:128bit, DES:64/192bit)
 	 * @param cryptoAlgorithm 加密算法/填充算法
 	 *
 	 * @throws NoSuchAlgorithmException 加密算法无效
@@ -183,7 +183,7 @@ public class AESCipher{
 	 *
 	 * @param in 待解密数据流
 	 * @param out 解密后数据流
-	 * @param key 秘钥(AES:128/256bit, DES:64/192bit)
+	 * @param key 秘钥(AES:128bit, DES:64/192bit)
 	 * @param ivSeed iv初始化向量, "1234567812345678".getBytes("UTF-8")
 	 * @param cryptoAlgorithm 加密算法/填充算法
 	 *
