@@ -38,10 +38,11 @@ import java.security.NoSuchAlgorithmException;
  */
 public class DESEdeCipher {
 
-    private static final String KEY_ALGORITHM = "DESede";
+    public static final String KEY_ALGORITHM = "DESede";
 
-    private static final String CRYPTO_ALGORITHM_DES_EDE_ECB_NO_PADDING = "DESede/ECB/NoPadding";
-    private static final String CRYPTO_ALGORITHM_DES_EDE_ECB_PKCS5 = "DESede/ECB/PKCS5Padding";
+    public static final String CRYPTO_ALGORITHM_DES_EDE_ECB_PKCS5PADDING = "DESede/ECB/PKCS5Padding";
+    public static final String CRYPTO_ALGORITHM_DES_EDE_CBC_PKCS5PADDING = "DESede/CBC/PKCS5Padding";
+    public static final String CRYPTO_ALGORITHM_DES_EDE_CBC_NOPADDING = "DESede/CBC/NoPadding";
 
     /**
      * 加密(byte[]数据)

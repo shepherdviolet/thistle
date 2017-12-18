@@ -52,7 +52,7 @@ class BaseCipher {
      * @param data 数据
      * @param key 秘钥(AES:128/256bit, DES:64/192bit)
      * @param keyAlgorithm 秘钥算法
-     * @param ivSeed iv初始化向量, 例如:"1234567812345678".getBytes("UTF-8")
+     * @param ivSeed iv初始化向量, AES 16 bytes, DES 8bytes
      * @param cryptoAlgorithm 加密算法/填充算法
      *
      * @throws NoSuchAlgorithmException 加密算法无效
@@ -118,7 +118,7 @@ class BaseCipher {
      * @param out 加密后数据流
      * @param key 秘钥(AES:128/256bit, DES:64/192bit)
      * @param keyAlgorithm 秘钥算法
-     * @param ivSeed iv初始化向量, 例如:"1234567812345678".getBytes("UTF-8")
+     * @param ivSeed iv初始化向量, AES 16 bytes, DES 8bytes
      * @param cryptoAlgorithm 加密算法/填充算法
      *
      * @throws NoSuchAlgorithmException 加密算法无效
@@ -182,7 +182,7 @@ class BaseCipher {
      * @param data 数据
      * @param key 秘钥(AES:128/256bit, DES:64/192bit)
      * @param keyAlgorithm 秘钥算法
-     * @param ivSeed iv初始化向量, "1234567812345678".getBytes("UTF-8")
+     * @param ivSeed iv初始化向量, AES 16 bytes, DES 8bytes
      * @param cryptoAlgorithm 加密算法/填充算法
      *
      * @throws NoSuchAlgorithmException 加密算法无效
@@ -248,7 +248,7 @@ class BaseCipher {
      * @param out 解密后数据流
      * @param key 秘钥(AES:128/256bit, DES:64/192bit)
      * @param keyAlgorithm 秘钥算法
-     * @param ivSeed iv初始化向量, "1234567812345678".getBytes("UTF-8")
+     * @param ivSeed iv初始化向量, AES 16 bytes, DES 8bytes
      * @param cryptoAlgorithm 加密算法/填充算法
      *
      * @throws NoSuchAlgorithmException 加密算法无效

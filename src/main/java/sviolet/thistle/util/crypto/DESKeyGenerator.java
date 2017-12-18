@@ -37,7 +37,8 @@ public class DESKeyGenerator {
 	 * @return 秘钥
 	 */
 	public static byte[] generateDes(byte[] seed) throws NoSuchProviderException, NoSuchAlgorithmException {
-		return BaseKeyGenerator.generateKey(seed, 64, DES_KEY_ALGORITHM);
+		//这里配置56但是出来的是64bits
+		return BaseKeyGenerator.generateKey(seed, 56, DES_KEY_ALGORITHM);
 	}
 
 	/**
