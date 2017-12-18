@@ -72,15 +72,6 @@ public class DESKeyGenerator {
 		return BaseKeyGenerator.generateShaKey64(seed);
 	}
 
-    /**
-     * 利用SHA256摘要算法计算128位固定密钥, 安全性低, 但保证全平台一致
-     *
-     * @param seed 密码种子
-     */
-    public static byte[] generateShaKey128(byte[] seed){
-        return BaseKeyGenerator.generateShaKey128(seed);
-    }
-
 	/**
 	 * 利用SHA256摘要算法计算192位固定密钥, 安全性低, 但保证全平台一致
 	 *

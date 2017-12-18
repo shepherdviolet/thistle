@@ -50,7 +50,7 @@ public class DESEdeCipherTest {
     public void bytesCryptoCBC() throws UnsupportedEncodingException, NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchProviderException {
 
         byte[] dataBytes = STRING.getBytes("UTF-8");
-        byte[] key = DESKeyGenerator.generateShaKey128("wowowo".getBytes());
+        byte[] key = DESKeyGenerator.generateShaKey192("wowowo".getBytes());
 
 //        System.out.println(ByteUtils.bytesToHex(dataBytes));
 //        System.out.println(ByteUtils.bytesToHex(key));
