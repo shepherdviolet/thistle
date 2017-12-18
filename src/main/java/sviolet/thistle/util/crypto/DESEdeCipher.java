@@ -19,6 +19,9 @@
 
 package sviolet.thistle.util.crypto;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -26,22 +29,19 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-
 /**
- * DES加密工具
+ * DESede加密工具(3des)
  *
  * <p>Cipher/Signature/MessageDigest线程不安全!!!</p>
  *
  * Created by S.Violet on 2016/12/20.
  */
-public class DESCipher {
+public class DESEdeCipher {
 
-    public static final String KEY_ALGORITHM = "DES";
+    private static final String KEY_ALGORITHM = "DESede";
 
-    public static final String CRYPTO_ALGORITHM_DES = "DES";
+    private static final String CRYPTO_ALGORITHM_DES_EDE_ECB_NO_PADDING = "DESede/ECB/NoPadding";
+    private static final String CRYPTO_ALGORITHM_DES_EDE_ECB_PKCS5 = "DESede/ECB/PKCS5Padding";
 
     /**
      * 加密(byte[]数据)

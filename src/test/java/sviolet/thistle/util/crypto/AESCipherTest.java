@@ -26,14 +26,14 @@ public class AESCipherTest {
 
         ByteArrayInputStream in = new ByteArrayInputStream(data.getBytes("UTF-8"));
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        AESCipher.encrypt(in, out, key, AESCipher.CRYPTO_TRANSFORMATION_AES_ECB_PKCS5PADDING);
+        AESCipher.encrypt(in, out, key, AESCipher.CRYPTO_ALGORITHM_AES_ECB_PKCS5PADDING);
         byte[] encrypted = out.toByteArray();
 
 //        System.out.println(ByteUtils.bytesToHex(encrypted));
 
         in = new ByteArrayInputStream(encrypted);
         out = new ByteArrayOutputStream();
-        AESCipher.decrypt(in, out, key, AESCipher.CRYPTO_TRANSFORMATION_AES_ECB_PKCS5PADDING);
+        AESCipher.decrypt(in, out, key, AESCipher.CRYPTO_ALGORITHM_AES_ECB_PKCS5PADDING);
         byte[] decrypted = out.toByteArray();
 
 //        System.out.println(ByteUtils.bytesToHex(decrypted));

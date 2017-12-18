@@ -43,11 +43,18 @@ public class CertificateUtils {
 
     /**
      * <p>解析X509格式的证书, 返回Certificate对象, 可用来获取证书公钥实例等</p>
-     * @param inputStream X509格式证书数据流
+     * @param inputStream X509格式证书数据流, 会被close掉
      */
     public static Certificate parseX509ToCertificate(InputStream inputStream) throws CertificateException {
-        CertificateFactory factory = CertificateFactory.getInstance("X.509");
-        return factory.generateCertificate(inputStream);
+        try {
+            CertificateFactory factory = CertificateFactory.getInstance("X.509");
+            return factory.generateCertificate(inputStream);
+        } finally {
+            try {
+                inputStream.close();
+            } catch (Exception ignore) {
+            }
+        }
     }
 
     /**
