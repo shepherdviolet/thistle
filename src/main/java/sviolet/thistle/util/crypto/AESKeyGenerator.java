@@ -21,17 +21,15 @@ package sviolet.thistle.util.crypto;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.security.SecureRandom;
-
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
 
 /**
  * AES秘钥生成工具
+ *
+ * @author S.Violet
  */
 public class AESKeyGenerator {
 
-	public static final String AES_KEY_ALGORITHM = "AES";
+	public static final String KEY_ALGORITHM = "AES";
 
 	/**
 	 * <p>生成128位AES密钥(不同系统平台相同seed生成结果可能不同), Android使用该方法, 相同seed仍会产生随机秘钥</p>
@@ -39,28 +37,19 @@ public class AESKeyGenerator {
 	 * @param seed 秘钥种子
 	 * @return 秘钥
 	 */
-	public static byte[] generate(byte[] seed) throws NoSuchProviderException {
-		return generate(seed, 128);
+	public static byte[] generate(byte[] seed) throws NoSuchProviderException, NoSuchAlgorithmException {
+		return BaseKeyGenerator.generateKey(seed, 128, KEY_ALGORITHM);
 	}
 
 	/**
-	 * <p>生成128位AES密钥(不同系统平台相同seed生成结果可能不同), Android使用该方法, 相同seed仍会产生随机秘钥</p>
+	 * <p>生成AES密钥(不同系统平台相同seed生成结果可能不同), Android使用该方法, 相同seed仍会产生随机秘钥</p>
 	 *
 	 * @param seed 秘钥种子
-	 * @param bits 秘钥位数(128/192/256)
+	 * @param bits 秘钥位数(128)
 	 * @return 秘钥
 	 */
-	public static byte[] generate(byte[] seed, int bits) throws NoSuchProviderException{
-		KeyGenerator keyGenerator = null;
-		try {
-			keyGenerator = KeyGenerator.getInstance(AES_KEY_ALGORITHM);
-		} catch (NoSuchAlgorithmException e) {
-			throw new RuntimeException(e);
-		}
-		SecureRandom secureRandom = new SecureRandom(seed);
-		keyGenerator.init(bits, secureRandom);
-		SecretKey secretKey = keyGenerator.generateKey();
-		return secretKey.getEncoded();
+	public static byte[] generate(byte[] seed, int bits) throws NoSuchProviderException, NoSuchAlgorithmException {
+		return BaseKeyGenerator.generateKey(seed, bits, KEY_ALGORITHM);
 	}
 
 	/**
@@ -69,10 +58,7 @@ public class AESKeyGenerator {
 	 * @param seed 密码种子
 	 */
 	public static byte[] generateShaKey128(byte[] seed){
-		byte[] sha = DigestCipher.digest(seed, DigestCipher.TYPE_SHA256);
-		byte[] password = new byte[16];
-		System.arraycopy(sha, 0, password, 0, password.length);
-		return password;
+		return BaseKeyGenerator.generateShaKey128(seed);
 	}
 
 	/**
@@ -81,7 +67,7 @@ public class AESKeyGenerator {
 	 * @param seed 密码种子
 	 */
 	public static byte[] generateShaKey256(byte[] seed){
-		return DigestCipher.digest(seed, DigestCipher.TYPE_SHA256);
+		return BaseKeyGenerator.generateShaKey256(seed);
 	}
 
 }
