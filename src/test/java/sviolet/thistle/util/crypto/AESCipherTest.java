@@ -20,6 +20,9 @@ public class AESCipherTest {
 
     private static final String STRING = "English中文#$%@#$%@GSDFG654465rq43we5■☝▌▋卍¶¶¶☹ΥΥθΕサイけにケ◆♂‥√▒卍ЫПЬрпㅂㅝㅂ㉹㉯╠╕┚╜ㅛㅛ㉰㉯⑩⒅⑯413English中文#$%@#$%@GSDFG654465rq43we5■☝▌▋卍¶¶¶☹ΥΥθΕサイけにケ◆♂‥√▒卍ЫПЬрпㅂㅝㅂ㉹㉯╠╕┚╜ㅛㅛ㉰㉯⑩⒅⑯413English中文#$%@#$%@GSDFG654465rq43we5■☝▌▋卍¶¶¶☹ΥΥθΕサイけにケ◆♂‥√▒卍ЫПЬрпㅂㅝㅂ㉹㉯╠╕┚╜ㅛㅛ㉰㉯⑩⒅⑯413";
 
+    /**
+     * byte[]加解密
+     */
     @Test
     public void bytesCrypto() throws UnsupportedEncodingException, NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchProviderException {
 
@@ -34,6 +37,30 @@ public class AESCipherTest {
 //        System.out.println(ByteUtils.bytesToHex(encrypted));
 
         byte[] decrypted = AESCipher.decrypt(encrypted, key, AESCipher.CRYPTO_ALGORITHM_AES_ECB_PKCS5PADDING);
+
+//        System.out.println(ByteUtils.bytesToHex(decrypted));
+
+        Assert.assertEquals(STRING, new String(decrypted, "UTF-8"));
+
+    }
+
+    /**
+     * byte[]加解密, CBC填充
+     */
+    @Test
+    public void bytesCryptoCBC() throws UnsupportedEncodingException, NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchProviderException {
+
+        byte[] dataBytes = STRING.getBytes("UTF-8");
+        byte[] key = AESKeyGenerator.generate("cbcbc".getBytes(), 128);
+
+//        System.out.println(ByteUtils.bytesToHex(dataBytes));
+//        System.out.println(ByteUtils.bytesToHex(key));
+
+        byte[] encrypted = AESCipher.encryptCBC(dataBytes, key, "1234567890123456".getBytes(), AESCipher.CRYPTO_ALGORITHM_AES_CBC_PKCS5PADDING);
+
+//        System.out.println(ByteUtils.bytesToHex(encrypted));
+
+        byte[] decrypted = AESCipher.decryptCBC(encrypted, key, "1234567890123456".getBytes(), AESCipher.CRYPTO_ALGORITHM_AES_CBC_PKCS5PADDING);
 
 //        System.out.println(ByteUtils.bytesToHex(decrypted));
 
@@ -63,6 +90,36 @@ public class AESCipherTest {
         in = new ByteArrayInputStream(encrypted);
         out = new ByteArrayOutputStream();
         AESCipher.decrypt(in, out, key, AESCipher.CRYPTO_ALGORITHM_AES_ECB_PKCS5PADDING);
+        byte[] decrypted = out.toByteArray();
+
+//        System.out.println(ByteUtils.bytesToHex(decrypted));
+
+        Assert.assertEquals(STRING, new String(decrypted, "UTF-8"));
+
+    }
+
+    /**
+     * 输入输出流加解密
+     */
+    @Test
+    public void streamCryptoCBC() throws IOException, NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+
+        byte[] dataBytes = STRING.getBytes("UTF-8");
+        byte[] key = AESKeyGenerator.generateShaKey128("key".getBytes());
+
+//        System.out.println(ByteUtils.bytesToHex(dataBytes));
+//        System.out.println(ByteUtils.bytesToHex(key));
+
+        ByteArrayInputStream in = new ByteArrayInputStream(dataBytes);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        AESCipher.encryptCBC(in, out, key, "1234567890123456".getBytes(), AESCipher.CRYPTO_ALGORITHM_AES_CBC_PKCS5PADDING);
+        byte[] encrypted = out.toByteArray();
+
+//        System.out.println(ByteUtils.bytesToHex(encrypted));
+
+        in = new ByteArrayInputStream(encrypted);
+        out = new ByteArrayOutputStream();
+        AESCipher.decryptCBC(in, out, key, "1234567890123456".getBytes(), AESCipher.CRYPTO_ALGORITHM_AES_CBC_PKCS5PADDING);
         byte[] decrypted = out.toByteArray();
 
 //        System.out.println(ByteUtils.bytesToHex(decrypted));
