@@ -2,7 +2,6 @@ package sviolet.thistle.util.crypto;
 
 import org.junit.Assert;
 import org.junit.Test;
-import sviolet.thistle.util.conversion.ByteUtils;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -16,7 +15,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 
-public class DESCipherTest {
+public class DESEdeCipherTest {
 
     private static final String STRING = "English中文#$%@#$%@GSDFG654465rq43we5■☝▌▋卍¶¶¶☹ΥΥθΕサイけにケ◆♂‥√▒卍ЫПЬрпㅂㅝㅂ㉹㉯╠╕┚╜ㅛㅛ㉰㉯⑩⒅⑯413English中文#$%@#$%@GSDFG654465rq43we5■☝▌▋卍¶¶¶☹ΥΥθΕサイけにケ◆♂‥√▒卍ЫПЬрпㅂㅝㅂ㉹㉯╠╕┚╜ㅛㅛ㉰㉯⑩⒅⑯413English中文#$%@#$%@GSDFG654465rq43we5■☝▌▋卍¶¶¶☹ΥΥθΕサイけにケ◆♂‥√▒卍ЫПЬрпㅂㅝㅂ㉹㉯╠╕┚╜ㅛㅛ㉰㉯⑩⒅⑯413";
 
@@ -27,16 +26,16 @@ public class DESCipherTest {
     public void bytesCrypto() throws UnsupportedEncodingException, NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchProviderException {
 
         byte[] dataBytes = STRING.getBytes("UTF-8");
-        byte[] key = DESKeyGenerator.generateDes64("lalala".getBytes());
+        byte[] key = DESKeyGenerator.generateDesEde128("lalala".getBytes());
 
 //        System.out.println(ByteUtils.bytesToHex(dataBytes));
 //        System.out.println(ByteUtils.bytesToHex(key));
 
-        byte[] encrypted = DESCipher.encrypt(dataBytes, key, DESCipher.CRYPTO_ALGORITHM_DES_ECB_PKCS5PADDING);
+        byte[] encrypted = DESEdeCipher.encrypt(dataBytes, key, DESEdeCipher.CRYPTO_ALGORITHM_DES_EDE_ECB_PKCS5PADDING);
 
 //        System.out.println(ByteUtils.bytesToHex(encrypted));
 
-        byte[] decrypted = DESCipher.decrypt(encrypted, key, DESCipher.CRYPTO_ALGORITHM_DES_ECB_PKCS5PADDING);
+        byte[] decrypted = DESEdeCipher.decrypt(encrypted, key, DESEdeCipher.CRYPTO_ALGORITHM_DES_EDE_ECB_PKCS5PADDING);
 
 //        System.out.println(ByteUtils.bytesToHex(decrypted));
 
@@ -51,16 +50,16 @@ public class DESCipherTest {
     public void bytesCryptoCBC() throws UnsupportedEncodingException, NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchProviderException {
 
         byte[] dataBytes = STRING.getBytes("UTF-8");
-        byte[] key = DESKeyGenerator.generateShaKey64("wowowo".getBytes());
+        byte[] key = DESKeyGenerator.generateShaKey128("wowowo".getBytes());
 
 //        System.out.println(ByteUtils.bytesToHex(dataBytes));
 //        System.out.println(ByteUtils.bytesToHex(key));
 
-        byte[] encrypted = DESCipher.encryptCBC(dataBytes, key, "12345678".getBytes(), DESCipher.CRYPTO_ALGORITHM_DES_CBC_PKCS5PADDING);
+        byte[] encrypted = DESEdeCipher.encryptCBC(dataBytes, key, "12345678".getBytes(), DESEdeCipher.CRYPTO_ALGORITHM_DES_EDE_CBC_PKCS5PADDING);
 
 //        System.out.println(ByteUtils.bytesToHex(encrypted));
 
-        byte[] decrypted = DESCipher.decryptCBC(encrypted, key, "12345678".getBytes(), DESCipher.CRYPTO_ALGORITHM_DES_CBC_PKCS5PADDING);
+        byte[] decrypted = DESEdeCipher.decryptCBC(encrypted, key, "12345678".getBytes(), DESEdeCipher.CRYPTO_ALGORITHM_DES_EDE_CBC_PKCS5PADDING);
 
 //        System.out.println(ByteUtils.bytesToHex(decrypted));
 
@@ -75,21 +74,21 @@ public class DESCipherTest {
     public void streamCrypto() throws IOException, NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchProviderException {
 
         byte[] dataBytes = STRING.getBytes("UTF-8");
-        byte[] key = DESKeyGenerator.generateDes64("lalala".getBytes());
+        byte[] key = DESKeyGenerator.generateDesEde192("lalala".getBytes());
 
 //        System.out.println(ByteUtils.bytesToHex(dataBytes));
 //        System.out.println(ByteUtils.bytesToHex(key));
 
         ByteArrayInputStream in = new ByteArrayInputStream(dataBytes);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        DESCipher.encrypt(in, out, key, DESCipher.CRYPTO_ALGORITHM_DES_ECB_PKCS5PADDING);
+        DESEdeCipher.encrypt(in, out, key, DESEdeCipher.CRYPTO_ALGORITHM_DES_EDE_ECB_PKCS5PADDING);
         byte[] encrypted = out.toByteArray();
 
 //        System.out.println(ByteUtils.bytesToHex(encrypted));
 
         in = new ByteArrayInputStream(encrypted);
         out = new ByteArrayOutputStream();
-        DESCipher.decrypt(in, out, key, DESCipher.CRYPTO_ALGORITHM_DES_ECB_PKCS5PADDING);
+        DESEdeCipher.decrypt(in, out, key, DESEdeCipher.CRYPTO_ALGORITHM_DES_EDE_ECB_PKCS5PADDING);
         byte[] decrypted = out.toByteArray();
 
 //        System.out.println(ByteUtils.bytesToHex(decrypted));
@@ -105,21 +104,21 @@ public class DESCipherTest {
     public void streamCryptoCBC() throws IOException, NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
 
         byte[] dataBytes = STRING.getBytes("UTF-8");
-        byte[] key = DESKeyGenerator.generateShaKey64("wowowo".getBytes());
+        byte[] key = DESKeyGenerator.generateShaKey192("wowowo".getBytes());
 
 //        System.out.println(ByteUtils.bytesToHex(dataBytes));
 //        System.out.println(ByteUtils.bytesToHex(key));
 
         ByteArrayInputStream in = new ByteArrayInputStream(dataBytes);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        DESCipher.encryptCBC(in, out, key, "12345678".getBytes(), DESCipher.CRYPTO_ALGORITHM_DES_CBC_PKCS5PADDING);
+        DESEdeCipher.encryptCBC(in, out, key, "12345678".getBytes(), DESEdeCipher.CRYPTO_ALGORITHM_DES_EDE_CBC_PKCS5PADDING);
         byte[] encrypted = out.toByteArray();
 
 //        System.out.println(ByteUtils.bytesToHex(encrypted));
 
         in = new ByteArrayInputStream(encrypted);
         out = new ByteArrayOutputStream();
-        DESCipher.decryptCBC(in, out, key, "12345678".getBytes(), DESCipher.CRYPTO_ALGORITHM_DES_CBC_PKCS5PADDING);
+        DESEdeCipher.decryptCBC(in, out, key, "12345678".getBytes(), DESEdeCipher.CRYPTO_ALGORITHM_DES_EDE_CBC_PKCS5PADDING);
         byte[] decrypted = out.toByteArray();
 
 //        System.out.println(ByteUtils.bytesToHex(decrypted));

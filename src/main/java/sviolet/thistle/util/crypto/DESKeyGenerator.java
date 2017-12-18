@@ -31,24 +31,36 @@ public class DESKeyGenerator {
 	public static final String DES_EDE_KEY_ALGORITHM = "DESede";
 
 	/**
-	 * <p>生成64位DES密钥(不同系统平台相同seed生成结果可能不同), Android使用该方法, 相同seed仍会产生随机秘钥</p>
+	 * <p>生成64(56)位DES密钥(不同系统平台相同seed生成结果可能不同), Android使用该方法, 相同seed仍会产生随机秘钥</p>
 	 *
 	 * @param seed 秘钥种子
 	 * @return 秘钥
 	 */
-	public static byte[] generateDes(byte[] seed) throws NoSuchProviderException, NoSuchAlgorithmException {
+	public static byte[] generateDes64(byte[] seed) throws NoSuchProviderException, NoSuchAlgorithmException {
 		//这里配置56但是出来的是64bits
 		return BaseKeyGenerator.generateKey(seed, 56, DES_KEY_ALGORITHM);
 	}
 
 	/**
-	 * <p>生成64位DES密钥(不同系统平台相同seed生成结果可能不同), Android使用该方法, 相同seed仍会产生随机秘钥</p>
+	 * <p>生成128(112)位DESede密钥(不同系统平台相同seed生成结果可能不同), Android使用该方法, 相同seed仍会产生随机秘钥</p>
 	 *
 	 * @param seed 秘钥种子
 	 * @return 秘钥
 	 */
-	public static byte[] generateDesEde(byte[] seed) throws NoSuchProviderException, NoSuchAlgorithmException {
-		return BaseKeyGenerator.generateKey(seed, 192, DES_EDE_KEY_ALGORITHM);
+	public static byte[] generateDesEde128(byte[] seed) throws NoSuchProviderException, NoSuchAlgorithmException {
+		//这里配置112但是出来的是128bits
+		return BaseKeyGenerator.generateKey(seed, 112, DES_EDE_KEY_ALGORITHM);
+	}
+
+	/**
+	 * <p>生成192(168)位DESede密钥(不同系统平台相同seed生成结果可能不同), Android使用该方法, 相同seed仍会产生随机秘钥</p>
+	 *
+	 * @param seed 秘钥种子
+	 * @return 秘钥
+	 */
+	public static byte[] generateDesEde192(byte[] seed) throws NoSuchProviderException, NoSuchAlgorithmException {
+		//这里配置168但是出来的是192bits
+		return BaseKeyGenerator.generateKey(seed, 168, DES_EDE_KEY_ALGORITHM);
 	}
 
 	/**
@@ -59,6 +71,15 @@ public class DESKeyGenerator {
 	public static byte[] generateShaKey64(byte[] seed){
 		return BaseKeyGenerator.generateShaKey64(seed);
 	}
+
+    /**
+     * 利用SHA256摘要算法计算128位固定密钥, 安全性低, 但保证全平台一致
+     *
+     * @param seed 密码种子
+     */
+    public static byte[] generateShaKey128(byte[] seed){
+        return BaseKeyGenerator.generateShaKey128(seed);
+    }
 
 	/**
 	 * 利用SHA256摘要算法计算192位固定密钥, 安全性低, 但保证全平台一致
