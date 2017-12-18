@@ -19,18 +19,10 @@
 
 package sviolet.thistle.util.crypto;
 
-import sviolet.thistle.util.common.PlatformUtils;
-import sviolet.thistle.util.file.FileUtils;
-
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.Signature;
-import java.security.SignatureException;
+import java.security.*;
+import java.security.cert.Certificate;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 
@@ -51,15 +43,36 @@ public class ECDSACipher {
     public static final String SIGN_ALGORITHM_ECDSA_SHA256 = "SHA256withECDSA";
 
     /**
+     * 创建签名的实例
      * @param privateKey 私钥
-     * @param signAlgorithm 签名逻辑: ECDSACipher.SIGN_ALGORITHM_ECDSA_SHA256
+     * @param signAlgorithm 签名逻辑
      * @throws NoSuchAlgorithmException 无效的signAlgorithm
      * @throws InvalidKeyException 无效的私钥
      */
-    public static Signature generateECDSASignatureInstance(ECPrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException {
-        Signature signature = Signature.getInstance(signAlgorithm);
-        signature.initSign(privateKey);
-        return signature;
+    public static Signature generateSignatureInstance(PrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException {
+        return BaseCipher.generateSignatureInstance(privateKey, signAlgorithm);
+    }
+
+    /**
+     * 创建验签的实例
+     * @param publicKey 公钥
+     * @param signAlgorithm 签名逻辑
+     * @throws NoSuchAlgorithmException 无效的signAlgorithm
+     * @throws InvalidKeyException 无效的私钥
+     */
+    public static Signature generateSignatureInstance(PublicKey publicKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException {
+        return BaseCipher.generateSignatureInstance(publicKey, signAlgorithm);
+    }
+
+    /**
+     * 创建验签的实例
+     * @param certificate 证书
+     * @param signAlgorithm 签名逻辑
+     * @throws NoSuchAlgorithmException 无效的signAlgorithm
+     * @throws InvalidKeyException 无效的私钥
+     */
+    public static Signature generateSignatureInstance(Certificate certificate, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException {
+        return BaseCipher.generateSignatureInstance(certificate, signAlgorithm);
     }
 
     /**
@@ -75,9 +88,7 @@ public class ECDSACipher {
      * @throws SignatureException 签名异常
      */  
     public static byte[] sign(byte[] data, ECPrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException{
-        Signature signature = generateECDSASignatureInstance(privateKey, signAlgorithm);
-        signature.update(data);
-        return signature.sign();
+        return BaseCipher.sign(data, privateKey, signAlgorithm);
     }
 
     /**
@@ -93,20 +104,7 @@ public class ECDSACipher {
      * @throws SignatureException 签名异常
      */
     public static byte[] sign(File file, ECPrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
-        if (PlatformUtils.PLATFORM == PlatformUtils.Platform.DALVIK){
-            //安卓API11以上使用NIO, API10以下会很慢
-            if (PlatformUtils.ANDROID_VERSION < 11){
-                return signIo(file, privateKey, signAlgorithm);
-            } else {
-                return signNio(file, privateKey, signAlgorithm);
-            }
-        }
-        //能手动回收MappedByteBuffer则使用NIO
-        if (FileUtils.isMappedByteBufferCanClean()){
-            return signNio(file, privateKey, signAlgorithm);
-        } else {
-            return signIo(file, privateKey, signAlgorithm);
-        }
+        return BaseCipher.sign(file, privateKey, signAlgorithm);
     }
 
     /**
@@ -127,32 +125,7 @@ public class ECDSACipher {
      * @throws SignatureException 签名异常
      */
     public static byte[] signNio(File file, ECPrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
-        FileInputStream inputStream = null;
-        FileChannel channel = null;
-        MappedByteBuffer byteBuffer = null;
-        try {
-            inputStream = new FileInputStream(file);
-            channel = inputStream.getChannel();
-            byteBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, file.length());
-            Signature signature = generateECDSASignatureInstance(privateKey, signAlgorithm);
-            signature.update(byteBuffer);
-            return signature.sign();
-        } finally {
-            if (inputStream != null){
-                try {
-                    inputStream.close();
-                } catch (IOException ignored) {
-                }
-            }
-            if (channel != null){
-                try {
-                    channel.close();
-                } catch (IOException ignored) {
-                }
-            }
-            //尝试将MappedByteBuffer回收, 解决后续文件无法被读写删除的问题
-            FileUtils.cleanMappedByteBuffer(byteBuffer);
-        }
+        return BaseCipher.signNio(file, privateKey, signAlgorithm);
     }
 
     /**
@@ -168,24 +141,7 @@ public class ECDSACipher {
      * @throws SignatureException 签名异常
      */
     public static byte[] signIo(File file, ECPrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
-        FileInputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(file);
-            Signature signature = generateECDSASignatureInstance(privateKey, signAlgorithm);
-            byte[] buff = new byte[1024];
-            int size;
-            while((size = inputStream.read(buff)) != -1){
-                signature.update(buff, 0, size);
-            }
-            return signature.sign();
-        } finally {
-            if (inputStream != null){
-                try {
-                    inputStream.close();
-                } catch (IOException ignored) {
-                }
-            }
-        }
+        return BaseCipher.signIo(file, privateKey, signAlgorithm);
     }
 
     /**
@@ -203,10 +159,7 @@ public class ECDSACipher {
      *  
      */  
     public static boolean verify(byte[] data, byte[] sign, ECPublicKey publicKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException{
-        Signature signature = Signature.getInstance(signAlgorithm);
-        signature.initVerify(publicKey);
-        signature.update(data);
-        return signature.verify(sign);  
+        return BaseCipher.verify(data, sign, publicKey, signAlgorithm);
     }
 
     /**
@@ -223,20 +176,7 @@ public class ECDSACipher {
      * @throws SignatureException 签名异常
      */
     public static boolean verify(File file, byte[] sign, ECPublicKey publicKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
-        if (PlatformUtils.PLATFORM == PlatformUtils.Platform.DALVIK){
-            //安卓API11以上使用NIO, API10以下会很慢
-            if (PlatformUtils.ANDROID_VERSION < 11){
-                return verifyIo(file, sign, publicKey, signAlgorithm);
-            } else {
-                return verifyNio(file, sign, publicKey, signAlgorithm);
-            }
-        }
-        //能手动回收MappedByteBuffer则使用NIO
-        if (FileUtils.isMappedByteBufferCanClean()){
-            return verifyNio(file, sign, publicKey, signAlgorithm);
-        } else {
-            return verifyIo(file, sign, publicKey, signAlgorithm);
-        }
+        return BaseCipher.verify(file, sign, publicKey, signAlgorithm);
     }
 
     /**
@@ -259,33 +199,7 @@ public class ECDSACipher {
      *
      */
     public static boolean verifyNio(File file, byte[] sign, ECPublicKey publicKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
-        FileInputStream inputStream = null;
-        FileChannel channel = null;
-        MappedByteBuffer byteBuffer = null;
-        try {
-            inputStream = new FileInputStream(file);
-            channel = inputStream.getChannel();
-            byteBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, file.length());
-            Signature signature = Signature.getInstance(signAlgorithm);
-            signature.initVerify(publicKey);
-            signature.update(byteBuffer);
-            return signature.verify(sign);
-        } finally {
-            if (inputStream != null){
-                try {
-                    inputStream.close();
-                } catch (IOException ignored) {
-                }
-            }
-            if (channel != null){
-                try {
-                    channel.close();
-                } catch (IOException ignored) {
-                }
-            }
-            //尝试将MappedByteBuffer回收, 解决后续文件无法被读写删除的问题
-            FileUtils.cleanMappedByteBuffer(byteBuffer);
-        }
+        return BaseCipher.verifyNio(file, sign, publicKey, signAlgorithm);
     }
 
     /**
@@ -303,25 +217,7 @@ public class ECDSACipher {
      *
      */
     public static boolean verifyIo(File file, byte[] sign, ECPublicKey publicKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
-        FileInputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(file);
-            Signature signature = Signature.getInstance(signAlgorithm);
-            signature.initVerify(publicKey);
-            byte[] buff = new byte[1024];
-            int size;
-            while((size = inputStream.read(buff)) != -1){
-                signature.update(buff, 0, size);
-            }
-            return signature.verify(sign);
-        } finally {
-            if (inputStream != null){
-                try {
-                    inputStream.close();
-                } catch (IOException ignored) {
-                }
-            }
-        }
+        return BaseCipher.verifyIo(file, sign, publicKey, signAlgorithm);
     }
 
 }
