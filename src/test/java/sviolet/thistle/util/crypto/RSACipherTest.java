@@ -5,6 +5,9 @@ import org.junit.Test;
 import sviolet.thistle.util.conversion.Base64Utils;
 import sviolet.thistle.util.conversion.ByteUtils;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -29,12 +32,12 @@ public class RSACipherTest {
         byte[] dataBytes = STRING.getBytes("UTF-8");
         RSAKeyGenerator.RSAKeyPair pair = RSAKeyGenerator.generateKeyPair();
 
-        System.out.println(ByteUtils.bytesToHex(dataBytes));
-        System.out.println(pair);
+//        System.out.println(ByteUtils.bytesToHex(dataBytes));
+//        System.out.println(pair);
 
         byte[] sign = RSACipher.sign(dataBytes, pair.getPrivateKey(), RSACipher.SIGN_ALGORITHM_RSA_SHA1);
 
-        System.out.println(ByteUtils.bytesToHex(sign));
+//        System.out.println(ByteUtils.bytesToHex(sign));
 
         Assert.assertEquals(true, RSACipher.verify(dataBytes, sign, pair.getPublicKey(), RSACipher.SIGN_ALGORITHM_RSA_SHA1));
 
@@ -65,6 +68,44 @@ public class RSACipherTest {
 //        System.out.println(ByteUtils.bytesToHex(sign));
 
         Assert.assertEquals(true, RSACipher.verifyNio(new File(TEST_FILE), sign, publicKey, RSACipher.SIGN_ALGORITHM_RSA_SHA256));
+
+    }
+
+    @Test
+    public void encryptDecrypt1() throws InvalidKeySpecException, IOException, NoSuchPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+
+        byte[] dataBytes = STRING.getBytes("UTF-8");
+        RSAPrivateKey privateKey = RSAKeyGenerator.generatePrivateKeyByPKCS8(Base64Utils.decode(PRIVATE));
+        RSAPublicKey publicKey = RSAKeyGenerator.generatePublicKeyByX509(Base64Utils.decode(PUBLIC));
+
+        byte[] encrypted = RSACipher.encrypt(dataBytes, publicKey, RSACipher.CRYPTO_ALGORITHM_RSA_ECB_PKCS1PADDING);
+
+//        System.out.println(ByteUtils.bytesToHex(encrypted));
+
+        byte[] decrypted = RSACipher.decrypt(encrypted, privateKey, RSACipher.CRYPTO_ALGORITHM_RSA_ECB_PKCS1PADDING);
+
+//        System.out.println(ByteUtils.bytesToHex(decrypted));
+
+        Assert.assertEquals(STRING, new String(decrypted, "UTF-8"));
+
+    }
+
+    @Test
+    public void encryptDecrypt2() throws InvalidKeySpecException, IOException, NoSuchPaddingException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+
+        byte[] dataBytes = STRING.getBytes("UTF-8");
+        RSAPrivateKey privateKey = RSAKeyGenerator.generatePrivateKeyByPKCS8(Base64Utils.decode(PRIVATE));
+        RSAPublicKey publicKey = RSAKeyGenerator.generatePublicKeyByX509(Base64Utils.decode(PUBLIC));
+
+        byte[] encrypted = RSACipher.encrypt(dataBytes, privateKey, RSACipher.CRYPTO_ALGORITHM_RSA_ECB_PKCS1PADDING);
+
+//        System.out.println(ByteUtils.bytesToHex(encrypted));
+
+        byte[] decrypted = RSACipher.decrypt(encrypted, publicKey, RSACipher.CRYPTO_ALGORITHM_RSA_ECB_PKCS1PADDING);
+
+//        System.out.println(ByteUtils.bytesToHex(decrypted));
+
+        Assert.assertEquals(STRING, new String(decrypted, "UTF-8"));
 
     }
 
