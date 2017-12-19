@@ -51,8 +51,6 @@ public class Base64Utils {
 
     /**
      * 编码为String
-     * @param data
-     * @return
      */
     public static String encodeToString(byte[] data) {
         try {
@@ -64,8 +62,6 @@ public class Base64Utils {
 
     /**
      * 编码为Url专用的String, 用于Http的Url参数, 否则+号会变空格
-     * @param data
-     * @return
      */
     public static String encodeToUrlEncodedString(byte[] data){
         try {
@@ -77,10 +73,12 @@ public class Base64Utils {
 
     /**
      * 编码
-     * @param data
-     * @return
      */
     public static byte[] encode(byte[] data) {
+        if (data == null){
+            return new byte[0];
+        }
+
         byte[] bytes;
         int modulus = data.length % 3;
         if (modulus == 0) {
@@ -137,10 +135,12 @@ public class Base64Utils {
 
     /**
      * 解码
-     * @param data
-     * @return
      */
     public static byte[] decode(byte[] data) {
+        if (data == null){
+            return new byte[0];
+        }
+
         byte[] bytes;
         byte b1;
         byte b2;
@@ -187,10 +187,12 @@ public class Base64Utils {
 
     /**
      * 解码
-     * @param data
-     * @return
      */
     public static byte[] decode(String data) {
+        if (data == null){
+            return new byte[0];
+        }
+
         byte[] bytes;
         byte b1;
         byte b2;
@@ -272,10 +274,12 @@ public class Base64Utils {
 
     /**
      * 压缩
-     * @param input
-     * @return
      */
     public static byte[] compressBytes(byte[] input) {
+        if (input == null){
+            return new byte[0];
+        }
+
         int cachesize = 1024;
 
         Deflater compresser = new Deflater();
@@ -305,10 +309,12 @@ public class Base64Utils {
 
     /**
      * 解压缩
-     * @param input
-     * @return
      */
     public static byte[] decompressBytes(byte[] input) {
+        if (input == null){
+            return new byte[0];
+        }
+
         int cachesize = 1024;
         Inflater decompresser = new Inflater();
 
@@ -338,8 +344,6 @@ public class Base64Utils {
 
     /**
      * 解压缩String
-     * @param encdata
-     * @return
      */
     public static String decompressData(String encdata) {
         try {

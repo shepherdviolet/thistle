@@ -19,6 +19,9 @@
 
 package sviolet.thistle.util.crypto;
 
+import org.jetbrains.annotations.Nullable;
+import sviolet.thistle.util.conversion.Base64Utils;
+
 import java.security.*;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
@@ -121,7 +124,12 @@ public class ECDSAKeyGenerator {
             return privateKey;
         }
 
+        @Nullable
         public byte[] getX509EncodedPublicKey() throws InvalidKeySpecException {
+            if (publicKey == null){
+                return null;
+            }
+
             KeyFactory factory;
             try {
                 factory = KeyFactory.getInstance(ECDSA_KEY_ALGORITHM);
@@ -131,7 +139,12 @@ public class ECDSAKeyGenerator {
             return factory.getKeySpec(publicKey, X509EncodedKeySpec.class).getEncoded();
         }
 
+        @Nullable
         public byte[] getPKCS8EncodedPrivateKey() throws InvalidKeySpecException {
+            if (privateKey == null){
+                return null;
+            }
+
             KeyFactory factory;
             try {
                 factory = KeyFactory.getInstance(ECDSA_KEY_ALGORITHM);
@@ -141,5 +154,13 @@ public class ECDSAKeyGenerator {
             return factory.getKeySpec(privateKey, PKCS8EncodedKeySpec.class).getEncoded();
         }
 
+        @Override
+        public String toString() {
+            try {
+                return "ECKeyPair\n<public>" + Base64Utils.encodeToString(getX509EncodedPublicKey()) + "\n<private>" + Base64Utils.encodeToString(getPKCS8EncodedPrivateKey());
+            } catch (InvalidKeySpecException e) {
+                return "ECKeyPair\n<exception>" + e.getMessage();
+            }
+        }
     }
 }

@@ -19,6 +19,9 @@
 
 package sviolet.thistle.util.crypto;
 
+import org.jetbrains.annotations.Nullable;
+import sviolet.thistle.util.conversion.Base64Utils;
+
 import java.math.BigInteger;
 import java.security.Key;
 import java.security.KeyFactory;
@@ -190,7 +193,12 @@ public class RSAKeyGenerator {
             return privateKey.getPrivateExponent();
         }
 
+        @Nullable
         public byte[] getX509EncodedPublicKey() throws InvalidKeySpecException {
+            if (publicKey == null){
+                return null;
+            }
+
             KeyFactory factory;
             try {
                 factory = KeyFactory.getInstance(RSA_KEY_ALGORITHM);
@@ -200,7 +208,12 @@ public class RSAKeyGenerator {
             return factory.getKeySpec(publicKey, X509EncodedKeySpec.class).getEncoded();
         }
 
+        @Nullable
         public byte[] getPKCS8EncodedPrivateKey() throws InvalidKeySpecException {
+            if (privateKey == null){
+                return null;
+            }
+
             KeyFactory factory;
             try {
                 factory = KeyFactory.getInstance(RSA_KEY_ALGORITHM);
@@ -208,6 +221,15 @@ public class RSAKeyGenerator {
                 throw new RuntimeException(e);
             }
             return factory.getKeySpec(privateKey, PKCS8EncodedKeySpec.class).getEncoded();
+        }
+
+        @Override
+        public String toString() {
+            try {
+                return "RSAKeyPair\n<public>" + Base64Utils.encodeToString(getX509EncodedPublicKey()) + "\n<private>" + Base64Utils.encodeToString(getPKCS8EncodedPrivateKey());
+            } catch (InvalidKeySpecException e) {
+                return "RSAKeyPair\n<exception>" + e.getMessage();
+            }
         }
 
     }
