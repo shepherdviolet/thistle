@@ -17,7 +17,7 @@ import java.security.spec.InvalidKeySpecException;
 
 public class ECDSACipherTest {
 
-    private static final String TEST_FILE = "./README.md";
+    private static final String TEST_FILE = "./LICENSE.txt";
 
     private static final String STRING = "English中文#$%@#$%@GSDFG654465rq43we5■☝▌▋卍¶¶¶☹ΥΥθΕサイけにケ◆♂‥√▒卍ЫПЬрпㅂㅝㅂ㉹㉯╠╕┚╜ㅛㅛ㉰㉯⑩⒅⑯413English中文#$%@#$%@GSDFG654465rq43we5■☝▌▋卍¶¶¶☹ΥΥθΕサイけにケ◆♂‥√▒卍ЫПЬрпㅂㅝㅂ㉹㉯╠╕┚╜ㅛㅛ㉰㉯⑩⒅⑯413English中文#$%@#$%@GSDFG654465rq43we5■☝▌▋卍¶¶¶☹ΥΥθΕサイけにケ◆♂‥√▒卍ЫПЬрпㅂㅝㅂ㉹㉯╠╕┚╜ㅛㅛ㉰㉯⑩⒅⑯413";
     private static final String PUBLIC = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEfcug7j3ywRhkl343yFKr8FzWyvkYlOCangIV14taWmxRqVeFDtuED7PmKHtpL/zeb39D/54c/dn+3+awriF7yA==";
