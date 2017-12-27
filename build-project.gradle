@@ -44,8 +44,10 @@ dependencies {
     //required
 
     //optional
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$version_kotlinVersion"
-    compile 'com.google.code.gson:gson:2.8.1'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$version_kotlinVersion"
+    implementation 'com.google.code.gson:gson:2.8.1'
+    implementation 'com.squareup.okhttp3:okhttp:3.9.0'
 
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    //test
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
 }
