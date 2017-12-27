@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
 import sviolet.thistle.model.thread.LazySingleThreadPool;
-import sviolet.thistle.common.entity.Destroyable;
+import sviolet.thistle.entity.Destroyable;
 
 /**
  * <p>寄生变量</p>

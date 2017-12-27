@@ -23,7 +23,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import sviolet.thistle.common.compat.CompatLruCache;
+import sviolet.thistle.compat.CompatLruCache;
 
 /**
  * <p>反射缓存, 用于一些反复使用反射的Class</p>

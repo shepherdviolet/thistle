@@ -12,7 +12,7 @@
  * the License.
  */
 
-package sviolet.thistle.common.compat;
+package sviolet.thistle.compat;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Locale;

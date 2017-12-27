@@ -17,7 +17,7 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.common.entity;
+package sviolet.thistle.entity;
 
 /**
  * 可销毁对象, 销毁监听器

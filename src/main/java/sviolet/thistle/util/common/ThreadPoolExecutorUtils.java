@@ -1,6 +1,6 @@
 package sviolet.thistle.util.common;
 
-import sviolet.thistle.common.compat.CompatThreadFactoryBuilder;
+import sviolet.thistle.compat.CompatThreadFactoryBuilder;
 
 import java.util.concurrent.*;
 

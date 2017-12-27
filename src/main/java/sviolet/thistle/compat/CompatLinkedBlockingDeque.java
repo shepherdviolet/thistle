@@ -4,7 +4,7 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-package sviolet.thistle.common.compat;
+package sviolet.thistle.compat;
 
 import java.util.AbstractQueue;
 import java.util.Collection;

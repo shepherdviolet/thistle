@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sviolet.thistle.common.compat;
+package sviolet.thistle.compat;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
