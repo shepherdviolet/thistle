@@ -66,10 +66,11 @@ public class HostManagerNetworkAbnormalTest {
             public void run() {
 
                 //网路故障的Host编号
-//                int[] badIndex = {0, 1, 2, 3};
+                int[] badIndex = {0, 1, 2, 3};
 //                int[] badIndex = {1, 3};
 //                int[] badIndex = {0, 1};
-                int[] badIndex = {1};
+//                int[] badIndex = {1};
+//                int[] badIndex = {};
 
                 for (int i = 0 ; i < badIndex.length ; i++){
                     AtomicBoolean switcher = switchers.get(hosts.get(badIndex[i]));
