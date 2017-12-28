@@ -19,8 +19,7 @@ public class HostManagerCommonTest {
     private static final int HOST_NUM = 16;
 //    private static final int HOST_NUM = 64;
 
-//    private static final int TASK_NUM = 4;
-    private static final int TASK_NUM = 32;
+    private static final int TASK_NUM = 4;
 
     public static void main(String[] args) {
 
@@ -48,7 +47,7 @@ public class HostManagerCommonTest {
                     Thread.sleep(100L);
                 } catch (InterruptedException ignored) {
                 }
-                for (int i = 0 ; i < 1000 ; i++){
+                for (int i = 0 ; i < 10000000 ; i++){
                     AtomicInteger counter = counters.get(manager.nextHost().getUrl());
                     counter.incrementAndGet();
                 }
