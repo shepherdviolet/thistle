@@ -32,7 +32,7 @@ public class HostManagerNetworkAbnormalTest {
         manager.setHostList(hosts);
 
         randomAbnormal(random, counters, switchers, hosts);//随机网络波动
-//        allAbnormal(random, counters, switchers, hosts);//全挂全恢复
+//        staticAbnormal(random, counters, switchers, hosts);//固定故障情况
 
         for (int i = 0 ; i < TASK_NUM ; i++) {
             newTask(counters, manager, switchers);
@@ -63,21 +63,27 @@ public class HostManagerNetworkAbnormalTest {
         }).start();
     }
 
-    public static void allAbnormal(final Random random, final Map<String, AtomicInteger> counters, final Map<String, AtomicBoolean> switchers, final List<String> hosts) {
+    public static void staticAbnormal(final Random random, final Map<String, AtomicInteger> counters, final Map<String, AtomicBoolean> switchers, final List<String> hosts) {
         new Thread(new Runnable() {
             @Override
             public void run() {
+
+                int[] badIndex = {0, 1, 2, 3};
+
+                for (int i = 0 ; i < badIndex.length ; i++){
+                    AtomicBoolean switcher = switchers.get(hosts.get(badIndex[i]));
+                    switcher.set(false);
+                }
+
+                StringBuilder stringBuilder = new StringBuilder();
+                for (AtomicBoolean swi : switchers.values()){
+                    stringBuilder.append(swi.get());
+                    stringBuilder.append(" ");
+                }
+                System.out.println("switchers " + stringBuilder.toString() + " --------------------------");
+
                 for (int i = 0 ; i < 60 ; i++){
-
                     delayAndPrint(counters);
-
-                    StringBuilder stringBuilder = new StringBuilder();
-                    for (AtomicBoolean swi : switchers.values()){
-                        swi.set(!swi.get());
-                        stringBuilder.append(swi.get());
-                        stringBuilder.append(" ");
-                    }
-                    System.out.println("switchers " + stringBuilder.toString() + " --------------------------");
                 }
             }
         }).start();
