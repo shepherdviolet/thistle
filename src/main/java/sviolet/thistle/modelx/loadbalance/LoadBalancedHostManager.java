@@ -2,10 +2,7 @@ package sviolet.thistle.modelx.loadbalance;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -31,7 +28,7 @@ public class LoadBalancedHostManager {
         Host host;
 
         int count = 0;
-        int reCountTimes = hostArray.length >> 1 + 1;
+        int reCountTimes = (hostArray.length + 1) >> 1;
         long currentTimeMillis = System.currentTimeMillis();
 
         for (int i = 0 ; i < reCountTimes ; i++) {
@@ -42,7 +39,9 @@ public class LoadBalancedHostManager {
             }
         }
 
-        for (int i = 0 ; i < hostArray.length - 1 ; i++){
+        int iterateCount = hostArray.length - 1;
+
+        for (int i = 0 ; i < iterateCount ; i++){
             count = ++count % hostArray.length;
             host = hostArray[count];
             if (!host.isBlocked(currentTimeMillis)){
@@ -61,7 +60,15 @@ public class LoadBalancedHostManager {
     private AtomicInteger settingCounter = new AtomicInteger(0);
     private AtomicReference<List<String>> newSettings = new AtomicReference<>(null);
 
-    public void setHosts(List<String> hosts){
+    public void setHostArray(String[] hosts) {
+        if (hosts == null){
+            setHostList(new ArrayList<String>(0));
+        } else {
+            setHostList(Arrays.asList(hosts));
+        }
+    }
+
+    public void setHostList(List<String> hosts){
         if (hosts == null){
             hosts = new ArrayList<>(0);
         }
@@ -139,6 +146,10 @@ public class LoadBalancedHostManager {
             return currentTimeMillis < blockingTime.get();
         }
 
+        @Override
+        public String toString() {
+            return "Host<" + url + ">";
+        }
     }
 
 }
