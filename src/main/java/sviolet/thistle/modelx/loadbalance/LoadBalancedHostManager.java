@@ -9,7 +9,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class LoadBalancedHostManager {
 
-    private AtomicInteger counter = new AtomicInteger(0);
+    private AtomicInteger mainCounter = new AtomicInteger(0);
+    private AtomicInteger refugeCounter = new AtomicInteger(0);
 
     private AtomicReference<Host[]> hostArray = new AtomicReference<>(new Host[0]);
     private Map<String, Integer> hostIndexMap = new HashMap<>(0);
@@ -26,26 +27,24 @@ public class LoadBalancedHostManager {
         }
 
         long currentTimeMillis = System.currentTimeMillis();
-        int count = counter.getAndIncrement() % hostArray.length;
-        Host host = hostArray[count];
+        int mainCount = mainCounter.getAndIncrement() % hostArray.length;
+        Host host = hostArray[mainCount];
 
         if (!host.isBlocked(currentTimeMillis)) {
             return host;
         }
 
-        int iterateCount = hostArray.length - 1;
+        int refugeCount = refugeCounter.getAndIncrement() % hostArray.length;
 
-        for (int i = 0 ; i < iterateCount ; i++){
-            counter.getAndIncrement();
-            count = ++count % hostArray.length;
-            host = hostArray[count];
-            if (!host.isBlocked(currentTimeMillis)){
+        for (int i = 0 ; i < hostArray.length ; i++) {
+            host = hostArray[refugeCount];
+            if (!host.isBlocked(currentTimeMillis)) {
                 return host;
             }
+            refugeCount = (refugeCount + 1) % hostArray.length;
         }
 
-        counter.getAndIncrement();
-        return hostArray[++count % hostArray.length];
+        return hostArray[mainCount];
 
     }
 

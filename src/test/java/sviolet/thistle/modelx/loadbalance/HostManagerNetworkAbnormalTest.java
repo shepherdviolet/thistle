@@ -29,12 +29,11 @@ public class HostManagerNetworkAbnormalTest {
         final LoadBalancedHostManager manager = new LoadBalancedHostManager();
         manager.setHostList(hosts);
 
-        randomAbnormal(random, counters, switchers, hosts);//随机网络波动
-//        staticAbnormal(random, counters, switchers, hosts);//固定故障情况
+//        randomAbnormal(random, counters, switchers, hosts);//随机网络波动
+        staticAbnormal(random, counters, switchers, hosts);//固定故障情况
 
-        newTask(counters, manager, switchers, 256);//带间隔的任务(配合多任务数)
-//        newFastTask(counters, manager, switchers, 4);//不带间隔的任务(配合少量任务数)
-
+//        newTask(counters, manager, switchers, 256);//带间隔的任务(配合多任务数)
+        newFastTask(counters, manager, switchers, 4);//不带间隔的任务(配合少量任务数)
 
     }
 
@@ -67,7 +66,10 @@ public class HostManagerNetworkAbnormalTest {
             public void run() {
 
                 //网路故障的Host编号
-                int[] badIndex = {0, 1, 2, 3};
+//                int[] badIndex = {0, 1, 2, 3};
+//                int[] badIndex = {1, 3};
+//                int[] badIndex = {0, 1};
+                int[] badIndex = {1};
 
                 for (int i = 0 ; i < badIndex.length ; i++){
                     AtomicBoolean switcher = switchers.get(hosts.get(badIndex[i]));
