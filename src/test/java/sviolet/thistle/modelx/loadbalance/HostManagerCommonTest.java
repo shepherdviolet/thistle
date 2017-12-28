@@ -6,6 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * LoadBalancedHostManager测试案例
+ * 1.配置固定不变
+ * 2.无网络故障
+ */
 public class HostManagerCommonTest {
 
 //    private static final int HOST_NUM = 1;
