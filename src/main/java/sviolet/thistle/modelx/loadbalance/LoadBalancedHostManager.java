@@ -25,23 +25,18 @@ public class LoadBalancedHostManager {
             return hostArray[0];
         }
 
-        Host host;
-
-        int count = 0;
-        int reCountTimes = (hostArray.length + 1) >> 1;
         long currentTimeMillis = System.currentTimeMillis();
+        int count = counter.getAndIncrement() % hostArray.length;
+        Host host = hostArray[count];
 
-        for (int i = 0 ; i < reCountTimes ; i++) {
-            count = counter.getAndIncrement() % hostArray.length;
-            host = hostArray[count];
-            if (!host.isBlocked(currentTimeMillis)){
-                return host;
-            }
+        if (!host.isBlocked(currentTimeMillis)) {
+            return host;
         }
 
         int iterateCount = hostArray.length - 1;
 
         for (int i = 0 ; i < iterateCount ; i++){
+            counter.getAndIncrement();
             count = ++count % hostArray.length;
             host = hostArray[count];
             if (!host.isBlocked(currentTimeMillis)){
@@ -49,6 +44,7 @@ public class LoadBalancedHostManager {
             }
         }
 
+        counter.getAndIncrement();
         return hostArray[++count % hostArray.length];
 
     }
