@@ -13,9 +13,6 @@ public class HostManagerNetworkAbnormalTest {
 
     private static final int HOST_NUM = 4;
 
-//    private static final int TASK_NUM = 4;//少量任务数
-    private static final int TASK_NUM = 256;//多任务数
-
     public static void main(String[] args) {
 
         final Random random = new Random(System.currentTimeMillis());
@@ -35,10 +32,9 @@ public class HostManagerNetworkAbnormalTest {
         randomAbnormal(random, counters, switchers, hosts);//随机网络波动
 //        staticAbnormal(random, counters, switchers, hosts);//固定故障情况
 
-        for (int i = 0 ; i < TASK_NUM ; i++) {
-//            newFastTask(counters, manager, switchers);//不带间隔的任务(配合少量任务数)
-            newTask(counters, manager, switchers);//带间隔的任务(配合多任务数)
-        }
+        newTask(counters, manager, switchers, 256);//带间隔的任务(配合多任务数)
+//        newFastTask(counters, manager, switchers, 4);//不带间隔的任务(配合少量任务数)
+
 
     }
 
@@ -108,42 +104,46 @@ public class HostManagerNetworkAbnormalTest {
         }
     }
 
-    private static void newTask(final Map<String, AtomicInteger> counters, final LoadBalancedHostManager manager, final Map<String, AtomicBoolean> switchers) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for (int i = 0 ; i < 6000 ; i++){
-                    try {
-                        Thread.sleep(100L);
-                    } catch (InterruptedException ignored) {
-                    }
-                    LoadBalancedHostManager.Host host = manager.nextHost();
-                    AtomicInteger counter = counters.get(host.getUrl());
-                    counter.incrementAndGet();
-                    AtomicBoolean switcher = switchers.get(host.getUrl());
-                    if (!switcher.get()){
-                        host.block(3000L);
+    private static void newTask(final Map<String, AtomicInteger> counters, final LoadBalancedHostManager manager, final Map<String, AtomicBoolean> switchers, int num) {
+        for (int i = 0 ; i < num ; i++) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    for (int i = 0; i < 6000; i++) {
+                        try {
+                            Thread.sleep(100L);
+                        } catch (InterruptedException ignored) {
+                        }
+                        LoadBalancedHostManager.Host host = manager.nextHost();
+                        AtomicInteger counter = counters.get(host.getUrl());
+                        counter.incrementAndGet();
+                        AtomicBoolean switcher = switchers.get(host.getUrl());
+                        if (!switcher.get()) {
+                            host.block(3000L);
+                        }
                     }
                 }
-            }
-        }).start();
+            }).start();
+        }
     }
 
-    private static void newFastTask(final Map<String, AtomicInteger> counters, final LoadBalancedHostManager manager, final Map<String, AtomicBoolean> switchers) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for (int i = 0 ; i < 1000000000 ; i++){
-                    LoadBalancedHostManager.Host host = manager.nextHost();
-                    AtomicInteger counter = counters.get(host.getUrl());
-                    counter.incrementAndGet();
-                    AtomicBoolean switcher = switchers.get(host.getUrl());
-                    if (!switcher.get()){
-                        host.block(3000L);
+    private static void newFastTask(final Map<String, AtomicInteger> counters, final LoadBalancedHostManager manager, final Map<String, AtomicBoolean> switchers, int num) {
+        for (int i = 0 ; i < num ; i++) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    for (int i = 0; i < 1000000000; i++) {
+                        LoadBalancedHostManager.Host host = manager.nextHost();
+                        AtomicInteger counter = counters.get(host.getUrl());
+                        counter.incrementAndGet();
+                        AtomicBoolean switcher = switchers.get(host.getUrl());
+                        if (!switcher.get()) {
+                            host.block(3000L);
+                        }
                     }
                 }
-            }
-        }).start();
+            }).start();
+        }
     }
 
 }
