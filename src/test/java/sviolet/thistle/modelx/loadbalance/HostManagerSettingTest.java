@@ -21,6 +21,7 @@ package sviolet.thistle.modelx.loadbalance;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -31,6 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class HostManagerSettingTest {
 
     private static final int MAX_HOST_NUM = 8;
+    private static final Random random = new Random(System.currentTimeMillis());
 
     public static void main(String[] args) {
 
@@ -42,11 +44,12 @@ public class HostManagerSettingTest {
             counters[i] = new AtomicInteger(0);
         }
 
-        setting(manager, 0x00000000);
+        setting(manager, 0x00000000, true);
 
         print(noHostCounter, counters);
 
-        changeSettingInterval(manager);//低频度变配置
+//        changeSettingInterval(manager);//低频度变配置
+        changeSettingConcurrent(manager);//高频率(并发)变配置
 
         newTask(noHostCounter, counters, manager, 256);
 
@@ -62,59 +65,82 @@ public class HostManagerSettingTest {
                 } catch (InterruptedException ignored) {
                 }
 
-                setting(manager, 0x10000000);
+                setting(manager, 0x10000000, true);
 
                 try {
                     Thread.sleep(5000L);
                 } catch (InterruptedException ignored) {
                 }
 
-                setting(manager, 0x01000000);
+                setting(manager, 0x01000000, true);
 
                 try {
                     Thread.sleep(5000L);
                 } catch (InterruptedException ignored) {
                 }
 
-                setting(manager, 0x00100000);
+                setting(manager, 0x00100000, true);
 
                 try {
                     Thread.sleep(5000L);
                 } catch (InterruptedException ignored) {
                 }
 
-                setting(manager, 0x00010000);
+                setting(manager, 0x00010000, true);
 
                 try {
                     Thread.sleep(5000L);
                 } catch (InterruptedException ignored) {
                 }
 
-                setting(manager, 0x11110000);
+                setting(manager, 0x11110000, true);
 
                 try {
                     Thread.sleep(5000L);
                 } catch (InterruptedException ignored) {
                 }
 
-                setting(manager, 0x00001111);
+                setting(manager, 0x00001111, true);
 
                 try {
                     Thread.sleep(5000L);
                 } catch (InterruptedException ignored) {
                 }
 
-                setting(manager, 0x11111111);
+                setting(manager, 0x11111111, true);
 
                 try {
                     Thread.sleep(5000L);
                 } catch (InterruptedException ignored) {
                 }
 
-                setting(manager, 0x10101010);
+                setting(manager, 0x10101010, true);
 
             }
         }).start();
+    }
+
+    /**
+     * 执行一段时间后, 看最后那些通道的计数在增加, 是否与打印出来的四种开关状态中的一种一致
+     */
+    private static void changeSettingConcurrent(final LoadBalancedHostManager manager) {
+        for (int i = 0 ; i < 4 ; i++){
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(500L);
+                    } catch (InterruptedException ignored) {
+                    }
+                    int switcher = 0x00000000;
+                    for (int j = 0 ; j < 1000000 ; j++) {
+                        switcher = random.nextInt(0x1FFFFFFF);
+                        setting(manager, switcher, false);
+                    }
+                    System.out.println(Integer.toHexString(Integer.reverseBytes(switcher & 0x11111111)));
+                }
+            }).start();
+        }
     }
 
     private static void newTask(final AtomicInteger noHostCounter, final AtomicInteger[] counters, final LoadBalancedHostManager manager, int num) {
@@ -140,19 +166,26 @@ public class HostManagerSettingTest {
         }
     }
 
-    private static void setting(LoadBalancedHostManager manager, int hostSwitchers) {
-        StringBuilder stringBuilder = new StringBuilder("switchers ");
+    private static void setting(LoadBalancedHostManager manager, int hostSwitchers, boolean printEnabled) {
+        StringBuilder stringBuilder = null;
+        if (printEnabled) {
+            stringBuilder = new StringBuilder("switchers ");
+        }
         List<String> hosts = new ArrayList<>(0);
         for (int i = 0 ; i < MAX_HOST_NUM ; i++){
             boolean enable = (hostSwitchers & (0x1 << i * 4)) > 0;
             if (enable){
                 hosts.add(String.valueOf(i));
             }
-            stringBuilder.append(enable);
-            stringBuilder.append(" ");
+            if (printEnabled) {
+                stringBuilder.append(enable);
+                stringBuilder.append(" ");
+            }
         }
         manager.setHostList(hosts);
-        System.out.println(stringBuilder.toString());
+        if (printEnabled) {
+            System.out.println(stringBuilder.toString());
+        }
     }
 
     private static void print(final AtomicInteger noHostCounter, final AtomicInteger[] counters) {
