@@ -42,9 +42,7 @@ public class HostManagerSettingTest {
             counters[i] = new AtomicInteger(0);
         }
 
-        setting(manager, new boolean[]{
-                false, false, false, false, false, false, false, false
-        });
+        setting(manager, 0x00000000);
 
         print(noHostCounter, counters);
 
@@ -64,72 +62,56 @@ public class HostManagerSettingTest {
                 } catch (InterruptedException ignored) {
                 }
 
-                setting(manager, new boolean[]{
-                        true, false, false, false, false, false, false, false
-                });
+                setting(manager, 0x10000000);
 
                 try {
                     Thread.sleep(5000L);
                 } catch (InterruptedException ignored) {
                 }
 
-                setting(manager, new boolean[]{
-                        false, true, false, false, false, false, false, false
-                });
+                setting(manager, 0x01000000);
 
                 try {
                     Thread.sleep(5000L);
                 } catch (InterruptedException ignored) {
                 }
 
-                setting(manager, new boolean[]{
-                        false, false, true, false, false, false, false, false
-                });
+                setting(manager, 0x00100000);
 
                 try {
                     Thread.sleep(5000L);
                 } catch (InterruptedException ignored) {
                 }
 
-                setting(manager, new boolean[]{
-                        false, false, false, true, false, false, false, false
-                });
+                setting(manager, 0x00010000);
 
                 try {
                     Thread.sleep(5000L);
                 } catch (InterruptedException ignored) {
                 }
 
-                setting(manager, new boolean[]{
-                        true, true, true, true, false, false, false, false
-                });
+                setting(manager, 0x11110000);
 
                 try {
                     Thread.sleep(5000L);
                 } catch (InterruptedException ignored) {
                 }
 
-                setting(manager, new boolean[]{
-                        false, false, false, false, true, true, true, true
-                });
+                setting(manager, 0x00001111);
 
                 try {
                     Thread.sleep(5000L);
                 } catch (InterruptedException ignored) {
                 }
 
-                setting(manager, new boolean[]{
-                        true, true, true, true, true, true, true, true
-                });
+                setting(manager, 0x11111111);
 
                 try {
                     Thread.sleep(5000L);
                 } catch (InterruptedException ignored) {
                 }
 
-                setting(manager, new boolean[]{
-                        true, false, true, false, true, false, true, false
-                });
+                setting(manager, 0x10101010);
 
             }
         }).start();
@@ -158,14 +140,15 @@ public class HostManagerSettingTest {
         }
     }
 
-    private static void setting(LoadBalancedHostManager manager, boolean[] hostSwitchers) {
+    private static void setting(LoadBalancedHostManager manager, int hostSwitchers) {
         StringBuilder stringBuilder = new StringBuilder("switchers ");
         List<String> hosts = new ArrayList<>(0);
         for (int i = 0 ; i < MAX_HOST_NUM ; i++){
-            if (hostSwitchers[i]){
+            boolean enable = (hostSwitchers & (0x1 << i * 4)) > 0;
+            if (enable){
                 hosts.add(String.valueOf(i));
             }
-            stringBuilder.append(hostSwitchers[i]);
+            stringBuilder.append(enable);
             stringBuilder.append(" ");
         }
         manager.setHostList(hosts);
