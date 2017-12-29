@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class HostManagerNetworkAbnormalTest {
 
-    private static final int HOST_NUM = 4;
+    static final int HOST_NUM = 4;
 
     public static void main(String[] args) {
 
@@ -37,7 +37,7 @@ public class HostManagerNetworkAbnormalTest {
 
     }
 
-    public static void randomAbnormal(final Random random, final Map<String, AtomicInteger> counters, final Map<String, AtomicBoolean> switchers, final List<String> hosts) {
+    static void randomAbnormal(final Random random, final Map<String, AtomicInteger> counters, final Map<String, AtomicBoolean> switchers, final List<String> hosts) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -60,7 +60,7 @@ public class HostManagerNetworkAbnormalTest {
         }).start();
     }
 
-    public static void staticAbnormal(final Random random, final Map<String, AtomicInteger> counters, final Map<String, AtomicBoolean> switchers, final List<String> hosts) {
+    static void staticAbnormal(final Random random, final Map<String, AtomicInteger> counters, final Map<String, AtomicBoolean> switchers, final List<String> hosts) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -91,7 +91,7 @@ public class HostManagerNetworkAbnormalTest {
         }).start();
     }
 
-    public static void delayAndPrint(Map<String, AtomicInteger> counters) {
+    static void delayAndPrint(Map<String, AtomicInteger> counters) {
         for (int j = 0 ; j < 20 ; j++) {
             try {
                 Thread.sleep(500L);
@@ -107,7 +107,7 @@ public class HostManagerNetworkAbnormalTest {
         }
     }
 
-    private static void newTask(final Map<String, AtomicInteger> counters, final LoadBalancedHostManager manager, final Map<String, AtomicBoolean> switchers, int num) {
+    static void newTask(final Map<String, AtomicInteger> counters, final LoadBalancedHostManager manager, final Map<String, AtomicBoolean> switchers, int num) {
         for (int i = 0 ; i < num ; i++) {
             new Thread(new Runnable() {
                 @Override
@@ -130,7 +130,7 @@ public class HostManagerNetworkAbnormalTest {
         }
     }
 
-    private static void newFastTask(final Map<String, AtomicInteger> counters, final LoadBalancedHostManager manager, final Map<String, AtomicBoolean> switchers, int num) {
+    static void newFastTask(final Map<String, AtomicInteger> counters, final LoadBalancedHostManager manager, final Map<String, AtomicBoolean> switchers, int num) {
         for (int i = 0 ; i < num ; i++) {
             new Thread(new Runnable() {
                 @Override
