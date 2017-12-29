@@ -1,12 +1,37 @@
+/*
+ * Copyright (C) 2015-2017 S.Violet
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Project GitHub: https://github.com/shepherdviolet/thistle
+ * Email: shepherdviolet@163.com
+ */
+
 package sviolet.thistle.modelx.loadbalance;
 
 import org.jetbrains.annotations.Nullable;
+import sviolet.thistle.model.thread.LazySingleThreadPool;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * 负载均衡--远端URL管理器
+ *
+ * @author S.Violet
+ */
 public class LoadBalancedHostManager {
 
     private AtomicInteger mainCounter = new AtomicInteger(0);
@@ -52,7 +77,7 @@ public class LoadBalancedHostManager {
      * settings
      */
 
-    private AtomicInteger settingCounter = new AtomicInteger(0);
+    private LazySingleThreadPool settingThreadPool = new LazySingleThreadPool("LoadBalancedHostManager-Setting-%d");
     private AtomicReference<List<String>> newSettings = new AtomicReference<>(null);
 
     public void setHostArray(String[] hosts) {
@@ -77,47 +102,45 @@ public class LoadBalancedHostManager {
 
         newSettings.set(hosts);
 
-        int count = settingCounter.incrementAndGet();
-        if (count > 1){
-            settingCounter.decrementAndGet();
-            return;
-        }
+        settingThreadPool.execute(settingInstallTask);
+    }
 
-        List<String> newSettings;
-        while ((newSettings = this.newSettings.getAndSet(null)) != null){
+    private Runnable settingInstallTask = new Runnable() {
+        @Override
+        public void run() {
+            List<String> newSettings;
+            while ((newSettings = LoadBalancedHostManager.this.newSettings.getAndSet(null)) != null){
 
-            Host[] hostArray = this.hostArray.get();
+                Host[] hostArray = LoadBalancedHostManager.this.hostArray.get();
 
-            int newSize = newSettings.size();
-            Host[] newHostArray = new Host[newSize];
-            Map<String, Integer> newHostIndexMap = new HashMap<>(newSize);
+                int newSize = newSettings.size();
+                Host[] newHostArray = new Host[newSize];
+                Map<String, Integer> newHostIndexMap = new HashMap<>(newSize);
 
-            for (int i = 0 ; i < newSize ; i++){
+                for (int i = 0 ; i < newSize ; i++){
 
-                String newUrl = newSettings.get(i);
-                Integer oldIndex = hostIndexMap.get(newUrl);
+                    String newUrl = newSettings.get(i);
+                    Integer oldIndex = hostIndexMap.get(newUrl);
 
-                if (oldIndex != null){
-                    try {
-                        newHostArray[i] = new Host(newUrl, hostArray[oldIndex].blockingTime);
-                    } catch (Throwable ignore){
+                    if (oldIndex != null){
+                        try {
+                            newHostArray[i] = new Host(newUrl, hostArray[oldIndex].blockingTime);
+                        } catch (Throwable ignore){
+                            newHostArray[i] = new Host(newUrl, new AtomicLong(0));
+                        }
+                    } else {
                         newHostArray[i] = new Host(newUrl, new AtomicLong(0));
                     }
-                } else {
-                    newHostArray[i] = new Host(newUrl, new AtomicLong(0));
+
+                    newHostIndexMap.put(newUrl, i);
+
                 }
 
-                newHostIndexMap.put(newUrl, i);
-
+                LoadBalancedHostManager.this.hostArray.set(newHostArray);
+                hostIndexMap = newHostIndexMap;
             }
-
-            this.hostArray.set(newHostArray);
-            hostIndexMap = newHostIndexMap;
-
         }
-
-        settingCounter.decrementAndGet();
-    }
+    };
 
     public static class Host {
 
