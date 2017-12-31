@@ -40,6 +40,10 @@ public class LoadBalancedHostManager {
     private AtomicReference<Host[]> hostArray = new AtomicReference<>(new Host[0]);
     private Map<String, Integer> hostIndexMap = new HashMap<>(0);
 
+    /**
+     * [线程安全的]
+     * @return 获取一个远端
+     */
     @Nullable
     public Host nextHost(){
 
@@ -80,6 +84,12 @@ public class LoadBalancedHostManager {
     private LazySingleThreadPool settingThreadPool = new LazySingleThreadPool("LoadBalancedHostManager-Setting-%d");
     private AtomicReference<List<String>> newSettings = new AtomicReference<>(null);
 
+    /**
+     * [线程安全的/异步的]
+     * 设置/刷新远端列表
+     *
+     * @param hosts 远端列表
+     */
     public void setHostArray(String[] hosts) {
         if (hosts == null){
             setHostList(new ArrayList<String>(0));
@@ -88,6 +98,12 @@ public class LoadBalancedHostManager {
         }
     }
 
+    /**
+     * [线程安全的/异步的]
+     * 设置/刷新远端列表
+     *
+     * @param hosts 远端列表
+     */
     public void setHostList(List<String> hosts){
         if (hosts == null){
             hosts = new ArrayList<>(0);
@@ -103,6 +119,10 @@ public class LoadBalancedHostManager {
         newSettings.set(hosts);
 
         settingThreadPool.execute(settingInstallTask);
+    }
+
+    Host[] getHostArray(){
+        return this.hostArray.get();
     }
 
     private Runnable settingInstallTask = new Runnable() {
