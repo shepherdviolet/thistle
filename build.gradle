@@ -2,6 +2,22 @@
 //构建脚本配置
 buildscript {
 
+    //装载其他配置文件
+    ext {
+        //解析配置文件
+        def customProperties = new Properties()
+        file("gradle-local.properties").withInputStream { stream -> customProperties.load(stream) }
+//        file("gradle-other.properties").withInputStream { stream -> customProperties.load(stream) }
+
+        //将配置放入公共配置, 在gradle中可直接引用
+        customProperties.each {
+            rootProject.extensions.add("$it.key",it.value)
+        }
+
+        //默认值, 判断配置项是否存在, 需要使用rootProject.extensions.findByName('name'). 而确保配置项存在的情况下, 可直接引用
+        //upload_mavenVersion = rootProject.extensions.findByName('upload_mavenVersion') != null ? upload_mavenVersion : version_projectVersionName + '-SNAPSHOT'
+    }
+
     //构建脚本依赖仓库
     repositories {
         jcenter()

@@ -36,8 +36,8 @@ compileTestKotlin {
 }
 
 repositories {
-    if (rootProject.extensions.findByName('mvn_local_repo') != null) {
-        maven {url mvn_local_repo}
+    if (rootProject.extensions.findByName('repository_localRepositoryPath') != null) {
+        maven {url repository_localRepositoryPath}
     }
     jcenter()
     maven { url 'https://jitpack.io' }

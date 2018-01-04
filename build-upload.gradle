@@ -16,6 +16,6 @@ uploadArchives {
         pom.groupId = project.group
         pom.artifactId = project.name
         pom.version = project.version
-        repository(url: uri(mvn_local_repo))
+        repository(url: uri(repository_localRepositoryPath))
     }
 }
