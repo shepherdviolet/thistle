@@ -1,4 +1,5 @@
 apply plugin: 'maven'
+apply plugin: 'signing'
 
 //编译时产生源代码jar
 task generateSourcesJar(type: Jar) {
@@ -6,16 +7,75 @@ task generateSourcesJar(type: Jar) {
     classifier 'sources'
 }
 
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    from javadoc.destinationDir
+    classifier = 'javadoc'
+}
+
+if (JavaVersion.current().isJava8Compatible()) {
+    tasks.withType(Javadoc) {
+        // disable the crazy super-strict doclint tool in Java 8
+        //noinspection SpellCheckingInspection
+        options.addStringOption('Xdoclint:none', '-quiet')
+    }
+}
+
 //将源代码jar加入artifacts
 artifacts {
     archives generateSourcesJar
+    archives javadocJar
+}
+
+signing {
+    sign configurations.archives
 }
 
 uploadArchives {
     repositories.mavenDeployer {
+        //为Pom文件做数字签名
+        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+        //指定项目部署到的中央库地址，UserName和Password就是Part 1中注册的账号。
+        repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+            authentication(userName: sonatype_user, password: sonatype_password)
+        }
+        snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+            authentication(userName: sonatype_user, password: sonatype_password)
+        }
+
         pom.groupId = project.group
         pom.artifactId = project.name
         pom.version = project.version
-        repository(url: uri(repository_localRepositoryPath))
+//        repository(url: uri(repository_localRepositoryPath))
+
+        //构造项目的Pom文件，参见Part 2中Pom文件的规范，不要遗漏必填项
+        pom.project {
+            name project.name
+            packaging 'jar'
+            description 'thistle'
+            url 'https://github.com/shepherdviolet/thistle'
+
+            scm {
+                url 'scm:git@github.com:shepherdviolet/thistle.git'
+                connection 'scm:git@github.com:shepherdviolet/thistle.git'
+                developerConnection 'git@github.com:shepherdviolet/thistle.git'
+            }
+
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution 'shepherdviolet'
+                }
+            }
+
+            developers {
+                developer {
+                    id 'shepherdviolet'
+                    name 'Shepherd Violet'
+                    email 'shepherdviolet@163.com'
+                }
+            }
+        }
     }
 }
