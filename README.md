@@ -7,6 +7,8 @@
 ```gradle
 
 repositories {
+    // maven central or jitpack.io
+    mavenCentral()
     maven { url 'https://jitpack.io' }
 }
 dependencies {
