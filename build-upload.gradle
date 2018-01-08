@@ -1,3 +1,17 @@
+/*
+ * MAVEN上传(中心库/本地库)
+ *
+ * 注意:需要在C:\Users\<user>\.gradle\gradle.properties中配置如下信息
+ * signing.keyId=XXXXXXXX(gpg -K 查看私钥ID)
+ * signing.password=XXXXXXXX(私钥保存的秘钥)
+ * signing.secretKeyRingFile=C:/Users/<user>/AppData/Roaming/gnupg/secring.gpg
+ * sonatype_user=sonatype用户名
+ * sonatype_password=sonatype密码
+ *
+ * gradle-local.properties中选择上传到中心库还是本地库
+ *
+ */
+
 apply plugin: 'maven'
 apply plugin: 'signing'
 
@@ -7,52 +21,59 @@ task generateSourcesJar(type: Jar) {
     classifier 'sources'
 }
 
+//编译时产生JAVADOC
 task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
     classifier = 'javadoc'
 }
 
+//禁用JAVA8的JAVADOC检查
 if (JavaVersion.current().isJava8Compatible()) {
     tasks.withType(Javadoc) {
-        // disable the crazy super-strict doclint tool in Java 8
-        //noinspection SpellCheckingInspection
         options.addStringOption('Xdoclint:none', '-quiet')
     }
 }
 
-//将源代码jar加入artifacts
+//对jar包签名
+signing {
+    sign configurations.archives
+}
+
+//将源码和JAVADOC加入artifacts
 artifacts {
     archives generateSourcesJar
     archives javadocJar
 }
 
-signing {
-    sign configurations.archives
-}
-
+//上传
 uploadArchives {
     repositories.mavenDeployer {
+
         //为Pom文件做数字签名
         beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-        //指定项目部署到的中央库地址，UserName和Password就是Part 1中注册的账号。
-        repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-            authentication(userName: sonatype_user, password: sonatype_password)
-        }
-        snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-            authentication(userName: sonatype_user, password: sonatype_password)
+        if (upload_target == 'maven') {
+            //部署到中央库
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: sonatype_user, password: sonatype_password)
+            }
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: sonatype_user, password: sonatype_password)
+            }
+        } else {
+            //部署到本地仓库
+            repository(url: uri(repository_localRepositoryPath))
         }
 
         pom.groupId = project.group
         pom.artifactId = project.name
         pom.version = project.version
-//        repository(url: uri(repository_localRepositoryPath))
 
         //构造项目的Pom文件，参见Part 2中Pom文件的规范，不要遗漏必填项
         pom.project {
             name project.name
             packaging 'jar'
-            description 'thistle'
+            description 'Java SE library for private use'
             url 'https://github.com/shepherdviolet/thistle'
 
             scm {
