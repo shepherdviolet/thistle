@@ -21,38 +21,45 @@ task generateSourcesJar(type: Jar) {
     classifier 'sources'
 }
 
-//编译时产生JAVADOC
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    from javadoc.destinationDir
-    classifier = 'javadoc'
-}
+if (upload_target == 'maven') {
 
-//禁用JAVA8的JAVADOC检查
-if (JavaVersion.current().isJava8Compatible()) {
-    tasks.withType(Javadoc) {
-        options.addStringOption('Xdoclint:none', '-quiet')
+    //编译时产生JAVADOC
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        from javadoc.destinationDir
+        classifier = 'javadoc'
     }
-}
 
-//对jar包签名
-signing {
-    sign configurations.archives
+    //禁用JAVA8的JAVADOC检查
+    if (JavaVersion.current().isJava8Compatible()) {
+        tasks.withType(Javadoc) {
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
+    }
+
+    //对jar包签名
+    signing {
+        sign configurations.archives
+    }
+
 }
 
 //将源码和JAVADOC加入artifacts
 artifacts {
     archives generateSourcesJar
-    archives javadocJar
+    if (upload_target == 'maven') {
+        archives javadocJar
+    }
 }
 
 //上传
 uploadArchives {
     repositories.mavenDeployer {
 
-        //为Pom文件做数字签名
-        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
         if (upload_target == 'maven') {
+
+            //为Pom文件做数字签名
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
             //部署到中央库
             repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
                 authentication(userName: sonatype_user, password: sonatype_password)
@@ -60,9 +67,12 @@ uploadArchives {
             snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
                 authentication(userName: sonatype_user, password: sonatype_password)
             }
+
         } else {
+
             //部署到本地仓库
             repository(url: uri(repository_localRepositoryPath))
+
         }
 
         pom.groupId = project.group
