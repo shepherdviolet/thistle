@@ -35,6 +35,9 @@ import java.security.SecureRandom;
  */
 class BaseKeyGenerator {
 
+    /**
+     * linux中secureRandom会从/dev/urandom中获取内核熵, 相对比普通种子安全
+     */
     private static SecureRandom secureRandom = new SecureRandom();
 
     /**

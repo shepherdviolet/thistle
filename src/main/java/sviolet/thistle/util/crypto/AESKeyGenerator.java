@@ -32,6 +32,15 @@ public class AESKeyGenerator {
 
 	public static final String KEY_ALGORITHM = "AES";
 
+    /**
+     * <p>生成对称密钥, 用于服务端场合</p>
+     *
+     * @return 秘钥
+     */
+    public static byte[] generate() throws NoSuchProviderException, NoSuchAlgorithmException {
+        return BaseKeyGenerator.generateKey((SecureRandom) null, 128, KEY_ALGORITHM);
+    }
+
 	/**
 	 * <p>生成对称密钥, 用于服务端场合</p>
 	 *

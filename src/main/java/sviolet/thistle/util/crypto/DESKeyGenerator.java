@@ -34,6 +34,36 @@ public class DESKeyGenerator {
 	/**
 	 * <p>生成64(56)位DES密钥, 用于服务端场合</p>
 	 *
+	 * @return 秘钥
+	 */
+	public static byte[] generateDes64() throws NoSuchProviderException, NoSuchAlgorithmException {
+		//这里配置56但是出来的是64bits
+		return BaseKeyGenerator.generateKey((SecureRandom) null, 56, DES_KEY_ALGORITHM);
+	}
+
+	/**
+	 * <p>生成128(112)位DESede密钥, 用于服务端场合</p>
+	 *
+	 * @return 秘钥
+	 */
+	public static byte[] generateDesEde128() throws NoSuchProviderException, NoSuchAlgorithmException {
+		//这里配置112但是出来的是128bits
+		return BaseKeyGenerator.generateKey((SecureRandom) null, 112, DES_EDE_KEY_ALGORITHM);
+	}
+
+	/**
+	 * <p>生成192(168)位DESede密钥, 用于服务端场合</p>
+	 *
+	 * @return 秘钥
+	 */
+	public static byte[] generateDesEde192() throws NoSuchProviderException, NoSuchAlgorithmException {
+		//这里配置168但是出来的是192bits
+		return BaseKeyGenerator.generateKey((SecureRandom) null, 168, DES_EDE_KEY_ALGORITHM);
+	}
+
+	/**
+	 * <p>生成64(56)位DES密钥, 用于服务端场合</p>
+	 *
 	 * @param secureRandom SecureRandom是线程安全的, 服务端通常使用一个单例的SecureRandom
 	 * @return 秘钥
 	 */
