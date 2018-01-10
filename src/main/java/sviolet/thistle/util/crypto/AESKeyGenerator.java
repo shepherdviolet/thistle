@@ -21,6 +21,7 @@ package sviolet.thistle.util.crypto;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.SecureRandom;
 
 /**
  * AES秘钥生成工具
@@ -30,6 +31,16 @@ import java.security.NoSuchProviderException;
 public class AESKeyGenerator {
 
 	public static final String KEY_ALGORITHM = "AES";
+
+	/**
+	 * <p>生成对称密钥, 用于服务端场合</p>
+	 *
+	 * @param secureRandom SecureRandom是线程安全的, 服务端通常使用一个单例的SecureRandom
+	 * @return 秘钥
+	 */
+	public static byte[] generate(SecureRandom secureRandom) throws NoSuchProviderException, NoSuchAlgorithmException {
+		return BaseKeyGenerator.generateKey(secureRandom, 128, KEY_ALGORITHM);
+	}
 
 	/**
 	 * <p>生成128位AES密钥(不同系统平台相同seed生成结果可能不同), Android使用该方法, 相同seed仍会产生随机秘钥</p>

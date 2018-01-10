@@ -35,11 +35,29 @@ import java.security.SecureRandom;
  */
 class BaseKeyGenerator {
 
+    private static SecureRandom secureRandom = new SecureRandom();
+
+    /**
+     * <p>生成对称密钥, 用于服务端场合</p>
+     *
+     * @param secureRandom SecureRandom是线程安全的, 服务端通常使用一个单例的SecureRandom
+     * @param bits 秘钥位数(64/128/192/256...)
+     * @param keyAlgorithm 秘钥算法类型
+     * @return 秘钥
+     */
+    public static byte[] generateKey(SecureRandom secureRandom, int bits, String keyAlgorithm) throws NoSuchProviderException, NoSuchAlgorithmException {
+        KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlgorithm);
+        keyGenerator.init(bits, secureRandom != null ? secureRandom : BaseKeyGenerator.secureRandom);
+        SecretKey secretKey = keyGenerator.generateKey();
+        return secretKey.getEncoded();
+    }
+
     /**
      * <p>生成对称密钥(不同系统平台相同seed生成结果可能不同), Android使用该方法, 相同seed仍会产生随机秘钥</p>
      *
      * @param seed 秘钥种子
      * @param bits 秘钥位数(64/128/192/256...)
+     * @param keyAlgorithm 秘钥算法类型
      * @return 秘钥
      */
     public static byte[] generateKey(byte[] seed, int bits, String keyAlgorithm) throws NoSuchProviderException, NoSuchAlgorithmException {
