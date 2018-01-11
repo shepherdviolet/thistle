@@ -131,8 +131,14 @@ class BaseCipher {
                 out.write(buff, 0, length);
             }
         } finally {
-            in.close();
-            out.close();
+            try {
+                in.close();
+            } catch (Throwable ignore){
+            }
+            try {
+                out.close();
+            } catch (Throwable ignore){
+            }
         }
     }
 
@@ -174,8 +180,14 @@ class BaseCipher {
                 out.write(buff, 0, length);
             }
         } finally {
-            in.close();
-            out.close();
+            try {
+                in.close();
+            } catch (Throwable ignore){
+            }
+            try {
+                out.close();
+            } catch (Throwable ignore){
+            }
         }
     }
 
@@ -267,8 +279,14 @@ class BaseCipher {
                 out.write(buff, 0, length);
             }
         } finally {
-            in.close();
-            out.close();
+            try {
+                in.close();
+            } catch (Throwable ignore){
+            }
+            try {
+                out.close();
+            } catch (Throwable ignore){
+            }
         }
     }
 
@@ -310,8 +328,14 @@ class BaseCipher {
                 out.write(buff, 0, length);
             }
         } finally {
-            in.close();
-            out.close();
+            try {
+                in.close();
+            } catch (Throwable ignore){
+            }
+            try {
+                out.close();
+            } catch (Throwable ignore){
+            }
         }
     }
 
