@@ -59,6 +59,9 @@ class BaseCipher {
      * @throws InvalidAlgorithmParameterException 算法参数无效
      */
     public static byte[] encrypt(byte[] data, byte[] key, String keyAlgorithm, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException{
+        if (data == null){
+            return null;
+        }
         SecretKeySpec keySpec = new SecretKeySpec(key, keyAlgorithm);
         Cipher cipher = Cipher.getInstance(cryptoAlgorithm);
         cipher.init(Cipher.ENCRYPT_MODE, keySpec);
@@ -82,6 +85,9 @@ class BaseCipher {
      * @throws InvalidAlgorithmParameterException 算法参数无效
      */
     public static byte[] encryptCBC(byte[] data, byte[] key, String keyAlgorithm, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException{
+        if (data == null){
+            return null;
+        }
         SecretKeySpec keySpec = new SecretKeySpec(key, keyAlgorithm);
         Cipher cipher = Cipher.getInstance(cryptoAlgorithm);
         IvParameterSpec iv = new IvParameterSpec(ivSeed);
@@ -189,6 +195,9 @@ class BaseCipher {
      * @throws InvalidAlgorithmParameterException 算法参数无效
      */
     public static byte[] decrypt(byte[] data, byte[] key, String keyAlgorithm, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException{
+        if (data == null){
+            return null;
+        }
         SecretKeySpec keySpec = new SecretKeySpec(key, keyAlgorithm);
         Cipher cipher = Cipher.getInstance(cryptoAlgorithm);
         cipher.init(Cipher.DECRYPT_MODE, keySpec);
@@ -212,6 +221,9 @@ class BaseCipher {
      * @throws InvalidAlgorithmParameterException 算法参数无效
      */
     public static byte[] decryptCBC(byte[] data, byte[] key, String keyAlgorithm, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException{
+        if (data == null){
+            return null;
+        }
         SecretKeySpec keySpec = new SecretKeySpec(key, keyAlgorithm);
         Cipher cipher = Cipher.getInstance(cryptoAlgorithm);
         IvParameterSpec iv = new IvParameterSpec(ivSeed);
@@ -363,6 +375,9 @@ class BaseCipher {
      * @throws SignatureException 签名异常
      */
     public static byte[] sign(byte[] data, PrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException{
+        if (data == null){
+            return null;
+        }
         Signature signature = generateSignatureInstance(privateKey, signAlgorithm);
         signature.update(data);
         return signature.sign();
@@ -491,6 +506,9 @@ class BaseCipher {
      *
      */
     public static boolean verify(byte[] data, byte[] sign, PublicKey publicKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException{
+        if (data == null){
+            return false;
+        }
         Signature signature = generateSignatureInstance(publicKey, signAlgorithm);
         signature.update(data);
         return signature.verify(sign);
@@ -634,6 +652,10 @@ class BaseCipher {
      */
     public static byte[] decryptByRSAPrivateKey(byte[] data, RSAPrivateKey privateKey, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, IOException{
 
+        if (data == null){
+            return null;
+        }
+
         Cipher cipher = Cipher.getInstance(cryptoAlgorithm);
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
 
@@ -673,6 +695,11 @@ class BaseCipher {
      * @throws IOException IO错误
      */
     public static byte[] encryptByRSAPublicKey(byte[] data, RSAPublicKey publicKey, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, IOException{
+
+        if (data == null){
+            return null;
+        }
+
         Cipher cipher = Cipher.getInstance(cryptoAlgorithm);
         cipher.init(Cipher.ENCRYPT_MODE, publicKey);
 
@@ -712,6 +739,10 @@ class BaseCipher {
      */
     public static byte[] decryptByRSAPublicKey(byte[] data, RSAPublicKey publicKey, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, IOException{
 
+        if (data == null){
+            return null;
+        }
+
         Cipher cipher = Cipher.getInstance(cryptoAlgorithm);
         cipher.init(Cipher.DECRYPT_MODE, publicKey);
 
@@ -750,6 +781,11 @@ class BaseCipher {
      * @throws IOException IO错误
      */
     public static byte[] encryptByRSAPrivateKey(byte[] data, RSAPrivateKey privateKey, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, IOException{
+
+        if (data == null){
+            return null;
+        }
+
         Cipher cipher = Cipher.getInstance(cryptoAlgorithm);
         cipher.init(Cipher.ENCRYPT_MODE, privateKey);
 
