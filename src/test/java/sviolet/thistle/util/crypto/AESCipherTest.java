@@ -27,7 +27,7 @@ public class AESCipherTest {
     public void bytesCrypto() throws UnsupportedEncodingException, NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchProviderException {
 
         byte[] dataBytes = STRING.getBytes("UTF-8");
-        byte[] key = AESKeyGenerator.generate("lalala".getBytes(), 128);
+        byte[] key = AESKeyGenerator.generateAes128();
 
 //        System.out.println(ByteUtils.bytesToHex(dataBytes));
 //        System.out.println(ByteUtils.bytesToHex(key));
@@ -51,7 +51,7 @@ public class AESCipherTest {
     public void bytesCryptoCBC() throws UnsupportedEncodingException, NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchProviderException {
 
         byte[] dataBytes = STRING.getBytes("UTF-8");
-        byte[] key = AESKeyGenerator.generate("cbcbc".getBytes(), 128);
+        byte[] key = AESKeyGenerator.generateAes128("cbcbc".getBytes());
 
 //        System.out.println(ByteUtils.bytesToHex(dataBytes));
 //        System.out.println(ByteUtils.bytesToHex(key));

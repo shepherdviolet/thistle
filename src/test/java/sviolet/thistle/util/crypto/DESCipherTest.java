@@ -2,7 +2,6 @@ package sviolet.thistle.util.crypto;
 
 import org.junit.Assert;
 import org.junit.Test;
-import sviolet.thistle.util.conversion.ByteUtils;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -11,10 +10,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
+import java.security.*;
 
 public class DESCipherTest {
 
@@ -27,7 +23,7 @@ public class DESCipherTest {
     public void bytesCrypto() throws UnsupportedEncodingException, NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchProviderException {
 
         byte[] dataBytes = STRING.getBytes("UTF-8");
-        byte[] key = DESKeyGenerator.generateDes64("lalala".getBytes());
+        byte[] key = DESKeyGenerator.generateDes64();
 
 //        System.out.println(ByteUtils.bytesToHex(dataBytes));
 //        System.out.println(ByteUtils.bytesToHex(key));
@@ -75,7 +71,7 @@ public class DESCipherTest {
     public void streamCrypto() throws IOException, NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchProviderException {
 
         byte[] dataBytes = STRING.getBytes("UTF-8");
-        byte[] key = DESKeyGenerator.generateDes64("lalala".getBytes());
+        byte[] key = DESKeyGenerator.generateDes64(new SecureRandom());
 
 //        System.out.println(ByteUtils.bytesToHex(dataBytes));
 //        System.out.println(ByteUtils.bytesToHex(key));

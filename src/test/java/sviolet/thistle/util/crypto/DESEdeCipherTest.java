@@ -26,7 +26,7 @@ public class DESEdeCipherTest {
     public void bytesCrypto() throws UnsupportedEncodingException, NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchProviderException {
 
         byte[] dataBytes = STRING.getBytes("UTF-8");
-        byte[] key = DESKeyGenerator.generateDesEde128("lalala".getBytes());
+        byte[] key = DESKeyGenerator.generateDesEde128();
 
 //        System.out.println(ByteUtils.bytesToHex(dataBytes));
 //        System.out.println(ByteUtils.bytesToHex(key));
@@ -74,7 +74,7 @@ public class DESEdeCipherTest {
     public void streamCrypto() throws IOException, NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchProviderException {
 
         byte[] dataBytes = STRING.getBytes("UTF-8");
-        byte[] key = DESKeyGenerator.generateDesEde192("lalala".getBytes());
+        byte[] key = DESKeyGenerator.generateDesEde192();
 
 //        System.out.println(ByteUtils.bytesToHex(dataBytes));
 //        System.out.println(ByteUtils.bytesToHex(key));
