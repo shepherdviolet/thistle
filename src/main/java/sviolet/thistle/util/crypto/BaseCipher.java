@@ -733,7 +733,8 @@ class BaseCipher {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         int offSet = 0;
         byte[] buffer;
-        int blockSize = publicKey.getModulus().bitLength() / 8 - 11;//加密块比密钥长度小11
+        //加密块比密钥长度小11
+        int blockSize = publicKey.getModulus().bitLength() / 8 - 11;
 
         // 对数据分段加密
         while (dataLength - offSet > 0) {
@@ -776,7 +777,8 @@ class BaseCipher {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         int offSet = 0;
         byte[] buffer;
-        int blockSize = publicKey.getModulus().bitLength() / 8;//解密块和密钥等长
+        //解密块和密钥等长
+        int blockSize = publicKey.getModulus().bitLength() / 8;
 
         // 对数据分段解密
         while (dataLength - offSet > 0) {
@@ -819,7 +821,8 @@ class BaseCipher {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         int offSet = 0;
         byte[] buffer;
-        int blockSize = privateKey.getModulus().bitLength() / 8 - 11;//加密块比密钥长度小11
+        //加密块比密钥长度小11
+        int blockSize = privateKey.getModulus().bitLength() / 8 - 11;
 
         // 对数据分段加密
         while (dataLength - offSet > 0) {

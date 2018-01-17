@@ -62,11 +62,20 @@ import sviolet.thistle.entity.Destroyable;
  */
 public class ParasiticVars {
 
-    private static WeakReference<GcHandler> gcHandler;//gc事件监听器
+    /**
+     * gc事件监听器
+     */
+    private static WeakReference<GcHandler> gcHandler;
 
-    private static Map<String, HostHolder> hosts;//变量宿主
+    /**
+     * 变量宿主
+     */
+    private static Map<String, HostHolder> hosts;
 
-    private static LazySingleThreadPool gcTaskPool;//gc任务执行线程池
+    /**
+     * gc任务执行线程池
+     */
+    private static LazySingleThreadPool gcTaskPool;
 
     private final static ReentrantLock LOCK = new ReentrantLock();
 
@@ -86,9 +95,11 @@ public class ParasiticVars {
             throw new NullPointerException("[ParasiticVars] key == null");
         }
 
-        init();//初始化
+        //初始化
+        init();
 
-        String hostKey = calculateHostKey(host);//计算宿主Key
+        //计算宿主Key
+        String hostKey = calculateHostKey(host);
 
         try{
             LOCK.lock();
@@ -123,9 +134,11 @@ public class ParasiticVars {
             throw new NullPointerException("[ParasiticVars] key == null");
         }
 
-        init();//初始化
+        //初始化
+        init();
 
-        String hostKey = calculateHostKey(host);//计算宿主Key
+        //计算宿主Key
+        String hostKey = calculateHostKey(host);
 
         try{
             LOCK.lock();
@@ -158,9 +171,11 @@ public class ParasiticVars {
             throw new NullPointerException("[ParasiticVars] key == null");
         }
 
-        init();//初始化
+        //初始化
+        init();
 
-        String hostKey = calculateHostKey(host);//计算宿主Key
+        //计算宿主Key
+        String hostKey = calculateHostKey(host);
         HostHolder gcHostHolder = null;
 
         try{
@@ -189,9 +204,11 @@ public class ParasiticVars {
             return;
         }
 
-        init();//初始化
+        //初始化
+        init();
 
-        String hostKey = calculateHostKey(host);//计算宿主Key
+        //计算宿主Key
+        String hostKey = calculateHostKey(host);
         HostHolder gcHostHolder = null;
 
         try{
@@ -242,8 +259,10 @@ public class ParasiticVars {
             try{
                 LOCK.lock();
                 if (hosts == null){
-                    hosts = new HashMap<>();//新建宿主Map
-                    gcHandler = new WeakReference<>(new GcHandler());//新建gc事件监听
+                    //新建宿主Map
+                    hosts = new HashMap<>(0);
+                    //新建gc事件监听
+                    gcHandler = new WeakReference<>(new GcHandler());
                 }
             }finally {
                 LOCK.unlock();
@@ -256,7 +275,8 @@ public class ParasiticVars {
             try{
                 LOCK.lock();
                 if (gcTaskPool == null){
-                    gcTaskPool = new LazySingleThreadPool("ParasiticVars-GC-%d");//新建gc任务执行线程池
+                    //新建gc任务执行线程池
+                    gcTaskPool = new LazySingleThreadPool("ParasiticVars-GC-%d");
                 }
             }finally {
                 LOCK.unlock();
@@ -277,7 +297,8 @@ public class ParasiticVars {
             return;
         }
 
-        Map<String, HostHolder> gcHosts = new HashMap<>();//被清理的宿主镜像
+        //被清理的宿主镜像
+        Map<String, HostHolder> gcHosts = new HashMap<>(0);
 
         try{
             LOCK.lock();
@@ -346,8 +367,16 @@ public class ParasiticVars {
      */
     private static class HostHolder{
 
-        private WeakReference<Object> host;//宿主
-        private Map<String, Object> params = new HashMap<>();//宿主变量
+        /**
+         * 宿主
+         */
+        private WeakReference<Object> host;
+
+        /**
+         * 宿主变量
+         */
+        private Map<String, Object> params = new HashMap<>();
+
         private final ReentrantLock lock = new ReentrantLock();
 
         HostHolder(Object host){
@@ -429,7 +458,7 @@ public class ParasiticVars {
             try{
                 lock.lock();
                 destroyables = params;
-                params = new HashMap<>();
+                params = new HashMap<>(0);
             }finally {
                 lock.unlock();
             }
@@ -456,7 +485,7 @@ public class ParasiticVars {
 
         /**
          * 宿主是否还存在
-         * @return
+         * @return true 宿主存在
          */
         boolean isHostExists(){
             return getHost() != null;

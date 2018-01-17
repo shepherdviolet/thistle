@@ -32,7 +32,10 @@ import sviolet.thistle.entity.Destroyable;
  */
 public class AsyncWaiter <T> implements Destroyable {
 
-    private long timeout = 0;//超时时间ms
+    /**
+     * 超时时间ms
+     */
+    private long timeout = 0;
 
     private Result result;
     private T value;

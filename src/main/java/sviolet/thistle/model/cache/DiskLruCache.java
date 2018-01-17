@@ -156,7 +156,8 @@ public final class DiskLruCache implements Closeable {
     /* From java.util.Arrays */
     @SuppressWarnings("unchecked")
     private static <T> T[] copyOfRange(T[] original, int start, int end) {
-        final int originalLength = original.length; // For exception priority compatibility.
+        // For exception priority compatibility.
+        final int originalLength = original.length;
         if (start > end) {
             throw new IllegalArgumentException();
         }
@@ -257,7 +258,8 @@ public final class DiskLruCache implements Closeable {
         @Override public Void call() throws Exception {
             synchronized (DiskLruCache.this) {
                 if (journalWriter == null) {
-                    return null; // closed
+                    // closed
+                    return null;
                 }
                 trimToSize();
                 if (journalRebuildRequired()) {
@@ -543,13 +545,15 @@ public final class DiskLruCache implements Closeable {
         Entry entry = lruEntries.get(key);
         if (expectedSequenceNumber != ANY_SEQUENCE_NUMBER
                 && (entry == null || entry.sequenceNumber != expectedSequenceNumber)) {
-            return null; // snapshot is stale
+            // snapshot is stale
+            return null;
         }
         if (entry == null) {
             entry = new Entry(key);
             lruEntries.put(key, entry);
         } else if (entry.currentEditor != null) {
-            return null; // another edit is in progress
+            // another edit is in progress
+            return null;
         }
 
         Editor editor = new Editor(entry);
@@ -863,7 +867,8 @@ public final class DiskLruCache implements Closeable {
         public void commit() throws IOException {
             if (hasErrors) {
                 completeEdit(this, false);
-                remove(entry.key); // the previous entry is stale
+                // the previous entry is stale
+                remove(entry.key);
             } else {
                 completeEdit(this, true);
             }

@@ -138,21 +138,57 @@ import sviolet.thistle.model.thread.LazySingleThreadPool;
  */
 public class PurposefulBlockingMessagePool <K, I> {
 
-    private static final int DEFAULT_LIMIT = 1000;//默认限制
-    private static final long UNEXPECTED_ITEM_FLUSH_DELAY = 10 * 1000000L;//意外消息池清理任务时延
+    /**
+     * 默认限制
+     */
+    private static final int DEFAULT_LIMIT = 1000;
+    /**
+     * 意外消息池清理任务时延
+     */
+    private static final long UNEXPECTED_ITEM_FLUSH_DELAY = 10 * 1000000L;
 
-    private final ReentrantLock lock = new ReentrantLock();//锁
-    private final Map<K, Condition> conditionPool = new HashMap<>();//信号池
-    private final Map<K, I> itemPool = new HashMap<>();//消息池
+    /**
+     * 锁
+     */
+    private final ReentrantLock lock = new ReentrantLock();
+    /**
+     * 信号池
+     */
+    private final Map<K, Condition> conditionPool = new HashMap<>();
+    /**
+     * 消息池
+     */
+    private final Map<K, I> itemPool = new HashMap<>();
 
-    private Map<K, UnexpectedItem<I>> unexpectedItemPool = null;//意外消息池(存放未注册ID的消息)
-    private long unexpectedItemValidityPeriod = 0;//意外消息有效期(ms)
+    /**
+     * 意外消息池(存放未注册ID的消息)
+     */
+    private Map<K, UnexpectedItem<I>> unexpectedItemPool = null;
+    /**
+     * 意外消息有效期(ms)
+     */
+    private long unexpectedItemValidityPeriod = 0;
+    /**
+     * 意外消息锁
+     */
     private ReentrantLock unexpectedItemLock = null;
-    private LazySingleThreadPool unexpectedItemFlushThreadPool = null;//意外消息池清理线程
-    private MessageDropListener<I> messageDropListener = null;//消息从意外消息池被丢弃回调
+    /**
+     * 意外消息池清理线程
+     */
+    private LazySingleThreadPool unexpectedItemFlushThreadPool = null;
+    /**
+     * 消息从意外消息池被丢弃回调
+     */
+    private MessageDropListener<I> messageDropListener = null;
 
-    private int registerLimit = DEFAULT_LIMIT;//注册等待数上限
-    private int messageLimit = DEFAULT_LIMIT;//消息池内消息数上限
+    /**
+     * 注册等待数上限
+     */
+    private int registerLimit = DEFAULT_LIMIT;
+    /**
+     * 消息池内消息数上限
+     */
+    private int messageLimit = DEFAULT_LIMIT;
 
     /**
      * 直接丢弃意外消息(未注册ID的塞入消息)

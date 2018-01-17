@@ -59,7 +59,8 @@ public final class CompatThreadFactoryBuilder {
    * @return this for the builder pattern
    */
   public CompatThreadFactoryBuilder setNameFormat(String nameFormat) {
-    String unused = format(nameFormat, 0); // fail fast if the format is bad or null
+    // fail fast if the format is bad or null
+    String unused = format(nameFormat, 0);
     this.nameFormat = nameFormat;
     return this;
   }

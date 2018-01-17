@@ -83,10 +83,20 @@ public class PlatformUtils {
     public static final String VM_INFO = System.getProperty("java.vm.info");
     public static final String SPECIFICATION_VERSION = System.getProperty("java.specification.version");
 
-    public static final Platform PLATFORM = getPlatform();//platform
+    /**
+     * platform
+     */
+    public static final Platform PLATFORM = getPlatform();
 
-    public static final int ANDROID_VERSION = getAndroidVersion();//Android version. Will be -1 for none android platform, and -2 for exception
-    public static final boolean ANDROID_IS_OPEN_JDK = getAndroidIsOpenJDK();//Flag telling if this version of Android is based on the OpenJDK
+    /**
+     * Android version. Will be -1 for none android platform, and -2 for exception
+     */
+    public static final int ANDROID_VERSION = getAndroidVersion();
+
+    /**
+     * Flag telling if this version of Android is based on the OpenJDK
+     */
+    public static final boolean ANDROID_IS_OPEN_JDK = getAndroidIsOpenJDK();
 
     public static final String GAE_VERSION = getGaeRuntimeVersion();
     public static final boolean GAE_IS_GOOGLE_APP_ENGINE = getGaeIsGoogleAppEngine();

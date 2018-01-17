@@ -29,10 +29,21 @@ package sviolet.thistle.model.math;
  */
 
 public class AverageFloat {
-	
-	private float[] sample;//样本数据
-	private int offset;//当前写入位置
-	private boolean full;//样本容器是否填满
+
+	/**
+	 * 样本数据
+	 */
+	private float[] sample;
+
+	/**
+	 * 当前写入位置
+	 */
+	private int offset;
+
+	/**
+	 * 样本容器是否填满
+	 */
+	private boolean full;
 	
 	/**
 	 * 

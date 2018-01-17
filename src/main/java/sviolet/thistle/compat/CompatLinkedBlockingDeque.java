@@ -239,7 +239,8 @@ public class CompatLinkedBlockingDeque<E>
         Node<E> n = f.next;
         E item = f.item;
         f.item = null;
-        f.next = f; // help GC
+        // help GC
+        f.next = f;
         first = n;
         if (n == null) {
             last = null;
@@ -263,7 +264,8 @@ public class CompatLinkedBlockingDeque<E>
         Node<E> p = l.prev;
         E item = l.item;
         l.item = null;
-        l.prev = l; // help GC
+        // help GC
+        l.prev = l;
         last = p;
         if (p == null) {
             first = null;
@@ -806,7 +808,8 @@ public class CompatLinkedBlockingDeque<E>
         try {
             int n = Math.min(maxElements, count);
             for (int i = 0; i < n; i++) {
-                c.add(first.item);   // In this order, in case add() throws.
+                // In this order, in case add() throws.
+                c.add(first.item);
                 unlinkFirst();
             }
             return n;
@@ -1137,7 +1140,17 @@ public class CompatLinkedBlockingDeque<E>
          */
         private Node<E> lastRet;
 
+        /**
+         * first node
+         * @return first node
+         */
         abstract Node<E> firstNode();
+
+        /**
+         * next node
+         * @param n node
+         * @return next node
+         */
         abstract Node<E> nextNode(Node<E> n);
 
         AbstractItr() {

@@ -34,37 +34,144 @@ import sviolet.thistle.util.conversion.ByteUtils;
  */
 public class DataTypeUtils {
 
-    private static final int MAX_HEADER_LENGTH = 20;//最大截取文件头长度
-    private static final Map<String, Type> TYPES_MAPPING = new HashMap<>();//映射表
+    /**
+     * 最大截取文件头长度
+     */
+    private static final int MAX_HEADER_LENGTH = 20;
+
+    /**
+     * 映射表
+     */
+    private static final Map<String, Type> TYPES_MAPPING = new HashMap<>();
 
     /**
      * 数据类型
      */
     public enum Type {
+
+        /**
+         * JPG
+         */
         JPG,
+
+        /**
+         * PNG
+         */
         PNG,
+
+        /**
+         * GIF
+         */
         GIF,
+
+        /**
+         * BMP
+         */
         BMP,
+
+        /**
+         * TIF
+         */
         TIF,
+
+        /**
+         * DWG
+         */
         DWG,
+
+        /**
+         * PSD
+         */
         PSD,
+
+        /**
+         * RTF
+         */
         RTF,
+
+        /**
+         * XML
+         */
         XML,
+
+        /**
+         * HTML
+         */
         HTML,
+
+        /**
+         * EMAIL
+         */
         EMAIL,
+
+        /**
+         * DOC
+         */
         DOC,
+
+        /**
+         * MDB
+         */
         MDB,
+
+        /**
+         * PS
+         */
         PS,
+
+        /**
+         * PDF
+         */
         PDF,
+
+        /**
+         * ZIP
+         */
         ZIP,
+
+        /**
+         * RAR
+         */
         RAR,
+
+        /**
+         * WAV
+         */
         WAV,
+
+        /**
+         * AVI
+         */
         AVI,
+
+        /**
+         * RM
+         */
         RM,
+
+        /**
+         * MPG
+         */
         MPG,
+
+        /**
+         * MOV
+         */
         MOV,
+
+        /**
+         * ASF
+         */
         ASF,
+
+        /**
+         * MID
+         */
         MID,
+
+        /**
+         * GZ
+         */
         GZ,
 
         /**
@@ -78,7 +185,7 @@ public class DataTypeUtils {
         NULL
     }
 
-    /**
+    /*
      * 填充文件头-文件类型映射表
      */
     static {
