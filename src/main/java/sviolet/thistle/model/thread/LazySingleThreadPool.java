@@ -39,19 +39,31 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class LazySingleThreadPool {
 
-    //默认最大队列长度
+    /**
+     * 默认最大队列长度
+     */
     private static final int DEFAULT_MAX_QUEUE_LENGTH = 2;
 
-    //单线程池
+    /**
+     * 单线程池
+     */
     private ExecutorService singleThreadPool;
 
-    //最大队列长度
+    /**
+     * 最大队列长度
+     */
     private int maxQueueLength = DEFAULT_MAX_QUEUE_LENGTH;
-    //线程名称格式
+    /**
+     * 线程名称格式
+     */
     private String threadNameFormat = "LazySingleThreadPool-%d";
-    //队列长度
+    /**
+     * 队列长度
+     */
     private AtomicInteger queueLength = new AtomicInteger(0);
-    //锁
+    /**
+     * 锁
+     */
     private final ReentrantLock locker = new ReentrantLock();
 
     /**

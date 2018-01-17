@@ -139,8 +139,12 @@ public final class CompatThreadFactoryBuilder {
     return doBuild(this);
   }
 
-  // Split out so that the anonymous ThreadFactory can't contain a reference back to the builder.
-  // At least, I assume that's why.
+  /**
+   * Split out so that the anonymous ThreadFactory can't contain a reference back to the builder.
+   * At least, I assume that's why.
+   * @param builder builder
+   * @return ThreadFactory
+   */
   private static ThreadFactory doBuild(CompatThreadFactoryBuilder builder) {
     final String nameFormat = builder.nameFormat;
     final Boolean daemon = builder.daemon;
