@@ -37,6 +37,7 @@ import sviolet.thistle.util.file.FileUtils;
  *
  * <p>Cipher/Signature/MessageDigest线程不安全!!!</p>
  *
+ * @author S.Violet
  */
 public class DigestCipher {
 	
@@ -119,7 +120,7 @@ public class DigestCipher {
 	public static byte[] digestFile(File file, String type) throws IOException {
 		if (PlatformUtils.PLATFORM == PlatformUtils.Platform.DALVIK){
 			//安卓API11以上使用NIO, API10以下会很慢
-			if (PlatformUtils.ANDROID_VERSION < 11){
+			if (PlatformUtils.ANDROID_VERSION < BaseCipher.ANDROID_API11){
 				return digestFileIo(file, type);
 			} else {
 				return digestFileNio(file, type);

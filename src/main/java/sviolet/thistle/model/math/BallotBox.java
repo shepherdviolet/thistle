@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * <p>Ballot Box</p>
  *
- * Created by S.Violet on 2016/5/10.
+ * @author S.Violet
  */
 public class BallotBox {
 

@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * <p>Ballot Ticket</p>
  *
- * Created by S.Violet on 2016/5/10.
+ * @author S.Violet
  */
 public class BallotTicket {
 

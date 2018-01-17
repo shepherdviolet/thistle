@@ -30,6 +30,8 @@ import java.util.zip.InflaterOutputStream;
 /**
  * Base64工具(自实现)<br/>
  * 可使用Android自带的Base64编码解码
+ *
+ * @author SOMEONE
  */
 public class Base64Utils {
 

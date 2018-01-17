@@ -30,7 +30,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  *
  * <p>可指定等待队列长度, 当等待队列满时, 新加入的任务会被抛弃, 且{@link VolatileCachedThreadPool#execute(Runnable)}方法返回false</p>
  *
- * Created by S.Violet on 2016/4/12.
+ * @author S.Violet
  */
 public class VolatileCachedThreadPool {
 

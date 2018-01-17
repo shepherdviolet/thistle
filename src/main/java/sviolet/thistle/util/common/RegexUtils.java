@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 /**
  * 正则表达式工具
  *
- * Created by S.Violet on 2017/2/7.
+ * @author S.Violet
  */
 public class RegexUtils {
 

@@ -20,7 +20,8 @@
 package sviolet.thistle.util.common;
 
 /**
- * Created by S.Violet on 2017/1/14.
+ * 经纬度工具
+ * @author S.Violet
  */
 
 public class LatLonUtils {

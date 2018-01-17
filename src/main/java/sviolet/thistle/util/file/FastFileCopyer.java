@@ -25,6 +25,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 
+/**
+ * 文件复制器快速版
+ *
+ * @author S.Violet
+ */
 public class FastFileCopyer {
 	
 	/**

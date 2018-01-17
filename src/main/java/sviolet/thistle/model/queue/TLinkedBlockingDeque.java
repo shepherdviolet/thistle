@@ -34,7 +34,7 @@ import sviolet.thistle.compat.CompatLinkedBlockingDeque;
  * 3.增加"移除所有等于指定对象的元素"方法<br/>
  * 4.元素意外移除监听<br/>
  *
- * Created by S.Violet on 2015/9/16.
+ * @author S.Violet
  */
 public class TLinkedBlockingDeque<E> extends CompatLinkedBlockingDeque<E> {
 
@@ -407,6 +407,7 @@ public class TLinkedBlockingDeque<E> extends CompatLinkedBlockingDeque<E> {
      */
     public interface OnElementUnexpectedRemoveListener {
         /**
+         * 当元素被意外删除时调用
          * @param element 被删除的元素
          */
         void onUnexpectedRemove(Object element);

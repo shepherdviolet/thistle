@@ -74,6 +74,8 @@ import java.util.concurrent.ExecutorService;
  * an error occurs while writing a cache value, the edit will fail silently.
  * Callers should handle other problems by catching {@code IOException} and
  * responding appropriately.
+ *
+ * @author SOMEONE
  */
 public final class DiskLruCache implements Closeable {
 

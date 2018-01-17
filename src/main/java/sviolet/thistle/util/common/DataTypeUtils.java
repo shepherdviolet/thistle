@@ -30,7 +30,7 @@ import sviolet.thistle.util.conversion.ByteUtils;
 /**
  * 数据类型判断工具
  *
- * Created by S.Violet on 2016/5/4.
+ * @author S.Violet
  */
 public class DataTypeUtils {
 
@@ -66,8 +66,16 @@ public class DataTypeUtils {
         ASF,
         MID,
         GZ,
-        UNKNOWN,//未知类型
-        NULL//文件或字节流为空
+
+        /**
+         * 未知类型
+         */
+        UNKNOWN,
+
+        /**
+         * 文件或字节流为空
+         */
+        NULL
     }
 
     /**

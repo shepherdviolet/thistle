@@ -134,7 +134,7 @@ import sviolet.thistle.model.thread.LazySingleThreadPool;
  *
  * }</pre>
  *
- * <p>Created by S.Violet on 2016/3/23.</p>
+ * @author S.Violet
  */
 public class PurposefulBlockingMessagePool <K, I> {
 
@@ -471,6 +471,11 @@ public class PurposefulBlockingMessagePool <K, I> {
      * @param <I>
      */
     public interface MessageDropListener<I>{
+
+        /**
+         * 消息从意外消息池被抛弃时回调
+         * @param item 消息
+         */
         void onDrop(I item);
     }
 

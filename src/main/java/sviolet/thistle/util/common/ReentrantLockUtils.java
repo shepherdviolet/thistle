@@ -27,9 +27,8 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * <p>ReentrantLock工具</p>
  *
- * Created by S.Violet on 2016/8/12.
+ * @author S.Violet
  */
-
 public class ReentrantLockUtils {
 
     /**

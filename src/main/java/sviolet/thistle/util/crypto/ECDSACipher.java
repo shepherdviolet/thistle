@@ -37,6 +37,7 @@ import java.security.interfaces.ECPublicKey;
  * 密钥产生:0.3ms 签名:0.8ms 验签:1.7ms
  * </p>
  *
+ * @author S.Violet
  */
 public class ECDSACipher {
 

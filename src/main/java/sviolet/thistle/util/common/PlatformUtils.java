@@ -23,17 +23,46 @@ import java.lang.reflect.Field;
 
 /**
  * JAVA运行环境信息
+ *
+ * @author S.Violet
  */
 public class PlatformUtils {
 
     public enum Platform{
 
+        /**
+         * Java HotSpot
+         */
         HOTSPOT("Java HotSpot"),
+
+        /**
+         * OpenJDK
+         */
         OPENJDK("OpenJDK"),
+
+        /**
+         * Dalvik
+         */
         DALVIK("Dalvik"),
+
+        /**
+         * EBA
+         */
         JROCKIT("BEA"),
+
+        /**
+         * GNU libgcj
+         */
         GNU("GNU libgcj"),
+
+        /**
+         * PERC
+         */
         PERC("PERC"),
+
+        /**
+         * UNKNOWN
+         */
         UNKNOWN("UNKNOWN");
 
         private String prefix;

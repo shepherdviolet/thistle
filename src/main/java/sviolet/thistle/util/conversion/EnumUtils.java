@@ -22,7 +22,7 @@ package sviolet.thistle.util.conversion;
 /**
  * <p>ENUM工具</p>
  *
- * Created by S.Violet on 2016/7/13.
+ * @author S.Violet
  */
 
 public class EnumUtils {

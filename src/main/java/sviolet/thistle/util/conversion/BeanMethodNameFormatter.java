@@ -26,7 +26,7 @@ package sviolet.thistle.util.conversion;
  * 2、如果前两个字母是大写（一般的专有名词和缩略词都会大写），也是属性名直接用作 getter/setter 方法中 get/set 的后部分。例如属性名为URL，方法是getURL/setURL。<br/>
  * 3、如果首字母大写，也是属性名直接用作 getter/setter 方法中 get/set 的后部分。例如属性名为Name，方法是getName/setName，这种是最糟糕的情况，会找不到属性出错，因为默认的属性名是name。<br/>
  *
- * Created by S.Violet on 2016/7/21.
+ * @author S.Violet
  */
 public class BeanMethodNameFormatter {
 

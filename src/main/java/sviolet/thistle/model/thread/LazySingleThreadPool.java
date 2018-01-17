@@ -35,7 +35,7 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * 可用于实现守护进程/调度进程/清扫进程.<br/>
  *
- * Created by S.Violet on 2016/1/7.
+ * @author S.Violet
  */
 public class LazySingleThreadPool {
 

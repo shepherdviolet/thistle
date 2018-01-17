@@ -22,10 +22,13 @@ package sviolet.thistle.entity;
 /**
  * 可销毁对象, 销毁监听器
  *
- * Created by S.Violet on 2015/11/24.
+ * @author S.Violet
  */
 public interface Destroyable {
 
+    /**
+     * 当对象销毁时回调该方法
+     */
     void onDestroy();
 
 }

@@ -32,6 +32,7 @@ import java.security.spec.X509EncodedKeySpec;
 
 /**
  * ECDSA秘钥生成工具
+ * @author S.Violet
  */
 public class ECDSAKeyGenerator {
 

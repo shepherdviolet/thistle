@@ -28,7 +28,7 @@ import java.util.Map;
 /**
  * 并发工具<p/>
  *
- * Created by S.Violet on 2015/11/25.
+ * @author S.Violet
  */
 public class ConcurrentUtils {
 

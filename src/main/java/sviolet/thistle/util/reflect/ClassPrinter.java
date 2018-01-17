@@ -29,7 +29,7 @@ import sviolet.thistle.util.common.CheckUtils;
 /**
  * <p>将一个类或一个对象的数据/构造函数/方法打印出来</p>
  *
- * Created by S.Violet on 2016/6/13.
+ * @author S.Violet
  */
 public class ClassPrinter {
 

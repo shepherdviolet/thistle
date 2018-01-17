@@ -43,6 +43,8 @@ import java.security.interfaces.RSAPublicKey;
  */
 class BaseCipher {
 
+    static final int ANDROID_API11 = 11;
+
     /**
      * 加密(byte[]数据)
      *
@@ -422,7 +424,7 @@ class BaseCipher {
     public static byte[] sign(File file, PrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
         if (PlatformUtils.PLATFORM == PlatformUtils.Platform.DALVIK){
             //安卓API11以上使用NIO, API10以下会很慢
-            if (PlatformUtils.ANDROID_VERSION < 11){
+            if (PlatformUtils.ANDROID_VERSION < ANDROID_API11){
                 return signIo(file, privateKey, signAlgorithm);
             } else {
                 return signNio(file, privateKey, signAlgorithm);
@@ -554,7 +556,7 @@ class BaseCipher {
     public static boolean verify(File file, byte[] sign, PublicKey publicKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
         if (PlatformUtils.PLATFORM == PlatformUtils.Platform.DALVIK){
             //安卓API11以上使用NIO, API10以下会很慢
-            if (PlatformUtils.ANDROID_VERSION < 11){
+            if (PlatformUtils.ANDROID_VERSION < ANDROID_API11){
                 return verifyIo(file, sign, publicKey, signAlgorithm);
             } else {
                 return verifyNio(file, sign, publicKey, signAlgorithm);

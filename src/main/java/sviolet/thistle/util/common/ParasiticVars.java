@@ -58,7 +58,7 @@ import sviolet.thistle.entity.Destroyable;
  * 变量实例可能在下一次系统GC时销毁, 若变量被其他对象强引用, 则不会被GC
  * </p>
  *
- * Created by S.Violet on 2015/11/24.
+ * @author S.Violet
  */
 public class ParasiticVars {
 

@@ -76,6 +76,11 @@ public class ChineseSortUtils {
 	}
 
 	public interface KeyGetter<T>{
+		/**
+		 * 实现从对象中获取key, 用于排序
+		 * @param obj 待排序对象
+		 * @return key
+		 */
 		String getKey(T obj);
 	}
 

@@ -43,6 +43,7 @@ import javax.crypto.NoSuchPaddingException;
  * 密钥产生:766.3ms 签名:19.8ms 验签:0.7ms
  * </p>
  *
+ * @author S.Violet
  */
 public class RSACipher {
 

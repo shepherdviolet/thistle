@@ -30,10 +30,11 @@ import java.security.PrivilegedAction;
 /**
  * 文件工具
  *
- * Created by S.Violet on 2017/7/27.
+ * @author S.Violet
  */
-
 public class FileUtils {
+
+    private static final String SUN_MISC_CLEANER = "sun.misc.Cleaner";
 
     /**
      * 向文件写入字符串
@@ -114,7 +115,7 @@ public class FileUtils {
                     if (directByteBufferCleanerMethod == null){
                         throw new Exception("Method cleaner can not find in java.nio.DirectByteBuffer");
                     }
-                    if (!"sun.misc.Cleaner".equals(directByteBufferCleanerMethod.getReturnType().getName())){
+                    if (!SUN_MISC_CLEANER.equals(directByteBufferCleanerMethod.getReturnType().getName())){
                         throw new Exception("Return type of method cleaner is not sun.misc.Cleaner");
                     }
                     directByteBufferCleanerMethod.setAccessible(true);

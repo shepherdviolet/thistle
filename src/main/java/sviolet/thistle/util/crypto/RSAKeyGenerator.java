@@ -38,6 +38,8 @@ import java.security.spec.X509EncodedKeySpec;
 
 /**
  * RSA秘钥生成工具
+ *
+ * @author S.Violet
  */
 public class RSAKeyGenerator {
 

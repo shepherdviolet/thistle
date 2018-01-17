@@ -25,6 +25,7 @@ import java.util.concurrent.*;
 
 /**
  * 线程池工具
+ * @author S.Violet
  */
 public class ThreadPoolExecutorUtils {
 
@@ -102,8 +103,18 @@ public class ThreadPoolExecutorUtils {
 
     public interface ExecuteListener {
 
+        /**
+         * 在Runnable执行前调用
+         * @param t 线程
+         * @param r runnable
+         */
         void beforeExecute(Thread t, Runnable r);
 
+        /**
+         * 在Runnable执行后调用
+         * @param r runnable
+         * @param t 线程
+         */
         void afterExecute(Runnable r, Throwable t);
 
     }

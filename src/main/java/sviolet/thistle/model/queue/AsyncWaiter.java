@@ -28,7 +28,7 @@ import sviolet.thistle.entity.Destroyable;
 /**
  * 挂起当前线程等待异步线程的结果
  *
- * Created by S.Violet on 2016/7/7.
+ * @author S.Violet
  */
 public class AsyncWaiter <T> implements Destroyable {
 
@@ -168,8 +168,19 @@ public class AsyncWaiter <T> implements Destroyable {
     }
 
     public enum Result{
+        /**
+         * SUCCESS
+         */
         SUCCESS,
+
+        /**
+         * TIMEOUT
+         */
         TIMEOUT,
+
+        /**
+         * ERROR
+         */
         ERROR
     }
 

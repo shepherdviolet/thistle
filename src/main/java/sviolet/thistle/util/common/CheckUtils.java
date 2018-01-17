@@ -21,7 +21,7 @@ package sviolet.thistle.util.common;
 
 /**
  * 用于检查数据的工具
- * Created by S.Violet on 2015/8/28.
+ * @author S.Violet
  */
 public class CheckUtils {
 

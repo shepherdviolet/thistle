@@ -23,6 +23,8 @@ import java.io.InputStream;
 
 /**
  * Java路径工具
+ *
+ * @author S.Violet
  */
 public class JavaDirectoryUtils {
 

@@ -19,6 +19,11 @@
 
 package sviolet.thistle.util.common;
 
+/**
+ * 数学工具
+ *
+ * @author S.Violet
+ */
 public class MathUtils {
 
 	/*********************************************************************

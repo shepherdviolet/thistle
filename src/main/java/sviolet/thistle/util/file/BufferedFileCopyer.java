@@ -26,6 +26,11 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
+/**
+ * 文件复制器Buffer版
+ *
+ * @author S.Violet
+ */
 public class BufferedFileCopyer {
 
 	/**

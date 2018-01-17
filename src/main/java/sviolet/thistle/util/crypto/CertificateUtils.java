@@ -28,7 +28,7 @@ import java.security.cert.CertificateFactory;
 /**
  * <p>证书工具</p>
  *
- * Created by S.Violet on 2016/8/24.
+ * @author S.Violet
  */
 
 public class CertificateUtils {

@@ -28,7 +28,7 @@ import sviolet.thistle.compat.CompatLruCache;
 /**
  * <p>反射缓存, 用于一些反复使用反射的Class</p>
  *
- * Created by S.Violet on 2016/8/5.
+ * @author S.Violet
  */
 
 public class ReflectCache {

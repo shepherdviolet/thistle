@@ -35,7 +35,7 @@ import javax.crypto.NoSuchPaddingException;
  *
  * <p>Cipher/Signature/MessageDigest线程不安全!!!</p>
  *
- * Created by S.Violet on 2016/12/20.
+ * @author S.Violet
  */
 public class DESCipher {
 
