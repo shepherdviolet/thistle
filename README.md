@@ -27,3 +27,18 @@ repositories {
 }
 
 ```
+
+# How to exclude dependencies (optional)
+
+```gradle
+    repositories {
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+    }
+    dependencies {
+        compile ('com.github.shepherdviolet:thistle:7.1') {
+            exclude group:'org.jetbrains.kotlin', module:'kotlin-stdlib-jre7'
+            exclude group:'com.google.code.gson'
+        }
+    }
+```
