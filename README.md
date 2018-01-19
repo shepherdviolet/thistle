@@ -7,7 +7,9 @@
 ```gradle
 
 repositories {
-    // maven central or jitpack.io
+    //local repository
+    //maven { url 'file:C:/m2repository/repository' }
+    //maven central or jitpack.io
     mavenCentral()
     maven { url 'https://jitpack.io' }
 }
@@ -17,15 +19,12 @@ dependencies {
 
 ```
 
-### Import dependencies from local repository
-
-```gradle
-
-repositories {
-    //replace by your path
-    maven { url 'file:C:/m2repository/repository' }
-}
-
+```maven
+    <dependency>    
+        <groupId>com.github.shepherdviolet</groupId>
+        <artifactId>thistle</artifactId>
+        <version>7.1</version> 
+    </dependency>
 ```
 
 # How to exclude dependencies (optional)
@@ -41,4 +40,21 @@ repositories {
             exclude group:'com.google.code.gson'
         }
     }
+```
+
+```maven
+    <dependency>    
+        <groupId>com.github.shepherdviolet</groupId>
+        <artifactId>thistle</artifactId>
+        <version>7.1</version> 
+        <exclusions>  
+             <exclusion>	 
+                 <groupId>org.jetbrains.kotlin</groupId>		
+                 <artifactId>kotlin-stdlib-jre7</artifactId>  
+             </exclusion>  
+             <exclusion>	 
+                 <groupId>com.google.code.gson</groupId>		
+             </exclusion>  
+        </exclusions>  
+    </dependency>
 ```
