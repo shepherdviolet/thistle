@@ -53,7 +53,8 @@ dependencies {
                  <artifactId>kotlin-stdlib-jre7</artifactId>  
              </exclusion>  
              <exclusion>	 
-                 <groupId>com.google.code.gson</groupId>		
+                 <groupId>com.google.code.gson</groupId>
+                 <artifactId>*</artifactId>
              </exclusion>  
         </exclusions>  
     </dependency>
