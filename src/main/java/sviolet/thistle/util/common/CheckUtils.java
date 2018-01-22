@@ -32,12 +32,17 @@ public class CheckUtils {
      * @return true 空 false 非空
      */
     public static boolean isEmpty(String input){
-        if (input == null){
-            return true;
-        } else if (input.length() <= 0){
-            return true;
-        }
-        return false;
+        return input == null || input.length() <= 0;
+    }
+
+    /**
+     * 检查String是否为空或空白<br/>
+     * null / "" | "  " <br/>
+     * @param input 检查数据
+     * @return true 空 false 非空
+     */
+    public static boolean isEmptyOrBlank(String input){
+        return isEmpty(input) || input.trim().length() <= 0;
     }
 
     /**
