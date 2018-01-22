@@ -43,19 +43,19 @@ dependencies {
 ```
 
 ```maven
-    <dependency>    
+    <dependency>
         <groupId>com.github.shepherdviolet</groupId>
         <artifactId>thistle</artifactId>
-        <version>7.1</version> 
-        <exclusions>  
-             <exclusion>	 
-                 <groupId>org.jetbrains.kotlin</groupId>		
-                 <artifactId>kotlin-stdlib-jre7</artifactId>  
-             </exclusion>  
-             <exclusion>	 
+        <version>7.1</version>
+        <exclusions>
+             <exclusion>
+                 <groupId>org.jetbrains.kotlin</groupId>
+                 <artifactId>kotlin-stdlib-jre7</artifactId>
+             </exclusion>
+             <exclusion>
                  <groupId>com.google.code.gson</groupId>
                  <artifactId>*</artifactId>
-             </exclusion>  
-        </exclusions>  
+             </exclusion>
+        </exclusions>
     </dependency>
 ```
