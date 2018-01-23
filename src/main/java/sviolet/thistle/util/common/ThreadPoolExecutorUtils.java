@@ -21,6 +21,9 @@ package sviolet.thistle.util.common;
 
 import sviolet.thistle.compat.CompatThreadFactoryBuilder;
 
+import java.util.Collections;
+import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.concurrent.*;
 
 /**
@@ -28,6 +31,8 @@ import java.util.concurrent.*;
  * @author S.Violet
  */
 public class ThreadPoolExecutorUtils {
+
+    private static final Set<ExecutorService> POOL = Collections.newSetFromMap(new WeakHashMap<ExecutorService, Boolean>());
 
     /**
      * 创建一个线程池
@@ -69,7 +74,7 @@ public class ThreadPoolExecutorUtils {
                                               final ExecuteListener executeListener){
 
         if (executeListener == null) {
-            return new ThreadPoolExecutor(
+            ExecutorService executorService = new ThreadPoolExecutor(
                     corePoolSize,
                     maximumPoolSize,
                     keepAliveSeconds,
@@ -77,8 +82,12 @@ public class ThreadPoolExecutorUtils {
                     workQueue,
                     new CompatThreadFactoryBuilder().setNameFormat(threadNameFormat).build(),
                     rejectHandler != null ? rejectHandler : new ThreadPoolExecutor.AbortPolicy());
+            synchronized (POOL) {
+                POOL.add(executorService);
+            }
+            return executorService;
         } else {
-            return new ThreadPoolExecutor(
+            ExecutorService executorService = new ThreadPoolExecutor(
                     corePoolSize,
                     maximumPoolSize,
                     keepAliveSeconds,
@@ -98,6 +107,27 @@ public class ThreadPoolExecutorUtils {
                     executeListener.afterExecute(r, t);
                 }
             };
+            synchronized (POOL) {
+                POOL.add(executorService);
+            }
+            return executorService;
+        }
+    }
+
+    /**
+     * 将所有通过此工具创建的ExecutorService停止(shutdownNow, 实际上是向线程发送interrupt信号, 并不是直接杀死线程),
+     * 谨慎使用此方法, 调用后之前所有创建的ExecutorService都将无法使用, 通常在停止服务时调用.
+     */
+    public static void allShutdownNow(){
+        synchronized (POOL) {
+            for (ExecutorService executorService : POOL) {
+                if (executorService != null) {
+                    try {
+                        executorService.shutdownNow();
+                    } catch (Throwable ignore){
+                    }
+                }
+            }
         }
     }
 
