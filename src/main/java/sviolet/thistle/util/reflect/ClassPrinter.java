@@ -24,7 +24,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import sviolet.thistle.util.common.CheckUtils;
+import sviolet.thistle.util.judge.CheckUtils;
 
 /**
  * <p>将一个类或一个对象的数据/构造函数/方法打印出来</p>

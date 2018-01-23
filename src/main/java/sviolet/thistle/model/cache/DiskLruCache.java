@@ -16,7 +16,7 @@
 
 package sviolet.thistle.model.cache;
 
-import sviolet.thistle.util.common.ThreadPoolExecutorUtils;
+import sviolet.thistle.util.concurrent.ThreadPoolExecutorUtils;
 
 import java.io.*;
 import java.lang.reflect.Array;

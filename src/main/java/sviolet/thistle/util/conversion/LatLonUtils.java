@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 S.Violet
+ * Copyright (C) 2015-2018 S.Violet
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,9 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.util.common;
+package sviolet.thistle.util.conversion;
+
+import sviolet.thistle.util.math.MathUtils;
 
 /**
  * 经纬度工具

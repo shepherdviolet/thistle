@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 S.Violet
+ * Copyright (C) 2015-2018 S.Violet
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.util.common;
+package sviolet.thistle.util.concurrent;
 
 import sviolet.thistle.compat.CompatThreadFactoryBuilder;
 
@@ -97,7 +97,7 @@ public class ThreadPoolExecutorUtils {
      * 谨慎使用此方法, 调用后之前所有创建的ExecutorService都将无法使用, 通常在停止服务时调用.
      * 另外, 此方法停止的线程池, RejectedExecutionHandler的异常也会被拦截, 不会抛出.
      */
-    public static void allShutdownNow(){
+    public static void shutdownNowAll(){
         synchronized (POOL) {
             for (EnhancedThreadPoolExecutor executorService : POOL) {
                 if (executorService != null) {

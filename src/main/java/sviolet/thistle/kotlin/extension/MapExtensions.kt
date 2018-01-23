@@ -19,7 +19,7 @@
 
 package sviolet.thistle.kotlin.extension
 
-import sviolet.thistle.util.common.ConcurrentUtils
+import sviolet.thistle.util.concurrent.ConcurrentUtils
 
 /**
  * Map extensions

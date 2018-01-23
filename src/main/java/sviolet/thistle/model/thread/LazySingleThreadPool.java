@@ -19,7 +19,7 @@
 
 package sviolet.thistle.model.thread;
 
-import sviolet.thistle.util.common.ThreadPoolExecutorUtils;
+import sviolet.thistle.util.concurrent.ThreadPoolExecutorUtils;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
