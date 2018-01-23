@@ -32,7 +32,7 @@ import java.util.concurrent.*;
  */
 public class ThreadPoolExecutorUtils {
 
-    private static final Set<ExecutorService> POOL = Collections.newSetFromMap(new WeakHashMap<ExecutorService, Boolean>());
+    private static final Set<EnhancedThreadPoolExecutor> POOL = Collections.newSetFromMap(new WeakHashMap<EnhancedThreadPoolExecutor, Boolean>());
 
     /**
      * 创建一个线程池
@@ -73,62 +73,133 @@ public class ThreadPoolExecutorUtils {
                                               RejectedExecutionHandler rejectHandler,
                                               final ExecuteListener executeListener){
 
-        if (executeListener == null) {
-            ExecutorService executorService = new ThreadPoolExecutor(
-                    corePoolSize,
-                    maximumPoolSize,
-                    keepAliveSeconds,
-                    TimeUnit.SECONDS,
-                    workQueue,
-                    new CompatThreadFactoryBuilder().setNameFormat(threadNameFormat).build(),
-                    rejectHandler != null ? rejectHandler : new ThreadPoolExecutor.AbortPolicy());
-            synchronized (POOL) {
-                POOL.add(executorService);
-            }
-            return executorService;
-        } else {
-            ExecutorService executorService = new ThreadPoolExecutor(
-                    corePoolSize,
-                    maximumPoolSize,
-                    keepAliveSeconds,
-                    TimeUnit.SECONDS,
-                    workQueue,
-                    new CompatThreadFactoryBuilder().setNameFormat(threadNameFormat).build(),
-                    rejectHandler != null ? rejectHandler : new ThreadPoolExecutor.AbortPolicy()) {
-                @Override
-                protected void beforeExecute(Thread t, Runnable r) {
-                    super.beforeExecute(t, r);
-                    executeListener.beforeExecute(t, r);
-                }
+        EnhancedThreadPoolExecutor executorService = new EnhancedThreadPoolExecutor(
+                corePoolSize,
+                maximumPoolSize,
+                keepAliveSeconds,
+                TimeUnit.SECONDS,
+                workQueue,
+                new CompatThreadFactoryBuilder().setNameFormat(threadNameFormat).build(),
+                new RejectedExecutionHandlerWrapper(rejectHandler != null ? rejectHandler : new ThreadPoolExecutor.AbortPolicy()),
+                executeListener);
 
-                @Override
-                protected void afterExecute(Runnable r, Throwable t) {
-                    super.afterExecute(r, t);
-                    executeListener.afterExecute(r, t);
-                }
-            };
-            synchronized (POOL) {
-                POOL.add(executorService);
-            }
-            return executorService;
+        synchronized (POOL) {
+            POOL.add(executorService);
         }
+
+        return executorService;
+
     }
 
     /**
-     * 将所有通过此工具创建的ExecutorService停止(shutdownNow, 实际上是向线程发送interrupt信号, 并不是直接杀死线程),
+     * 将所有通过此工具创建的ExecutorService停止(shutdownNow, 实际上是向线程发送interrupt信号,
+     * 并不是直接杀死线程).
      * 谨慎使用此方法, 调用后之前所有创建的ExecutorService都将无法使用, 通常在停止服务时调用.
+     * 另外, 此方法停止的线程池, RejectedExecutionHandler的异常也会被拦截, 不会抛出.
      */
     public static void allShutdownNow(){
         synchronized (POOL) {
-            for (ExecutorService executorService : POOL) {
+            for (EnhancedThreadPoolExecutor executorService : POOL) {
                 if (executorService != null) {
                     try {
-                        executorService.shutdownNow();
+                        executorService.enhancedShutdownNow();
                     } catch (Throwable ignore){
                     }
                 }
             }
         }
+    }
+
+    /**
+     * ThreadPoolExecutor加强
+     */
+    private static class EnhancedThreadPoolExecutor extends ThreadPoolExecutor {
+
+        private ExecuteListener executeListener;
+        private RejectedExecutionHandlerWrapper rejectedExecutionHandlerWrapper;
+
+        private EnhancedThreadPoolExecutor(int corePoolSize,
+                                  int maximumPoolSize,
+                                  long keepAliveTime,
+                                  TimeUnit unit,
+                                  BlockingQueue<Runnable> workQueue,
+                                  ThreadFactory threadFactory,
+                                  RejectedExecutionHandlerWrapper handler,
+                                  ExecuteListener executeListener) {
+            super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory, handler);
+            this.executeListener = executeListener;
+            this.rejectedExecutionHandlerWrapper = handler;
+        }
+
+        @Override
+        protected void beforeExecute(Thread t, Runnable r) {
+            super.beforeExecute(t, r);
+            if (executeListener != null) {
+                executeListener.beforeExecute(t, r);
+            }
+        }
+
+        @Override
+        protected void afterExecute(Runnable r, Throwable t) {
+            super.afterExecute(r, t);
+            if (executeListener != null) {
+                executeListener.afterExecute(r, t);
+            }
+        }
+
+        /**
+         * shutdownNow的同时, 屏蔽RejectedExecutionHandler的异常, 忽略异常
+         */
+        private void enhancedShutdownNow() {
+            try {
+                rejectedExecutionHandlerWrapper.shutdown();
+                super.shutdownNow();
+            } catch (Throwable ignore){
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            return super.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return super.equals(obj);
+        }
+    }
+
+    /**
+     * RejectedExecutionHandler包装类
+     */
+    private static class RejectedExecutionHandlerWrapper implements RejectedExecutionHandler{
+
+        private RejectedExecutionHandler provider;
+        private volatile boolean isShutdown = false;
+
+        private RejectedExecutionHandlerWrapper(RejectedExecutionHandler provider) {
+            this.provider = provider;
+        }
+
+        @Override
+        public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+            /*
+                如果shutdown状态, 则不抛出异常
+             */
+            try {
+                provider.rejectedExecution(r, executor);
+            } catch (Throwable t) {
+                if (isShutdown){
+                    return;
+                }
+                throw t;
+            }
+        }
+
+        private void shutdown(){
+            isShutdown = true;
+        }
+
     }
 
     public interface ExecuteListener {
