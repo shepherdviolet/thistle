@@ -28,6 +28,8 @@ import sviolet.thistle.compat.CompatLruCache;
 /**
  * <p>反射缓存, 用于一些反复使用反射的Class</p>
  *
+ * <p>其实JDK已经实现了反射对象的缓存, 正常使用反射也没问题</p>
+ *
  * @author S.Violet
  */
 
