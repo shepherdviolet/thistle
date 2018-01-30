@@ -55,44 +55,76 @@ public class ReflectGetterTest {
         Bean bean = buildTestBean();
         assertEquals(
                 "hello",
-                ReflectGetter.get(bean, ReflectGetter.parseKeyPath("objectMap.name"), true)
+                ReflectGetter.get(bean, "objectMap.name", true)
         );
         assertEquals(
                 null,
-                ReflectGetter.get(bean, ReflectGetter.parseKeyPath("objectMap.undefined"), true)
+                ReflectGetter.get(bean, "objectMap.undefined", true)
         );
         assertEquals(
                 596,
-                ReflectGetter.get(bean, ReflectGetter.parseKeyPath("objectMap.obj.intValue"), true)
+                ReflectGetter.get(bean, "objectMap.obj.intValue", true)
         );
         assertEquals(
                 495L,
-                ReflectGetter.get(bean, ReflectGetter.parseKeyPath("objectMap.map.list[1].longValue"), true)
+                ReflectGetter.get(bean, "objectMap.map.list[1].longValue", true)
         );
         assertArrayEquals(
                 new byte[]{51, 52, 53},
-                (byte[]) ReflectGetter.get(bean, ReflectGetter.parseKeyPath("objectMap.lo"), true)
+                ReflectGetter.<byte[]>get(bean, "objectMap.lo", true)
         );
         assertArrayEquals(
                 new String[]{"a", "b", "c"},
-                (String[]) ReflectGetter.get(bean, ReflectGetter.parseKeyPath("objectMap.ssss"), true)
+                ReflectGetter.<String[]>get(bean, "objectMap.ssss", true)
         );
-
-        String s = ReflectGetter.<String>get(bean, "bean", true);
-        System.out.println(s);
-
-//        assertEquals(
-//                "",
-//                ReflectGetter.get(bean, ReflectGetter.parseKeyPath(""), true)
-//        );
-//        assertEquals(
-//                "",
-//                ReflectGetter.get(bean, ReflectGetter.parseKeyPath(""), true)
-//        );
-//        assertEquals(
-//                "",
-//                ReflectGetter.get(bean, ReflectGetter.parseKeyPath(""), true)
-//        );
+        assertEquals(
+                1.698f,
+                ReflectGetter.get(bean, "objectList[1].floatValue", true)
+        );
+        assertEquals(
+                5453988,
+                ReflectGetter.get(bean, "objectList[2].list[0]", true)
+        );
+        assertEquals(
+                "xxxx",
+                ReflectGetter.get(bean, "strings[2]", true)
+        );
+        assertEquals(
+                "ddd",
+                ReflectGetter.get(bean, "stringss[1][1]", true)
+        );
+        assertEquals(
+                "qq",
+                ReflectGetter.get(bean, "stringsss[0][1].[0]", true)
+        );
+        assertEquals(
+                "nn",
+                ReflectGetter.get(bean, "stringssss[1][0].[1][0]", true)
+        );
+        assertEquals(
+                "b",
+                ReflectGetter.get(new String[]{"a", "b"}, "[1]", true)
+        );
+        assertEquals(
+                "modified",
+                ReflectGetter.get(bean, "bean.stringValue", true)
+        );
+        assertEquals(
+                "21",
+                ReflectGetter.get(bean, "beanss[1][0].stringValue", true)
+        );
+        assertEquals(
+                "fromField",
+                ReflectGetter.get(bean, "methodVoid", true)
+        );
+        assertEquals(
+                "hello",
+                ReflectGetter.get(bean, "methodString", true)
+        );
+        assertEquals(
+                5.9659554d,
+                ReflectGetter.get(bean, "methodBean.doubleValue", true)
+        );
     }
 
     private static Bean buildTestBean() {
@@ -124,6 +156,7 @@ public class ReflectGetterTest {
         bean.strings = new String[]{"xx", "xxx", "xxxx"};
         bean.stringss = new String[][]{{"gg", "ggg"}, {"dd", "ddd"}};
         bean.stringsss = new String[][][]{{{"gg", "ggg"}, {"qq", "qqq"}}, {{"dd", "ddd"}, {"uu", "uuu"}}};
+        bean.stringssss = new String[][][][]{{{{"gg", "ggg"}, {"kk", "kkk"}}, {{"qq", "qqq"}, {"pp", "ppp"}}}, {{{"dd", "ddd"}, {"nn", "nnn"}}, {{"uu", "uuu"}, {"zz", "zzz"}}}};
 
         bean.bean = new Bean();
         bean.bean.stringValue = "modified";
@@ -154,6 +187,7 @@ public class ReflectGetterTest {
         public String[] strings;
         public String[][] stringss;
         public String[][][] stringsss;
+        public String[][][][] stringssss;
 
         private Bean bean;
         public Bean[][] beanss;
@@ -165,6 +199,7 @@ public class ReflectGetterTest {
             this.stringValue = stringValue;
         }
 
+        private String methodVoid = "fromField";
         public void getMethodVoid(){
 
         }
