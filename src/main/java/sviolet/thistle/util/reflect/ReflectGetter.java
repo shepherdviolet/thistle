@@ -79,10 +79,13 @@ public class ReflectGetter {
                                 //ignore private method
                                 method = clazz.getMethod(BeanMethodNameFormatter.toGetterName(currentKeyPath.key));
                                 if(!void.class.isAssignableFrom(method.getReturnType())){
+                                    if (!method.isAccessible()){
+                                        method.setAccessible(true);
+                                    }
                                     currentObj = method.invoke(currentObj);
                                     break;
                                 }
-                            } catch (BeanMethodNameFormatter.FormatException | NoSuchMethodException | IllegalAccessException ignore) {
+                            } catch (BeanMethodNameFormatter.FormatException | NoSuchMethodException ignore) {
                                 //find field
                             } catch (Throwable t) {
                                 throw new ReflectException("Error while getting field by method, method:" + method.getName() + ", type:" + currentObj.getClass().getName() + ". objType:" + obj.getClass().getName() + ", index:" + index + ", keyPath:" + keyPath, t);
