@@ -34,7 +34,7 @@ public class BeanMethodNameFormatter {
      * 将FieldName转化为setter方法名
      * @param fieldName fieldName of java bean
      */
-    public static String toSetterName(String fieldName){
+    public static String toSetterName(String fieldName) throws FormatException {
         return "set" + formatFieldName(fieldName);
     }
 
@@ -42,7 +42,7 @@ public class BeanMethodNameFormatter {
      * 将FieldName转化为getter方法名
      * @param fieldName fieldName of java bean
      */
-    public static String toGetterName(String fieldName){
+    public static String toGetterName(String fieldName) throws FormatException {
         return "get" + formatFieldName(fieldName);
     }
 
@@ -50,14 +50,14 @@ public class BeanMethodNameFormatter {
      * 将FieldName转化为getter方法名(boolean属性专用的isXXX())
      * @param fieldName fieldName of java bean
      */
-    public static String toBooleanGetterName(String fieldName){
+    public static String toBooleanGetterName(String fieldName) throws FormatException {
         return "is" + formatFieldName(fieldName);
     }
 
-    private static String formatFieldName(String fieldName) {
+    private static String formatFieldName(String fieldName) throws FormatException {
         //检查输入
         if (fieldName == null || fieldName.length() <= 0) {
-            throw new RuntimeException("empty fieldName");
+            return "";
         }
 
         //转为charArray
@@ -71,7 +71,7 @@ public class BeanMethodNameFormatter {
         } else if (firstChar > 96 && firstChar < 123){
             isFirstCharLowerCase = true;
         } else {
-            throw new RuntimeException("invalid fieldName:" + fieldName);
+            throw new FormatException("Invalid fieldName (first char):" + fieldName);
         }
 
         //判断第二个字符
@@ -84,7 +84,7 @@ public class BeanMethodNameFormatter {
             } else if (secondChar > 96 && secondChar < 123){
                 isSecondCharLowerCase = true;
             } else {
-                throw new RuntimeException("invalid fieldName:" + fieldName);
+                throw new FormatException("Invalid fieldName (second char):" + fieldName);
             }
         }
 
@@ -94,6 +94,15 @@ public class BeanMethodNameFormatter {
         }
 
         return String.valueOf(fieldNameChars);
+    }
+
+    /**
+     * 格式化异常
+     */
+    public static class FormatException extends Exception{
+        public FormatException(String message) {
+            super(message);
+        }
     }
 
 }

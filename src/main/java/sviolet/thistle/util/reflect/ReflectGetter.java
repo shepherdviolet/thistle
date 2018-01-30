@@ -19,9 +19,13 @@
 
 package sviolet.thistle.util.reflect;
 
+import sviolet.thistle.util.conversion.BeanMethodNameFormatter;
 import sviolet.thistle.util.judge.CheckUtils;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +37,7 @@ import java.util.Map;
  */
 public class ReflectGetter {
 
-    public static Object get(Object obj, KeyPath keyPath) throws IllegalKeyPathException, TypeNotMatchException, OutOfBoundException {
+    public static Object get(Object obj, KeyPath keyPath, boolean getByMethodEnabled) throws IllegalKeyPathException, TypeNotMatchException, OutOfBoundException, ReflectException, FieldNotFoundException {
         if (obj == null){
             return null;
         }
@@ -59,7 +63,7 @@ public class ReflectGetter {
 
                 switch (type){
                     case 0:
-                        throw new TypeNotMatchException("Can't get field by key from basic type, type:" + currentObj.getClass().getName() + ", index:" + index + ". objType:" + obj.getClass().getName() + ", keyPath:" + keyPath);
+                        throw new TypeNotMatchException("Can't get field by key from basic type, type:" + currentObj.getClass().getName() + ". objType:" + obj.getClass().getName() + ", index:" + index + ", keyPath:" + keyPath);
                     case 1:
                         Map<?, ?> mapObj = (Map<?, ?>) currentObj;
                         currentObj = mapObj.get(currentKeyPath.key);
@@ -67,9 +71,38 @@ public class ReflectGetter {
                     case 2:
                     case 3:
                     case 4:
-                        throw new TypeNotMatchException("Can't get field by key from List / array[] / array[][], type:" + currentObj.getClass().getName() + ", index:" + index + ". objType:" + obj.getClass().getName() + ", keyPath:" + keyPath);
+                        throw new TypeNotMatchException("Can't get field by key from List / array[] / array[][], type:" + currentObj.getClass().getName() + ". objType:" + obj.getClass().getName() + ", index:" + index + ", keyPath:" + keyPath);
+                    case 9:
+                        Class<?> clazz = currentObj.getClass();
+                        if (getByMethodEnabled) {
+                            Method method = null;
+                            try {
+                                //ignore private method
+                                method = clazz.getMethod(BeanMethodNameFormatter.toGetterName(currentKeyPath.key));
+                                if(!void.class.isAssignableFrom(method.getReturnType())){
+                                    currentObj = method.invoke(currentObj);
+                                    break;
+                                }
+                            } catch (BeanMethodNameFormatter.FormatException | NoSuchMethodException | IllegalAccessException ignore) {
+                                //find field
+                            } catch (Throwable t) {
+                                throw new ReflectException("Error while getting field by method, method:" + method.getName() + ", type:" + currentObj.getClass().getName() + ". objType:" + obj.getClass().getName() + ", index:" + index + ", keyPath:" + keyPath, t);
+                            }
+                        }
+                        try {
+                            Field field = clazz.getDeclaredField(currentKeyPath.key);
+                            if (!field.isAccessible()){
+                                field.setAccessible(true);
+                            }
+                            currentObj = field.get(currentObj);
+                        } catch (NoSuchFieldException e) {
+                            throw new FieldNotFoundException("Field not found in bean, field:" + currentKeyPath.key + ", type:" + currentObj.getClass().getName() + ". objType:" + obj.getClass().getName() + ", index:" + index + ", keyPath:" + keyPath);
+                        } catch (Throwable t) {
+                            throw new ReflectException("Error while getting field by name, field:" + currentKeyPath.key + ", type:" + currentObj.getClass().getName() + ". objType:" + obj.getClass().getName() + ", index:" + index + ", keyPath:" + keyPath, t);
+                        }
+                        break;
                     default:
-                        throw new TypeNotMatchException("Unexpected object type, type:" + currentObj.getClass().getName() + ", index:" + index + ". objType:" + obj.getClass().getName() + ", keyPath:" + keyPath);
+                        throw new TypeNotMatchException("Unexpected object type, type:" + currentObj.getClass().getName() + ". objType:" + obj.getClass().getName() + ", index:" + index + ", keyPath:" + keyPath);
                 }
 
                 if (currentObj == null){
@@ -89,32 +122,32 @@ public class ReflectGetter {
 
                 switch (type){
                     case 0:
-                        throw new TypeNotMatchException("Can't get field by index from basic type, type:" + currentObj.getClass().getName() + ", index:" + index + ". objType:" + obj.getClass().getName() + ", keyPath:" + keyPath);
+                        throw new TypeNotMatchException("Can't get field by index from basic type, type:" + currentObj.getClass().getName() + ". objType:" + obj.getClass().getName() + ", index:" + index + ", keyPath:" + keyPath);
                     case 1:
-                        throw new TypeNotMatchException("Can't get field by index from Map, type:" + currentObj.getClass().getName() + ", index:" + index + ". objType:" + obj.getClass().getName() + ", keyPath:" + keyPath);
+                        throw new TypeNotMatchException("Can't get field by index from Map, type:" + currentObj.getClass().getName() + ". objType:" + obj.getClass().getName() + ", index:" + index + ", keyPath:" + keyPath);
                     case 2:
                         List<?> listObj = (List<?>) currentObj;
                         try {
                             temp = listObj.get(currentKeyPath.index1);
                         } catch (Throwable t){
-                            throw new OutOfBoundException("Out of bound while getting field from List, your index1:" + currentKeyPath.index1 + ", list size:" + listObj.size() + ", index:" + index + ". objType:" + obj.getClass().getName() + ", keyPath:" + keyPath);
+                            throw new OutOfBoundException("Out of bound while getting field from List, your index1:" + currentKeyPath.index1 + ", list size:" + listObj.size() + ". objType:" + obj.getClass().getName() + ", index:" + index + ", keyPath:" + keyPath);
                         }
                         break;
                     case 3:
                         try {
                             temp = Array.get(currentObj, currentKeyPath.index1);
                         } catch (Throwable t){
-                            throw new OutOfBoundException("Out of bound while getting field from array[], your index1:" + currentKeyPath.index1 + ", array length:" + Array.getLength(currentObj) + ", index:" + index + ". objType:" + obj.getClass().getName() + ", keyPath:" + keyPath);
+                            throw new OutOfBoundException("Out of bound while getting field from array[], your index1:" + currentKeyPath.index1 + ", array length:" + Array.getLength(currentObj) + ". objType:" + obj.getClass().getName() + ", index:" + index + ", keyPath:" + keyPath);
                         }
                         break;
                     case 4:
                         try {
                             temp = Array.get(currentObj, currentKeyPath.index1);
                         } catch (Throwable t){
-                            throw new OutOfBoundException("Out of bound while getting field from array[][], your index1:" + currentKeyPath.index1 + ", array length:" + Array.getLength(currentObj) + ", index:" + index + ". objType:" + obj.getClass().getName() + ", keyPath:" + keyPath);
+                            throw new OutOfBoundException("Out of bound while getting field from array[][], your index1:" + currentKeyPath.index1 + ", array length:" + Array.getLength(currentObj) + ". objType:" + obj.getClass().getName() + ", index:" + index + ", keyPath:" + keyPath);
                         }
                         if (currentKeyPath.index2 < 0){
-                            throw new TypeNotMatchException("Object is array[][], but array[] is defined in your keyPath, type:" + currentObj.getClass().getName() + ", index:" + index + ". objType:" + obj.getClass().getName() + ", keyPath:" + keyPath);
+                            throw new TypeNotMatchException("Object is array[][], but array[] is defined in your keyPath, type:" + currentObj.getClass().getName() + ". objType:" + obj.getClass().getName() + ", index:" + index + ", keyPath:" + keyPath);
                         }
                         if (temp == null){
                             return null;
@@ -122,12 +155,14 @@ public class ReflectGetter {
                         currentObj = temp;
                         stat = 2;
                         continue;
+                    case 9:
+                        throw new TypeNotMatchException("Can't get field by index from bean type, type:" + currentObj.getClass().getName() + ". objType:" + obj.getClass().getName() + ", index:" + index + ", keyPath:" + keyPath);
                     default:
-                        throw new TypeNotMatchException("Unexpected object type, type:" + currentObj.getClass().getName() + ", index:" + index + ". objType:" + obj.getClass().getName() + ", keyPath:" + keyPath);
+                        throw new TypeNotMatchException("Unexpected object type, type:" + currentObj.getClass().getName() + ". objType:" + obj.getClass().getName() + ", index:" + index + ", keyPath:" + keyPath);
                 }
 
                 if (currentKeyPath.index2 >= 0){
-                    throw new TypeNotMatchException("Object is array[], but array[][] is defined in your keyPath, type:" + currentObj.getClass().getName() + ", index:" + index + ". objType:" + obj.getClass().getName() + ", keyPath:" + keyPath);
+                    throw new TypeNotMatchException("Object is array[], but array[][] is defined in your keyPath, type:" + currentObj.getClass().getName() + ". objType:" + obj.getClass().getName() + ", index:" + index + ", keyPath:" + keyPath);
                 }
                 if (temp == null){
                     return null;
@@ -143,7 +178,7 @@ public class ReflectGetter {
                 try {
                     currentObj = Array.get(currentObj, currentKeyPath.index2);
                 } catch (Throwable t){
-                    throw new OutOfBoundException("Out of bound while getting field from array[][], your index2:" + currentKeyPath.index1 + ", array length2:" + Array.getLength(currentObj) + ", index:" + index + ". objType:" + obj.getClass().getName() + ", keyPath:" + keyPath);
+                    throw new OutOfBoundException("Out of bound while getting field from array[][], your index2:" + currentKeyPath.index1 + ", array length2:" + Array.getLength(currentObj) + ". objType:" + obj.getClass().getName() + ", index:" + index + ", keyPath:" + keyPath);
                 }
 
                 currentKeyPath = currentKeyPath.next;
@@ -484,6 +519,26 @@ public class ReflectGetter {
         }
     }
 
+    /**
+     * Bean对象中成员变量或Getter方法不存在
+     */
+    public static class FieldNotFoundException extends Exception {
+        public FieldNotFoundException(String message) {
+            super(message);
+        }
+    }
+
+    /**
+     * Bean对象通过反射取值时异常
+     */
+    public static class ReflectException extends Exception {
+        public ReflectException(String message) {
+            super(message);
+        }
+        public ReflectException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
 
     /**
      * 非法键路径异常
