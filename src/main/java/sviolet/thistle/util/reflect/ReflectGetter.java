@@ -41,6 +41,8 @@ public class ReflectGetter {
      *
      * <p>若值不存在则返回null, 若获取异常则返回null</p>
      *
+     * <p>ReflectGetter.<String>getWithoutException(obj, "body.list[1].name", true);</p>
+     *
      * <p>
      * 如下基本类型无法再拆分: <br>
      * int, long, float, boolean, byte, char, double, short, byte[], char[] <br>
@@ -63,6 +65,8 @@ public class ReflectGetter {
 
     /**
      * <p>根据键路径从对象中取值</p>
+     *
+     * <p>ReflectGetter.<String>get(obj, "body.list[1].name", true);</p>
      *
      * <p>
      * 如下基本类型无法再拆分: <br>
@@ -87,6 +91,8 @@ public class ReflectGetter {
 
     /**
      * <p>根据键路径从对象中取值, 忽略异常</p>
+     *
+     * <p>ReflectGetter.<String>getWithoutException(obj, keyPath, true);</p>
      *
      * <p>若值不存在则返回null, 若获取异常则返回null</p>
      *
@@ -113,6 +119,8 @@ public class ReflectGetter {
     /**
      * <p>[推荐]根据键路径从对象中取值. 建议先用ReflectGetter.parseKeyPath()方法解析键路径(键路径实例可重复使用, 线程安全),
      * 然后使用该方法取值.</p>
+     *
+     * <p>ReflectGetter.<String>get(obj, keyPath, true);</p>
      *
      * <p>
      * 如下基本类型无法再拆分: <br>
