@@ -24,7 +24,6 @@ import sviolet.thistle.util.judge.CheckUtils;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -199,7 +198,7 @@ public class ReflectGetter {
      * 4. array[][]
      *
      * basic:
-     * integer, long, float, boolean, byte, char, double, short, byte[], char[]
+     * integer, long, float, boolean, byte, char, double, short, byte[], char[], String
      */
     private static int getObjectType(Object obj){
         //null
@@ -223,7 +222,8 @@ public class ReflectGetter {
                 obj instanceof Byte ||
                 obj instanceof Character ||
                 obj instanceof Double ||
-                obj instanceof Short) {
+                obj instanceof Short ||
+                obj instanceof String) {
             return 0;
         }
         String className = obj.getClass().getName();
@@ -400,6 +400,9 @@ public class ReflectGetter {
                 previousElement.next = currentElement;
             }
             previousElement = currentElement;
+        }
+        if (firstElement == null){
+            throw new ReflectGetter.IllegalKeyPathException("Empty keyPath, keyPath:" + keyPath);
         }
         return firstElement;
     }
