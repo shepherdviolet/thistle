@@ -36,7 +36,105 @@ import java.util.Map;
  */
 public class ReflectGetter {
 
-    public static Object get(Object obj, KeyPath keyPath, boolean getByMethodEnabled) throws IllegalKeyPathException, TypeNotMatchException, OutOfBoundException, ReflectException, FieldNotFoundException {
+    /**
+     * <p>根据键路径从对象中取值, 忽略异常</p>
+     *
+     * <p>若值不存在则返回null, 若获取异常则返回null, 若返回对象类型与所需类型不匹配则返回null</p>
+     *
+     * <p>
+     * 如下基本类型无法再拆分: <br>
+     * int, long, float, boolean, byte, char, double, short, byte[], char[] <br>
+     * Integer, Long, Float, Boolean, Byte, Character, Double, Short, Byte[], Character[] <br>
+     * String <br>
+     * </p>
+     *
+     * @param obj 对象
+     * @param keyPath 键路径
+     * @param getByMethodEnabled true:尝试用getter方法从Bean中取值 false:只从成员变量中取值
+     * @return 若值不存在则返回null, 若获取异常则返回null, 若返回对象类型与所需类型不匹配则返回null
+     */
+    public static <T> T getWithoutException(Object obj, String keyPath, boolean getByMethodEnabled) {
+        try {
+            return get(obj, keyPath, getByMethodEnabled);
+        } catch (IllegalKeyPathException | TypeNotMatchException | ReflectException | OutOfBoundException | FieldNotFoundException | ResultCastException e) {
+            return null;
+        }
+    }
+
+    /**
+     * <p>根据键路径从对象中取值</p>
+     *
+     * <p>
+     * 如下基本类型无法再拆分: <br>
+     * int, long, float, boolean, byte, char, double, short, byte[], char[] <br>
+     * Integer, Long, Float, Boolean, Byte, Character, Double, Short, Byte[], Character[] <br>
+     * String <br>
+     * </p>
+     *
+     * @param obj 对象
+     * @param keyPath 键路径
+     * @param getByMethodEnabled true:尝试用getter方法从Bean中取值 false:只从成员变量中取值
+     * @return 若值不存在则返回null
+     * @throws IllegalKeyPathException 无效的键路径
+     * @throws TypeNotMatchException 取值时类型不匹配
+     * @throws OutOfBoundException 数组越界异常
+     * @throws FieldNotFoundException Bean对象中成员变量或Getter方法不存在
+     * @throws ReflectException Bean对象通过反射取值时异常
+     * @throws ResultCastException 最终取到的对象转换类型时异常
+     */
+    public static <T> T get(Object obj, String keyPath, boolean getByMethodEnabled) throws IllegalKeyPathException, TypeNotMatchException, OutOfBoundException, ReflectException, FieldNotFoundException, ResultCastException {
+        return get(obj, parseKeyPath(keyPath), getByMethodEnabled);
+    }
+
+    /**
+     * <p>根据键路径从对象中取值, 忽略异常</p>
+     *
+     * <p>若值不存在则返回null, 若获取异常则返回null, 若返回对象类型与所需类型不匹配则返回null</p>
+     *
+     * <p>
+     * 如下基本类型无法再拆分: <br>
+     * int, long, float, boolean, byte, char, double, short, byte[], char[] <br>
+     * Integer, Long, Float, Boolean, Byte, Character, Double, Short, Byte[], Character[] <br>
+     * String <br>
+     * </p>
+     *
+     * @param obj 对象
+     * @param keyPath 键路径
+     * @param getByMethodEnabled true:尝试用getter方法从Bean中取值 false:只从成员变量中取值
+     * @return 若值不存在则返回null, 若获取异常则返回null, 若返回对象类型与所需类型不匹配则返回null
+     */
+    public static <T> T getWithoutException(Object obj, KeyPath keyPath, boolean getByMethodEnabled) {
+        try {
+            return get(obj, keyPath, getByMethodEnabled);
+        } catch (IllegalKeyPathException | TypeNotMatchException | ReflectException | OutOfBoundException | FieldNotFoundException | ResultCastException e) {
+            return null;
+        }
+    }
+
+    /**
+     * <p>[推荐]根据键路径从对象中取值. 建议先用ReflectGetter.parseKeyPath()方法解析键路径(键路径实例可重复使用, 线程安全),
+     * 然后使用该方法取值.</p>
+     *
+     * <p>
+     * 如下基本类型无法再拆分: <br>
+     * int, long, float, boolean, byte, char, double, short, byte[], char[] <br>
+     * Integer, Long, Float, Boolean, Byte, Character, Double, Short, Byte[], Character[] <br>
+     * String <br>
+     * </p>
+     *
+     * @param obj 对象
+     * @param keyPath 键路径
+     * @param getByMethodEnabled true:尝试用getter方法从Bean中取值 false:只从成员变量中取值
+     * @return 若值不存在则返回null
+     * @throws IllegalKeyPathException 无效的键路径
+     * @throws TypeNotMatchException 取值时类型不匹配
+     * @throws OutOfBoundException 数组越界异常
+     * @throws FieldNotFoundException Bean对象中成员变量或Getter方法不存在
+     * @throws ReflectException Bean对象通过反射取值时异常
+     * @throws ResultCastException 最终取到的对象转换类型时异常
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T get(Object obj, KeyPath keyPath, boolean getByMethodEnabled) throws IllegalKeyPathException, TypeNotMatchException, OutOfBoundException, ReflectException, FieldNotFoundException, ResultCastException {
         if (obj == null){
             return null;
         }
@@ -189,7 +287,11 @@ public class ReflectGetter {
 
             }
         }
-        return currentObj;
+        try {
+            return (T) currentObj;
+        } catch (ClassCastException e){
+            throw new ResultCastException("Result class cast failed, actual type:" + (currentObj != null ? currentObj.getClass().getName() : "null"), e);
+        }
     }
 
     /**
@@ -250,7 +352,8 @@ public class ReflectGetter {
     }
 
     /**
-     * <p>解析键路径</p>
+     * <p>[推荐]解析键路径. 建议先用ReflectGetter.parseKeyPath()方法解析键路径(键路径实例可重复使用, 线程安全),
+     * 然后使用该方法取值.</p>
      *
      * <p>示例:body.infoList[3].name</p>
      *
@@ -542,6 +645,15 @@ public class ReflectGetter {
             super(message);
         }
         public ReflectException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
+    /**
+     * 最终取到的对象转换类型时异常
+     */
+    public static class ResultCastException extends Exception {
+        public ResultCastException(String message, Throwable cause) {
             super(message, cause);
         }
     }
