@@ -21,8 +21,10 @@ package sviolet.thistle.util.reflect;
 
 import sviolet.thistle.util.judge.CheckUtils;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 简易的反射取值工具
@@ -31,6 +33,183 @@ import java.util.List;
  */
 public class ReflectGetter {
 
+    public static Object get(Object obj, KeyPath keyPath) throws IllegalKeyPathException, TypeNotMatchException, OutOfBoundException {
+        if (obj == null){
+            return null;
+        }
+        if (keyPath == null) {
+            throw new IllegalKeyPathException("keyPath is null");
+        }
+
+        Object currentObj = obj;
+        KeyPath currentKeyPath = keyPath;
+        int index = 0;
+        //0:key 1:index1 2:index2
+        int stat = 0;
+        while (currentKeyPath != null) {
+            int type = getObjectType(currentObj);
+            if (stat == 0) {
+
+                if (CheckUtils.isEmpty(currentKeyPath.key)){
+                    if (currentKeyPath.index1 >= 0){
+                        stat = 1;
+                        continue;
+                    }
+                }
+
+                switch (type){
+                    case 0:
+                        throw new TypeNotMatchException("Can't get field by key from basic type, type:" + currentObj.getClass().getName() + ", index:" + index + ". objType:" + obj.getClass().getName() + ", keyPath:" + keyPath);
+                    case 1:
+                        Map<?, ?> mapObj = (Map<?, ?>) currentObj;
+                        currentObj = mapObj.get(currentKeyPath.key);
+                        break;
+                    case 2:
+                    case 3:
+                    case 4:
+                        throw new TypeNotMatchException("Can't get field by key from List / array[] / array[][], type:" + currentObj.getClass().getName() + ", index:" + index + ". objType:" + obj.getClass().getName() + ", keyPath:" + keyPath);
+                    default:
+                        throw new TypeNotMatchException("Unexpected object type, type:" + currentObj.getClass().getName() + ", index:" + index + ". objType:" + obj.getClass().getName() + ", keyPath:" + keyPath);
+                }
+
+                if (currentObj == null){
+                    return null;
+                }
+                if (currentKeyPath.index1 >= 0){
+                    stat = 1;
+                } else {
+                    currentKeyPath = currentKeyPath.next;
+                    index++;
+                    stat = 0;
+                }
+
+            } else if (stat == 1) {
+
+                Object temp;
+
+                switch (type){
+                    case 0:
+                        throw new TypeNotMatchException("Can't get field by index from basic type, type:" + currentObj.getClass().getName() + ", index:" + index + ". objType:" + obj.getClass().getName() + ", keyPath:" + keyPath);
+                    case 1:
+                        throw new TypeNotMatchException("Can't get field by index from Map, type:" + currentObj.getClass().getName() + ", index:" + index + ". objType:" + obj.getClass().getName() + ", keyPath:" + keyPath);
+                    case 2:
+                        List<?> listObj = (List<?>) currentObj;
+                        try {
+                            temp = listObj.get(currentKeyPath.index1);
+                        } catch (Throwable t){
+                            throw new OutOfBoundException("Out of bound while getting field from List, your index1:" + currentKeyPath.index1 + ", list size:" + listObj.size() + ", index:" + index + ". objType:" + obj.getClass().getName() + ", keyPath:" + keyPath);
+                        }
+                        break;
+                    case 3:
+                        try {
+                            temp = Array.get(currentObj, currentKeyPath.index1);
+                        } catch (Throwable t){
+                            throw new OutOfBoundException("Out of bound while getting field from array[], your index1:" + currentKeyPath.index1 + ", array length:" + Array.getLength(currentObj) + ", index:" + index + ". objType:" + obj.getClass().getName() + ", keyPath:" + keyPath);
+                        }
+                        break;
+                    case 4:
+                        try {
+                            temp = Array.get(currentObj, currentKeyPath.index1);
+                        } catch (Throwable t){
+                            throw new OutOfBoundException("Out of bound while getting field from array[][], your index1:" + currentKeyPath.index1 + ", array length:" + Array.getLength(currentObj) + ", index:" + index + ". objType:" + obj.getClass().getName() + ", keyPath:" + keyPath);
+                        }
+                        if (currentKeyPath.index2 < 0){
+                            throw new TypeNotMatchException("Object is array[][], but array[] is defined in your keyPath, type:" + currentObj.getClass().getName() + ", index:" + index + ". objType:" + obj.getClass().getName() + ", keyPath:" + keyPath);
+                        }
+                        if (temp == null){
+                            return null;
+                        }
+                        currentObj = temp;
+                        stat = 2;
+                        continue;
+                    default:
+                        throw new TypeNotMatchException("Unexpected object type, type:" + currentObj.getClass().getName() + ", index:" + index + ". objType:" + obj.getClass().getName() + ", keyPath:" + keyPath);
+                }
+
+                if (currentKeyPath.index2 >= 0){
+                    throw new TypeNotMatchException("Object is array[], but array[][] is defined in your keyPath, type:" + currentObj.getClass().getName() + ", index:" + index + ". objType:" + obj.getClass().getName() + ", keyPath:" + keyPath);
+                }
+                if (temp == null){
+                    return null;
+                }
+
+                currentObj = temp;
+                currentKeyPath = currentKeyPath.next;
+                index++;
+                stat = 0;
+
+            } else {
+
+                try {
+                    currentObj = Array.get(currentObj, currentKeyPath.index2);
+                } catch (Throwable t){
+                    throw new OutOfBoundException("Out of bound while getting field from array[][], your index2:" + currentKeyPath.index1 + ", array length2:" + Array.getLength(currentObj) + ", index:" + index + ". objType:" + obj.getClass().getName() + ", keyPath:" + keyPath);
+                }
+
+                currentKeyPath = currentKeyPath.next;
+                index++;
+                stat = 0;
+
+            }
+        }
+        return currentObj;
+    }
+
+    /**
+     * -1: nul
+     * 0: basic
+     * 1: map
+     * 2: list
+     * 3. array[]
+     * 4. array[][]
+     *
+     * basic:
+     * integer, long, float, boolean, byte, char, double, short, byte[], char[]
+     */
+    private static int getObjectType(Object obj){
+        //null
+        if (obj == null){
+            return -1;
+        }
+        //map
+        if (obj instanceof Map) {
+            return 1;
+        }
+        //list
+        if (obj instanceof List) {
+            return 2;
+        }
+        //basic
+        if (obj.getClass().isPrimitive() ||
+                obj instanceof Integer ||
+                obj instanceof Long ||
+                obj instanceof Float ||
+                obj instanceof Boolean ||
+                obj instanceof Byte ||
+                obj instanceof Character ||
+                obj instanceof Double ||
+                obj instanceof Short) {
+            return 0;
+        }
+        String className = obj.getClass().getName();
+        //basic
+        if ("[B".equals(className) ||
+                "[C".equals(className) ||
+                "[Ljava.lang.Byte;".equals(className) ||
+                "[Ljava.lang.Character;".equals(className)) {
+            return 0;
+        }
+        //array [][]
+        if (className.startsWith("[[")){
+            return 4;
+        }
+        //array []
+        if (className.startsWith("[")){
+            return 3;
+        }
+        //bean
+        return 9;
+    }
 
     /**
      * <p>解析键路径</p>
@@ -295,6 +474,16 @@ public class ReflectGetter {
             super(message);
         }
     }
+
+    /**
+     * 数组越界异常
+     */
+    public static class OutOfBoundException extends Exception{
+        public OutOfBoundException(String message) {
+            super(message);
+        }
+    }
+
 
     /**
      * 非法键路径异常
