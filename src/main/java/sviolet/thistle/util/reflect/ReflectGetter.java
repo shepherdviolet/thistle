@@ -357,7 +357,14 @@ public class ReflectGetter {
      * <p>[推荐]解析键路径. 建议先用ReflectGetter.parseKeyPath()方法解析键路径(键路径实例可重复使用, 线程安全),
      * 然后使用该方法取值.</p>
      *
-     * <p>示例:body.infoList[3].name</p>
+     * <p>
+     * 示例1:一般 <br>
+     * body.infoList[3].name <br>
+     * 示例2:三维数组 <br>
+     * infoList[3][1].[1] <br>
+     * 示例2:Obj本身是List或Array <br>
+     * [1].name <br>
+     * </p>
      *
      * <p>
      * 转移符: <br>
