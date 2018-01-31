@@ -46,6 +46,11 @@ class BaseKeyGenerator {
      * 一个SecureRandom实例. 每个SecureRandom实例化的时候(不设置种子), 会从种子生成器产生一个不同的种子, 因此产生的密钥
      * 也不会重复.<br>
      * </p>
+     *
+     * <p>
+     * 单例/四线程/每线程1000000次:1000ms
+     * ThreadLocal/四线程/每线程1000000次:400ms
+     * </p>
      */
     private static ThreadLocal<SecureRandom> secureRandoms = new ThreadLocal<>();
 
