@@ -33,31 +33,33 @@ public class AESKeyGenerator {
 	public static final String KEY_ALGORITHM = "AES";
 
     /**
-     * <p>生成128位AES对称密钥, 用于服务端场合</p>
+     * <p>生成128位AES对称密钥, 用于服务端场合, 产生随机密钥</p>
      *
      * @return 秘钥
      */
-    public static byte[] generateAes128() throws NoSuchProviderException, NoSuchAlgorithmException {
+    public static byte[] generateAes128() throws NoSuchAlgorithmException {
         return BaseKeyGenerator.generateKey((SecureRandom) null, 128, KEY_ALGORITHM);
     }
 
 	/**
-	 * <p>生成128位AES对称密钥, 用于服务端场合</p>
+	 * <p>生成128位AES对称密钥, 用于服务端场合, 产生随机密钥.
+	 * 推荐使用AESKeyGenerator.generateAes128()代替, 使用自定义的SecureRandom可能会导致安全问题</p>
 	 *
-	 * @param secureRandom SecureRandom是线程安全的, 服务端通常使用一个单例的SecureRandom
+	 * @param secureRandom 随机数, 推荐使用AESKeyGenerator.generateAes128()代替, 使用自定义的SecureRandom可能会导致安全问题
 	 * @return 秘钥
 	 */
-	public static byte[] generateAes128(SecureRandom secureRandom) throws NoSuchProviderException, NoSuchAlgorithmException {
+	public static byte[] generateAes128(SecureRandom secureRandom) throws NoSuchAlgorithmException {
 		return BaseKeyGenerator.generateKey(secureRandom, 128, KEY_ALGORITHM);
 	}
 
 	/**
-	 * <p>生成128位AES密钥(不同系统平台相同seed生成结果可能不同), Android使用该方法, 相同seed仍会产生随机秘钥</p>
+	 * <p>生成对称密钥, 用于固定密钥的场合.
+	 * 不同系统平台相同seed生成结果可能不同, Android使用该方法, 相同seed仍会产生随机密钥.</p>
 	 *
 	 * @param seed 秘钥种子
 	 * @return 秘钥
 	 */
-	public static byte[] generateAes128(byte[] seed) throws NoSuchProviderException, NoSuchAlgorithmException {
+	public static byte[] generateAes128(byte[] seed) throws NoSuchAlgorithmException {
 		return BaseKeyGenerator.generateKey(seed, 128, KEY_ALGORITHM);
 	}
 

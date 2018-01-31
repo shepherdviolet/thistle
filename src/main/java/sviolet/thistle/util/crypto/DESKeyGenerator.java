@@ -34,97 +34,103 @@ public class DESKeyGenerator {
 	public static final String DES_EDE_KEY_ALGORITHM = "DESede";
 
 	/**
-	 * <p>生成64(56)位DES密钥, 用于服务端场合</p>
+	 * <p>生成64(56)位DES密钥, 用于服务端场合, 产生随机密钥</p>
 	 *
 	 * @return 秘钥
 	 */
-	public static byte[] generateDes64() throws NoSuchProviderException, NoSuchAlgorithmException {
+	public static byte[] generateDes64() throws NoSuchAlgorithmException {
 		//这里配置56但是出来的是64bits
 		return BaseKeyGenerator.generateKey((SecureRandom) null, 56, DES_KEY_ALGORITHM);
 	}
 
 	/**
-	 * <p>生成128(112)位DESede密钥, 用于服务端场合</p>
+	 * <p>生成128(112)位DESede密钥, 用于服务端场合, 产生随机密钥</p>
 	 *
 	 * @return 秘钥
 	 */
-	public static byte[] generateDesEde128() throws NoSuchProviderException, NoSuchAlgorithmException {
+	public static byte[] generateDesEde128() throws NoSuchAlgorithmException {
 		//这里配置112但是出来的是128bits
 		return BaseKeyGenerator.generateKey((SecureRandom) null, 112, DES_EDE_KEY_ALGORITHM);
 	}
 
 	/**
-	 * <p>生成192(168)位DESede密钥, 用于服务端场合</p>
+	 * <p>生成192(168)位DESede密钥, 用于服务端场合, 产生随机密钥</p>
 	 *
 	 * @return 秘钥
 	 */
-	public static byte[] generateDesEde192() throws NoSuchProviderException, NoSuchAlgorithmException {
+	public static byte[] generateDesEde192() throws NoSuchAlgorithmException {
 		//这里配置168但是出来的是192bits
 		return BaseKeyGenerator.generateKey((SecureRandom) null, 168, DES_EDE_KEY_ALGORITHM);
 	}
 
 	/**
-	 * <p>生成64(56)位DES密钥, 用于服务端场合</p>
+	 * <p>生成64(56)位DES密钥, 用于服务端场合, 产生随机密钥.
+	 * 推荐使用DESKeyGenerator.generateDes64()代替, 使用自定义的SecureRandom可能会导致安全问题</p>
 	 *
-	 * @param secureRandom SecureRandom是线程安全的, 服务端通常使用一个单例的SecureRandom
+	 * @param secureRandom 推荐使用DESKeyGenerator.generateDes64()代替, 使用自定义的SecureRandom可能会导致安全问题
 	 * @return 秘钥
 	 */
-	public static byte[] generateDes64(SecureRandom secureRandom) throws NoSuchProviderException, NoSuchAlgorithmException {
+	public static byte[] generateDes64(SecureRandom secureRandom) throws NoSuchAlgorithmException {
 		//这里配置56但是出来的是64bits
 		return BaseKeyGenerator.generateKey(secureRandom, 56, DES_KEY_ALGORITHM);
 	}
 
 	/**
-	 * <p>生成128(112)位DESede密钥, 用于服务端场合</p>
+	 * <p>生成128(112)位DESede密钥, 用于服务端场合, 产生随机密钥.
+	 * 推荐使用DESKeyGenerator.generateDesEde128()代替, 使用自定义的SecureRandom可能会导致安全问题</p>
 	 *
-	 * @param secureRandom SecureRandom是线程安全的, 服务端通常使用一个单例的SecureRandom
+	 * @param secureRandom 推荐使用DESKeyGenerator.generateDesEde128()代替, 使用自定义的SecureRandom可能会导致安全问题
 	 * @return 秘钥
 	 */
-	public static byte[] generateDesEde128(SecureRandom secureRandom) throws NoSuchProviderException, NoSuchAlgorithmException {
+	public static byte[] generateDesEde128(SecureRandom secureRandom) throws NoSuchAlgorithmException {
 		//这里配置112但是出来的是128bits
 		return BaseKeyGenerator.generateKey(secureRandom, 112, DES_EDE_KEY_ALGORITHM);
 	}
 
 	/**
-	 * <p>生成192(168)位DESede密钥, 用于服务端场合</p>
+	 * <p>生成192(168)位DESede密钥, 用于服务端场合, 产生随机密钥.
+	 * 推荐使用DESKeyGenerator.generateDesEde192()代替, 使用自定义的SecureRandom可能会导致安全问题</p>
 	 *
-	 * @param secureRandom SecureRandom是线程安全的, 服务端通常使用一个单例的SecureRandom
+	 * @param secureRandom 推荐使用DESKeyGenerator.generateDesEde192()代替, 使用自定义的SecureRandom可能会导致安全问题
 	 * @return 秘钥
 	 */
-	public static byte[] generateDesEde192(SecureRandom secureRandom) throws NoSuchProviderException, NoSuchAlgorithmException {
+	public static byte[] generateDesEde192(SecureRandom secureRandom) throws NoSuchAlgorithmException {
 		//这里配置168但是出来的是192bits
 		return BaseKeyGenerator.generateKey(secureRandom, 168, DES_EDE_KEY_ALGORITHM);
 	}
 
 	/**
-	 * <p>生成64(56)位DES密钥(不同系统平台相同seed生成结果可能不同), Android使用该方法, 相同seed仍会产生随机秘钥</p>
+	 * <p>生成64(56)位DES密钥, 用于固定密钥的场合.
+	 * 不同系统平台相同seed生成结果可能不同, Android使用该方法, 相同seed仍会产生随机密钥.</p>
 	 *
 	 * @param seed 秘钥种子
 	 * @return 秘钥
 	 */
-	public static byte[] generateDes64(byte[] seed) throws NoSuchProviderException, NoSuchAlgorithmException {
+	public static byte[] generateDes64(byte[] seed) throws NoSuchAlgorithmException {
 		//这里配置56但是出来的是64bits
 		return BaseKeyGenerator.generateKey(seed, 56, DES_KEY_ALGORITHM);
 	}
 
 	/**
-	 * <p>生成128(112)位DESede密钥(不同系统平台相同seed生成结果可能不同), Android使用该方法, 相同seed仍会产生随机秘钥</p>
+	 * <p>生成128(112)位DESede密钥, 用于固定密钥的场合.
+	 * 不同系统平台相同seed生成结果可能不同, Android使用该方法, 相同seed仍会产生随机密钥.</p>
 	 *
 	 * @param seed 秘钥种子
 	 * @return 秘钥
 	 */
-	public static byte[] generateDesEde128(byte[] seed) throws NoSuchProviderException, NoSuchAlgorithmException {
+	public static byte[] generateDesEde128(byte[] seed) throws NoSuchAlgorithmException {
 		//这里配置112但是出来的是128bits
 		return BaseKeyGenerator.generateKey(seed, 112, DES_EDE_KEY_ALGORITHM);
 	}
 
 	/**
-	 * <p>生成192(168)位DESede密钥(不同系统平台相同seed生成结果可能不同), Android使用该方法, 相同seed仍会产生随机秘钥</p>
+	 * <p>生成192(168)位DESede密钥, 用于固定密钥的场合.
+	 * 不同系统平台相同seed生成结果可能不同, Android使用该方法, 相同seed仍会产生随机密钥.</p>
 	 *
 	 * @param seed 秘钥种子
 	 * @return 秘钥
 	 */
-	public static byte[] generateDesEde192(byte[] seed) throws NoSuchProviderException, NoSuchAlgorithmException {
+	public static byte[] generateDesEde192(byte[] seed) throws NoSuchAlgorithmException {
 		//这里配置168但是出来的是192bits
 		return BaseKeyGenerator.generateKey(seed, 168, DES_EDE_KEY_ALGORITHM);
 	}

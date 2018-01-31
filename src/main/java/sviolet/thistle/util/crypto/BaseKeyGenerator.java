@@ -36,34 +36,53 @@ import java.security.SecureRandom;
 class BaseKeyGenerator {
 
     /**
-     * linux中secureRandom会从/dev/urandom中获取内核熵, 相对比普通种子安全
+     * <p>
+     * 说明:<br>
+     * <br>
+     * 1.如果SecureRandom不设置种子, 在Linux中会从/dev/./urandom中获取内核熵, 作为种子生成器的种子, 再由种子生成器产生
+     * SecureRandom的种子, 因此不设置种子产生的随机密钥相对比设置了自定义种子的安全.<br>
+     * <br>
+     * 2.SecureRandom.nextBytes方法是同步方法, 如果多线程用一个实例, 会造成一定的性能损失, 因此采用ThreadLocal, 每个线程
+     * 一个SecureRandom实例. 每个SecureRandom实例化的时候(不设置种子), 会从种子生成器产生一个不同的种子, 因此产生的密钥
+     * 也不会重复.<br>
+     * </p>
      */
-    private static SecureRandom secureRandom = new SecureRandom();
+    private static ThreadLocal<SecureRandom> secureRandoms = new ThreadLocal<>();
 
     /**
-     * <p>生成对称密钥, 用于服务端场合</p>
+     * <p>生成对称密钥, 用于服务端场合, 产生随机密钥</p>
      *
-     * @param secureRandom SecureRandom是线程安全的, 服务端通常使用一个单例的SecureRandom
-     * @param bits 秘钥位数(64/128/192/256...)
-     * @param keyAlgorithm 秘钥算法类型
-     * @return 秘钥
+     * @param secureRandom 如果需要产生随机密钥, 建议传入null, 采用系统内核熵作为种子更安全
+     * @param bits 密钥位数(64/128/192/256...)
+     * @param keyAlgorithm 密钥算法类型
+     * @return 密钥
      */
-    public static byte[] generateKey(SecureRandom secureRandom, int bits, String keyAlgorithm) throws NoSuchProviderException, NoSuchAlgorithmException {
+    public static byte[] generateKey(SecureRandom secureRandom, int bits, String keyAlgorithm) throws NoSuchAlgorithmException {
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlgorithm);
-        keyGenerator.init(bits, secureRandom != null ? secureRandom : BaseKeyGenerator.secureRandom);
+        if (secureRandom != null) {
+            keyGenerator.init(bits, secureRandom);
+        } else {
+            SecureRandom systemSecureRandom = secureRandoms.get();
+            if (systemSecureRandom == null) {
+                systemSecureRandom = new SecureRandom();
+                secureRandoms.set(systemSecureRandom);
+            }
+            keyGenerator.init(bits, systemSecureRandom);
+        }
         SecretKey secretKey = keyGenerator.generateKey();
         return secretKey.getEncoded();
     }
 
     /**
-     * <p>生成对称密钥(不同系统平台相同seed生成结果可能不同), Android使用该方法, 相同seed仍会产生随机秘钥</p>
+     * <p>生成对称密钥, 用于固定密钥的场合.
+     * 不同系统平台相同seed生成结果可能不同, Android使用该方法, 相同seed仍会产生随机密钥.</p>
      *
-     * @param seed 秘钥种子
-     * @param bits 秘钥位数(64/128/192/256...)
-     * @param keyAlgorithm 秘钥算法类型
-     * @return 秘钥
+     * @param seed 密钥种子
+     * @param bits 密钥位数(64/128/192/256...)
+     * @param keyAlgorithm 密钥算法类型
+     * @return 密钥
      */
-    public static byte[] generateKey(byte[] seed, int bits, String keyAlgorithm) throws NoSuchProviderException, NoSuchAlgorithmException {
+    public static byte[] generateKey(byte[] seed, int bits, String keyAlgorithm) throws NoSuchAlgorithmException {
         KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlgorithm);
         SecureRandom secureRandom = new SecureRandom(seed);
         keyGenerator.init(bits, secureRandom);
