@@ -50,7 +50,7 @@ public class ThreadPoolExecutorUtils {
                 maximumPoolSize,
                 keepAliveSeconds,
                 threadNameFormat,
-                new LinkedBlockingQueue<Runnable>(),
+                new SynchronousQueue<Runnable>(),
                 new ThreadPoolExecutor.AbortPolicy(),
                 null);
     }
@@ -61,7 +61,7 @@ public class ThreadPoolExecutorUtils {
      * @param maximumPoolSize 最大线程数
      * @param keepAliveSeconds 线程保活时间(秒)
      * @param threadNameFormat 线程名称格式(rpc-pool-%d)
-     * @param workQueue 等待队列, new LinkedBlockingQueue<Runnable>(1024), new SynchronousQueue<Runnable>()
+     * @param workQueue 等待队列, new SynchronousQueue<Runnable>()
      * @param rejectHandler 拒绝处理器, new ThreadPoolExecutor.AbortPolicy()
      * @param executeListener nullable, 监听执行前执行后的事件
      */
