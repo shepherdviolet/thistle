@@ -22,10 +22,11 @@ package sviolet.thistle.util.common;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.locks.ReentrantLock;
 
-import sviolet.thistle.model.thread.LazySingleThreadPool;
 import sviolet.thistle.entity.Destroyable;
+import sviolet.thistle.util.concurrent.ThreadPoolExecutorUtils;
 
 /**
  * <p>寄生变量</p>
@@ -75,7 +76,7 @@ public class ParasiticVars {
     /**
      * gc任务执行线程池
      */
-    private static LazySingleThreadPool gcTaskPool;
+    private static ExecutorService gcTaskPool;
 
     private final static ReentrantLock LOCK = new ReentrantLock();
 
@@ -270,13 +271,13 @@ public class ParasiticVars {
         }
     }
 
-    private static LazySingleThreadPool getGcTaskPool(){
+    private static ExecutorService getGcTaskPool(){
         if (gcTaskPool == null){
             try{
                 LOCK.lock();
                 if (gcTaskPool == null){
                     //新建gc任务执行线程池
-                    gcTaskPool = new LazySingleThreadPool("ParasiticVars-GC-%d");
+                    gcTaskPool = ThreadPoolExecutorUtils.createLazy(60L, "ParasiticVars-GC-%d");
                 }
             }finally {
                 LOCK.unlock();

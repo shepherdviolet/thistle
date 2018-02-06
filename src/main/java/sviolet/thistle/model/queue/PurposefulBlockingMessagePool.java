@@ -19,16 +19,17 @@
 
 package sviolet.thistle.model.queue;
 
+import sviolet.thistle.util.concurrent.ThreadPoolExecutorUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
-
-import sviolet.thistle.model.thread.LazySingleThreadPool;
 
 /**
  * <p>目的性阻塞消息池</p>
@@ -175,7 +176,7 @@ public class PurposefulBlockingMessagePool <K, I> {
     /**
      * 意外消息池清理线程
      */
-    private LazySingleThreadPool unexpectedItemFlushThreadPool = null;
+    private ExecutorService unexpectedItemFlushThreadPool = null;
     /**
      * 消息从意外消息池被丢弃回调
      */
@@ -219,7 +220,7 @@ public class PurposefulBlockingMessagePool <K, I> {
         setMessageDropListener(messageDropListener);
         if (this.unexpectedItemValidityPeriod > 0) {
             this.unexpectedItemLock = new ReentrantLock();
-            this.unexpectedItemFlushThreadPool = new LazySingleThreadPool("PurposefulBlockingMessagePool-Flush-%d");
+            this.unexpectedItemFlushThreadPool = ThreadPoolExecutorUtils.createLazy(60L, "PurposefulBlockingMessagePool-Flush-%d");
             this.unexpectedItemPool = new HashMap<>();
         }
     }
