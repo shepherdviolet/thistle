@@ -144,7 +144,7 @@ public class LazySingleThreadPool {
             try{
                 locker.lock();
                 if (singleThreadPool == null) {
-                    singleThreadPool = ThreadPoolExecutorUtils.newInstance(
+                    singleThreadPool = ThreadPoolExecutorUtils.create(
                             0,
                             1,
                             60L,

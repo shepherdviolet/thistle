@@ -27,7 +27,27 @@ import java.util.WeakHashMap;
 import java.util.concurrent.*;
 
 /**
- * 线程池工具
+ * <p>ThreadPoolExecutor线程池工具</p>
+ *
+ * <p>
+ * ThreadPoolExecutor笔记:<br>
+ * 1.核心线程一般不会终止, 始终等待队列中的新任务.<br>
+ * 2.非核心线程空闲时会终止, 等待超过设定时间(keepAliveTime)后结束.<br>
+ * 3.线程数达到corePoolSize之前, 每次执行(execute)都会创建一个新的核心线程.<br>
+ * 4.当线程数达到corePoolSize之后, 会将任务(Runnable)加入工作队列(workQueue).<br>
+ * --4.1.如果此时线程数为0, 则会创建一个非核心线程(仅此一个).<br>
+ * --4.2.如果任务入队成功, 存活的线程会从队列中获取任务执行. <br>
+ * --4.3.如果任务入队失败(BlockingQueue.offer(E e)返回false), 会尝试增加非核心线程. 如果增加失败, 拒绝任务并由RejectedExecutionHandler处理.<br>
+ * 5.使用LinkedBlockingQueue工作队列时, 在填满核心线程后, 后续任务会加入队列, 队列满之前都不会尝试增加非核心线程.<br>
+ * --5.1.如果队列满了, 会尝试增加非核心线程. 如果增加失败, 拒绝任务并由RejectedExecutionHandler处理.<br>
+ * --5.2.因此, 一般corePoolSize == maximumPoolSize, 或者corePoolSize = 0 maximumPoolSize = 1(会超时的单线程池).<br>
+ * 6.使用SynchronousQueue工作队列时, 并发任务会直接增加线程(包括核心线程和非核心线程).<br>
+ * --6.1.当并发量超过maximumPoolSize时, 拒绝任务并由RejectedExecutionHandler处理.<br>
+ * --6.2.因此, 一般maximumPoolSize >= corePoolSize.<br>
+ * <br>
+ *
+ * </p>
+ *
  * @author S.Violet
  */
 public class ThreadPoolExecutorUtils {
@@ -35,17 +55,70 @@ public class ThreadPoolExecutorUtils {
     private static final Set<EnhancedThreadPoolExecutor> POOL = Collections.newSetFromMap(new WeakHashMap<EnhancedThreadPoolExecutor, Boolean>());
 
     /**
-     * 创建一个线程池
+     * <p>会超时的单线程池, 核心线程数0, 最大线程数1, 队列长度Integer.MAX_VALUE</p>
+     *
+     * <p>
+     * 5.使用LinkedBlockingQueue工作队列时, 在填满核心线程后, 后续任务会加入队列, 队列满之前都不会尝试增加非核心线程.<br>
+     * --5.1.如果队列满了, 会尝试增加非核心线程. 如果增加失败, 拒绝任务并由RejectedExecutionHandler处理.<br>
+     * --5.2.因此, 一般corePoolSize == maximumPoolSize, 或者corePoolSize = 0 maximumPoolSize = 1(会超时的单线程池).<br>
+     * <br>
+     *
+     * @param keepAliveSeconds 线程保活时间(秒)
+     * @param threadNameFormat 线程名称格式(rpc-pool-%d)
+     */
+    public static ExecutorService createSingle(long keepAliveSeconds, String threadNameFormat){
+        return create(
+                0,
+                1,
+                keepAliveSeconds,
+                threadNameFormat,
+                new LinkedBlockingQueue<Runnable>(),
+                new ThreadPoolExecutor.AbortPolicy(),
+                null);
+    }
+
+    /**
+     * <p>固定线程数的线程池, 核心线程数poolSize, 最大线程数poolSize, 队列长度Integer.MAX_VALUE</p>
+     *
+     * <p>
+     * 5.使用LinkedBlockingQueue工作队列时, 在填满核心线程后, 后续任务会加入队列, 队列满之前都不会尝试增加非核心线程.<br>
+     * --5.1.如果队列满了, 会尝试增加非核心线程. 如果增加失败, 拒绝任务并由RejectedExecutionHandler处理.<br>
+     * --5.2.因此, 一般corePoolSize == maximumPoolSize, 或者corePoolSize = 0 maximumPoolSize = 1(会超时的单线程池).<br>
+     * <br>
+     *
+     * @param poolSize 线程数
+     * @param threadNameFormat 线程名称格式(rpc-pool-%d)
+     */
+    public static ExecutorService createFixed(int poolSize, String threadNameFormat){
+        return create(
+                poolSize,
+                poolSize,
+                0L,
+                threadNameFormat,
+                new LinkedBlockingQueue<Runnable>(),
+                new ThreadPoolExecutor.AbortPolicy(),
+                null);
+    }
+
+    /**
+     * <p>动态线程数的线程池, 核心线程数corePoolSize, 最大线程数maximumPoolSize, 队列长度0</p>
+     *
+     * <p>
+     * 6.使用SynchronousQueue工作队列时, 并发任务会直接增加线程(包括核心线程和非核心线程).<br>
+     * --6.1.当并发量超过maximumPoolSize时, 拒绝任务并由RejectedExecutionHandler处理.<br>
+     * --6.2.因此, 一般maximumPoolSize >= corePoolSize.<br>
+     * <br>
+     *
      * @param corePoolSize 核心线程数
      * @param maximumPoolSize 最大线程数
      * @param keepAliveSeconds 线程保活时间(秒)
      * @param threadNameFormat 线程名称格式(rpc-pool-%d)
      */
-    public static ExecutorService newInstance(int corePoolSize,
-                                       int maximumPoolSize,
-                                       long keepAliveSeconds,
-                                       String threadNameFormat){
-        return newInstance(
+    public static ExecutorService createCached(int corePoolSize,
+                                               int maximumPoolSize,
+                                               long keepAliveSeconds,
+                                               String threadNameFormat){
+        return create(
                 corePoolSize,
                 maximumPoolSize,
                 keepAliveSeconds,
@@ -55,17 +128,28 @@ public class ThreadPoolExecutorUtils {
                 null);
     }
 
+
     /**
-     * 创建一个线程池
+     * <p>创建线程池</p>
+     *
+     * <p>
+     * 5.使用LinkedBlockingQueue工作队列时, 在填满核心线程后, 后续任务会加入队列, 队列满之前都不会尝试增加非核心线程.<br>
+     * --5.1.如果队列满了, 会尝试增加非核心线程. 如果增加失败, 拒绝任务并由RejectedExecutionHandler处理.<br>
+     * --5.2.因此, 一般corePoolSize == maximumPoolSize, 或者corePoolSize = 0 maximumPoolSize = 1(会超时的单线程池).<br>
+     * 6.使用SynchronousQueue工作队列时, 并发任务会直接增加线程(包括核心线程和非核心线程).<br>
+     * --6.1.当并发量超过maximumPoolSize时, 拒绝任务并由RejectedExecutionHandler处理.<br>
+     * --6.2.因此, 一般maximumPoolSize >= corePoolSize.<br>
+     * <br>
+     *
      * @param corePoolSize 核心线程数
      * @param maximumPoolSize 最大线程数
      * @param keepAliveSeconds 线程保活时间(秒)
      * @param threadNameFormat 线程名称格式(rpc-pool-%d)
-     * @param workQueue 等待队列, new SynchronousQueue<Runnable>()
-     * @param rejectHandler 拒绝处理器, new ThreadPoolExecutor.AbortPolicy()
+     * @param workQueue 工作队列
+     * @param rejectHandler nullable, 拒绝处理器, 默认: new ThreadPoolExecutor.AbortPolicy()
      * @param executeListener nullable, 监听执行前执行后的事件
      */
-    public static ExecutorService newInstance(int corePoolSize,
+    public static ExecutorService create(int corePoolSize,
                                               int maximumPoolSize,
                                               long keepAliveSeconds,
                                               String threadNameFormat,

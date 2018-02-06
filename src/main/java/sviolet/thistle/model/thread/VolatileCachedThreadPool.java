@@ -43,7 +43,7 @@ public class VolatileCachedThreadPool {
      * @param threadNameFormat 线程名称格式, VolatileCachedThreadPool-%d
      */
     public VolatileCachedThreadPool(int coreThreads, int maximumThreads, int waitingQueueSize, String threadNameFormat) {
-        executor = ThreadPoolExecutorUtils.newInstance(
+        executor = ThreadPoolExecutorUtils.create(
                 coreThreads,
                 maximumThreads,
                 60L,
