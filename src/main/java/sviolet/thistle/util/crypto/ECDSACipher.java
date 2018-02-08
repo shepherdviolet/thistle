@@ -88,7 +88,7 @@ public class ECDSACipher {
      * @throws InvalidKeyException 无效的私钥
      * @throws SignatureException 签名异常
      */  
-    public static byte[] sign(byte[] data, ECPrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException{
+    public static byte[] sign(byte[] data, PrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException{
         return BaseCipher.sign(data, privateKey, signAlgorithm);
     }
 
@@ -104,7 +104,7 @@ public class ECDSACipher {
      * @throws InvalidKeyException 无效的私钥
      * @throws SignatureException 签名异常
      */
-    public static byte[] sign(File file, ECPrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
+    public static byte[] sign(File file, PrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
         return BaseCipher.sign(file, privateKey, signAlgorithm);
     }
 
@@ -125,7 +125,7 @@ public class ECDSACipher {
      * @throws InvalidKeyException 无效的私钥
      * @throws SignatureException 签名异常
      */
-    public static byte[] signNio(File file, ECPrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
+    public static byte[] signNio(File file, PrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
         return BaseCipher.signNio(file, privateKey, signAlgorithm);
     }
 
@@ -141,7 +141,7 @@ public class ECDSACipher {
      * @throws InvalidKeyException 无效的私钥
      * @throws SignatureException 签名异常
      */
-    public static byte[] signIo(File file, ECPrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
+    public static byte[] signIo(File file, PrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
         return BaseCipher.signIo(file, privateKey, signAlgorithm);
     }
 
@@ -159,7 +159,7 @@ public class ECDSACipher {
      * @throws SignatureException 签名异常
      *  
      */  
-    public static boolean verify(byte[] data, byte[] sign, ECPublicKey publicKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException{
+    public static boolean verify(byte[] data, byte[] sign, PublicKey publicKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException{
         return BaseCipher.verify(data, sign, publicKey, signAlgorithm);
     }
 
@@ -176,7 +176,7 @@ public class ECDSACipher {
      * @throws InvalidKeyException 无效的私钥
      * @throws SignatureException 签名异常
      */
-    public static boolean verify(File file, byte[] sign, ECPublicKey publicKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
+    public static boolean verify(File file, byte[] sign, PublicKey publicKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
         return BaseCipher.verify(file, sign, publicKey, signAlgorithm);
     }
 
@@ -199,7 +199,7 @@ public class ECDSACipher {
      * @throws SignatureException 签名异常
      *
      */
-    public static boolean verifyNio(File file, byte[] sign, ECPublicKey publicKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
+    public static boolean verifyNio(File file, byte[] sign, PublicKey publicKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
         return BaseCipher.verifyNio(file, sign, publicKey, signAlgorithm);
     }
 
@@ -217,7 +217,7 @@ public class ECDSACipher {
      * @throws SignatureException 签名异常
      *
      */
-    public static boolean verifyIo(File file, byte[] sign, ECPublicKey publicKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
+    public static boolean verifyIo(File file, byte[] sign, PublicKey publicKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
         return BaseCipher.verifyIo(file, sign, publicKey, signAlgorithm);
     }
 
