@@ -54,6 +54,15 @@ class BaseKeyGenerator {
      */
     private static ThreadLocal<SecureRandom> secureRandoms = new ThreadLocal<>();
 
+    static SecureRandom getSecureRandom(){
+        SecureRandom systemSecureRandom = secureRandoms.get();
+        if (systemSecureRandom == null) {
+            systemSecureRandom = new SecureRandom();
+            secureRandoms.set(systemSecureRandom);
+        }
+        return systemSecureRandom;
+    }
+
     /**
      * <p>生成对称密钥, 用于服务端场合, 产生随机密钥</p>
      *
@@ -67,12 +76,7 @@ class BaseKeyGenerator {
         if (secureRandom != null) {
             keyGenerator.init(bits, secureRandom);
         } else {
-            SecureRandom systemSecureRandom = secureRandoms.get();
-            if (systemSecureRandom == null) {
-                systemSecureRandom = new SecureRandom();
-                secureRandoms.set(systemSecureRandom);
-            }
-            keyGenerator.init(bits, systemSecureRandom);
+            keyGenerator.init(bits, getSecureRandom());
         }
         SecretKey secretKey = keyGenerator.generateKey();
         return secretKey.getEncoded();
