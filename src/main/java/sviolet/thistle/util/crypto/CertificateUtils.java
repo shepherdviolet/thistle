@@ -93,13 +93,13 @@ public class CertificateUtils {
      * @param validity 有效期(天), Example:3650
      * @param signAlgorithm 签名算法, CertificateUtils.SIGN_ALGORITHM_RSA_SHA256
      */
-    public static CertificateAndKey generateX509RootCertificate(String name, int bits, int validity, String signAlgorithm) throws IOException, InvalidKeyException, CertificateException, SignatureException {
+    public static X509CertificateAndKey generateX509RootCertificate(String name, int bits, int validity, String signAlgorithm) throws IOException, InvalidKeyException, CertificateException, SignatureException {
         try {
             X500Name x500Name = new X500Name(name);
             CertAndKeyGen rootCertAndKeyGen = new CertAndKeyGen(KEK_ALGORITHM_RSA, signAlgorithm, null);
             rootCertAndKeyGen.setRandom(BaseKeyGenerator.getSecureRandom());
             rootCertAndKeyGen.generate(bits);
-            return new CertificateAndKey(rootCertAndKeyGen.getSelfCertificate(x500Name, validity * 24L * 60L * 60L), rootCertAndKeyGen.getPrivateKey());
+            return new X509CertificateAndKey(rootCertAndKeyGen.getSelfCertificate(x500Name, validity * 24L * 60L * 60L), rootCertAndKeyGen.getPrivateKey());
         } catch (NoSuchAlgorithmException | NoSuchProviderException e) {
             throw new RuntimeException(e);
         }
@@ -124,7 +124,7 @@ public class CertificateUtils {
      * @param caCertificate CA证书
      * @param caPrivateKey CA私钥
      */
-    public static CertificateAndKey generateX509Certificate(String name, int bits, int validity, String signAlgorithm, X509Certificate caCertificate, PrivateKey caPrivateKey) throws InvalidKeyException, IOException, CertificateException, SignatureException {
+    public static X509CertificateAndKey generateX509Certificate(String name, int bits, int validity, String signAlgorithm, X509Certificate caCertificate, PrivateKey caPrivateKey) throws InvalidKeyException, IOException, CertificateException, SignatureException {
         try {
             X500Name x500Name = new X500Name(name);
             CertAndKeyGen certAndKeyGen = new CertAndKeyGen(KEK_ALGORITHM_RSA, signAlgorithm, null);
@@ -140,7 +140,7 @@ public class CertificateUtils {
             x509CertInfo.set(X509CertInfo.ISSUER, new X500Name(caCertificate.getSubjectDN().getName()));
             X509CertImpl certificate = new X509CertImpl(x509CertInfo);
             certificate.sign(caPrivateKey, signAlgorithm);
-            return new CertificateAndKey(certificate, certAndKeyGen.getPrivateKey());
+            return new X509CertificateAndKey(certificate, certAndKeyGen.getPrivateKey());
         } catch (NoSuchAlgorithmException | NoSuchProviderException e) {
             throw new RuntimeException(e);
         }
@@ -149,12 +149,12 @@ public class CertificateUtils {
     /**
      * 证书与私钥
      */
-    public static class CertificateAndKey {
+    public static class X509CertificateAndKey {
 
         private X509Certificate certificate;
         private PrivateKey privateKey;
 
-        private CertificateAndKey(X509Certificate certificate, PrivateKey privateKey) {
+        private X509CertificateAndKey(X509Certificate certificate, PrivateKey privateKey) {
             this.certificate = certificate;
             this.privateKey = privateKey;
         }
