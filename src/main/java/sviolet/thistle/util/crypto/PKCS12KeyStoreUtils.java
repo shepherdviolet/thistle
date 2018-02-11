@@ -31,8 +31,19 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 
 /**
- * openssl pkcs12 -in pkcs12-test.p12 -info -noout
- * certmgr.msc
+ * <p>PKCS12密钥文件工具(p12/pfx)</p>
+ *
+ * <p>
+ *     OPENSSL查看p12文件信息:
+ *     openssl pkcs12 -in pkcs12-test.p12 -info -noout
+ * </p>
+ *
+ * <p>
+ *     Windows查看证书信息:
+ *     certmgr.msc
+ * </p>
+ *
+ * @author S.Violet
  */
 public class PKCS12KeyStoreUtils {
 
