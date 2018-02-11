@@ -19,14 +19,8 @@
 
 package sviolet.thistle.util.crypto;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
+import java.io.*;
+import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 
@@ -138,6 +132,85 @@ public class PKCS12KeyStoreUtils {
                 } catch (Throwable ignore){
                 }
             }
+        }
+    }
+
+    /**
+     * 从p12/pfx文件中读取证书和私钥
+     *
+     * <pre>{@code
+     *      PKCS12KeyStoreUtils.CertificateChainAndKey certificateChainAndKey = PKCS12KeyStoreUtils.loadCertificateAndKey(
+     *          "ca-cert.p12",
+     *          "000000",
+     *          "Thistle test ca alias"
+     *          );
+     * }</pre>
+     *
+     * @param keyStorePath keyStore路径
+     * @param keystorePassword keyStore密码
+     * @param alias 证书和私钥的别名
+     */
+    public static CertificateChainAndKey loadCertificateAndKey(String keyStorePath, String keystorePassword, String alias) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, UnrecoverableKeyException {
+        File keyStoreFile = new File(keyStorePath);
+        if (!keyStoreFile.exists()){
+            throw new IOException("Can not find keyStore file, path:" + keyStoreFile.getAbsolutePath());
+        }
+        return loadCertificateAndKey(new FileInputStream(keyStoreFile), keystorePassword, alias);
+    }
+
+    /**
+     * 从p12/pfx文件中读取证书和私钥
+     *
+     * <pre>{@code
+     *      PKCS12KeyStoreUtils.CertificateChainAndKey certificateChainAndKey = PKCS12KeyStoreUtils.loadCertificateAndKey(
+     *          inputStream,
+     *          "000000",
+     *          "Thistle test ca alias"
+     *          );
+     * }</pre>
+     *
+     * @param inputStream keyStore输入流
+     * @param keystorePassword keyStore密码
+     * @param alias 证书和私钥的别名
+     */
+    public static CertificateChainAndKey loadCertificateAndKey(InputStream inputStream, String keystorePassword, String alias) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, UnrecoverableKeyException {
+        try {
+            KeyStore keyStore = KeyStore.getInstance(ALGORITHM);
+            keyStore.load(inputStream, keystorePassword != null ? keystorePassword.toCharArray() : null);
+            Certificate[] certificateChain = keyStore.getCertificateChain(alias);
+            if (certificateChain == null){
+                Certificate certificate = keyStore.getCertificate(alias);
+                if (certificate != null) {
+                    certificateChain = new Certificate[]{certificate};
+                }
+            }
+            return new CertificateChainAndKey(certificateChain, (PrivateKey) keyStore.getKey(alias, keystorePassword != null ? keystorePassword.toCharArray() : null));
+        } finally {
+            if (inputStream != null){
+                try {
+                    inputStream.close();
+                } catch (IOException ignored) {
+                }
+            }
+        }
+    }
+
+    public static class CertificateChainAndKey {
+
+        private Certificate[] certificateChain;
+        private PrivateKey privateKey;
+
+        public CertificateChainAndKey(Certificate[] certificateChain, PrivateKey privateKey) {
+            this.certificateChain = certificateChain;
+            this.privateKey = privateKey;
+        }
+
+        public Certificate[] getCertificateChain() {
+            return certificateChain;
+        }
+
+        public PrivateKey getPrivateKey() {
+            return privateKey;
         }
     }
 
