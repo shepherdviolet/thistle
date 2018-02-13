@@ -19,6 +19,7 @@
 
 package sviolet.thistle.util.crypto;
 
+import org.bouncycastle.operator.OperatorCreationException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -26,16 +27,19 @@ import java.io.IOException;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
-import java.security.spec.InvalidKeySpecException;
+import java.security.cert.X509Certificate;
 
 public class PKCS12KeyStoreTest {
 
     @Test
-    public void common() throws CertificateException, SignatureException, InvalidKeyException, IOException, KeyStoreException, NoSuchAlgorithmException, InvalidKeySpecException, UnrecoverableKeyException, UnrecoverableKeyException {
+    public void common() throws CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException, OperatorCreationException {
 
-        CertificateUtils.X509CertificateAndKey certificateAndKey = CertificateUtils.generateX509RootCertificate(
+        RSAKeyGenerator.RSAKeyPair rootKeyPair = RSAKeyGenerator.generateKeyPair(2048);
+
+        X509Certificate rootCertificate = CertificateUtils.generateRSAX509RootCertificate(
                 "CN=Thistle test ca, OU=Thistle group, O=Violet Shell, L=Ningbo, ST=Zhejiang, C=CN",
-                1024,
+                rootKeyPair.getPublicKey(),
+                rootKeyPair.getPrivateKey(),
                 3650,
                 CertificateUtils.SIGN_ALGORITHM_RSA_SHA256
         );
@@ -45,23 +49,24 @@ public class PKCS12KeyStoreTest {
                 "000000",
                 "Thistle test ca alias",
                 null,
-                certificateAndKey.getCertificate());
+                rootCertificate);
 
-        CertificateUtils.X509CertificateAndKey certificateAndKey2 = CertificateUtils.generateX509Certificate(
+        RSAKeyGenerator.RSAKeyPair subjectKeyPair = RSAKeyGenerator.generateKeyPair(2048);
+
+        X509Certificate subjectCertificate = CertificateUtils.generateRSAX509Certificate(
                 "CN=Thistle test subject, OU=Thistle group, O=Violet Shell, L=Ningbo, ST=Zhejiang, C=CN",
-                1024,
+                subjectKeyPair.getPublicKey(),
                 3650,
                 CertificateUtils.SIGN_ALGORITHM_RSA_SHA256,
-                certificateAndKey.getCertificate(),
-                certificateAndKey.getPrivateKey()
-        );
+                rootCertificate,
+                rootKeyPair.getPrivateKey());
 
         PKCS12KeyStoreUtils.storeCertificateAndKey(
                 "./out/test-case/pkcs12-test.p12",
                 "000000",
                 "Thistle test subject alias",
-                certificateAndKey2.getPrivateKey(),
-                certificateAndKey2.getCertificate());
+                subjectKeyPair.getPrivateKey(),
+                subjectCertificate);
 
         PKCS12KeyStoreUtils.CertificateChainAndKey certificateChainAndKey = PKCS12KeyStoreUtils.loadCertificateAndKey(
                 "./out/test-case/pkcs12-test-ca.p12",
@@ -69,7 +74,7 @@ public class PKCS12KeyStoreTest {
                 "Thistle test ca alias"
         );
 
-        Assert.assertArrayEquals(new Certificate[]{certificateAndKey.getCertificate()}, certificateChainAndKey.getCertificateChain());
+        Assert.assertArrayEquals(new Certificate[]{rootCertificate}, certificateChainAndKey.getCertificateChain());
         Assert.assertNull(certificateChainAndKey.getPrivateKey());
 
         PKCS12KeyStoreUtils.CertificateChainAndKey certificateChainAndKey2 = PKCS12KeyStoreUtils.loadCertificateAndKey(
@@ -78,8 +83,8 @@ public class PKCS12KeyStoreTest {
                 "Thistle test subject alias"
         );
 
-        Assert.assertArrayEquals(new Certificate[]{certificateAndKey2.getCertificate()}, certificateChainAndKey2.getCertificateChain());
-        Assert.assertEquals(certificateAndKey2.getPrivateKey(), certificateChainAndKey2.getPrivateKey());
+        Assert.assertArrayEquals(new Certificate[]{subjectCertificate}, certificateChainAndKey2.getCertificateChain());
+        Assert.assertEquals(subjectKeyPair.getPrivateKey(), certificateChainAndKey2.getPrivateKey());
 
     }
 

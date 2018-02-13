@@ -50,6 +50,7 @@ dependencies {
     //optional
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$version_kotlinVersion"
     implementation 'com.google.code.gson:gson:2.8.1'
+    implementation 'org.bouncycastle:bcpkix-jdk15on:1.59'
 
     //test
     testImplementation group: 'junit', name: 'junit', version: '4.12'

@@ -38,6 +38,7 @@ dependencies {
         compile ('com.github.shepherdviolet:thistle:9.1') {
             exclude group:'org.jetbrains.kotlin', module:'kotlin-stdlib-jre7'
             exclude group:'com.google.code.gson'
+            exclude group:'org.bouncycastle'
         }
     }
 ```
@@ -54,6 +55,10 @@ dependencies {
              </exclusion>
              <exclusion>
                  <groupId>com.google.code.gson</groupId>
+                 <artifactId>*</artifactId>
+             </exclusion>
+             <exclusion>
+                 <groupId>org.bouncycastle</groupId>
                  <artifactId>*</artifactId>
              </exclusion>
         </exclusions>
