@@ -20,8 +20,11 @@ buildscript {
 
     //构建脚本依赖仓库
     repositories {
+	//jcenter http://jcenter.bintray.com/
         jcenter()
+	//maven-central
         mavenCentral()
+	//jitpack-io
         maven { url 'https://jitpack.io' }
     }
 
