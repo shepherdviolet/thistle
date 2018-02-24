@@ -43,6 +43,12 @@ public class FileUtils {
      * @param append true:追加 false:覆盖
      */
     public static void writeString(File file, String msg, boolean append) throws IOException {
+        File dirFile = file.getParentFile();
+        if (dirFile != null && !dirFile.exists()){
+            if (!dirFile.mkdirs()){
+                throw new IOException("Can not make directory before write string to file, path:" + dirFile.getAbsolutePath());
+            }
+        }
         BufferedWriter writer = null;
         try {
             writer = new BufferedWriter(new FileWriter(file, append));
