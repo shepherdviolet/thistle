@@ -39,10 +39,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
+import java.security.cert.*;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Date;
@@ -85,6 +82,18 @@ public class CertificateUtils {
             } catch (Exception ignore) {
             }
         }
+    }
+
+    /**
+     * 将证书编码为二进制数据
+     * @param certificate 证书
+     * @return 二进制数据
+     */
+    public static byte[] parseCertificateToEncoded(Certificate certificate) throws CertificateEncodingException {
+        if (certificate == null){
+            return null;
+        }
+        return certificate.getEncoded();
     }
 
     //Generate by Bouncy Castle///////////////////////////////////////////////////////////////////////////////////
