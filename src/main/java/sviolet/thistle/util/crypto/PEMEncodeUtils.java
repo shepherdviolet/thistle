@@ -95,8 +95,10 @@ public class PEMEncodeUtils {
         }
 
         start = line << 6;
-        stringBuilder.append(content, start, content.length());
-        stringBuilder.append(NEWLINE);
+        if (start < content.length() - 1) {
+            stringBuilder.append(content, start, content.length());
+            stringBuilder.append(NEWLINE);
+        }
 
         stringBuilder.append(TAIL_PREFIX);
         stringBuilder.append(title);
