@@ -21,6 +21,7 @@
 package sviolet.thistle.util.concurrent;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -32,13 +33,13 @@ import java.util.concurrent.locks.ReentrantLock;
 public class ReentrantLockUtils {
 
     /**
-     * 使用ReentrantLock+Condition阻塞线程等待指定时间, 防止直接用{@link Condition#await()}可能出现的
-     * 假性唤醒, 除了抛出InterruptedException以外, 能够保证等待足够时间(不会提早结束)
+     * 使用ReentrantLock+Condition阻塞线程等待指定时间, 除了抛出InterruptedException以外, 能够保证等待足够时间(不会提早结束),
+     * 即使使用condition.signal()/condition.signalAll()也会继续等待.
      * @param lock ReentrantLock
      * @param condition condition
      * @param timeout 等待时间(ms)
      */
-    public static void awaitMillis(ReentrantLock lock, Condition condition, long timeout) {
+    public static void sleepMillis(ReentrantLock lock, Condition condition, long timeout) {
         final long startMillis = System.currentTimeMillis();
         try {
             lock.lock();
@@ -53,6 +54,40 @@ public class ReentrantLockUtils {
                     }
                 } catch (InterruptedException e) {
                     return;
+                }
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * 使用ReentrantLock+Condition阻塞线程等待信号, 当finishFlag为true, 且condition发出唤醒信号时, 等待结束, 返回true.
+     * 当等待超时时, 返回false.
+     * @param lock ReentrantLock
+     * @param condition condition
+     * @param timeout 等待时间(ms)
+     * @param finishFlag 结束标记, 只有被置为true, 且condition发出唤醒信号时, 等待才会结束
+     * @return false:等待超时 true:在超时前, 线程被唤醒且finishFlag为true
+     */
+    public static boolean awaitMillis(ReentrantLock lock, Condition condition, long timeout, AtomicBoolean finishFlag) {
+        final long startMillis = System.currentTimeMillis();
+        try {
+            lock.lock();
+            while (true) {
+                final long remainTimeout = timeout - (System.currentTimeMillis() - startMillis);
+                if (remainTimeout <= 0) {
+                    return false;
+                }
+                try {
+                    if (!condition.await(remainTimeout, TimeUnit.MILLISECONDS)) {
+                        return false;
+                    }
+                    if (finishFlag.get()){
+                        return true;
+                    }
+                } catch (InterruptedException e) {
+                    return false;
                 }
             }
         } finally {
