@@ -73,6 +73,16 @@ public class FileUtils {
     /**
      * 读取整个文件(字符串形式), 仅限于读取小文件, 小心OOM
      * @param file 文件
+     * @param maxLength 最大长度, 如果文件大小超过该设定值, 会抛出异常
+     * @return 字符串
+     */
+    public static String readString(File file, int maxLength) throws LengthOutOfLimitException, IOException {
+        return readString(file, "utf-8", maxLength);
+    }
+
+    /**
+     * 读取整个文件(字符串形式), 仅限于读取小文件, 小心OOM
+     * @param file 文件
      * @param charset 字符编码
      * @param maxLength 最大长度, 如果文件大小超过该设定值, 会抛出异常
      * @return 字符串
