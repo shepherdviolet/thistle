@@ -43,6 +43,17 @@ public class FileUtils {
      * @param append true:追加 false:覆盖
      */
     public static void writeString(File file, String msg, boolean append) throws IOException {
+        writeString(file, msg, "utf-8", append);
+    }
+
+    /**
+     * 向文件写入字符串
+     * @param file 文件
+     * @param msg 字符串
+     * @param charset 字符编码
+     * @param append true:追加 false:覆盖
+     */
+    public static void writeString(File file, String msg, String charset, boolean append) throws IOException {
         File dirFile = file.getParentFile();
         if (dirFile != null && !dirFile.exists()){
             if (!dirFile.mkdirs()){
@@ -51,11 +62,48 @@ public class FileUtils {
         }
         BufferedWriter writer = null;
         try {
-            writer = new BufferedWriter(new FileWriter(file, append));
+            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, append), charset));
             writer.write(msg);
         } finally {
             try { if (writer != null) {writer.flush();} } catch (IOException ignored) { }
             try { if (writer != null) {writer.close();} } catch (IOException ignored) { }
+        }
+    }
+
+    /**
+     * 读取整个文件(字符串形式), 仅限于读取小文件, 小心OOM
+     * @param file 文件
+     * @param charset 字符编码
+     * @param maxLength 最大长度, 如果文件大小超过该设定值, 会抛出异常
+     * @return 字符串
+     */
+    public static String readString(File file, String charset, int maxLength) throws LengthOutOfLimitException, IOException {
+
+        if (!file.exists() || !file.isFile()) {
+            throw new FileNotFoundException("File not found, path:" + file.getAbsolutePath());
+        }
+
+        if (file.length() > maxLength){
+            throw new LengthOutOfLimitException("File length out of limit, file:" + file.getAbsolutePath() + ", length:" + file.length());
+        }
+
+        BufferedReader bufferedReader = null;
+        try {
+            bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(file), charset));
+            StringBuilder stringBuilder = new StringBuilder();
+            char[] buff = new char[1024];
+            int length;
+            while ((length = bufferedReader.read(buff)) >= 0) {
+                stringBuilder.append(buff, 0, length);
+            }
+            return stringBuilder.toString();
+        } finally {
+            if (bufferedReader != null) {
+                try {
+                    bufferedReader.close();
+                } catch (Exception ignore){
+                }
+            }
         }
     }
 
@@ -172,6 +220,16 @@ public class FileUtils {
             });
         } else {
             return false;
+        }
+    }
+
+    /****************************************************************************************************
+     * Exceptions
+     */
+
+    public static class LengthOutOfLimitException extends Exception {
+        public LengthOutOfLimitException(String message) {
+            super(message);
         }
     }
 
