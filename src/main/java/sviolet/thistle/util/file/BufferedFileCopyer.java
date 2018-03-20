@@ -45,7 +45,28 @@ public class BufferedFileCopyer {
 	 * @param source 源文件
 	 * @param target 目标文件
 	 */
-    public void copy(File source, File target) throws IOException {
+    public static void copy(File source, File target) throws IOException {
+        copy(source, target, 4096);
+    }
+
+    /**
+     * <p>
+     * 较快的复制文件方法（可监控复制进度）<br/>
+     * 目标文件的修改时间与原文件保持基本一致<br/>
+     * 目标文件修改时间可能会偏大,偏差<2000ms, 例如:<br/>
+     * 原始文件修改时间:****2356<br/>
+     * 目标文件修改时间:****4000<br/>
+     * </p>
+     *
+     * @param source 源文件
+     * @param target 目标文件
+     * @param watcher 进度回调
+     */
+    public static void copy(File source, File target, ProgressWatcher watcher) throws IOException {
+        copy(source, target, 64 * 1024, watcher);
+    }
+
+    private static void copy(File source, File target, int buffSize) throws IOException {
         FileChannel in = null;
         FileChannel out = null;
         FileInputStream inStream = null;
@@ -55,7 +76,7 @@ public class BufferedFileCopyer {
             outStream = new FileOutputStream(target);
             in = inStream.getChannel();
             out = outStream.getChannel();
-            ByteBuffer buffer = ByteBuffer.allocate(4096);
+            ByteBuffer buffer = ByteBuffer.allocate(buffSize);
             while (in.read(buffer) != -1) {
                 buffer.flip();
                 out.write(buffer);
@@ -76,4 +97,45 @@ public class BufferedFileCopyer {
         }
         target.setLastModified(lastModified);
     }
+
+    private static void copy(File source, File target, int buffSize, ProgressWatcher watcher) throws IOException {
+        FileChannel in = null;
+        FileChannel out = null;
+        FileInputStream inStream = null;
+        FileOutputStream outStream = null;
+        try {
+            inStream = new FileInputStream(source);
+            outStream = new FileOutputStream(target);
+            in = inStream.getChannel();
+            out = outStream.getChannel();
+            ByteBuffer buffer = ByteBuffer.allocate(buffSize);
+            long total = source.length();
+            long current = 0;
+            while (in.read(buffer) != -1) {
+                buffer.flip();
+                current += buffer.limit();
+                out.write(buffer);
+                buffer.clear();
+                watcher.onUpdate(total, current);
+            }
+        } finally {
+            try{in.close();}catch (Exception ignored){}
+            try{inStream.close();}catch (Exception ignored){}
+            try{outStream.flush();}catch (Exception ignored){}
+            try{out.close();}catch (Exception ignored){}
+            try{outStream.close();}catch (Exception ignored){}
+        }
+        //使目标文件修改时间与源文件保持一致
+        long lastModified = source.lastModified();
+        //解决有时候取出负数, 无法设置时间的问题
+        if(lastModified < 0L) {
+            lastModified = 0L;
+        }
+        target.setLastModified(lastModified);
+    }
+
+    public interface ProgressWatcher {
+        void onUpdate(long total, long current);
+    }
+
 }
