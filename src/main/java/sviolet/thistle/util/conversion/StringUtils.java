@@ -22,6 +22,7 @@ package sviolet.thistle.util.conversion;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.math.BigDecimal;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -137,6 +138,24 @@ public class StringUtils {
             return false;
         }
         return string.contains(keywords);
+    }
+
+    /**
+     * Excel文件数值进度丢失特征: 小数第三位第四位第五位为000或999
+     */
+    private static Pattern resolveExcelPrecisionProblemPattern = Pattern.compile("^(-?\\d+\\.\\d{2})(000|999)(\\d)*$");
+
+    /**
+     * [特殊]通常用于处理Excel文件数据,
+     * 因为Excel的数值有可能存在进度丢失的问题, 例如1.67变成1.669999999...3, 本方法专门识别这种情况, 并纠正精度丢失.
+     * @param string excel中读取的数值, 例如1.669999999...3
+     * @return 纠正后的数值, 例如1.67
+     */
+    public static String resolveExcelPrecisionProblem(String string){
+        if (string == null || !resolveExcelPrecisionProblemPattern.matcher(string).matches()){
+            return string;
+        }
+        return new BigDecimal(string).setScale(2, BigDecimal.ROUND_HALF_UP).toString();
     }
 
 }
