@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 
@@ -142,7 +143,7 @@ public class ByteUtils {
 	 * @param obj object
 	 * @return bytes
 	 */
-	public static byte[] objectToByte(Object obj) throws IOException {
+	public static byte[] objectToBytes(Object obj) throws IOException {
 		byte[] bytes = null;
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(bos);
@@ -159,7 +160,7 @@ public class ByteUtils {
 	 * @param bytes bytes
 	 * @return object
 	 */
-	public static Object byteToObject(byte[] bytes) throws IOException, ClassNotFoundException {
+	public static Object bytesToObject(byte[] bytes) throws IOException, ClassNotFoundException {
 		Object obj = null;
         ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
         ObjectInputStream ois = new ObjectInputStream(bis);
@@ -232,6 +233,34 @@ public class ByteUtils {
 	public static String byteToBin(byte b){
 		//byte做移位时, 会先转为int, 必须与0xff, 否则会出问题
 		return BIN_MAPPING[(b & 0xff) >>> 4] + BIN_MAPPING[b & 0x0F];
+	}
+
+	/**
+	 * bytes转long
+	 * @param bytes bytes
+	 * @param littleEndian 默认false
+	 */
+	public static long bytesToLong(byte[] bytes, boolean littleEndian) {
+		// 将byte[] 封装为 ByteBuffer
+		ByteBuffer buffer = ByteBuffer.wrap(bytes, 0,8);
+		if(littleEndian){
+			buffer.order(ByteOrder.LITTLE_ENDIAN);
+		}
+		return buffer.getLong();
+	}
+
+	/**
+	 * long转bytes
+	 * @param longValue long
+	 * @param littleEndian 默认false
+	 */
+	public static byte[] longToBytes(long longValue, boolean littleEndian){
+		ByteBuffer buffer = ByteBuffer.allocate(8);
+		if(littleEndian){
+			buffer.order(ByteOrder.LITTLE_ENDIAN);
+		}
+		buffer.putLong(longValue);
+		return buffer.array();
 	}
 
 }
