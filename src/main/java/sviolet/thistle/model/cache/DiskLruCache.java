@@ -845,6 +845,15 @@ public final class DiskLruCache implements Closeable {
             }
         }
 
+        public RandomAccessFile newRandomAccessFileForWrite(int index) throws IOException {
+            synchronized (DiskLruCache.this) {
+                if (entry.currentEditor != this) {
+                    throw new IllegalStateException();
+                }
+                return new RandomAccessFile(entry.getDirtyFile(index), "rw");
+            }
+        }
+
         /**
          * Sets the value at {@code index} to {@code value}.
          */
