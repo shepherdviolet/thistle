@@ -303,6 +303,7 @@ public class ReflectGetter {
      * 2: list
      * 3. array[]
      * 4. array[][]
+     * 9. bean
      *
      * basic:
      * integer, long, float, boolean, byte, char, double, short, byte[], char[], String
