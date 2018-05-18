@@ -150,6 +150,11 @@ public class FileUtils {
      * isMappedByteBufferCanClean方法可以判断当前运行环境是否能手动回收MappedByteBuffer, 无法手动回收的运行时环境建
      * 议不要随便使用MappedByteBuffer, 改用传统的IO.
      * cleanMappedByteBuffer方法可以手动回收MappedByteBuffer.
+     *
+     * MappedByteBuffer是通过下列方法获得的:
+     *      FileInputStream inputStream = new FileInputStream(file);
+     *      Channel channel = inputStream.getChannel();
+     *      MappedByteBuffer byteBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, file.length());
      */
 
     private static int isMappedByteBufferCanClean = -1;
