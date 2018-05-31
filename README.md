@@ -1,4 +1,4 @@
-# thistle 9.5
+# thistle 9.6
 * Java common library for private use
 * https://github.com/shepherdviolet/thistle
 
@@ -14,7 +14,7 @@ repositories {
     maven { url 'https://jitpack.io' }
 }
 dependencies {
-    compile 'com.github.shepherdviolet:thistle:9.5'
+    compile 'com.github.shepherdviolet:thistle:9.6'
 }
 
 ```
@@ -23,7 +23,7 @@ dependencies {
     <dependency>    
         <groupId>com.github.shepherdviolet</groupId>
         <artifactId>thistle</artifactId>
-        <version>9.5</version> 
+        <version>9.6</version> 
     </dependency>
 ```
 
@@ -35,7 +35,7 @@ dependencies {
         maven { url 'https://jitpack.io' }
     }
     dependencies {
-        compile ('com.github.shepherdviolet:thistle:9.5') {
+        compile ('com.github.shepherdviolet:thistle:9.6') {
             exclude group:'org.jetbrains.kotlin', module:'kotlin-stdlib-jre7'
             exclude group:'com.google.code.gson'
             exclude group:'org.bouncycastle'
@@ -47,7 +47,7 @@ dependencies {
     <dependency>
         <groupId>com.github.shepherdviolet</groupId>
         <artifactId>thistle</artifactId>
-        <version>9.5</version>
+        <version>9.6</version>
         <exclusions>
              <exclusion>
                  <groupId>org.jetbrains.kotlin</groupId>
