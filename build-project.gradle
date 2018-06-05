@@ -8,18 +8,8 @@ version project_version
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
-//set compile encoding
-tasks.withType(JavaCompile) {
-    options.encoding = "UTF-8"
-}
-
-//set doc encoding
-javadoc {
-    options{
-        encoding "UTF-8"
-        charSet 'UTF-8'
-    }
-}
+//encoding
+[compileJava, compileTestJava, javadoc]*.options*.encoding = "UTF-8"
 
 //kotlin compile
 compileKotlin {
