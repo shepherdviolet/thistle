@@ -38,6 +38,7 @@ import java.nio.charset.Charset;
 public class ByteUtils {
 
 	private static final String HEX_STRING_MAPPING = "0123456789abcdef0123456789ABCDEF";
+
 	/**
 	 * 把两个byte[]前后拼接成一个byte[]
 	 * 
@@ -55,7 +56,7 @@ public class ByteUtils {
 	/**
 	 * bytes转为hexString
 	 * @param bytes bytes
-	 * @return lower case hex string
+	 * @return upper case hex string
 	 */
 	public static String bytesToUpperCaseHex(byte bytes) {
 		return bytesToHex(bytes).toUpperCase();
@@ -64,7 +65,7 @@ public class ByteUtils {
 	/**
 	 * bytes转为hexString
 	 * @param bytes bytes
-	 * @return hex string
+	 * @return lower case hex string
 	 */
 	public static String bytesToHex(byte bytes) {
 		int unitInt = bytes & 0xFF;
@@ -78,7 +79,7 @@ public class ByteUtils {
     /**
      * bytes转为hexString
      * @param bytes bytes
-     * @return lower case hex string
+     * @return upper case hex string
      */
     public static String bytesToUpperCaseHex(byte[] bytes){
         return bytesToHex(bytes).toUpperCase();
@@ -87,7 +88,7 @@ public class ByteUtils {
 	/**
 	 * bytes转为hexString
 	 * @param bytes bytes
-	 * @return hex string
+	 * @return lower case hex string
 	 */
 	public static String bytesToHex(byte[] bytes){
 		if (bytes == null) {
@@ -139,12 +140,12 @@ public class ByteUtils {
 	}
 
 	/**
-	 * 对象转数组
+	 * 对象转数组(JDK序列化)
 	 * @param obj object
 	 * @return bytes
 	 */
 	public static byte[] objectToBytes(Object obj) throws IOException {
-		byte[] bytes = null;
+		byte[] bytes;
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(bos);
         oos.writeObject(obj);
@@ -156,12 +157,12 @@ public class ByteUtils {
 	}
 
 	/**
-	 * 数组转对象
+	 * 数组转对象(JDK反序列化)
 	 * @param bytes bytes
 	 * @return object
 	 */
 	public static Object bytesToObject(byte[] bytes) throws IOException, ClassNotFoundException {
-		Object obj = null;
+		Object obj;
         ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
         ObjectInputStream ois = new ObjectInputStream(bis);
         obj = ois.readObject();

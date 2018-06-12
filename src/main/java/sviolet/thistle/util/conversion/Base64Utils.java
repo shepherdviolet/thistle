@@ -23,13 +23,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
-import java.util.zip.InflaterOutputStream;
 
 /**
- * Base64工具(自实现)<br/>
- * 可使用Android自带的Base64编码解码
+ * Base64工具<br/>
  *
  * @author SOMEONE
  */
@@ -71,7 +70,9 @@ public class Base64Utils {
     }
 
     /**
-     * 编码为String
+     * bytes编码为String
+     *
+     * @param data bytes
      */
     public static String encodeToString(byte[] data) {
         try {
@@ -82,7 +83,9 @@ public class Base64Utils {
     }
 
     /**
-     * 编码为Url专用的String, 用于Http的Url参数, 否则+号会变空格
+     * bytes编码为Url专用的String, 用于Http的Url参数, 否则+号会变空格
+     *
+     * @param data bytes
      */
     public static String encodeToUrlEncodedString(byte[] data){
         try {
@@ -93,7 +96,9 @@ public class Base64Utils {
     }
 
     /**
-     * 编码
+     * bytes编码为Base64 bytes
+     *
+     * @param data bytes
      */
     public static byte[] encode(byte[] data) {
         if (data == null){
@@ -155,7 +160,7 @@ public class Base64Utils {
     }
 
     /**
-     * 解码
+     * Base64 bytes解码为bytes
      */
     public static byte[] decode(byte[] data) {
         if (data == null){
@@ -207,7 +212,7 @@ public class Base64Utils {
     }
 
     /**
-     * 解码
+     * Base64 String解码为bytes
      */
     public static byte[] decode(String data) {
         if (data == null){
@@ -294,7 +299,7 @@ public class Base64Utils {
     }
 
     /**
-     * 压缩
+     * bytes编码(压缩)为Base64 bytes
      */
     public static byte[] compressBytes(byte[] input) {
         if (input == null){
@@ -308,7 +313,7 @@ public class Base64Utils {
         compresser.reset();
         compresser.setInput(input);
         compresser.finish();
-        byte[] output = new byte[0];
+        byte[] output;
         ByteArrayOutputStream o = new ByteArrayOutputStream(input.length);
         try {
             byte[] buf = new byte[cachesize];
@@ -321,22 +326,21 @@ public class Base64Utils {
         } finally {
             try {
                 o.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException ignore) {
             }
         }
         return output;
     }
 
     /**
-     * 解压缩
+     * Base64 bytes解码(解压缩)为bytes
      */
-    public static byte[] decompressBytes(byte[] input) {
+    public static byte[] decompressBytes(byte[] input) throws DataFormatException {
         if (input == null){
             return new byte[0];
         }
 
-        int cachesize = 1024;
+        int cacheSize = 1024;
         Inflater decompresser = new Inflater();
 
         byte[] output = new byte[0];
@@ -344,38 +348,20 @@ public class Base64Utils {
         decompresser.setInput(input);
         ByteArrayOutputStream o = new ByteArrayOutputStream(input.length);
         try {
-            byte[] buf = new byte[cachesize];
+            byte[] buf = new byte[cacheSize];
             int got;
             while (!decompresser.finished()) {
                 got = decompresser.inflate(buf);
                 o.write(buf, 0, got);
             }
             output = o.toByteArray();
-        } catch (Exception e) {
-            e.printStackTrace();
         } finally {
             try {
                 o.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException ignore) {
             }
         }
         return output;
     }
 
-    /**
-     * 解压缩String
-     */
-    public static String decompressData(String encdata) {
-        try {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            InflaterOutputStream zos = new InflaterOutputStream(bos);
-            zos.write(Base64Utils.decode(encdata));
-            zos.close();
-            return new String(bos.toByteArray());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return "UNZIP_ERR";
-        }
-    }
 }
