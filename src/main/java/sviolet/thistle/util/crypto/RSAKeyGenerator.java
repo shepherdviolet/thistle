@@ -57,7 +57,7 @@ public class RSAKeyGenerator {
     /**
      * 随机生成RSA密钥对
      *
-     * @param bits 秘钥位数(默认1024)
+     * @param bits 秘钥位数(1024/2048)
      * @return 密钥对
      */
     public static RSAKeyPair generateKeyPair(int bits) {

@@ -36,6 +36,9 @@ import java.security.spec.X509EncodedKeySpec;
  */
 public class ECDSAKeyGenerator {
 
+    /**
+     * 密钥类型:EC
+     */
     public static final String ECDSA_KEY_ALGORITHM = "EC";
 
     /**

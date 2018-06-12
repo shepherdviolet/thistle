@@ -20,7 +20,6 @@
 package sviolet.thistle.util.crypto;
 
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 
 /**
@@ -48,6 +47,7 @@ public class AESKeyGenerator {
 	 * @param secureRandom 随机数, 推荐使用AESKeyGenerator.generateAes128()代替, 使用自定义的SecureRandom可能会导致安全问题
 	 * @return 秘钥
 	 */
+	@Deprecated
 	public static byte[] generateAes128(SecureRandom secureRandom) throws NoSuchAlgorithmException {
 		return BaseKeyGenerator.generateKey(secureRandom, 128, KEY_ALGORITHM);
 	}
@@ -59,6 +59,7 @@ public class AESKeyGenerator {
 	 * @param seed 秘钥种子
 	 * @return 秘钥
 	 */
+	@Deprecated
 	public static byte[] generateAes128(byte[] seed) throws NoSuchAlgorithmException {
 		return BaseKeyGenerator.generateKey(seed, 128, KEY_ALGORITHM);
 	}

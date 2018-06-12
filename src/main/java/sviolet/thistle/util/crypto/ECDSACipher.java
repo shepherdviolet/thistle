@@ -41,6 +41,9 @@ import java.security.interfaces.ECPublicKey;
  */
 public class ECDSACipher {
 
+    /**
+     * 签名算法:SHA256withECDSA
+     */
     public static final String SIGN_ALGORITHM_ECDSA_SHA256 = "SHA256withECDSA";
 
     /**
@@ -80,7 +83,7 @@ public class ECDSACipher {
      * 用私钥对信息生成数字签名<p>
      *  
      * @param data 需要签名的数据
-     * @param privateKey 私钥
+     * @param privateKey 私钥(ECDSA)
      * @param signAlgorithm 签名逻辑: ECDSACipher.SIGN_ALGORITHM_ECDSA_SHA256
      *  
      * @return 数字签名
@@ -96,8 +99,8 @@ public class ECDSACipher {
      * <p>用私钥对信息生成数字签名, 根据运行时环境选择使用NIO或IO方式</p>
      *
      * @param file 需要签名的文件
-     * @param privateKey 私钥
-     * @param signAlgorithm 签名逻辑: RSACipher.SIGN_ALGORITHM_RSA_MD5 / RSACipher.SIGN_ALGORITHM_RSA_SHA1
+     * @param privateKey 私钥(ECDSA)
+     * @param signAlgorithm 签名逻辑: ECDSACipher.SIGN_ALGORITHM_ECDSA_SHA256
      *
      * @return 数字签名
      * @throws NoSuchAlgorithmException 无效的signAlgorithm
@@ -169,7 +172,7 @@ public class ECDSACipher {
      * @param file 被签名的文件
      * @param sign 数字签名
      * @param publicKey 公钥
-     * @param signAlgorithm 签名逻辑: RSACipher.SIGN_ALGORITHM_RSA_MD5 / RSACipher.SIGN_ALGORITHM_RSA_SHA1
+     * @param signAlgorithm 签名逻辑: ECDSACipher.SIGN_ALGORITHM_ECDSA_SHA256
      *
      * @return true:数字签名有效
      * @throws NoSuchAlgorithmException 无效的signAlgorithm

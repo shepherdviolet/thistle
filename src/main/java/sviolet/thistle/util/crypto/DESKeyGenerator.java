@@ -20,7 +20,6 @@
 package sviolet.thistle.util.crypto;
 
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 
 /**
@@ -70,6 +69,7 @@ public class DESKeyGenerator {
 	 * @param secureRandom 推荐使用DESKeyGenerator.generateDes64()代替, 使用自定义的SecureRandom可能会导致安全问题
 	 * @return 秘钥
 	 */
+	@Deprecated
 	public static byte[] generateDes64(SecureRandom secureRandom) throws NoSuchAlgorithmException {
 		//这里配置56但是出来的是64bits
 		return BaseKeyGenerator.generateKey(secureRandom, 56, DES_KEY_ALGORITHM);
@@ -82,6 +82,7 @@ public class DESKeyGenerator {
 	 * @param secureRandom 推荐使用DESKeyGenerator.generateDesEde128()代替, 使用自定义的SecureRandom可能会导致安全问题
 	 * @return 秘钥
 	 */
+	@Deprecated
 	public static byte[] generateDesEde128(SecureRandom secureRandom) throws NoSuchAlgorithmException {
 		//这里配置112但是出来的是128bits
 		return BaseKeyGenerator.generateKey(secureRandom, 112, DES_EDE_KEY_ALGORITHM);
@@ -94,6 +95,7 @@ public class DESKeyGenerator {
 	 * @param secureRandom 推荐使用DESKeyGenerator.generateDesEde192()代替, 使用自定义的SecureRandom可能会导致安全问题
 	 * @return 秘钥
 	 */
+	@Deprecated
 	public static byte[] generateDesEde192(SecureRandom secureRandom) throws NoSuchAlgorithmException {
 		//这里配置168但是出来的是192bits
 		return BaseKeyGenerator.generateKey(secureRandom, 168, DES_EDE_KEY_ALGORITHM);
@@ -106,6 +108,7 @@ public class DESKeyGenerator {
 	 * @param seed 秘钥种子
 	 * @return 秘钥
 	 */
+	@Deprecated
 	public static byte[] generateDes64(byte[] seed) throws NoSuchAlgorithmException {
 		//这里配置56但是出来的是64bits
 		return BaseKeyGenerator.generateKey(seed, 56, DES_KEY_ALGORITHM);
@@ -118,6 +121,7 @@ public class DESKeyGenerator {
 	 * @param seed 秘钥种子
 	 * @return 秘钥
 	 */
+	@Deprecated
 	public static byte[] generateDesEde128(byte[] seed) throws NoSuchAlgorithmException {
 		//这里配置112但是出来的是128bits
 		return BaseKeyGenerator.generateKey(seed, 112, DES_EDE_KEY_ALGORITHM);
@@ -130,6 +134,7 @@ public class DESKeyGenerator {
 	 * @param seed 秘钥种子
 	 * @return 秘钥
 	 */
+	@Deprecated
 	public static byte[] generateDesEde192(byte[] seed) throws NoSuchAlgorithmException {
 		//这里配置168但是出来的是192bits
 		return BaseKeyGenerator.generateKey(seed, 168, DES_EDE_KEY_ALGORITHM);

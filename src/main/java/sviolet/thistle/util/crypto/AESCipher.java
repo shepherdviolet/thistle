@@ -29,7 +29,7 @@ import java.security.NoSuchAlgorithmException;
 
 /**
  * 
- * <p>AES加密工具</p>
+ * <p>AES加解密工具</p>
  *
  * <p>Cipher/Signature/MessageDigest线程不安全!!!</p>
  * 
@@ -38,11 +38,25 @@ import java.security.NoSuchAlgorithmException;
  */
 
 public class AESCipher{
-	
+
+	/**
+	 * 密钥类型:AES
+	 */
 	public static final String KEY_ALGORITHM = "AES";
 
+	/**
+	 * 加密算法:AES + ECB/PKCS5Padding填充
+	 */
 	public static final String CRYPTO_ALGORITHM_AES_ECB_PKCS5PADDING = "AES/ECB/PKCS5Padding";
+
+	/**
+	 * 加密算法:AES + CBC/PKCS5Padding填充
+	 */
 	public static final String CRYPTO_ALGORITHM_AES_CBC_PKCS5PADDING = "AES/CBC/PKCS5Padding";
+
+	/**
+	 * 加密算法:AES + CBC无填充
+	 */
     public static final String CRYPTO_ALGORITHM_AES_CBC_NOPADDING = "AES/CBC/NoPadding";
 
 	/**

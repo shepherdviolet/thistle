@@ -30,7 +30,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * DESede加密工具(3des)
+ * DESede加密工具(3DES)
  *
  * <p>Cipher/Signature/MessageDigest线程不安全!!!</p>
  *
@@ -40,10 +40,24 @@ import java.security.NoSuchAlgorithmException;
  */
 public class DESEdeCipher {
 
+    /**
+     * 密钥类型:DESede
+     */
     public static final String KEY_ALGORITHM = "DESede";
 
+    /**
+     * 加密算法:DESede + ECB/PKCS5Padding
+     */
     public static final String CRYPTO_ALGORITHM_DES_EDE_ECB_PKCS5PADDING = "DESede/ECB/PKCS5Padding";
+
+    /**
+     * 加密算法:DESede + CBC/PKCS5Padding
+     */
     public static final String CRYPTO_ALGORITHM_DES_EDE_CBC_PKCS5PADDING = "DESede/CBC/PKCS5Padding";
+
+    /**
+     * 加密算法:DESede + CBC无填充
+     */
     public static final String CRYPTO_ALGORITHM_DES_EDE_CBC_NOPADDING = "DESede/CBC/NoPadding";
 
     /**

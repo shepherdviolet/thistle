@@ -39,11 +39,29 @@ import javax.crypto.NoSuchPaddingException;
  */
 public class DESCipher {
 
+    /**
+     * 密钥类型:DES
+     */
     public static final String KEY_ALGORITHM = "DES";
 
+    /**
+     * 加密算法:DES + 无填充
+     */
     public static final String CRYPTO_ALGORITHM_DES = "DES";
+
+    /**
+     * 加密算法:DES + ECB/PKCS5Padding填充
+     */
     public static final String CRYPTO_ALGORITHM_DES_ECB_PKCS5PADDING = "DES/ECB/PKCS5Padding";
+
+    /**
+     * 加密算法:DES + CBC/PKCS5Padding
+     */
     public static final String CRYPTO_ALGORITHM_DES_CBC_PKCS5PADDING = "DES/CBC/PKCS5Padding";
+
+    /**
+     * 加密算法:DES + CBC无填充
+     */
     public static final String CRYPTO_ALGORITHM_DES_CBC_NOPADDING = "DES/CBC/NoPadding";
 
     /**

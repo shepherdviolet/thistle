@@ -47,13 +47,39 @@ import javax.crypto.NoSuchPaddingException;
  */
 public class RSACipher {
 
+    /**
+     * 签名算法:MD5withRSA
+     */
     public static final String SIGN_ALGORITHM_RSA_MD5 = "MD5withRSA";
+
+    /**
+     * 签名算法:SHA1withRSA
+     */
     public static final String SIGN_ALGORITHM_RSA_SHA1 = "SHA1withRSA";
+
+    /**
+     * 签名算法:SHA256withRSA
+     */
     public static final String SIGN_ALGORITHM_RSA_SHA256 = "SHA256withRSA";
 
+    /**
+     * 加密算法:RSA + ECB/PKCS1Padding
+     */
     public static final String CRYPTO_ALGORITHM_RSA_ECB_PKCS1PADDING = "RSA/ECB/PKCS1Padding";
+
+    /**
+     * 加密算法:RSA + ECB无填充
+     */
     public static final String CRYPTO_ALGORITHM_RSA_ECB_NOPADDING = "RSA/ECB/NoPadding";
+
+    /**
+     * 加密算法:RSA + 无填充
+     */
     public static final String CRYPTO_ALGORITHM_RSA_NONE_NOPADDING = "RSA/None/NoPadding";
+
+    /**
+     * 加密算法:RSA + 无填充
+     */
     public static final String CRYPTO_ALGORITHM_RSA = "RSA";
 
     /**

@@ -40,16 +40,31 @@ import sviolet.thistle.util.file.FileUtils;
  * @author S.Violet
  */
 public class DigestCipher {
-	
+
+	/**
+	 * 摘要类型:MD5
+	 */
 	public static final String TYPE_MD5 = "MD5";
+
+	/**
+	 * 摘要类型:SHA1
+	 */
 	public static final String TYPE_SHA1 = "SHA1";
+
+	/**
+	 * 摘要类型:SHA256
+	 */
     public static final String TYPE_SHA256 = "SHA-256";
-    public static final String TYPE_SHA512 = "SHA-512";
+
+	/**
+	 * 摘要类型:SHA-512
+	 */
+	public static final String TYPE_SHA512 = "SHA-512";
 
 	private static final String DEFAULT_ENCODING = "utf-8";
 	
 	/**
-	 * 摘要byte[], 注意抛出异常
+	 * 摘要byte[]
 	 * 
 	 * @param bytes bytes
 	 * @param type 摘要算法
@@ -79,7 +94,7 @@ public class DigestCipher {
 	}
 
 	/**
-	 * 摘要字符串(.getBytes(encoding)), 注意抛出异常
+	 * 摘要字符串(.getBytes(encoding))
 	 * 
 	 * @param str bytes
 	 * @param type 摘要算法
@@ -98,7 +113,7 @@ public class DigestCipher {
 	}
 
     /**
-     * 摘要十六进制字符串(ByteUtils.hexToBytes(hexStr)), 注意抛出异常
+     * 摘要十六进制字符串(ByteUtils.hexToBytes(hexStr))
      *
      * @param hexStr 十六进制字符串
      * @param type 摘要算法
