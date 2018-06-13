@@ -205,10 +205,16 @@ public class PKCS12KeyStoreUtils {
             this.privateKey = privateKey;
         }
 
+        /**
+         * 获得证书链
+         */
         public Certificate[] getCertificateChain() {
             return certificateChain;
         }
 
+        /**
+         * 获得私钥
+         */
         public PrivateKey getPrivateKey() {
             return privateKey;
         }
