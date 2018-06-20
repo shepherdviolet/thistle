@@ -68,6 +68,11 @@ uploadArchives {
                 authentication(userName: sonatype_user, password: sonatype_password)
             }
 
+            //部署到Nexus私服(reponame修改为仓库名称)
+//            repository(url: "http://localhost:8081/nexus/content/repositories/reponame/") {
+//                authentication(userName: 'name', password: 'password')
+//            }
+
         } else {
 
             //部署到本地仓库
