@@ -23,6 +23,9 @@ import java.io.*;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 
 /**
  * <p>PKCS12密钥文件工具(p12/pfx)</p>
@@ -136,6 +139,55 @@ public class PKCS12KeyStoreUtils {
     }
 
     /**
+     * 从p12/pfx文件中遍历alias
+     *
+     * <pre>{@code
+     *      Enumeration<String> aliases = PKCS12KeyStoreUtils.loadAliases(
+     *          "ca-cert.p12",
+     *          "000000"
+     *          );
+     * }</pre>
+     *
+     * @param keyStorePath keyStore路径
+     * @param keystorePassword keyStore密码
+     */
+    public static Enumeration<String> loadAliases(String keyStorePath, String keystorePassword) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, UnrecoverableKeyException {
+        File keyStoreFile = new File(keyStorePath);
+        if (!keyStoreFile.exists()){
+            throw new IOException("Can not find keyStore file, path:" + keyStoreFile.getAbsolutePath());
+        }
+        return loadAliases(new FileInputStream(keyStoreFile), keystorePassword);
+    }
+
+    /**
+     * 从p12/pfx文件中遍历alias
+     *
+     * <pre>{@code
+     *      Enumeration<String> aliases = PKCS12KeyStoreUtils.loadAliases(
+     *          inputStream,
+     *          "000000"
+     *          );
+     * }</pre>
+     *
+     * @param inputStream keyStore输入流
+     * @param keystorePassword keyStore密码
+     */
+    public static Enumeration<String> loadAliases(InputStream inputStream, String keystorePassword) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, UnrecoverableKeyException {
+        try {
+            KeyStore keyStore = KeyStore.getInstance(ALGORITHM);
+            keyStore.load(inputStream, keystorePassword != null ? keystorePassword.toCharArray() : null);
+            return keyStore.aliases();
+        } finally {
+            if (inputStream != null){
+                try {
+                    inputStream.close();
+                } catch (IOException ignored) {
+                }
+            }
+        }
+    }
+
+    /**
      * 从p12/pfx文件中读取证书和私钥
      *
      * <pre>{@code
@@ -184,7 +236,69 @@ public class PKCS12KeyStoreUtils {
                     certificateChain = new Certificate[]{certificate};
                 }
             }
-            return new CertificateChainAndKey(certificateChain, (PrivateKey) keyStore.getKey(alias, keystorePassword != null ? keystorePassword.toCharArray() : null));
+            return new CertificateChainAndKey(alias, certificateChain, (PrivateKey) keyStore.getKey(alias, keystorePassword != null ? keystorePassword.toCharArray() : null));
+        } finally {
+            if (inputStream != null){
+                try {
+                    inputStream.close();
+                } catch (IOException ignored) {
+                }
+            }
+        }
+    }
+
+    /**
+     * 从p12/pfx文件中读取证书和私钥
+     *
+     * <pre>{@code
+     *      List<PKCS12KeyStoreUtils.CertificateChainAndKey> certificateChainAndKeyList = PKCS12KeyStoreUtils.loadAllCertificateAndKey(
+     *          "ca-cert.p12",
+     *          "000000"
+     *          );
+     * }</pre>
+     *
+     * @param keyStorePath keyStore路径
+     * @param keystorePassword keyStore密码
+     */
+    public static List<CertificateChainAndKey> loadAllCertificateAndKey(String keyStorePath, String keystorePassword) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, UnrecoverableKeyException {
+        File keyStoreFile = new File(keyStorePath);
+        if (!keyStoreFile.exists()){
+            throw new IOException("Can not find keyStore file, path:" + keyStoreFile.getAbsolutePath());
+        }
+        return loadAllCertificateAndKey(new FileInputStream(keyStoreFile), keystorePassword);
+    }
+
+    /**
+     * 从p12/pfx文件中读取证书和私钥
+     *
+     * <pre>{@code
+     *      List<PKCS12KeyStoreUtils.CertificateChainAndKey> certificateChainAndKeyList = PKCS12KeyStoreUtils.loadAllCertificateAndKey(
+     *          inputStream,
+     *          "000000"
+     *          );
+     * }</pre>
+     *
+     * @param inputStream keyStore输入流
+     * @param keystorePassword keyStore密码
+     */
+    public static List<CertificateChainAndKey> loadAllCertificateAndKey(InputStream inputStream, String keystorePassword) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, UnrecoverableKeyException {
+        try {
+            KeyStore keyStore = KeyStore.getInstance(ALGORITHM);
+            keyStore.load(inputStream, keystorePassword != null ? keystorePassword.toCharArray() : null);
+            List<CertificateChainAndKey> list = new ArrayList<>(1);
+            Enumeration<String> aliases = keyStore.aliases();
+            while (aliases.hasMoreElements()) {
+                String alias = aliases.nextElement();
+                Certificate[] certificateChain = keyStore.getCertificateChain(alias);
+                if (certificateChain == null) {
+                    Certificate certificate = keyStore.getCertificate(alias);
+                    if (certificate != null) {
+                        certificateChain = new Certificate[]{certificate};
+                    }
+                }
+                list.add(new CertificateChainAndKey(alias, certificateChain, (PrivateKey) keyStore.getKey(alias, keystorePassword != null ? keystorePassword.toCharArray() : null)));
+            }
+            return list;
         } finally {
             if (inputStream != null){
                 try {
@@ -197,12 +311,18 @@ public class PKCS12KeyStoreUtils {
 
     public static class CertificateChainAndKey {
 
+        private String alias;
         private Certificate[] certificateChain;
         private PrivateKey privateKey;
 
-        public CertificateChainAndKey(Certificate[] certificateChain, PrivateKey privateKey) {
+        private CertificateChainAndKey(String alias, Certificate[] certificateChain, PrivateKey privateKey) {
+            this.alias = alias;
             this.certificateChain = certificateChain;
             this.privateKey = privateKey;
+        }
+
+        public String getAlias() {
+            return alias;
         }
 
         /**
@@ -218,6 +338,7 @@ public class PKCS12KeyStoreUtils {
         public PrivateKey getPrivateKey() {
             return privateKey;
         }
+
     }
 
 }
