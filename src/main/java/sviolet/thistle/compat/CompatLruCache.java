@@ -108,8 +108,6 @@ public class CompatLruCache<K, V> {
     /**
      * Sets the size of the cache.
      * @param maxSize The new maximum size.
-     *
-     * @hide
      */
     public void resize(int maxSize) {
         if (maxSize <= 0) {

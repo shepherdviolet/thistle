@@ -354,7 +354,6 @@ public class TLinkedBlockingDeque<E> extends CompatLinkedBlockingDeque<E> {
      * [增强]把队列中所有等于指定对象的元素全部移除(根据元素.equals()判断)<br/>
      * 在元素不可重复模式下, 建议使用remove(Object);
      * @param o 指定对象
-     * @return
      */
     public boolean removeAll(Object o){
         if (o == null) {

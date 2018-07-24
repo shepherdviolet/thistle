@@ -92,8 +92,6 @@ public class AverageFloat {
 	
 	/**
 	 * 返回当前平均值
-	 * 
-	 * @return
 	 */
 	public float getAverage(){
 		if(full){
