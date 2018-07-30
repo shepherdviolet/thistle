@@ -150,6 +150,15 @@ public class RSAKeyGenerator {
         return (RSAPrivateKey) keyFactory.generatePrivate(keySpec);
     }
 
+    /**
+     * 已知私钥获得公钥
+     * @param privateKey 私钥
+     * @return 公钥(公钥指数65537)
+     */
+    public static RSAPublicKey parsePublicKeyFromPrivateKey(RSAPrivateKey privateKey) throws InvalidKeySpecException {
+        return generatePublicKey(privateKey.getModulus(), new BigInteger("65537"));
+    }
+
     public static class RSAKeyPair {
 
         private RSAPublicKey publicKey = null;
