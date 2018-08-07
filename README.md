@@ -7,6 +7,7 @@
 ```gradle
 
 repositories {
+	//Thistle in mavenCentral
     mavenCentral()
 }
 dependencies {
@@ -27,6 +28,7 @@ dependencies {
 
 ```gradle
     repositories {
+    	//Thistle in mavenCentral
         mavenCentral()
     }
     dependencies {
