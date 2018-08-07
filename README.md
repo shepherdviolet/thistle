@@ -7,11 +7,7 @@
 ```gradle
 
 repositories {
-    //local repository
-    //maven { url 'file:C:/m2repository/repository' }
-    //maven central or jitpack.io
     mavenCentral()
-    maven { url 'https://jitpack.io' }
 }
 dependencies {
     compile 'com.github.shepherdviolet:thistle:9.8'
@@ -32,7 +28,6 @@ dependencies {
 ```gradle
     repositories {
         mavenCentral()
-        maven { url 'https://jitpack.io' }
     }
     dependencies {
         compile ('com.github.shepherdviolet:thistle:9.8') {
