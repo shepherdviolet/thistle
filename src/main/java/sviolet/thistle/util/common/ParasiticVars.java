@@ -71,7 +71,7 @@ public class ParasiticVars {
     /**
      * 变量宿主
      */
-    private static Map<String, HostHolder> hosts;
+    private volatile static Map<String, HostHolder> hosts;
 
     /**
      * gc任务执行线程池
