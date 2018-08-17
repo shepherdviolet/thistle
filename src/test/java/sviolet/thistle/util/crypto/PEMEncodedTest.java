@@ -21,6 +21,7 @@ package sviolet.thistle.util.crypto;
 
 import org.junit.Assert;
 import org.junit.Test;
+import sviolet.thistle.entity.IllegalParamException;
 
 import java.security.spec.InvalidKeySpecException;
 
@@ -87,7 +88,7 @@ public class PEMEncodedTest {
             "YUjDoBey36dCBDtK6rQF9Le0sRY/gU35J44uSymmzQ==";
 
     @Test
-    public void common() throws InvalidKeySpecException {
+    public void common() throws InvalidKeySpecException, IllegalParamException {
 
         Assert.assertEquals(
                 CERTIFICATE_PEM,
@@ -97,6 +98,16 @@ public class PEMEncodedTest {
         Assert.assertEquals(
                 PRIVATE_KEY_PEM,
                 PEMEncodeUtils.rsaPrivateKeyToPEMEncoded(PRIVATE_KEY_BASE64)
+        );
+
+        Assert.assertEquals(
+                CERTIFICATE_BASE64,
+                PEMEncodeUtils.pemEncodedToX509EncodedString(CERTIFICATE_PEM)
+        );
+
+        Assert.assertEquals(
+                PRIVATE_KEY_BASE64,
+                PEMEncodeUtils.pemEncodedToX509EncodedString(PRIVATE_KEY_PEM)
         );
 
         RSAKeyGenerator.RSAKeyPair keyPair = RSAKeyGenerator.generateKeyPair();

@@ -19,6 +19,7 @@
 
 package sviolet.thistle.util.crypto;
 
+import sviolet.thistle.entity.IllegalParamException;
 import sviolet.thistle.util.conversion.Base64Utils;
 
 /**
@@ -163,6 +164,77 @@ public class PEMEncodeUtils {
 
     public static String certificateToPEMEncoded(byte[] content) {
         return toPEMEncoded(content, "CERTIFICATE");
+    }
+
+    /**
+     * 将PEM格式的文本转换为X509 Base64 String, 即砍掉标题, 去除换行
+     * <p>
+     * 例如:
+     * <p>
+     * <pre>{@code
+     *  -----BEGIN RSA PRIVATE KEY-----
+     *  MIICWwIBAAKBgQCwA7DAKe4d+kwbt4T5i8vKP4SF0zju3BgDBW3CUlyfLvtTM8ev
+     *  BzB3lhvNT8cmV/08Dwj8NyoJ6XLGegEsOYdQl7qsoJCm1uQbnI0M59Pg05/V1T1X
+     *  vtkxQTfIoYRSbFa2EuvC23XO+FAp4vwia0jR7P2vHHN5zqg/GUDom5xwtQIDAQAB
+     *  AoGAYVuJNqF6vkYmNuaJvOZgcJw1lzhAM462EWW9UlDwPnRkO59Wgi+91UfIVQYd
+     *  p83fmorOc4On0xe3jqUJZQblGvkZF3v+qH4mvOxuFc4WiStJ1kfss/3lzr33Exsr
+     *  PnkP7QZXvxUjJbA9i+mGNO9GCrUwnRQPxUMDdztNB9Xz/EECQQDo/DpsG4AmZ8VK
+     *  qspvPv8kzw3sGzhO4zBY4lUCtzOrgWR+qBclejBhdnFRLkEPooY1t0rAjBxnVxEt
+     *  hPUi6QY9AkEAwWbGAocdFErTEfNrN8qvh4A/g/u/hB4VVSlc1hvg/HoIo+Txt82j
+     *  vBnqArY0e3ND8F6ZUdsC0egmiulPTLgz2QJAXbMa9+Fzf36abPYVJfpq+G3BRqSH
+     *  18os5oJX+Bif0ijetsV5UZw7mubcme6FQfl2CmJl0NxIjBMLGIhxYhHfbQJABt00
+     *  7eYJvCyjrSFsjsBc1nxQxMhsla3TqAAd0WOP6qYSJG79vT5JL2XkDlCVMER5BtD0
+     *  tBkH0pdgttFtBRYMkQJABz+cacRKSJvE7j1Cnkp4tt5B0MiLWCMm7UHCoBGaj/RU
+     *  YUjDoBey36dCBDtK6rQF9Le0sRY/gU35J44uSymmzQ==
+     *  -----END RSA PRIVATE KEY-----
+     * }</pre>
+     *
+     * @param pemEncoded PEM格式的文本
+     * @return X509 Base64 String
+     */
+    public static String pemEncodedToX509EncodedString(String pemEncoded) throws IllegalParamException {
+        if (pemEncoded == null) {
+            return null;
+        }
+        int titleStart = pemEncoded.indexOf("-----BEGIN");
+        int titleEnd = pemEncoded.indexOf("-----", titleStart + 10);
+        int tailStart = pemEncoded.indexOf("-----END", titleEnd + 5);
+        if (titleStart < 0 || titleStart >= titleEnd || titleEnd >= tailStart) {
+            throw new IllegalParamException("Invalid pem encoded text:" + pemEncoded);
+        }
+        return pemEncoded.substring(titleEnd + 5, tailStart)
+                .replaceAll("\\r", "")
+                .replaceAll("\\n", "");
+    }
+
+    /**
+     * 将PEM格式的文本转换为X509二进制数据, 即砍掉标题, 去除换行
+     * <p>
+     * 例如:
+     * <p>
+     * <pre>{@code
+     *  -----BEGIN RSA PRIVATE KEY-----
+     *  MIICWwIBAAKBgQCwA7DAKe4d+kwbt4T5i8vKP4SF0zju3BgDBW3CUlyfLvtTM8ev
+     *  BzB3lhvNT8cmV/08Dwj8NyoJ6XLGegEsOYdQl7qsoJCm1uQbnI0M59Pg05/V1T1X
+     *  vtkxQTfIoYRSbFa2EuvC23XO+FAp4vwia0jR7P2vHHN5zqg/GUDom5xwtQIDAQAB
+     *  AoGAYVuJNqF6vkYmNuaJvOZgcJw1lzhAM462EWW9UlDwPnRkO59Wgi+91UfIVQYd
+     *  p83fmorOc4On0xe3jqUJZQblGvkZF3v+qH4mvOxuFc4WiStJ1kfss/3lzr33Exsr
+     *  PnkP7QZXvxUjJbA9i+mGNO9GCrUwnRQPxUMDdztNB9Xz/EECQQDo/DpsG4AmZ8VK
+     *  qspvPv8kzw3sGzhO4zBY4lUCtzOrgWR+qBclejBhdnFRLkEPooY1t0rAjBxnVxEt
+     *  hPUi6QY9AkEAwWbGAocdFErTEfNrN8qvh4A/g/u/hB4VVSlc1hvg/HoIo+Txt82j
+     *  vBnqArY0e3ND8F6ZUdsC0egmiulPTLgz2QJAXbMa9+Fzf36abPYVJfpq+G3BRqSH
+     *  18os5oJX+Bif0ijetsV5UZw7mubcme6FQfl2CmJl0NxIjBMLGIhxYhHfbQJABt00
+     *  7eYJvCyjrSFsjsBc1nxQxMhsla3TqAAd0WOP6qYSJG79vT5JL2XkDlCVMER5BtD0
+     *  tBkH0pdgttFtBRYMkQJABz+cacRKSJvE7j1Cnkp4tt5B0MiLWCMm7UHCoBGaj/RU
+     *  YUjDoBey36dCBDtK6rQF9Le0sRY/gU35J44uSymmzQ==
+     *  -----END RSA PRIVATE KEY-----
+     * }</pre>
+     *
+     * @param pemEncoded PEM格式的文本
+     * @return X509 byte[]
+     */
+    public static byte[] pemEncodedToX509EncodedBytes(String pemEncoded) throws IllegalParamException {
+        return Base64Utils.decode(pemEncodedToX509EncodedString(pemEncoded));
     }
 
 }
