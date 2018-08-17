@@ -157,7 +157,7 @@ public class FileUtils {
      *      MappedByteBuffer byteBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, file.length());
      */
 
-    private static int isMappedByteBufferCanClean = -1;
+    private static volatile int isMappedByteBufferCanClean = -1;
     private static Class<?> directByteBufferClass;
     private static Method directByteBufferCleanerMethod;
     private static Method cleanerCleanMethod;
