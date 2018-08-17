@@ -51,6 +51,11 @@ public class DESEdeCipher {
     public static final String CRYPTO_ALGORITHM_DES_EDE_ECB_PKCS5PADDING = "DESede/ECB/PKCS5Padding";
 
     /**
+     * 加密算法:DESede + ECB无填充
+     */
+    public static final String CRYPTO_ALGORITHM_DES_EDE_ECB_NOPADDING = "DESede/ECB/NoPadding";
+
+    /**
      * 加密算法:DESede + CBC/PKCS5Padding
      */
     public static final String CRYPTO_ALGORITHM_DES_EDE_CBC_PKCS5PADDING = "DESede/CBC/PKCS5Padding";

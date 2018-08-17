@@ -44,6 +44,30 @@ public class DESEdeCipherTest {
     }
 
     /**
+     * byte[]加解密 ESB无填充
+     */
+    @Test
+    public void bytesCryptoNoPadding() throws UnsupportedEncodingException, NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchProviderException {
+
+        byte[] dataBytes = ZeroPaddingUtils.padding(STRING.getBytes("UTF-8"), 8);
+        byte[] key = DESKeyGenerator.generateDesEde128();
+
+//        System.out.println(ByteUtils.bytesToHex(dataBytes));
+//        System.out.println(ByteUtils.bytesToHex(key));
+
+        byte[] encrypted = DESEdeCipher.encrypt(dataBytes, key, DESEdeCipher.CRYPTO_ALGORITHM_DES_EDE_ECB_NOPADDING);
+
+//        System.out.println(ByteUtils.bytesToHex(encrypted));
+
+        byte[] decrypted = DESEdeCipher.decrypt(encrypted, key, DESEdeCipher.CRYPTO_ALGORITHM_DES_EDE_ECB_NOPADDING);
+
+//        System.out.println(ByteUtils.bytesToHex(decrypted));
+
+        Assert.assertEquals(STRING, new String(ZeroPaddingUtils.trimZero(decrypted), "UTF-8"));
+
+    }
+
+    /**
      * byte[]加解密, CBC填充
      */
     @Test
