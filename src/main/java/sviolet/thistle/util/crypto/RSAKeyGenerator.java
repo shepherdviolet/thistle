@@ -90,16 +90,6 @@ public class RSAKeyGenerator {
     }
 
     /**
-     * <p>将秘钥转为bytes, 具体编码根据Key的编码类型决定</p>
-     */
-    public static byte[] parseKeyToBytes(Key key){
-        if (key == null){
-            return null;
-        }
-        return key.getEncoded();
-    }
-
-    /**
      * <p>根据PKCS8格式的私钥数据生成私钥</p>
      *
      * @param pkcs8EncodedPrivateKey PKCS8格式私钥数据
@@ -151,12 +141,60 @@ public class RSAKeyGenerator {
     }
 
     /**
-     * 已知私钥获得公钥
+     * 已知私钥获得公钥(公钥指数65537)
      * @param privateKey 私钥
      * @return 公钥(公钥指数65537)
      */
     public static RSAPublicKey parsePublicKeyFromPrivateKey(RSAPrivateKey privateKey) throws InvalidKeySpecException {
         return generatePublicKey(privateKey.getModulus(), new BigInteger("65537"));
+    }
+
+    /**
+     * <p>将秘钥转为bytes, 具体编码根据Key的编码类型决定</p>
+     */
+    public static byte[] encodeKey(Key key){
+        if (key == null){
+            return null;
+        }
+        return key.getEncoded();
+    }
+
+    /**
+     * 将私钥转为PKCS8格式的二进制数据
+     * @param privateKey 私钥
+     * @return PKCS8格式的私钥数据
+     */
+    public static byte[] encodePrivateKeyToPKCS8(RSAPrivateKey privateKey) throws InvalidKeySpecException {
+        if (privateKey == null){
+            return null;
+        }
+
+        KeyFactory factory;
+        try {
+            factory = KeyFactory.getInstance(RSA_KEY_ALGORITHM);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+        return factory.getKeySpec(privateKey, PKCS8EncodedKeySpec.class).getEncoded();
+    }
+
+    /**
+     * 将公钥转为X509格式的二进制数据
+     * @param publicKey 公钥
+     * @return X509格式的公钥数据
+     */
+    public static byte[] encodePublicKeyToX509(RSAPublicKey publicKey) throws InvalidKeySpecException {
+        if (publicKey == null){
+            return null;
+        }
+
+        KeyFactory factory;
+        try {
+            factory = KeyFactory.getInstance(RSA_KEY_ALGORITHM);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+        return factory.getKeySpec(publicKey, X509EncodedKeySpec.class).getEncoded();
     }
 
     public static class RSAKeyPair {
@@ -206,32 +244,12 @@ public class RSAKeyGenerator {
 
         @Nullable
         public byte[] getX509EncodedPublicKey() throws InvalidKeySpecException {
-            if (publicKey == null){
-                return null;
-            }
-
-            KeyFactory factory;
-            try {
-                factory = KeyFactory.getInstance(RSA_KEY_ALGORITHM);
-            } catch (NoSuchAlgorithmException e) {
-                throw new RuntimeException(e);
-            }
-            return factory.getKeySpec(publicKey, X509EncodedKeySpec.class).getEncoded();
+            return encodePublicKeyToX509(publicKey);
         }
 
         @Nullable
         public byte[] getPKCS8EncodedPrivateKey() throws InvalidKeySpecException {
-            if (privateKey == null){
-                return null;
-            }
-
-            KeyFactory factory;
-            try {
-                factory = KeyFactory.getInstance(RSA_KEY_ALGORITHM);
-            } catch (NoSuchAlgorithmException e) {
-                throw new RuntimeException(e);
-            }
-            return factory.getKeySpec(privateKey, PKCS8EncodedKeySpec.class).getEncoded();
+            return encodePrivateKeyToPKCS8(privateKey);
         }
 
         @Override
