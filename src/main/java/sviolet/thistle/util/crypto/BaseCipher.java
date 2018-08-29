@@ -41,7 +41,7 @@ import java.security.interfaces.RSAPublicKey;
  * @author S.Violet
  *
  */
-class BaseCipher {
+public class BaseCipher {
 
     static final int ANDROID_API11 = 11;
 

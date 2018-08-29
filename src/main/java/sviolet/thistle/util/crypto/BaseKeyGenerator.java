@@ -33,7 +33,7 @@ import java.security.SecureRandom;
  * @author S.Violet
  *
  */
-class BaseKeyGenerator {
+public class BaseKeyGenerator {
 
     /**
      * <p>
