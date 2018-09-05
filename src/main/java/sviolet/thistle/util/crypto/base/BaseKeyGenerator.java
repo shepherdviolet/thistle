@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 S.Violet
+ * Copyright (C) 2015-2018 S.Violet
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,25 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.util.crypto;
+package sviolet.thistle.util.crypto.base;
+
+import sviolet.thistle.util.crypto.DigestCipher;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 
 /**
- * <p>密钥生成基本逻辑</p>
+ * 密钥生成基本逻辑<p>
  *
- * <p>Cipher/Signature/MessageDigest线程不安全!!!</p>
+ * Not recommended for direct use<p>
+ *
+ * 不建议直接使用<p>
+ *
+ * Cipher/Signature/MessageDigest线程不安全!!!<p>
  *
  * @author S.Violet
- *
  */
 public class BaseKeyGenerator {
 
@@ -54,7 +58,7 @@ public class BaseKeyGenerator {
      */
     private static ThreadLocal<SecureRandom> secureRandoms = new ThreadLocal<>();
 
-    static SecureRandom getSecureRandom(){
+    public static SecureRandom getSystemSecureRandom(){
         SecureRandom systemSecureRandom = secureRandoms.get();
         if (systemSecureRandom == null) {
             systemSecureRandom = new SecureRandom();
@@ -76,7 +80,7 @@ public class BaseKeyGenerator {
         if (secureRandom != null) {
             keyGenerator.init(bits, secureRandom);
         } else {
-            keyGenerator.init(bits, getSecureRandom());
+            keyGenerator.init(bits, getSystemSecureRandom());
         }
         SecretKey secretKey = keyGenerator.generateKey();
         return secretKey.getEncoded();

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 S.Violet
+ * Copyright (C) 2015-2018 S.Violet
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,79 +17,68 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.util.crypto;
+package sviolet.thistle.util.crypto.base;
 
+import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.asn1.x500.RDN;
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
+import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.asn1.x509.X509CertificateStructure;
-import org.bouncycastle.operator.OperatorCreationException;
-import sviolet.thistle.util.conversion.Base64Utils;
-import sviolet.thistle.util.crypto.base.BaseBCCertificateUtils;
-import sviolet.thistle.util.crypto.base.BaseCertificateUtils;
+import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.cert.X509v3CertificateBuilder;
+import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
+import org.bouncycastle.crypto.util.PrivateKeyFactory;
+import org.bouncycastle.operator.*;
+import org.bouncycastle.operator.bc.BcRSAContentSignerBuilder;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateEncodingException;
+import java.math.BigInteger;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Date;
 
 /**
- * <p>证书工具</p>
+ * 证书处理基本逻辑Bouncy Castle<p>
+ *
+ * Not recommended for direct use<p>
+ *
+ * 不建议直接使用<p>
  *
  * @author S.Violet
  */
-public class CertificateUtils {
+public class BaseBCCertificateUtils {
+
+    private static final SignatureAlgorithmIdentifierFinder SIGNATURE_ALGORITHM_IDENTIFIER_FINDER = new DefaultSignatureAlgorithmIdentifierFinder();
+    private static final DigestAlgorithmIdentifierFinder DIGEST_ALGORITHM_IDENTIFIER_FINDER = new DefaultDigestAlgorithmIdentifierFinder();
+
+    private static final ReversedBCStyle REVERSED_BC_STYLE = new ReversedBCStyle();
 
     /**
-     * 密钥类型:RSA
+     * 倒序的BCStyle, 因为BouncyCastle生成证书后DN信息是颠倒的, 为了保持原顺序, 我们在这里做一下倒序
      */
-    public static final String KEK_ALGORITHM_RSA = "RSA";
-
-    /**
-     * 签名算法:MD5withRSA
-     */
-    public static final String SIGN_ALGORITHM_RSA_MD5 = "MD5withRSA";
-
-    /**
-     * 签名算法:SHA1withRSA
-     */
-    public static final String SIGN_ALGORITHM_RSA_SHA1 = "SHA1withRSA";
-
-    /**
-     * 签名算法:SHA256withRSA
-     */
-    public static final String SIGN_ALGORITHM_RSA_SHA256 = "SHA256withRSA";
-
-    //Parse//////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * <p>解析X509格式的证书, 返回Certificate对象, 可用来获取证书公钥实例等</p>
-     * @param certData X509格式证书数据
-     */
-    public static Certificate parseX509ToCertificate(byte[] certData) throws CertificateException {
-        return BaseCertificateUtils.parseCertificate(certData, BaseCertificateUtils.TYPE_X509);
+    private static class ReversedBCStyle extends BCStyle {
+        @Override
+        public RDN[] fromString(String dirName) {
+            RDN[] rdns = super.fromString(dirName);
+            if (rdns != null && rdns.length > 1){
+                RDN temp;
+                for (int i = 0 ; i < rdns.length / 2 ; i++){
+                    temp = rdns[i];
+                    rdns[i] = rdns[rdns.length - 1 - i];
+                    rdns[rdns.length - 1 - i] = temp;
+                }
+            }
+            return rdns;
+        }
     }
-
-    /**
-     * <p>解析X509格式的证书, 返回Certificate对象, 可用来获取证书公钥实例等</p>
-     * @param inputStream X509格式证书数据流, 会被close掉
-     */
-    public static Certificate parseX509ToCertificate(InputStream inputStream) throws CertificateException {
-        return BaseCertificateUtils.parseCertificate(inputStream, BaseCertificateUtils.TYPE_X509);
-    }
-
-    /**
-     * 将证书编码为二进制数据
-     * @param certificate 证书
-     * @return 二进制数据
-     */
-    public static byte[] parseCertificateToEncoded(Certificate certificate) throws CertificateEncodingException {
-        return BaseCertificateUtils.encodeCertificate(certificate);
-    }
-
-    //Bouncy Castle///////////////////////////////////////////////////////////////////////////////////
 
     /**
      * 生成RSA根证书(自签名证书)
@@ -107,11 +96,11 @@ public class CertificateUtils {
      * @param publicKey 证书的RSA公钥
      * @param privateKey 证书的RSA私钥(自签名)
      * @param validity 证书的有效期(天), 例:3650
-     * @param signAlgorithm 签名算法, CertificateUtils.SIGN_ALGORITHM_RSA_SHA256
+     * @param signAlgorithm 签名算法, 例如:SHA256withRSA
      *
      */
     public static X509Certificate generateRSAX509RootCertificate(String dn, RSAPublicKey publicKey, RSAPrivateKey privateKey, int validity, String signAlgorithm) throws IOException, CertificateException, OperatorCreationException {
-        return BaseBCCertificateUtils.generateRSAX509RootCertificate(dn, publicKey, privateKey, validity, signAlgorithm);
+        return generateRSAX509Certificate(dn, publicKey, validity, signAlgorithm, null, privateKey);
     }
 
     /**
@@ -129,30 +118,35 @@ public class CertificateUtils {
      * @param subjectDn 申请证书的DN信息, 例:CN=Test CA, OU=IT Dept, O=My Company, L=Ningbo, ST=Zhejiang, C=CN
      * @param subjectPublicKey 申请证书的RSA公钥
      * @param subjectValidity 申请证书的有效期(天), 例:3650
-     * @param signAlgorithm 签名算法, CertificateUtils.SIGN_ALGORITHM_RSA_SHA256
+     * @param signAlgorithm 签名算法, 例如:SHA256withRSA
      * @param caCertificate CA的证书
      * @param caPrivateKey CA的RSA私钥
      */
     public static X509Certificate generateRSAX509Certificate(String subjectDn, RSAPublicKey subjectPublicKey, int subjectValidity, String signAlgorithm, X509Certificate caCertificate, RSAPrivateKey caPrivateKey) throws IOException, CertificateException, OperatorCreationException {
-        return BaseBCCertificateUtils.generateRSAX509Certificate(subjectDn, subjectPublicKey, subjectValidity, signAlgorithm, caCertificate, caPrivateKey);
-    }
+        //certificate builder
+        X509v3CertificateBuilder certificateBuilder = new X509v3CertificateBuilder(
+                //issuer dn
+                new X500Name(REVERSED_BC_STYLE, caCertificate != null ? caCertificate.getSubjectX500Principal().toString() : subjectDn),
+                //serial
+                BigInteger.probablePrime(32, BaseKeyGenerator.getSystemSecureRandom()),
+                //start date
+                new Date(),
+                //expire date
+                new Date(System.currentTimeMillis() + subjectValidity * 24L * 60L * 60L * 1000L),
+                //subject dn
+                new X500Name(REVERSED_BC_STYLE, subjectDn),
+                //public key
+                SubjectPublicKeyInfo.getInstance(new ASN1InputStream(subjectPublicKey.getEncoded()).readObject()));
 
-    /**
-     * <p>解析ASN.1编码的X509证书数据</p>
-     *
-     * @param certBase64 X509证书数据, ASN.1编码, Base64编码
-     */
-    public static X509CertificateStructure parseX509ToStructure(String certBase64) throws IOException {
-        return parseX509ToStructure(Base64Utils.decode(certBase64));
-    }
+        //sign
+        AlgorithmIdentifier signAlgorithmId = SIGNATURE_ALGORITHM_IDENTIFIER_FINDER.find(signAlgorithm);
+        AlgorithmIdentifier digestAlgorithmId = DIGEST_ALGORITHM_IDENTIFIER_FINDER.find(signAlgorithmId);
+        AsymmetricKeyParameter asymmetricKeyParameter = PrivateKeyFactory.createKey(caPrivateKey.getEncoded());
+        ContentSigner contentSigner = new BcRSAContentSignerBuilder(signAlgorithmId, digestAlgorithmId).build(asymmetricKeyParameter);
+        X509CertificateHolder holder = certificateBuilder.build(contentSigner);
 
-    /**
-     * <p>解析ASN.1编码的X509证书数据</p>
-     *
-     * @param certData X509证书数据, ASN.1编码, 非Base64编码
-     */
-    public static X509CertificateStructure parseX509ToStructure(byte[] certData) throws IOException {
-        return parseX509ToStructure(new ByteArrayInputStream(certData));
+        //to certificate
+        return (X509Certificate) CertificateFactory.getInstance("X509").generateCertificate(new ByteArrayInputStream(holder.getEncoded()));
     }
 
     /**
@@ -196,7 +190,18 @@ public class CertificateUtils {
      * @param inputStream X509证书输入流, ASN.1编码, 非Base64编码
      */
     public static X509CertificateStructure parseX509ToStructure(InputStream inputStream) throws IOException {
-        return BaseBCCertificateUtils.parseX509ToStructure(inputStream);
+        try {
+            ASN1InputStream asn1InputStream = new ASN1InputStream(inputStream);
+            ASN1Sequence seq = (ASN1Sequence) asn1InputStream.readObject();
+            return new X509CertificateStructure(seq);
+        }finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (Throwable ignore){
+                }
+            }
+        }
     }
 
 }

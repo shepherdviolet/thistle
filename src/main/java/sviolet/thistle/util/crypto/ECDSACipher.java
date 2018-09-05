@@ -19,12 +19,12 @@
 
 package sviolet.thistle.util.crypto;
 
+import sviolet.thistle.util.crypto.base.BaseCipher;
+
 import java.io.File;
 import java.io.IOException;
 import java.security.*;
 import java.security.cert.Certificate;
-import java.security.interfaces.ECPrivateKey;
-import java.security.interfaces.ECPublicKey;
 
 /**
  * <p>ECDSA签名验签工具</p>

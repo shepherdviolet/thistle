@@ -19,41 +19,45 @@
 
 package sviolet.thistle.util.crypto;
 
+import sviolet.thistle.util.crypto.base.BaseKeyGenerator;
+
 /**
  * 安全随机数工具
+ *
+ * @author S.Violet
  */
 public class SecureRandomUtils {
 
     public static void nextBytes(byte[] bytes){
-        BaseKeyGenerator.getSecureRandom().nextBytes(bytes);
+        BaseKeyGenerator.getSystemSecureRandom().nextBytes(bytes);
     }
 
     public static int nextInt(){
-        return BaseKeyGenerator.getSecureRandom().nextInt();
+        return BaseKeyGenerator.getSystemSecureRandom().nextInt();
     }
 
     public static int nextInt(int bound){
-        return BaseKeyGenerator.getSecureRandom().nextInt(bound);
+        return BaseKeyGenerator.getSystemSecureRandom().nextInt(bound);
     }
 
     public static boolean nextBoolean(){
-        return BaseKeyGenerator.getSecureRandom().nextBoolean();
+        return BaseKeyGenerator.getSystemSecureRandom().nextBoolean();
     }
 
     public static double nextDouble(){
-        return BaseKeyGenerator.getSecureRandom().nextDouble();
+        return BaseKeyGenerator.getSystemSecureRandom().nextDouble();
     }
 
     public static float nextFloat(){
-        return BaseKeyGenerator.getSecureRandom().nextFloat();
+        return BaseKeyGenerator.getSystemSecureRandom().nextFloat();
     }
 
     public static double nextGaussian(){
-        return BaseKeyGenerator.getSecureRandom().nextGaussian();
+        return BaseKeyGenerator.getSystemSecureRandom().nextGaussian();
     }
 
     public static long nextLong(){
-        return BaseKeyGenerator.getSecureRandom().nextLong();
+        return BaseKeyGenerator.getSystemSecureRandom().nextLong();
     }
 
 }

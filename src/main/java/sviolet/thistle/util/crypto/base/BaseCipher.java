@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 S.Violet
+ * Copyright (C) 2015-2018 S.Violet
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.util.crypto;
+package sviolet.thistle.util.crypto.base;
 
 import sviolet.thistle.util.common.PlatformUtils;
 import sviolet.thistle.util.file.FileUtils;
@@ -34,12 +34,15 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
 /**
- * <p>加解密基本逻辑</p>
+ * 加解密基本逻辑<p>
  *
- * <p>Cipher/Signature/MessageDigest线程不安全!!!</p>
+ * Not recommended for direct use<p>
+ *
+ * 不建议直接使用<p>
+ *
+ * Cipher/Signature/MessageDigest线程不安全!!!<p>
  *
  * @author S.Violet
- *
  */
 public class BaseCipher {
 

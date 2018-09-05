@@ -21,20 +21,14 @@ package sviolet.thistle.util.crypto;
 
 import org.jetbrains.annotations.Nullable;
 import sviolet.thistle.util.conversion.Base64Utils;
+import sviolet.thistle.util.crypto.base.BaseAsymKeyGenerator;
 
 import java.math.BigInteger;
-import java.security.Key;
-import java.security.KeyFactory;
 import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.RSAPrivateKeySpec;
-import java.security.spec.RSAPublicKeySpec;
-import java.security.spec.X509EncodedKeySpec;
 
 /**
  * RSA秘钥生成工具
@@ -61,14 +55,12 @@ public class RSAKeyGenerator {
      * @return 密钥对
      */
     public static RSAKeyPair generateKeyPair(int bits) {
-        KeyPairGenerator keyPairGen;
+        KeyPair keyPair;
         try {
-            keyPairGen = KeyPairGenerator.getInstance(RSA_KEY_ALGORITHM);
+            keyPair = BaseAsymKeyGenerator.generateRsaKeyPair(bits, RSA_KEY_ALGORITHM);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
-        keyPairGen.initialize(bits);
-        KeyPair keyPair = keyPairGen.generateKeyPair();
         return new RSAKeyPair((RSAPublicKey) keyPair.getPublic(), (RSAPrivateKey) keyPair.getPrivate());
     }
 
@@ -79,14 +71,7 @@ public class RSAKeyGenerator {
      * @return 公钥
      */
     public static RSAPublicKey generatePublicKeyByX509(byte[] x509EncodedPublicKey) throws InvalidKeySpecException {
-        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(x509EncodedPublicKey);
-        KeyFactory factory;
-        try {
-            factory = KeyFactory.getInstance(RSA_KEY_ALGORITHM);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-        return (RSAPublicKey) factory.generatePublic(keySpec);
+        return (RSAPublicKey) BaseAsymKeyGenerator.parsePublicKeyByX509(x509EncodedPublicKey, RSA_KEY_ALGORITHM);
     }
 
     /**
@@ -96,14 +81,7 @@ public class RSAKeyGenerator {
      * @return 私钥
      */
     public static RSAPrivateKey generatePrivateKeyByPKCS8(byte[] pkcs8EncodedPrivateKey) throws InvalidKeySpecException {
-        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(pkcs8EncodedPrivateKey);
-        KeyFactory factory;
-        try {
-            factory = KeyFactory.getInstance(RSA_KEY_ALGORITHM);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-        return (RSAPrivateKey) factory.generatePrivate(keySpec);
+        return (RSAPrivateKey) BaseAsymKeyGenerator.parsePrivateKeyByPKCS8(pkcs8EncodedPrivateKey, RSA_KEY_ALGORITHM);
     }
 
     /**
@@ -113,14 +91,7 @@ public class RSAKeyGenerator {
      * @param exponent 指数
      */
     public static RSAPublicKey generatePublicKey(BigInteger modulus, BigInteger exponent) throws InvalidKeySpecException {
-        KeyFactory keyFactory = null;
-        try {
-            keyFactory = KeyFactory.getInstance(RSA_KEY_ALGORITHM);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-        RSAPublicKeySpec keySpec = new RSAPublicKeySpec(modulus, exponent);
-        return (RSAPublicKey) keyFactory.generatePublic(keySpec);
+        return BaseAsymKeyGenerator.parseRsaPublicKey(modulus, exponent, RSA_KEY_ALGORITHM);
     }
 
     /**
@@ -130,14 +101,7 @@ public class RSAKeyGenerator {
      * @param exponent 指数
      */
     public static RSAPrivateKey generatePrivateKey(BigInteger modulus, BigInteger exponent) throws InvalidKeySpecException {
-        KeyFactory keyFactory = null;
-        try {
-            keyFactory = KeyFactory.getInstance(RSA_KEY_ALGORITHM);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-        RSAPrivateKeySpec keySpec = new RSAPrivateKeySpec(modulus, exponent);
-        return (RSAPrivateKey) keyFactory.generatePrivate(keySpec);
+        return BaseAsymKeyGenerator.parseRsaPrivateKey(modulus, exponent, RSA_KEY_ALGORITHM);
     }
 
     /**
@@ -146,17 +110,7 @@ public class RSAKeyGenerator {
      * @return 公钥(公钥指数65537)
      */
     public static RSAPublicKey parsePublicKeyFromPrivateKey(RSAPrivateKey privateKey) throws InvalidKeySpecException {
-        return generatePublicKey(privateKey.getModulus(), new BigInteger("65537"));
-    }
-
-    /**
-     * <p>将秘钥转为bytes, 具体编码根据Key的编码类型决定</p>
-     */
-    public static byte[] encodeKey(Key key){
-        if (key == null){
-            return null;
-        }
-        return key.getEncoded();
+        return BaseAsymKeyGenerator.parseRsaPublicKeyFromPrivate(privateKey);
     }
 
     /**
@@ -165,17 +119,7 @@ public class RSAKeyGenerator {
      * @return PKCS8格式的私钥数据
      */
     public static byte[] encodePrivateKeyToPKCS8(RSAPrivateKey privateKey) throws InvalidKeySpecException {
-        if (privateKey == null){
-            return null;
-        }
-
-        KeyFactory factory;
-        try {
-            factory = KeyFactory.getInstance(RSA_KEY_ALGORITHM);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-        return factory.getKeySpec(privateKey, PKCS8EncodedKeySpec.class).getEncoded();
+        return BaseAsymKeyGenerator.encodePrivateKeyToPKCS8(privateKey, RSA_KEY_ALGORITHM);
     }
 
     /**
@@ -184,17 +128,7 @@ public class RSAKeyGenerator {
      * @return X509格式的公钥数据
      */
     public static byte[] encodePublicKeyToX509(RSAPublicKey publicKey) throws InvalidKeySpecException {
-        if (publicKey == null){
-            return null;
-        }
-
-        KeyFactory factory;
-        try {
-            factory = KeyFactory.getInstance(RSA_KEY_ALGORITHM);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-        return factory.getKeySpec(publicKey, X509EncodedKeySpec.class).getEncoded();
+        return BaseAsymKeyGenerator.encodePublicKeyToX509(publicKey, RSA_KEY_ALGORITHM);
     }
 
     public static class RSAKeyPair {

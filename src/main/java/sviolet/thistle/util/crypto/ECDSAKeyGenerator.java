@@ -21,14 +21,14 @@ package sviolet.thistle.util.crypto;
 
 import org.jetbrains.annotations.Nullable;
 import sviolet.thistle.util.conversion.Base64Utils;
+import sviolet.thistle.util.crypto.base.BaseAsymKeyGenerator;
 
-import java.security.*;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
-import java.security.spec.ECGenParameterSpec;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
 
 /**
  * ECDSA秘钥生成工具
@@ -47,16 +47,14 @@ public class ECDSAKeyGenerator {
      * @return 密钥对
      */
     public static ECKeyPair generateKeyPair() {
-        KeyPairGenerator keyPairGen;
+        KeyPair keyPair;
         try {
-            keyPairGen = KeyPairGenerator.getInstance(ECDSA_KEY_ALGORITHM);
-            keyPairGen.initialize(new ECGenParameterSpec("secp256r1"));
+            keyPair = BaseAsymKeyGenerator.generateEcKeyPair("secp256r1", ECDSA_KEY_ALGORITHM);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         } catch (InvalidAlgorithmParameterException e) {
             throw new RuntimeException(e);
         }
-        KeyPair keyPair = keyPairGen.generateKeyPair();
         return new ECKeyPair((ECPublicKey) keyPair.getPublic(), (ECPrivateKey) keyPair.getPrivate());
     }
 
@@ -67,24 +65,7 @@ public class ECDSAKeyGenerator {
      * @return 公钥
      */
     public static ECPublicKey generatePublicKeyByX509(byte[] x509EncodedPublicKey) throws InvalidKeySpecException {
-        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(x509EncodedPublicKey);
-        KeyFactory factory;
-        try {
-            factory = KeyFactory.getInstance(ECDSA_KEY_ALGORITHM);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-        return (ECPublicKey) factory.generatePublic(keySpec);
-    }
-
-    /**
-     * <p>将秘钥转为bytes, 具体编码根据Key的编码类型决定</p>
-     */
-    public static byte[] parseKeyToBytes(Key key){
-        if (key == null){
-            return null;
-        }
-        return key.getEncoded();
+        return (ECPublicKey) BaseAsymKeyGenerator.parsePublicKeyByX509(x509EncodedPublicKey, ECDSA_KEY_ALGORITHM);
     }
 
     /**
@@ -94,14 +75,25 @@ public class ECDSAKeyGenerator {
      * @return 私钥
      */
     public static ECPrivateKey generatePrivateKeyByPKCS8(byte[] pkcs8EncodedPrivateKey) throws InvalidKeySpecException {
-        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(pkcs8EncodedPrivateKey);
-        KeyFactory factory;
-        try {
-            factory = KeyFactory.getInstance(ECDSA_KEY_ALGORITHM);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-        return (ECPrivateKey) factory.generatePrivate(keySpec);
+        return (ECPrivateKey) BaseAsymKeyGenerator.parsePrivateKeyByPKCS8(pkcs8EncodedPrivateKey, ECDSA_KEY_ALGORITHM);
+    }
+
+    /**
+     * 将私钥转为PKCS8格式的二进制数据
+     * @param privateKey 私钥
+     * @return PKCS8格式的私钥数据
+     */
+    public static byte[] encodePrivateKeyToPKCS8(ECPrivateKey privateKey) throws InvalidKeySpecException {
+        return BaseAsymKeyGenerator.encodePrivateKeyToPKCS8(privateKey, ECDSA_KEY_ALGORITHM);
+    }
+
+    /**
+     * 将公钥转为X509格式的二进制数据
+     * @param publicKey 公钥
+     * @return X509格式的公钥数据
+     */
+    public static byte[] encodePublicKeyToX509(ECPublicKey publicKey) throws InvalidKeySpecException {
+        return BaseAsymKeyGenerator.encodePublicKeyToX509(publicKey, ECDSA_KEY_ALGORITHM);
     }
 
     public static class ECKeyPair {
@@ -130,32 +122,12 @@ public class ECDSAKeyGenerator {
 
         @Nullable
         public byte[] getX509EncodedPublicKey() throws InvalidKeySpecException {
-            if (publicKey == null){
-                return null;
-            }
-
-            KeyFactory factory;
-            try {
-                factory = KeyFactory.getInstance(ECDSA_KEY_ALGORITHM);
-            } catch (NoSuchAlgorithmException e) {
-                throw new RuntimeException(e);
-            }
-            return factory.getKeySpec(publicKey, X509EncodedKeySpec.class).getEncoded();
+            return encodePublicKeyToX509(publicKey);
         }
 
         @Nullable
         public byte[] getPKCS8EncodedPrivateKey() throws InvalidKeySpecException {
-            if (privateKey == null){
-                return null;
-            }
-
-            KeyFactory factory;
-            try {
-                factory = KeyFactory.getInstance(ECDSA_KEY_ALGORITHM);
-            } catch (NoSuchAlgorithmException e) {
-                throw new RuntimeException(e);
-            }
-            return factory.getKeySpec(privateKey, PKCS8EncodedKeySpec.class).getEncoded();
+            return encodePrivateKeyToPKCS8(privateKey);
         }
 
         @Override

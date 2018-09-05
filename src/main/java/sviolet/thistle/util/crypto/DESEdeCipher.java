@@ -19,6 +19,8 @@
 
 package sviolet.thistle.util.crypto;
 
+import sviolet.thistle.util.crypto.base.BaseCipher;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;

@@ -19,6 +19,8 @@
 
 package sviolet.thistle.util.crypto;
 
+import sviolet.thistle.util.crypto.base.BaseKeyGenerator;
+
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 

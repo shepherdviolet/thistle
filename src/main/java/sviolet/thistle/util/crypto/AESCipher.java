@@ -19,7 +19,11 @@
 
 package sviolet.thistle.util.crypto;
 
-import javax.crypto.*;
+import sviolet.thistle.util.crypto.base.BaseCipher;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -34,9 +38,7 @@ import java.security.NoSuchAlgorithmException;
  * <p>Cipher/Signature/MessageDigest线程不安全!!!</p>
  * 
  * @author S.Violet
- *
  */
-
 public class AESCipher{
 
 	/**

@@ -19,18 +19,12 @@
 
 package sviolet.thistle.util.crypto;
 
+import sviolet.thistle.util.conversion.ByteUtils;
+import sviolet.thistle.util.crypto.base.BaseDigestCipher;
+
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
-import sviolet.thistle.util.common.PlatformUtils;
-import sviolet.thistle.util.conversion.ByteUtils;
-import sviolet.thistle.util.file.FileUtils;
 
 /**
  * [国际算法]摘要工具
@@ -71,15 +65,7 @@ public class DigestCipher {
 	 * @return 摘要bytes
 	 */
 	public static byte[] digest(byte[] bytes,String type) {
-		if (bytes == null){
-			throw new NullPointerException("[DigestCipher]digest: bytes is null");
-		}
-		try {
-			MessageDigest cipher = MessageDigest.getInstance(type);
-			return cipher.digest(bytes);
-		} catch (NoSuchAlgorithmException e) {
-			throw new RuntimeException("[DigestCipher]No Such Algorithm:" + type, e);
-		}
+		return BaseDigestCipher.digest(bytes, type);
 	}
 
 	/**
@@ -88,14 +74,14 @@ public class DigestCipher {
 	 * @param str 字符串
 	 * @param type 摘要算法
 	 * @return 摘要bytes
-     */
+	 */
 	public static byte[] digestStr(String str, String type){
 		return digestStr(str, type, DEFAULT_ENCODING);
 	}
 
 	/**
 	 * 摘要字符串(.getBytes(encoding))
-	 * 
+	 *
 	 * @param str bytes
 	 * @param type 摘要算法
 	 * @param encoding 编码方式
@@ -106,7 +92,7 @@ public class DigestCipher {
 			throw new NullPointerException("[DigestCipher]digestStr: str is null");
 		}
 		try {
-			return digest(str.getBytes(encoding), type);
+			return BaseDigestCipher.digest(str.getBytes(encoding), type);
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("[DigestCipher]Unsupported Encoding:" + encoding, e);
 		}
@@ -123,7 +109,7 @@ public class DigestCipher {
 		if (hexStr == null){
 			throw new NullPointerException("[DigestCipher]digestHexStr: hexStr is null");
 		}
-        return digest(ByteUtils.hexToBytes(hexStr), type);
+        return BaseDigestCipher.digest(ByteUtils.hexToBytes(hexStr), type);
 	}
 
 	/**
@@ -133,20 +119,7 @@ public class DigestCipher {
 	 * @return 摘要bytes
 	 */
 	public static byte[] digestFile(File file, String type) throws IOException {
-		if (PlatformUtils.PLATFORM == PlatformUtils.Platform.DALVIK){
-			//安卓API11以上使用NIO, API10以下会很慢
-			if (PlatformUtils.ANDROID_VERSION < BaseCipher.ANDROID_API11){
-				return digestFileIo(file, type);
-			} else {
-				return digestFileNio(file, type);
-			}
-		}
-		//能手动回收MappedByteBuffer则使用NIO
-		if (FileUtils.isMappedByteBufferCanClean()){
-			return digestFileNio(file, type);
-		} else {
-			return digestFileIo(file, type);
-		}
+		return BaseDigestCipher.digestFile(file, type);
 	}
 
     /**
@@ -162,36 +135,7 @@ public class DigestCipher {
      * @return 摘要bytes
      */
     public static byte[] digestFileNio(File file, String type) throws IOException {
-        FileInputStream inputStream = null;
-		FileChannel channel = null;
-		MappedByteBuffer byteBuffer = null;
-        try {
-            inputStream = new FileInputStream(file);
-            channel = inputStream.getChannel();
-            byteBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, file.length());
-            MessageDigest cipher = MessageDigest.getInstance(type);
-            cipher.update(byteBuffer);
-            return cipher.digest();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("[DigestCipher]No Such Algorithm:" + type, e);
-        } catch (IOException e) {
-            throw e;
-        }finally {
-            if (inputStream != null){
-                try {
-                    inputStream.close();
-                } catch (IOException ignored) {
-                }
-            }
-			if (channel != null){
-				try {
-					channel.close();
-				} catch (IOException ignored) {
-				}
-			}
-			//尝试将MappedByteBuffer回收, 解决后续文件无法被读写删除的问题
-			FileUtils.cleanMappedByteBuffer(byteBuffer);
-        }
+        return BaseDigestCipher.digestFileNio(file, type);
     }
 
     /**
@@ -202,28 +146,7 @@ public class DigestCipher {
      * @return 摘要bytes
      */
     public static byte[] digestFileIo(File file, String type) throws IOException {
-        FileInputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(file);
-            MessageDigest cipher = MessageDigest.getInstance(type);
-            byte[] buff = new byte[1024];
-            int size;
-            while((size = inputStream.read(buff)) != -1){
-                cipher.update(buff, 0, size);
-            }
-            return cipher.digest();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("[DigestCipher]No Such Algorithm:" + type, e);
-        } catch (IOException e) {
-            throw e;
-        }finally {
-            if (inputStream != null){
-                try {
-                    inputStream.close();
-                } catch (IOException ignored) {
-                }
-            }
-        }
+        return BaseDigestCipher.digestFileIo(file, type);
     }
 
 }
