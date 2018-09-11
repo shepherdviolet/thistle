@@ -37,25 +37,56 @@ public class DateTimeUtils {
      * 获得当前日期相关
      */
 
+    private static ThreadLocal<SimpleDateFormat> defaultDateFormat = new ThreadLocal<>();
+	private static ThreadLocal<SimpleDateFormat> defaultTimeFormat = new ThreadLocal<>();
+	private static ThreadLocal<SimpleDateFormat> defaultDateTimeFormat = new ThreadLocal<>();
+
+	private static SimpleDateFormat getDefaultDateFormat(){
+		SimpleDateFormat format = defaultDateFormat.get();
+		if (format == null) {
+			format = new SimpleDateFormat("yyyy-MM-dd", Locale.SIMPLIFIED_CHINESE);
+			defaultDateFormat.set(format);
+		}
+		return format;
+	}
+
+	private static SimpleDateFormat getDefaultTimeFormat(){
+		SimpleDateFormat format = defaultTimeFormat.get();
+		if (format == null) {
+			format = new SimpleDateFormat("HH:mm:ss.SSS", Locale.SIMPLIFIED_CHINESE);
+			defaultTimeFormat.set(format);
+		}
+		return format;
+	}
+
+    private static SimpleDateFormat getDefaultDateTimeFormat(){
+		SimpleDateFormat format = defaultDateTimeFormat.get();
+		if (format == null) {
+			format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.SIMPLIFIED_CHINESE);
+			defaultDateTimeFormat.set(format);
+		}
+		return format;
+	}
+
 	/**
 	 * 获得当前日期
 	 */
 	public static String getDate(){
-		return SimpleDateFormat.getDateInstance().format(new Date());
+		return getDefaultDateFormat().format(new Date());
 	}
 	
 	/**
 	 * 获得当前时间
 	 */
 	public static String getTime(){
-		return SimpleDateFormat.getTimeInstance().format(new Date());
+		return getDefaultTimeFormat().format(new Date());
 	}
 	
 	/**
 	 * 获得当前日期和时间
 	 */
 	public static String getDateTime(){
-		return SimpleDateFormat.getDateTimeInstance().format(new Date());
+		return getDefaultDateTimeFormat().format(new Date());
 	}
 	
 	/**
