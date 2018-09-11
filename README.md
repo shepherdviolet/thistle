@@ -62,14 +62,6 @@ dependencies {
     </dependency>
 ```
 
-# Jvm options
+# Contents
 
-### ThistleSpi
-
-* Disable log
-
-> `-Dthistle.spi.debug=false`
-
-* Custom logger implementation (System.out by default), should implement `sviolet.thistle.util.common.ThistleSpi.Logger` interface
-
-> `-Dthistle.spi.logger=sample.base.LoggerImpl`
+* [Thistle Spi](https://github.com/shepherdviolet/thistle/blob/master/docs/spi-manual.md)
