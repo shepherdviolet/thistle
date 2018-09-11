@@ -36,6 +36,7 @@ public interface IService {
          * 加载器会持有加载过的所有服务和ClassLoader, 重复调用loadService方法会返回同一个实例.
          * 加载多个服务时, 建议使用同一个加载器(避免重复加载相关配置).
          * 如果有动态类加载的需要, 可以在重新加载时, 创建一个新的服务加载器, 新的类加载器会重新加载配置和类.
+         * 配置文件解析出错时会抛出RuntimeException异常.
          */
         ThistleSpi.ServiceLoader serviceLoader = ThistleSpi.newLoader();
         /*

@@ -54,8 +54,12 @@ public class ThistleSpi {
 
     /**
      * [非线程安全]<p>
-     * 创建服务加载器<p>
-     * 该方法会从Classpath中加载所有配置文件, 若配置文件格式有误, 会抛出RuntimeException<p>
+     * 创建服务加载器:
+     * 创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类.
+     * 加载器会持有加载过的所有服务和ClassLoader, 重复调用loadService方法会返回同一个实例.
+     * 加载多个服务时, 建议使用同一个加载器(避免重复加载相关配置).
+     * 如果有动态类加载的需要, 可以在重新加载时, 创建一个新的服务加载器, 新的类加载器会重新加载配置和类.
+     * 配置文件解析出错时会抛出RuntimeException异常.
      * @param classLoader ClassLoader
      * @return 服务加载器
      */
@@ -68,8 +72,12 @@ public class ThistleSpi {
 
     /**
      * [非线程安全]<p>
-     * 创建服务加载器<p>
-     * 该方法会从Classpath中加载所有配置文件, 若配置文件格式有误, 会抛出RuntimeException<p>
+     * 创建服务加载器:
+     * 创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类.
+     * 加载器会持有加载过的所有服务和ClassLoader, 重复调用loadService方法会返回同一个实例.
+     * 加载多个服务时, 建议使用同一个加载器(避免重复加载相关配置).
+     * 如果有动态类加载的需要, 可以在重新加载时, 创建一个新的服务加载器, 新的类加载器会重新加载配置和类.
+     * 配置文件解析出错时会抛出RuntimeException异常.
      * @return 服务加载器
      */
     public static ServiceLoader newLoader() {
@@ -81,13 +89,18 @@ public class ThistleSpi {
         private ClassLoader classLoader;
         private Logger logger;
 
+        //service配置信息
         private Map<String, SpiInfo> spiInfos = new HashMap<>(8);
+        //apply配置信息
         private Map<String, ApplyInfo> applyInfos = new HashMap<>(8);
+        //服务实例缓存
         private Map<String, Object> serviceCache = new HashMap<>(8);
 
         private ServiceLoader(ClassLoader classLoader) {
             this.classLoader = classLoader;
+            //加载日志打印器
             logger = loadLogger(classLoader);
+            //加载配置文件
             loadProperties(classLoader, logger, spiInfos, applyInfos);
         }
 
@@ -102,12 +115,19 @@ public class ThistleSpi {
             if (type == null) {
                 return null;
             }
+
+            //类名
             String classname = type.getName();
+
+            //检查是否已加载
             if (serviceCache.containsKey(classname)) {
                 return (T) serviceCache.get(classname);
             }
 
+            //获取服务实现信息
             SpiInfo spiInfo = spiInfos.get(classname);
+
+            //不存在服务实现
             if (spiInfo.appliedService == null) {
                 if (debug) {
                     logger.print("Thistle Spi | Warning: loadService failed, no service definition found, type:" + type.getName());
@@ -116,6 +136,7 @@ public class ThistleSpi {
                 return null;
             }
 
+            //实例化服务
             try {
                 Class clazz = classLoader.loadClass(spiInfo.appliedService.implement);
                 T service = (T) clazz.newInstance();
@@ -133,16 +154,25 @@ public class ThistleSpi {
             }
         }
 
+        /**
+         * @return 加载过的服务类型
+         */
         public Set<String> loadedServiceTypes(){
             return serviceCache.keySet();
         }
 
+        /**
+         * @return 加载过的服务
+         */
         public Collection<Object> loadedServices(){
             return serviceCache.values();
         }
 
     }
 
+    /**
+     * 日志打印接口
+     */
     public interface Logger {
 
         void print(String msg);
@@ -195,6 +225,7 @@ public class ThistleSpi {
 
         //loading thistle.spi.service
 
+        //加载所有META-INF/thistle.spi.service配置文件
         Enumeration<URL> urls;
         try {
             urls = classLoader.getResources(SERVICE_CONFIG_PATH);
@@ -210,6 +241,7 @@ public class ThistleSpi {
             return;
         }
 
+        //遍历所有META-INF/thistle.spi.service配置文件
         while (urls.hasMoreElements()) {
             URL url = urls.nextElement();
             String urlStr = String.valueOf(url);
@@ -218,6 +250,7 @@ public class ThistleSpi {
                 logger.print("Thistle Spi | Loading " + url);
             }
 
+            //装载配置
             Properties properties;
             try {
                 properties = new Properties();
@@ -227,6 +260,7 @@ public class ThistleSpi {
                 throw new RuntimeException("ThistleSpi: Error while loading config, url" + urlStr, e);
             }
 
+            //id和level
             String id = properties.getProperty(SERVICE_CONFIG_ID);
             Level level = Level.parse(properties.getProperty(SERVICE_CONFIG_LEVEL));
 
@@ -248,6 +282,7 @@ public class ThistleSpi {
                 }
             }
 
+            //遍历所有key-value
             Enumeration<?> names = properties.propertyNames();
             while (names.hasMoreElements()) {
                 String type = String.valueOf(names.nextElement());
@@ -255,6 +290,7 @@ public class ThistleSpi {
                     continue;
                 }
 
+                //遇到新的服务接口, 则创建一个对象
                 SpiInfo spiInfo = spiInfos.get(type);
                 if (spiInfo == null) {
                     spiInfo = new SpiInfo();
@@ -262,12 +298,14 @@ public class ThistleSpi {
                     spiInfos.put(type, spiInfo);
                 }
 
+                //实现类
                 String implement = properties.getProperty(type);
                 if (CheckUtils.isEmptyOrBlank(implement)) {
                     logger.print("Thistle Spi | ERROR: Illegal config, value of " + type + " is empty, config:" + urlStr);
                     throw new RuntimeException("ThistleSpi: Illegal config, value of " + type + " is empty, config:" + urlStr);
                 }
 
+                //服务接口信息
                 ServiceInfo serviceInfo = new ServiceInfo();
                 serviceInfo.id = id;
                 serviceInfo.level = level;
@@ -281,6 +319,7 @@ public class ThistleSpi {
 
         //loading thistle.spi.apply
 
+        //加载所有META-INF/thistle.spi.apply配置文件
         try {
             urls = classLoader.getResources(APPLY_CONFIG_PATH);
         } catch (Exception e) {
@@ -288,6 +327,7 @@ public class ThistleSpi {
             throw new RuntimeException("ThistleSpi: Error while loading config, " + APPLY_CONFIG_PATH, e);
         }
 
+        //遍历所有META-INF/thistle.spi.apply配置文件
         while (urls != null && urls.hasMoreElements()) {
             URL url = urls.nextElement();
             String urlStr = String.valueOf(url);
@@ -296,6 +336,7 @@ public class ThistleSpi {
                 logger.print("Thistle Spi | loading " + url);
             }
 
+            //装载配置文件
             Properties properties;
             try {
                 properties = new Properties();
@@ -311,6 +352,7 @@ public class ThistleSpi {
                 }
             }
 
+            //遍历所有key-value
             Enumeration<?> names = properties.propertyNames();
             while (names.hasMoreElements()) {
                 String type = String.valueOf(names.nextElement());
@@ -321,20 +363,26 @@ public class ThistleSpi {
                 }
 
                 if (applyInfos.containsKey(type)) {
+                    //apply配置重复处理
                     ApplyInfo previous = applyInfos.get(type);
                     if (id.equals(previous.id)){
+                        //若id相同, 不抛出错误, 仅做提醒
                         if (debug) {
                             logger.print("Thistle Spi | Warning: Duplicate apply info defined with same value, key:" + type + ", value:" + id + ", url1:" + url + ", url2:" + previous.resource);
                         }
                     } else {
-                        //we can use -Dthistle.spi.apply to resolve duplicate error
+                        //若id不相同, 则需要抛出异常
                         String idFromJvmArgs = System.getProperty(PROPERTY_APPLY_PREFIX + type);
+                        //允许使用-Dthistle.spi.apply解决apply冲突
+                        //we can use -Dthistle.spi.apply to resolve duplicate error
                         String duplicateError = "Duplicate apply info defined with different value, key:" + type + ", value1:" + id + ", value2:" + previous.id + ", url1:" + url + ", url2:" + previous.resource;
                         if (CheckUtils.isEmptyOrBlank(idFromJvmArgs)) {
+                            //如果没有-Dthistle.spi.apply, 直接抛出异常
                             //no -Dthistle.spi.apply, throw exception
                             logger.print("Thistle Spi | ERROR: " + duplicateError);
                             throw new RuntimeException("ThistleSpi: " + duplicateError);
                         } else {
+                            //如果有-Dthistle.spi.apply, 先放一马
                             //try with -Dthistle.spi.apply
                             previous.duplicateError = duplicateError;
                             if (debug) {
@@ -345,6 +393,7 @@ public class ThistleSpi {
                     continue;
                 }
 
+                //创建apply信息
                 ApplyInfo applyInfo = new ApplyInfo();
                 applyInfo.type = type;
                 applyInfo.id = properties.getProperty(type);
@@ -361,8 +410,10 @@ public class ThistleSpi {
             logger.print("Thistle Spi | Loading finish");
         }
 
+        //遍历所有服务
         for (SpiInfo spi : spiInfos.values()) {
 
+            //优先用-Dthistle.spi.apply选择服务实现
             String applyId = System.getProperty(PROPERTY_APPLY_PREFIX + spi.type);
             if (!CheckUtils.isEmptyOrBlank(applyId)) {
                 ServiceInfo serviceInfo = spi.definedServices.get(applyId);
@@ -376,6 +427,7 @@ public class ThistleSpi {
                 }
             }
 
+            //然后用apply配置选择服务实现
             if (applyInfos.containsKey(spi.type)){
                 ApplyInfo applyInfo = applyInfos.get(spi.type);
                 if (applyInfo.duplicateError != null) {
@@ -393,6 +445,8 @@ public class ThistleSpi {
                     logger.print("Thistle Spi | Warning: We will apply '" + spi.type + "' service by level automatically (application > platform > library)");
                 }
             }
+
+            //最后用优先级选择服务实现
 
             List<ServiceInfo> appliedServices = new ArrayList<>(1);
             int highestPriority = -1;
