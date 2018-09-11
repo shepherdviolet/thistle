@@ -329,7 +329,7 @@ public class ThistleSpi {
                     } else {
                         //we can use -Dthistle.spi.apply to resolve duplicate error
                         String idFromJvmArgs = System.getProperty(PROPERTY_APPLY_PREFIX + type);
-                        String duplicateError = "Duplicate apply info defined with different value, key:" + type + ", value1:" + id + "value2:" + previous.id + ", url1:" + url + ", url2:" + previous.resource;
+                        String duplicateError = "Duplicate apply info defined with different value, key:" + type + ", value1:" + id + ", value2:" + previous.id + ", url1:" + url + ", url2:" + previous.resource;
                         if (CheckUtils.isEmptyOrBlank(idFromJvmArgs)) {
                             //no -Dthistle.spi.apply, throw exception
                             logger.print("Thistle Spi | ERROR: " + duplicateError);
