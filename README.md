@@ -2,7 +2,7 @@
 * Java common library for private use
 * https://github.com/shepherdviolet/thistle
 
-### Import dependencies from maven repository
+# Import dependencies from maven repository
 
 ```gradle
 
@@ -61,3 +61,15 @@ dependencies {
         </exclusions>
     </dependency>
 ```
+
+# Jvm options
+
+### ThistleSpi
+
+* Disable log
+
+> `-Dthistle.spi.debug=false`
+
+* Custom logger implementation (System.out by default), should implement `sviolet.thistle.util.common.ThistleSpi.Logger` interface
+
+> `-Dthistle.spi.logger=sample.base.LoggerImpl`

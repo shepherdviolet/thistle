@@ -327,8 +327,20 @@ public class ThistleSpi {
                             logger.print("Thistle Spi | Warning: Duplicate apply info defined with same value, key:" + type + ", value:" + id + ", url1:" + url + ", url2:" + previous.resource);
                         }
                     } else {
-                        logger.print("Thistle Spi | ERROR: Duplicate apply info defined with different value, key:" + type + ", value1:" + id + "value2:" + previous.id + ", url1:" + url + ", url2:" + previous.resource);
-                        throw new RuntimeException("ThistleSpi: Duplicate apply info defined with different value, key:" + type + ", value1:" + id + "value2:" + previous.id + ", url1:" + url + ", url2:" + previous.resource);
+                        //we can use -Dthistle.spi.apply to resolve duplicate error
+                        String idFromJvmArgs = System.getProperty(PROPERTY_APPLY_PREFIX + type);
+                        String duplicateError = "Duplicate apply info defined with different value, key:" + type + ", value1:" + id + "value2:" + previous.id + ", url1:" + url + ", url2:" + previous.resource;
+                        if (CheckUtils.isEmptyOrBlank(idFromJvmArgs)) {
+                            //no -Dthistle.spi.apply, throw exception
+                            logger.print("Thistle Spi | ERROR: " + duplicateError);
+                            throw new RuntimeException("ThistleSpi: " + duplicateError);
+                        } else {
+                            //try with -Dthistle.spi.apply
+                            previous.duplicateError = duplicateError;
+                            if (debug) {
+                                logger.print("Thistle Spi | Warning: (Try to resolve by -Dthistle.spi.apply)" + duplicateError);
+                            }
+                        }
                     }
                     continue;
                 }
@@ -351,25 +363,33 @@ public class ThistleSpi {
 
         for (SpiInfo spi : spiInfos.values()) {
 
-            String applyReason = null;
             String applyId = System.getProperty(PROPERTY_APPLY_PREFIX + spi.type);
             if (!CheckUtils.isEmptyOrBlank(applyId)) {
-                applyReason = "-D" + PROPERTY_APPLY_PREFIX + spi.type + "=" + applyId;
-            } else if (applyInfos.containsKey(spi.type)){
-                ApplyInfo applyInfo = applyInfos.get(spi.type);
-                applyId = applyInfo.id;
-                applyReason = applyInfo.resource;
-            }
-
-            if (applyId != null) {
                 ServiceInfo serviceInfo = spi.definedServices.get(applyId);
                 if (serviceInfo != null) {
                     spi.appliedService = serviceInfo;
-                    spi.applyReason = applyReason;
+                    spi.applyReason = "-D" + PROPERTY_APPLY_PREFIX + spi.type + "=" + applyId;
                     continue;
                 }
                 if (debug) {
-                    logger.print("Thistle Spi | Warning: No service named " + applyId + ", failed to apply service '" + spi.type + "' with id '" + applyId + "' by " + applyReason);
+                    logger.print("Thistle Spi | Warning: No service named " + applyId + ", failed to apply service '" + spi.type + "' with id '" + applyId + "' by -D" + PROPERTY_APPLY_PREFIX + spi.type + "=" + applyId);
+                }
+            }
+
+            if (applyInfos.containsKey(spi.type)){
+                ApplyInfo applyInfo = applyInfos.get(spi.type);
+                if (applyInfo.duplicateError != null) {
+                    logger.print("Thistle Spi | ERROR: " + applyInfo.duplicateError);
+                    throw new RuntimeException("ThistleSpi: " + applyInfo.duplicateError);
+                }
+                ServiceInfo serviceInfo = spi.definedServices.get(applyInfo.id);
+                if (serviceInfo != null) {
+                    spi.appliedService = serviceInfo;
+                    spi.applyReason = serviceInfo.resource;
+                    continue;
+                }
+                if (debug) {
+                    logger.print("Thistle Spi | Warning: No service named " + applyInfo.id + ", failed to apply service '" + spi.type + "' with id '" + applyInfo.id + "' by " + applyInfo.resource);
                     logger.print("Thistle Spi | Warning: We will apply '" + spi.type + "' service by level automatically (application > platform > library)");
                 }
             }
@@ -464,6 +484,7 @@ public class ThistleSpi {
         private String type;
         private String id;
         private String resource;
+        private String duplicateError;
 
     }
 
