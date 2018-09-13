@@ -17,31 +17,22 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.kotlin.utilx.treebuilder.json
+package sviolet.thistle.x.kotlin.utilx.treebuilder.json
 
-import com.google.gson.JsonObject
+import com.google.gson.JsonArray
 
-class JsonObjectList
+class JsonArrayList
 internal constructor(
-        val bean: JsonObject
+        val bean: JsonArray
 ){
 
-    private var key: String? = null
     private var hasIterable = false
     private var iterable: Any? = null
 
     /**
-     * key, required
+     * iterable, optional
      */
-    infix fun k(key: String?): JsonObjectList {
-        this.key = key
-        return this
-    }
-
-    /**
-     * iterable, optional.
-     */
-    infix fun i(iterable: Iterable<*>): JsonObjectList {
+    infix fun i(iterable: Iterable<*>): JsonArrayList {
         this.iterable = iterable
         hasIterable = true
         return this
@@ -50,7 +41,7 @@ internal constructor(
     /**
      * iterable, optional
      */
-    infix fun i(array: Array<*>): JsonObjectList {
+    infix fun i(array: Array<*>): JsonArrayList {
         this.iterable = array
         hasIterable = true
         return this
@@ -60,9 +51,6 @@ internal constructor(
      * block(to build JsonArray)
      */
     infix fun v(block: JsonArrayBuilder.(Any?) -> Unit) {
-        if (key == null){
-            throw IllegalArgumentException("You should invoke method \"k\" to set key before set value")
-        }
         val array = JsonArrayBuilder()
         if (hasIterable) {
             val i = iterable
@@ -80,6 +68,7 @@ internal constructor(
         } else {
             array.block(null)
         }
-        bean.add(key, array.bean)
+        bean.add(array.bean)
     }
+
 }

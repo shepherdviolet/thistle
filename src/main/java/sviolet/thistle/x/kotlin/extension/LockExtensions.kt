@@ -17,32 +17,24 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.kotlin.utilx.treebuilder.map
+package sviolet.thistle.x.kotlin.extension
+
+import java.util.concurrent.locks.ReentrantLock
 
 /**
- * Kotlin json 工具
+ * Lock extensions
  *
- * Created by S.Violet on 2017/7/31.
+ * Created by S.Violet on 2017/5/24.
  */
-class MapObjectBuilder
-internal constructor() {
 
-    internal val bean = HashMap<String, Any?>()
-
-    /**
-     * Build string item or Map item
-     */
-    val item: MapObjectItem
-        get() = MapObjectItem(bean)
-
-    /**
-     * Build List item
-     */
-    val list: MapObjectList
-        get() = MapObjectList(bean)
-
-    fun build(): Map<String, Any?> {
-        return bean
+/**
+ * ReentrantLock: execute try lock and finally unlock
+ */
+fun ReentrantLock.sync(action: () -> Unit){
+    try {
+        this.lock()
+        action()
+    } finally {
+        this.unlock()
     }
-
 }

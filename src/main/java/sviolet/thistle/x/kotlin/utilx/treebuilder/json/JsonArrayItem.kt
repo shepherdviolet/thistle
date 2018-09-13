@@ -17,19 +17,29 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.kotlin.extension
+package sviolet.thistle.x.kotlin.utilx.treebuilder.json
 
-import sviolet.thistle.util.concurrent.ConcurrentUtils
+import com.google.gson.JsonArray
 
-/**
- * Map extensions
- *
- * Created by S.Violet on 2017/5/24.
- */
+class JsonArrayItem
+internal constructor(
+        val bean: JsonArray
+){
 
-/**
- * Get snap shot of map, for concurrent use
- */
-fun <K, V> Map<K, V>?.getSnapShot() : Map<K, V>?{
-    return ConcurrentUtils.getSnapShot(this)
+    /**
+     * value(add String)
+     */
+    infix fun v(value: Any?) {
+        bean.add(value?.toString() ?: "")
+    }
+
+    /**
+     * block(to build JsonObject)
+     */
+    infix fun v(block: JsonObjectBuilder.() -> Unit) {
+        val obj = JsonObjectBuilder()
+        obj.block()
+        bean.add(obj.bean)
+    }
+
 }

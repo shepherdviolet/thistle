@@ -17,24 +17,42 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.kotlin.extension
+package sviolet.thistle.x.kotlin.extension
 
-import java.util.concurrent.locks.ReentrantLock
+import java.util.*
 
 /**
- * Lock extensions
+ * Date extensions
  *
- * Created by S.Violet on 2017/5/24.
+ * Created by S.Violet on 2017/6/6.
  */
 
 /**
- * ReentrantLock: execute try lock and finally unlock
+ * Date() + milliSeconds
  */
-fun ReentrantLock.sync(action: () -> Unit){
-    try {
-        this.lock()
-        action()
-    } finally {
-        this.unlock()
+operator fun Date?.plus(milliSeconds: Long?) : Date?{
+    if (this == null || milliSeconds == null){
+        return this
     }
+    return Date(this.time + milliSeconds)
+}
+
+/**
+ * Date() - milliSeconds
+ */
+operator fun Date?.minus(milliSeconds: Long?) : Date?{
+    if (this == null || milliSeconds == null){
+        return this
+    }
+    return Date(this.time - milliSeconds)
+}
+
+/**
+ * Date() - Date()
+ */
+operator fun Date?.minus(date: Date?) : Long?{
+    if (this == null || date == null){
+        return 0
+    }
+    return this.time - date.time
 }

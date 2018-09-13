@@ -17,29 +17,32 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.kotlin.utilx.treebuilder.json
+package sviolet.thistle.x.kotlin.utilx.treebuilder.map
 
-import com.google.gson.JsonArray
+/**
+ * Kotlin json 工具
+ *
+ * Created by S.Violet on 2017/7/31.
+ */
+class MapArrayBuilder
+internal constructor() {
 
-class JsonArrayItem
-internal constructor(
-        val bean: JsonArray
-){
-
-    /**
-     * value(add String)
-     */
-    infix fun v(value: Any?) {
-        bean.add(value?.toString() ?: "")
-    }
+    internal val bean = ArrayList<Any?>()
 
     /**
-     * block(to build JsonObject)
+     * Build string item or JsonObject item
      */
-    infix fun v(block: JsonObjectBuilder.() -> Unit) {
-        val obj = JsonObjectBuilder()
-        obj.block()
-        bean.add(obj.bean)
+    val item: MapArrayItem
+        get() = MapArrayItem(bean)
+
+    /**
+     * Build JsonArray item
+     */
+    val list: MapArrayList
+        get() = MapArrayList(bean)
+
+    fun build(): String {
+        return bean.toString()
     }
 
 }

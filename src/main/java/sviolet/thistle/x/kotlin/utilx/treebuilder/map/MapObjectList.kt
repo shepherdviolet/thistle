@@ -17,7 +17,7 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.kotlin.utilx.treebuilder.map
+package sviolet.thistle.x.kotlin.utilx.treebuilder.map
 
 class MapObjectList
 internal constructor(

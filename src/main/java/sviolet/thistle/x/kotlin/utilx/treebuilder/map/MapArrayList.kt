@@ -17,13 +17,11 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.kotlin.utilx.treebuilder.json
+package sviolet.thistle.x.kotlin.utilx.treebuilder.map
 
-import com.google.gson.JsonArray
-
-class JsonArrayList
+class MapArrayList
 internal constructor(
-        val bean: JsonArray
+        val bean: ArrayList<Any?>
 ){
 
     private var hasIterable = false
@@ -32,7 +30,7 @@ internal constructor(
     /**
      * iterable, optional
      */
-    infix fun i(iterable: Iterable<*>): JsonArrayList {
+    infix fun i(iterable: Iterable<*>): MapArrayList {
         this.iterable = iterable
         hasIterable = true
         return this
@@ -41,17 +39,17 @@ internal constructor(
     /**
      * iterable, optional
      */
-    infix fun i(array: Array<*>): JsonArrayList {
+    infix fun i(array: Array<*>): MapArrayList {
         this.iterable = array
         hasIterable = true
         return this
     }
 
     /**
-     * block(to build JsonArray)
+     * block(to build List)
      */
-    infix fun v(block: JsonArrayBuilder.(Any?) -> Unit) {
-        val array = JsonArrayBuilder()
+    infix fun v(block: MapArrayBuilder.(Any?) -> Unit) {
+        val array = MapArrayBuilder()
         if (hasIterable) {
             val i = iterable
             if (i is Iterable<*>) {
@@ -63,7 +61,7 @@ internal constructor(
                     array.block(it)
                 }
             } else {
-                throw IllegalArgumentException("The \"iterable\" argument cannot be iterate")
+                throw IllegalArgumentException("[TJson]The \"iterable\" argument cannot be iterate")
             }
         } else {
             array.block(null)

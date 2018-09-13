@@ -17,7 +17,7 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.kotlin.utilx.treebuilder.json
+package sviolet.thistle.x.kotlin.utilx.treebuilder.json
 
 import com.google.gson.JsonObject
 

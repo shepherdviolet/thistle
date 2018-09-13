@@ -17,42 +17,32 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.kotlin.extension
-
-import java.util.*
+package sviolet.thistle.x.kotlin.utilx.treebuilder.map
 
 /**
- * Date extensions
+ * Kotlin json 工具
  *
- * Created by S.Violet on 2017/6/6.
+ * Created by S.Violet on 2017/7/31.
  */
+class MapObjectBuilder
+internal constructor() {
 
-/**
- * Date() + milliSeconds
- */
-operator fun Date?.plus(milliSeconds: Long?) : Date?{
-    if (this == null || milliSeconds == null){
-        return this
-    }
-    return Date(this.time + milliSeconds)
-}
+    internal val bean = HashMap<String, Any?>()
 
-/**
- * Date() - milliSeconds
- */
-operator fun Date?.minus(milliSeconds: Long?) : Date?{
-    if (this == null || milliSeconds == null){
-        return this
-    }
-    return Date(this.time - milliSeconds)
-}
+    /**
+     * Build string item or Map item
+     */
+    val item: MapObjectItem
+        get() = MapObjectItem(bean)
 
-/**
- * Date() - Date()
- */
-operator fun Date?.minus(date: Date?) : Long?{
-    if (this == null || date == null){
-        return 0
+    /**
+     * Build List item
+     */
+    val list: MapObjectList
+        get() = MapObjectList(bean)
+
+    fun build(): Map<String, Any?> {
+        return bean
     }
-    return this.time - date.time
+
 }

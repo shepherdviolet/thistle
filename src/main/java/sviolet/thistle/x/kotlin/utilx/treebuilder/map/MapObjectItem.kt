@@ -17,27 +17,39 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.kotlin.utilx.treebuilder.map
+package sviolet.thistle.x.kotlin.utilx.treebuilder.map
 
-class MapArrayItem
+class MapObjectItem
 internal constructor(
-        val bean: ArrayList<Any?>
+        val bean: HashMap<String, Any?>
 ){
+
+    private var key: String? = null
+
+    /**
+     * key, required
+     */
+    infix fun k(key: String) : MapObjectItem {
+        this.key = key
+        return this
+    }
 
     /**
      * value(add String)
      */
     infix fun v(value: Any?) {
-        bean.add(value)
+        val k = key ?: throw IllegalArgumentException("You should invoke method \"k\" to set key before set value")
+        bean.put(k, value)
     }
 
     /**
      * block(to build Map)
      */
     infix fun v(block: MapObjectBuilder.() -> Unit) {
+        val k = key ?: throw IllegalArgumentException("You should invoke method \"k\" to set key before set value")
         val obj = MapObjectBuilder()
         obj.block()
-        bean.add(obj.bean)
+        bean.put(k, obj.bean)
     }
 
 }

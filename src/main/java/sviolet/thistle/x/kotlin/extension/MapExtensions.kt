@@ -17,34 +17,19 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.kotlin.utilx.treebuilder.json
+package sviolet.thistle.x.kotlin.extension
 
-import com.google.gson.JsonArray
+import sviolet.thistle.util.concurrent.ConcurrentUtils
 
 /**
- * Kotlin json 工具
+ * Map extensions
  *
- * Created by S.Violet on 2017/7/31.
+ * Created by S.Violet on 2017/5/24.
  */
-class JsonArrayBuilder
-internal constructor() {
 
-    internal val bean = JsonArray()
-
-    /**
-     * Build string item or JsonObject item
-     */
-    val item: JsonArrayItem
-        get() = JsonArrayItem(bean)
-
-    /**
-     * Build JsonArray item
-     */
-    val list: JsonArrayList
-        get() = JsonArrayList(bean)
-
-    fun build(): String {
-        return bean.toString()
-    }
-
+/**
+ * Get snap shot of map, for concurrent use
+ */
+fun <K, V> Map<K, V>?.getSnapShot() : Map<K, V>?{
+    return ConcurrentUtils.getSnapShot(this)
 }

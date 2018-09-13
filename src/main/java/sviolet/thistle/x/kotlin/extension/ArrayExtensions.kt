@@ -17,32 +17,21 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.kotlin.utilx.treebuilder.map
+package sviolet.thistle.x.kotlin.extension
 
 /**
- * Kotlin json 工具
+ * Array extensions
  *
- * Created by S.Violet on 2017/7/31.
+ * Created by S.Violet on 2017/5/25.
  */
-class MapArrayBuilder
-internal constructor() {
 
-    internal val bean = ArrayList<Any?>()
-
-    /**
-     * Build string item or JsonObject item
-     */
-    val item: MapArrayItem
-        get() = MapArrayItem(bean)
-
-    /**
-     * Build JsonArray item
-     */
-    val list: MapArrayList
-        get() = MapArrayList(bean)
-
-    fun build(): String {
-        return bean.toString()
+/**
+ * Get item from Array without exceptions
+ */
+fun <T> Array<T>?.safeGet(index: Int) : T?{
+    try {
+        return this?.get(index)
+    } catch (e: Exception) {
+        return null
     }
-
 }
