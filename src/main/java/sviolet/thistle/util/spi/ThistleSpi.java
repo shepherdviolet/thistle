@@ -124,6 +124,19 @@ public class ThistleSpi {
             //清除日志打印器的配置
             serviceInfos.clear();
             applyInfos.clear();
+            //打印调用者
+            if (debug) {
+                StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+                boolean foundThistleSpi = false;
+                for (StackTraceElement element : stackTraceElements) {
+                    if (ThistleSpi.class.getName().equals(element.getClassName())) {
+                        foundThistleSpi = true;
+                    } else if (foundThistleSpi){
+                        logger.print("Thistle Spi | CREATE LOADER BY " + element.getClassName() + "#" + element.getMethodName());
+                        break;
+                    }
+                }
+            }
             //加载其他配置文件
             loadServiceConfig(classLoader, logger, configPath, false, serviceInfos, applyInfos);
             loadPluginConfig(classLoader, logger, configPath, pluginInfos, ignoreInfos);
