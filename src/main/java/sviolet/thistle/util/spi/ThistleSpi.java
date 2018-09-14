@@ -152,20 +152,22 @@ public class ThistleSpi {
             }
 
             //实例化服务
+            Object service;
             try {
                 Class clazz = classLoader.loadClass(serviceInfo.appliedService.implement);
-                T service = (T) clazz.newInstance();
-                if (debug) {
-                    logger.print("Thistle Spi | loadService: service " + serviceInfo.type + " (" + serviceInfo.appliedService.implement + ") loaded successfully");
-                }
-                return service;
-            } catch (ClassCastException e) {
-                logger.print("Thistle Spi | ERROR: " + serviceInfo.appliedService.implement + " is not instance of " + serviceInfo.type + ", illegal config:" + serviceInfo.appliedService.resource, e);
-                throw new RuntimeException("ThistleSpi: " + serviceInfo.appliedService.implement + " is not instance of " + serviceInfo.type + ", illegal config:" + serviceInfo.appliedService.resource, e);
+                service = clazz.newInstance();
             } catch (Exception e) {
                 logger.print("Thistle Spi | ERROR: Service " + serviceInfo.type + " (" + serviceInfo.appliedService.implement + ") instantiation error, config:" + serviceInfo.appliedService.resource, e);
                 throw new RuntimeException("ThistleSpi: Service " + serviceInfo.type + " (" + serviceInfo.appliedService.implement + ") instantiation error, config:" + serviceInfo.appliedService.resource, e);
             }
+            if (!type.isAssignableFrom(service.getClass())) {
+                logger.print("Thistle Spi | ERROR: " + serviceInfo.appliedService.implement + " is not instance of " + serviceInfo.type + ", illegal config:" + serviceInfo.appliedService.resource);
+                throw new RuntimeException("ThistleSpi: " + serviceInfo.appliedService.implement + " is not instance of " + serviceInfo.type + ", illegal config:" + serviceInfo.appliedService.resource);
+            }
+            if (debug) {
+                logger.print("Thistle Spi | loadService: service " + serviceInfo.type + " (" + serviceInfo.appliedService.implement + ") loaded successfully");
+            }
+            return (T) service;
         }
 
     }
