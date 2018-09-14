@@ -26,8 +26,14 @@ package sviolet.thistle.util.spi;
  */
 public interface SpiLogger {
 
+    /**
+     * 打印日志
+     */
     void print(String msg);
 
+    /**
+     * 打印日志和错误
+     */
     void print(String msg, Throwable throwable);
 
 }

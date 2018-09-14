@@ -23,6 +23,7 @@ import sviolet.thistle.util.judge.CheckUtils;
 
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * [非线程安全] <p>
@@ -44,7 +45,10 @@ public class ThistleSpi {
     private static final String CONFIG_FILE_PLUGIN = "plugin.properties";
     private static final String CONFIG_FILE_PLUGIN_IGNORE = "plugin-ignore.properties";
 
+    private static final String LOG_PREFIX = " ThistleSpi | ";
+
     private static final boolean debug;
+    private static final AtomicInteger loaderIdCount = new AtomicInteger(0);
 
     static {
         debug = "true".equals(System.getProperty(PROPERTY_DEBUG, "true"));
@@ -102,6 +106,7 @@ public class ThistleSpi {
 
         private ClassLoader classLoader;
         private SpiLogger logger = new DefaultSpiLogger();
+        private int loaderId;
 
         //service配置信息
         private Map<String, ServiceInfo> serviceInfos = new HashMap<>(8);
@@ -113,10 +118,11 @@ public class ThistleSpi {
         private Map<String, IgnoreInfo> ignoreInfos = new HashMap<>(8);
 
         private ServiceLoader(ClassLoader classLoader, String configPath) {
+            this.loaderId = loaderIdCount.getAndIncrement();
             this.classLoader = classLoader;
             //加载日志打印器配置文件
-            loadServiceConfig(classLoader, logger, CONFIG_PATH_LOGGER, true, serviceInfos, applyInfos);
-            //加载日志打印器
+            loadServiceConfig(classLoader, logger, loaderId, true, CONFIG_PATH_LOGGER, serviceInfos, applyInfos);
+            //加载自定义日志打印器
             SpiLogger customLogger = loadService(SpiLogger.class);
             if (customLogger != null) {
                 logger = customLogger;
@@ -125,21 +131,10 @@ public class ThistleSpi {
             serviceInfos.clear();
             applyInfos.clear();
             //打印调用者
-            if (debug) {
-                StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-                boolean foundThistleSpi = false;
-                for (StackTraceElement element : stackTraceElements) {
-                    if (ThistleSpi.class.getName().equals(element.getClassName())) {
-                        foundThistleSpi = true;
-                    } else if (foundThistleSpi){
-                        logger.print("Thistle Spi | CREATE LOADER BY " + element.getClassName() + "#" + element.getMethodName());
-                        break;
-                    }
-                }
-            }
+            printCaller(loaderId);
             //加载其他配置文件
-            loadServiceConfig(classLoader, logger, configPath, false, serviceInfos, applyInfos);
-            loadPluginConfig(classLoader, logger, configPath, pluginInfos, ignoreInfos);
+            loadServiceConfig(classLoader, logger, loaderId, false, configPath, serviceInfos, applyInfos);
+            loadPluginConfig(classLoader, logger, loaderId, configPath, pluginInfos, ignoreInfos);
         }
 
         /**
@@ -162,7 +157,7 @@ public class ThistleSpi {
             //不存在服务实现
             if (serviceInfo == null || serviceInfo.appliedService == null) {
                 if (debug) {
-                    logger.print("Thistle Spi | loadService: no service definition found, type:" + type.getName());
+                    logger.print(loaderId + LOG_PREFIX + "loadService: no service definition found, type:" + type.getName());
                 }
                 return null;
             }
@@ -173,15 +168,15 @@ public class ThistleSpi {
                 Class clazz = classLoader.loadClass(serviceInfo.appliedService.implement);
                 service = clazz.newInstance();
             } catch (Exception e) {
-                logger.print("Thistle Spi | loadService: ERROR: Service " + serviceInfo.type + " (" + serviceInfo.appliedService.implement + ") instantiation error, config:" + serviceInfo.appliedService.resource, e);
+                logger.print(loaderId + LOG_PREFIX + "loadService: ERROR: Service " + serviceInfo.type + " (" + serviceInfo.appliedService.implement + ") instantiation error, config:" + serviceInfo.appliedService.resource, e);
                 throw new RuntimeException("ThistleSpi: Service " + serviceInfo.type + " (" + serviceInfo.appliedService.implement + ") instantiation error, config:" + serviceInfo.appliedService.resource, e);
             }
             if (!type.isAssignableFrom(service.getClass())) {
-                logger.print("Thistle Spi | loadService: ERROR: " + serviceInfo.appliedService.implement + " is not instance of " + serviceInfo.type + ", illegal config:" + serviceInfo.appliedService.resource);
+                logger.print(loaderId + LOG_PREFIX + "loadService: ERROR: " + serviceInfo.appliedService.implement + " is not instance of " + serviceInfo.type + ", illegal config:" + serviceInfo.appliedService.resource);
                 throw new RuntimeException("ThistleSpi: " + serviceInfo.appliedService.implement + " is not instance of " + serviceInfo.type + ", illegal config:" + serviceInfo.appliedService.resource);
             }
             if (debug) {
-                logger.print("Thistle Spi | loadService: Service " + serviceInfo.type + " (" + serviceInfo.appliedService.implement + ") loaded successfully");
+                logger.print(loaderId + LOG_PREFIX + "loadService: Service " + serviceInfo.type + " (" + serviceInfo.appliedService.implement + ") loaded successfully");
             }
             return (T) service;
         }
@@ -206,7 +201,7 @@ public class ThistleSpi {
             //不存在插件实现
             if (pluginInfo == null || pluginInfo.orderedPlugins == null) {
                 if (debug) {
-                    logger.print("Thistle Spi | loadPlugins: no enabled plugins found, type:" + type.getName());
+                    logger.print(loaderId + LOG_PREFIX + "loadPlugins: no enabled plugins found, type:" + type.getName());
                 }
                 return null;
             }
@@ -221,11 +216,11 @@ public class ThistleSpi {
                     Class clazz = classLoader.loadClass(plugin.implement);
                     pluginObj = clazz.newInstance();
                 } catch (Exception e) {
-                    logger.print("Thistle Spi | loadPlugins: ERROR: Plugin " + pluginInfo.type + " (" + plugin.implement + ") instantiation error, config:" + plugin.resource, e);
+                    logger.print(loaderId + LOG_PREFIX + "loadPlugins: ERROR: Plugin " + pluginInfo.type + " (" + plugin.implement + ") instantiation error, config:" + plugin.resource, e);
                     throw new RuntimeException("ThistleSpi: Plugin " + pluginInfo.type + " (" + plugin.implement + ") instantiation error, config:" + plugin.resource, e);
                 }
                 if (!type.isAssignableFrom(pluginObj.getClass())) {
-                    logger.print("Thistle Spi | loadPlugins: ERROR: " + plugin.implement + " is not instance of " + pluginInfo.type + ", illegal config:" + plugin.resource);
+                    logger.print(loaderId + LOG_PREFIX + "loadPlugins: ERROR: " + plugin.implement + " is not instance of " + pluginInfo.type + ", illegal config:" + plugin.resource);
                     throw new RuntimeException("ThistleSpi: " + plugin.implement + " is not instance of " + pluginInfo.type + ", illegal config:" + plugin.resource);
                 }
 
@@ -234,7 +229,7 @@ public class ThistleSpi {
             }
 
             if (debug) {
-                StringBuilder stringBuilder = new StringBuilder("Thistle Spi | loadPlugins: Plugin ");
+                StringBuilder stringBuilder = new StringBuilder(loaderId + LOG_PREFIX + "loadPlugins: Plugin ");
                 stringBuilder.append(pluginInfo.type);
                 stringBuilder.append(" (");
                 for (Plugin plugin : pluginInfo.orderedPlugins) {
@@ -248,6 +243,21 @@ public class ThistleSpi {
             return plugins;
         }
 
+        private void printCaller(int loaderId) {
+            if (debug) {
+                StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+                boolean foundThistleSpi = false;
+                for (StackTraceElement element : stackTraceElements) {
+                    if (ThistleSpi.class.getName().equals(element.getClassName())) {
+                        foundThistleSpi = true;
+                    } else if (foundThistleSpi){
+                        logger.print(loaderId + LOG_PREFIX + "CREATE LOADER BY " + element.getClassName() + "#" + element.getMethodName());
+                        break;
+                    }
+                }
+            }
+        }
+
     }
 
     /* ************************************************************************************************************
@@ -257,14 +267,15 @@ public class ThistleSpi {
     private static void loadServiceConfig(
             ClassLoader classLoader,
             SpiLogger logger,
-            String configPath,
+            int loaderId,
             boolean loadLogger,
+            String configPath,
             Map<String, ServiceInfo> serviceInfos,
             Map<String, ApplyInfo> applyInfos){
 
         if (debug) {
-            logger.print("Thistle Spi | -------------------------------------------------------------");
-            logger.print("Thistle Spi | Loading " + (loadLogger ? "logger" : "services") + " from " + configPath + ", DOC: https://github.com/shepherdviolet/thistle");
+            logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
+            logger.print(loaderId + LOG_PREFIX + "Loading " + (loadLogger ? "logger" : "services") + " from " + configPath + ", DOC: https://github.com/shepherdviolet/thistle");
         }
 
         //loading service.properties
@@ -275,14 +286,14 @@ public class ThistleSpi {
         try {
             urls = classLoader.getResources(serviceConfigFile);
         } catch (Exception e) {
-            logger.print("Thistle Spi | ERROR: Error while loading " + serviceConfigFile, e);
+            logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading " + serviceConfigFile, e);
             throw new RuntimeException("ThistleSpi: Error while loading " + serviceConfigFile, e);
         }
 
         if (urls == null || !urls.hasMoreElements()) {
             if (debug) {
-                logger.print("Thistle Spi | No " + serviceConfigFile + " found in classpath");
-                logger.print("Thistle Spi | -------------------------------------------------------------");
+                logger.print(loaderId + LOG_PREFIX + "No " + serviceConfigFile + " found in classpath");
+                logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
             }
             return;
         }
@@ -293,7 +304,7 @@ public class ThistleSpi {
             String urlStr = String.valueOf(url);
 
             if (debug) {
-                logger.print("Thistle Spi | Loading " + url);
+                logger.print(loaderId + LOG_PREFIX + "Loading " + url);
             }
 
             //装载配置
@@ -302,13 +313,13 @@ public class ThistleSpi {
                 properties = new Properties();
                 properties.load(url.openStream());
             } catch (Exception e) {
-                logger.print("Thistle Spi | ERROR: Error while loading config " + urlStr, e);
+                logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading config " + urlStr, e);
                 throw new RuntimeException("ThistleSpi: Error while loading config " + urlStr, e);
             }
 
             if (properties.size() <= 0) {
                 if (debug) {
-                    logger.print("Thistle Spi | Warning: No properties in " + url);
+                    logger.print(loaderId + LOG_PREFIX + "Warning: No properties in " + url);
                 }
             }
 
@@ -320,7 +331,7 @@ public class ThistleSpi {
                 //拆解key
                 String[] keyItems = key.split(">");
                 if (keyItems.length != 3) {
-                    logger.print("Thistle Spi | ERROR: Illegal key in config file, key:" + key + ", correct format:interface>id>level=impl, config:" + urlStr);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal key in config file, key:" + key + ", correct format:interface>id>level=impl, config:" + urlStr);
                     throw new RuntimeException("ThistleSpi: Illegal key in config file, key:" + key + ", correct format:interface>id>level=impl, config:" + urlStr);
                 }
 
@@ -329,7 +340,7 @@ public class ThistleSpi {
                 Level level = Level.parse(keyItems[2]);
 
                 if (level == Level.UNDEFINED) {
-                    logger.print("Thistle Spi | ERROR: Illegal config, undefined level " + level + ", should be library/platform/application, in key:" + key + ", config:" + urlStr);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, undefined level " + level + ", should be library/platform/application, in key:" + key + ", config:" + urlStr);
                     throw new RuntimeException("ThistleSpi: Illegal config, undefined level " + level + ", should be library/platform/application, in key:" + key + ", config:" + urlStr);
                 }
 
@@ -344,7 +355,7 @@ public class ThistleSpi {
                 //实现类
                 String implement = properties.getProperty(key);
                 if (CheckUtils.isEmptyOrBlank(implement)) {
-                    logger.print("Thistle Spi | ERROR: Illegal config, value of " + key + " is empty, config:" + urlStr);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " is empty, config:" + urlStr);
                     throw new RuntimeException("ThistleSpi: Illegal config, value of " + key + " is empty, config:" + urlStr);
                 }
 
@@ -358,7 +369,7 @@ public class ThistleSpi {
                 Service previous = serviceInfo.definedServices.get(id);
                 //若有重复id, 则抛出异常
                 if (previous != null) {
-                    logger.print("Thistle Spi | ERROR: Duplicate service defined with same id, type:" + type + ", id:" + id + ", url1:" + url + ", url2:" + previous.resource);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Duplicate service defined with same id, type:" + type + ", id:" + id + ", url1:" + url + ", url2:" + previous.resource);
                     throw new RuntimeException("ThistleSpi: Duplicate service defined with same id, type:" + type + ", id:" + id + ", url1:" + url + ", url2:" + previous.resource);
                 }
 
@@ -375,7 +386,7 @@ public class ThistleSpi {
         try {
             urls = classLoader.getResources(applyConfigFile);
         } catch (Exception e) {
-            logger.print("Thistle Spi | ERROR: Error while loading config " + applyConfigFile, e);
+            logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading config " + applyConfigFile, e);
             throw new RuntimeException("ThistleSpi: Error while loading config " + applyConfigFile, e);
         }
 
@@ -385,7 +396,7 @@ public class ThistleSpi {
             String urlStr = String.valueOf(url);
 
             if (debug) {
-                logger.print("Thistle Spi | loading " + url);
+                logger.print(loaderId + LOG_PREFIX + "loading " + url);
             }
 
             //装载配置文件
@@ -394,13 +405,13 @@ public class ThistleSpi {
                 properties = new Properties();
                 properties.load(url.openStream());
             } catch (Exception e) {
-                logger.print("Thistle Spi | ERROR: Error while loading config " + urlStr, e);
+                logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading config " + urlStr, e);
                 throw new RuntimeException("ThistleSpi: Error while loading config " + urlStr, e);
             }
 
             if (properties.size() <= 0) {
                 if (debug) {
-                    logger.print("Thistle Spi | Warning: No properties in " + url);
+                    logger.print(loaderId + LOG_PREFIX + "Warning: No properties in " + url);
                 }
             }
 
@@ -410,7 +421,7 @@ public class ThistleSpi {
                 String type = String.valueOf(names.nextElement());
                 String id = properties.getProperty(type);
                 if (CheckUtils.isEmptyOrBlank(id)) {
-                    logger.print("Thistle Spi | ERROR: Illegal config, value of " + type + " is empty, config:" + urlStr);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + type + " is empty, config:" + urlStr);
                     throw new RuntimeException("ThistleSpi: Illegal config, value of " + type + " is empty, config:" + urlStr);
                 }
 
@@ -420,7 +431,7 @@ public class ThistleSpi {
                     if (id.equals(previous.id)){
                         //若id相同, 不抛出错误, 仅做提醒
                         if (debug) {
-                            logger.print("Thistle Spi | Warning: Duplicate apply defined with same value, key:" + type + ", value:" + id + ", url1:" + url + ", url2:" + previous.resource);
+                            logger.print(loaderId + LOG_PREFIX + "Warning: Duplicate apply defined with same value, key:" + type + ", value:" + id + ", url1:" + url + ", url2:" + previous.resource);
                         }
                     } else {
                         //若id不相同, 则需要抛出异常
@@ -431,14 +442,14 @@ public class ThistleSpi {
                         if (CheckUtils.isEmptyOrBlank(idFromJvmArgs)) {
                             //如果没有-Dthistle.spi.apply, 直接抛出异常
                             //no -Dthistle.spi.apply, throw exception
-                            logger.print("Thistle Spi | ERROR: " + duplicateError);
+                            logger.print(loaderId + LOG_PREFIX + "ERROR: " + duplicateError);
                             throw new RuntimeException("ThistleSpi: " + duplicateError);
                         } else {
                             //如果有-Dthistle.spi.apply, 先放一马
                             //try with -Dthistle.spi.apply
                             previous.duplicateError = duplicateError;
                             if (debug) {
-                                logger.print("Thistle Spi | Warning: (Resolve by -Dthistle.spi.apply)" + duplicateError);
+                                logger.print(loaderId + LOG_PREFIX + "Warning: (Resolve by -Dthistle.spi.apply)" + duplicateError);
                             }
                         }
                     }
@@ -459,7 +470,7 @@ public class ThistleSpi {
         //apply service
 
         if (debug) {
-            logger.print("Thistle Spi | Loading finish");
+            logger.print(loaderId + LOG_PREFIX + "Loading finish");
         }
 
         //遍历所有服务
@@ -475,7 +486,7 @@ public class ThistleSpi {
                     continue;
                 }
                 if (debug) {
-                    logger.print("Thistle Spi | Warning: No service named " + applyId + ", failed to apply service '" + spi.type + "' to id '" + applyId + "' by -D" + PROPERTY_SERVICE_APPLY_PREFIX + spi.type + "=" + applyId);
+                    logger.print(loaderId + LOG_PREFIX + "Warning: No service named " + applyId + ", failed to apply service '" + spi.type + "' to id '" + applyId + "' by -D" + PROPERTY_SERVICE_APPLY_PREFIX + spi.type + "=" + applyId);
                 }
             }
 
@@ -483,7 +494,7 @@ public class ThistleSpi {
             if (applyInfos.containsKey(spi.type)){
                 ApplyInfo applyInfo = applyInfos.get(spi.type);
                 if (applyInfo.duplicateError != null) {
-                    logger.print("Thistle Spi | ERROR: " + applyInfo.duplicateError);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: " + applyInfo.duplicateError);
                     throw new RuntimeException("ThistleSpi: " + applyInfo.duplicateError);
                 }
                 Service service = spi.definedServices.get(applyInfo.id);
@@ -493,8 +504,8 @@ public class ThistleSpi {
                     continue;
                 }
                 if (debug) {
-                    logger.print("Thistle Spi | Warning: No service named " + applyInfo.id + ", failed to apply service '" + spi.type + "' to id '" + applyInfo.id + "' by " + applyInfo.resource);
-                    logger.print("Thistle Spi | Warning: We will apply '" + spi.type + "' service by level automatically (application > platform > library)");
+                    logger.print(loaderId + LOG_PREFIX + "Warning: No service named " + applyInfo.id + ", failed to apply service '" + spi.type + "' to id '" + applyInfo.id + "' by " + applyInfo.resource);
+                    logger.print(loaderId + LOG_PREFIX + "Warning: We will apply '" + spi.type + "' service by level automatically (application > platform > library)");
                 }
             }
 
@@ -522,7 +533,7 @@ public class ThistleSpi {
                     stringBuilder.append(service);
                     stringBuilder.append("|");
                 }
-                logger.print("Thistle Spi | ERROR: " + stringBuilder.toString());
+                logger.print(loaderId + LOG_PREFIX + "ERROR: " + stringBuilder.toString());
                 throw new RuntimeException("ThistleSpi: " + stringBuilder.toString());
             }
 
@@ -535,25 +546,25 @@ public class ThistleSpi {
 
             for (ServiceInfo serviceInfo : serviceInfos.values()) {
 
-                logger.print("Thistle Spi | -------------------------------------------------------------");
-                logger.print("Thistle Spi | Service:");
-                logger.print("Thistle Spi | type: " + serviceInfo.type);
-                logger.print("Thistle Spi | impl: " + serviceInfo.appliedService.implement);
-                logger.print("Thistle Spi | url: " + serviceInfo.appliedService.resource);
-                logger.print("Thistle Spi | reason: Applied by " + serviceInfo.applyReason);
-                logger.print("Thistle Spi | Definitions:");
+                logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
+                logger.print(loaderId + LOG_PREFIX + "Service:");
+                logger.print(loaderId + LOG_PREFIX + "type: " + serviceInfo.type);
+                logger.print(loaderId + LOG_PREFIX + "impl: " + serviceInfo.appliedService.implement);
+                logger.print(loaderId + LOG_PREFIX + "url: " + serviceInfo.appliedService.resource);
+                logger.print(loaderId + LOG_PREFIX + "reason: Applied by " + serviceInfo.applyReason);
+                logger.print(loaderId + LOG_PREFIX + "Definitions:");
 
                 for (Service service : serviceInfo.definedServices.values()) {
                     if (service == serviceInfo.appliedService) {
-                        logger.print("Thistle Spi | + " + service);
+                        logger.print(loaderId + LOG_PREFIX + "+ " + service);
                     } else {
-                        logger.print("Thistle Spi | - " + service);
+                        logger.print(loaderId + LOG_PREFIX + "- " + service);
                     }
                 }
 
             }
 
-            logger.print("Thistle Spi | -------------------------------------------------------------");
+            logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
         }
 
     }
@@ -637,13 +648,14 @@ public class ThistleSpi {
     private static void loadPluginConfig(
             ClassLoader classLoader,
             SpiLogger logger,
+            int loaderId,
             String configPath,
             Map<String, PluginInfo> pluginInfos,
             Map<String, IgnoreInfo> ignoreInfos){
 
         if (debug) {
-            logger.print("Thistle Spi | -------------------------------------------------------------");
-            logger.print("Thistle Spi | Loading plugins from " + configPath + ", DOC: https://github.com/shepherdviolet/thistle");
+            logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
+            logger.print(loaderId + LOG_PREFIX + "Loading plugins from " + configPath + ", DOC: https://github.com/shepherdviolet/thistle");
         }
 
         //loading plugin.properties
@@ -654,14 +666,14 @@ public class ThistleSpi {
         try {
             urls = classLoader.getResources(pluginConfigFile);
         } catch (Exception e) {
-            logger.print("Thistle Spi | ERROR: Error while loading " + pluginConfigFile, e);
+            logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading " + pluginConfigFile, e);
             throw new RuntimeException("ThistleSpi: Error while loading " + pluginConfigFile, e);
         }
 
         if (urls == null || !urls.hasMoreElements()) {
             if (debug) {
-                logger.print("Thistle Spi | No " + pluginConfigFile + " found in classpath");
-                logger.print("Thistle Spi | -------------------------------------------------------------");
+                logger.print(loaderId + LOG_PREFIX + "No " + pluginConfigFile + " found in classpath");
+                logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
             }
             return;
         }
@@ -672,7 +684,7 @@ public class ThistleSpi {
             String urlStr = String.valueOf(url);
 
             if (debug) {
-                logger.print("Thistle Spi | Loading " + url);
+                logger.print(loaderId + LOG_PREFIX + "Loading " + url);
             }
 
             //装载配置
@@ -681,13 +693,13 @@ public class ThistleSpi {
                 properties = new Properties();
                 properties.load(url.openStream());
             } catch (Exception e) {
-                logger.print("Thistle Spi | ERROR: Error while loading config " + urlStr, e);
+                logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading config " + urlStr, e);
                 throw new RuntimeException("ThistleSpi: Error while loading config " + urlStr, e);
             }
 
             if (properties.size() <= 0) {
                 if (debug) {
-                    logger.print("Thistle Spi | Warning: No properties in " + url);
+                    logger.print(loaderId + LOG_PREFIX + "Warning: No properties in " + url);
                 }
             }
 
@@ -699,7 +711,7 @@ public class ThistleSpi {
                 //拆解key
                 String[] keyItems = key.split(">");
                 if (keyItems.length != 2) {
-                    logger.print("Thistle Spi | ERROR: Illegal key in config file, key:" + key + ", correct format:interface>priority=impl, config:" + urlStr);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal key in config file, key:" + key + ", correct format:interface>priority=impl, config:" + urlStr);
                     throw new RuntimeException("ThistleSpi: Illegal key in config file, key:" + key + ", correct format:interface>priority=impl, config:" + urlStr);
                 }
 
@@ -708,7 +720,7 @@ public class ThistleSpi {
                 try {
                     priority = Integer.valueOf(keyItems[1]);
                 } catch (Exception e) {
-                    logger.print("Thistle Spi | ERROR: Illegal config, invalid priority " + keyItems[1] + ", should be integer, in key:" + key + ", config:" + urlStr);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, invalid priority " + keyItems[1] + ", should be integer, in key:" + key + ", config:" + urlStr);
                     throw new RuntimeException("ThistleSpi: Illegal config, invalid priority " + keyItems[1] + ", should be integer, in key:" + key + ", config:" + urlStr);
                 }
 
@@ -723,7 +735,7 @@ public class ThistleSpi {
                 //实现类
                 String implement = properties.getProperty(key);
                 if (CheckUtils.isEmptyOrBlank(implement)) {
-                    logger.print("Thistle Spi | ERROR: Illegal config, value of " + key + " is empty, config:" + urlStr);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " is empty, config:" + urlStr);
                     throw new RuntimeException("ThistleSpi: Illegal config, value of " + key + " is empty, config:" + urlStr);
                 }
 
@@ -745,7 +757,7 @@ public class ThistleSpi {
         try {
             urls = classLoader.getResources(ignoreConfigFile);
         } catch (Exception e) {
-            logger.print("Thistle Spi | ERROR: Error while loading config " + ignoreConfigFile, e);
+            logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading config " + ignoreConfigFile, e);
             throw new RuntimeException("ThistleSpi: Error while loading config " + ignoreConfigFile, e);
         }
 
@@ -755,7 +767,7 @@ public class ThistleSpi {
             String urlStr = String.valueOf(url);
 
             if (debug) {
-                logger.print("Thistle Spi | loading " + url);
+                logger.print(loaderId + LOG_PREFIX + "loading " + url);
             }
 
             //装载配置文件
@@ -764,13 +776,13 @@ public class ThistleSpi {
                 properties = new Properties();
                 properties.load(url.openStream());
             } catch (Exception e) {
-                logger.print("Thistle Spi | ERROR: Error while loading config " + urlStr, e);
+                logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading config " + urlStr, e);
                 throw new RuntimeException("ThistleSpi: Error while loading config " + urlStr, e);
             }
 
             if (properties.size() <= 0) {
                 if (debug) {
-                    logger.print("Thistle Spi | Warning: No properties in " + url);
+                    logger.print(loaderId + LOG_PREFIX + "Warning: No properties in " + url);
                 }
             }
 
@@ -780,7 +792,7 @@ public class ThistleSpi {
                 String type = String.valueOf(names.nextElement());
                 String ignoreStr = properties.getProperty(type);
                 if (CheckUtils.isEmptyOrBlank(ignoreStr)) {
-                    logger.print("Thistle Spi | ERROR: Illegal config, value of " + type + " is empty, config:" + urlStr);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + type + " is empty, config:" + urlStr);
                     throw new RuntimeException("ThistleSpi: Illegal config, value of " + type + " is empty, config:" + urlStr);
                 }
 
@@ -813,7 +825,7 @@ public class ThistleSpi {
         //apply service
 
         if (debug) {
-            logger.print("Thistle Spi | Loading finish");
+            logger.print(loaderId + LOG_PREFIX + "Loading finish");
         }
 
         //遍历所有服务
@@ -840,7 +852,7 @@ public class ThistleSpi {
                         }
                     }
                     if (debug && count <= 0) {
-                        logger.print("Thistle Spi | Warning: Plugin implement " + ignoreImpl + " undefined, failed to ignore implement '" + ignoreImpl + "' of '" + pluginInfo.type + "' by -D" + PROPERTY_PLUGIN_IGNORE_PREFIX + pluginInfo.type + "=" + ignoreStr);
+                        logger.print(loaderId + LOG_PREFIX + "Warning: Plugin implement " + ignoreImpl + " undefined, failed to ignore implement '" + ignoreImpl + "' of '" + pluginInfo.type + "' by -D" + PROPERTY_PLUGIN_IGNORE_PREFIX + pluginInfo.type + "=" + ignoreStr);
                     }
                 }
             }
@@ -858,7 +870,7 @@ public class ThistleSpi {
                         }
                     }
                     if (debug && count <= 0) {
-                        logger.print("Thistle Spi | Warning: Plugin implement " + ignore.ignoreImpl + " undefined, failed to ignore implement '" + ignore.ignoreImpl + "' of '" + pluginInfo.type + "' by " + ignore.resource);
+                        logger.print(loaderId + LOG_PREFIX + "Warning: Plugin implement " + ignore.ignoreImpl + " undefined, failed to ignore implement '" + ignore.ignoreImpl + "' of '" + pluginInfo.type + "' by " + ignore.resource);
                     }
                 }
             }
@@ -882,21 +894,21 @@ public class ThistleSpi {
 
             for (PluginInfo pluginInfo : pluginInfos.values()) {
 
-                logger.print("Thistle Spi | -------------------------------------------------------------");
-                logger.print("Thistle Spi | Plugin:");
-                logger.print("Thistle Spi | type: " + pluginInfo.type);
-                logger.print("Thistle Spi | Enabled:");
+                logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
+                logger.print(loaderId + LOG_PREFIX + "Plugin:");
+                logger.print(loaderId + LOG_PREFIX + "type: " + pluginInfo.type);
+                logger.print(loaderId + LOG_PREFIX + "Enabled:");
                 for (Plugin plugin : pluginInfo.orderedPlugins) {
-                    logger.print("Thistle Spi | + " + plugin.toAbstractString());
+                    logger.print(loaderId + LOG_PREFIX + "+ " + plugin.toAbstractString());
                 }
-                logger.print("Thistle Spi | Definitions:");
+                logger.print(loaderId + LOG_PREFIX + "Definitions:");
                 for (Plugin plugin : pluginInfo.plugins) {
-                    logger.print("Thistle Spi | " + (plugin.enabled ? "+ " : "- ") + plugin);
+                    logger.print(loaderId + LOG_PREFIX + "" + (plugin.enabled ? "+ " : "- ") + plugin);
                 }
 
             }
 
-            logger.print("Thistle Spi | -------------------------------------------------------------");
+            logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
         }
 
     }
