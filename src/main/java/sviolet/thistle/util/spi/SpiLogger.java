@@ -19,6 +19,11 @@
 
 package sviolet.thistle.util.spi;
 
+/**
+ * ThistleSpi日志接口
+ *
+ * @author S.Violet
+ */
 public interface SpiLogger {
 
     void print(String msg);

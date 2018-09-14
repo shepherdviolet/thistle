@@ -33,7 +33,6 @@ import java.util.*;
  */
 public class ThistleSpi {
 
-
     private static final String PROPERTY_DEBUG = "thistle.spi.debug";
     private static final String PROPERTY_SERVICE_APPLY_PREFIX = "thistle.spi.apply.";
     private static final String PROPERTY_PLUGIN_IGNORE_PREFIX = "thistle.spi.ignore.";
@@ -58,7 +57,7 @@ public class ThistleSpi {
      * 加载多个服务时, 建议使用同一个加载器(避免重复加载相关配置).
      * 如果有动态类加载的需要, 可以在重新加载时, 创建一个新的服务加载器, 新的类加载器会重新加载配置.
      * 配置文件解析出错时会抛出RuntimeException异常.
-     * @param classLoader ClassLoader
+     * @param classLoader ClassLoader 类加载器
      * @param configPath 自定义配置文件路径, 默认META-INF/thistle-spi/
      * @return 服务加载器
      */
@@ -79,7 +78,7 @@ public class ThistleSpi {
      * 加载多个服务时, 建议使用同一个加载器(避免重复加载相关配置).
      * 如果有动态类加载的需要, 可以在重新加载时, 创建一个新的服务加载器, 新的类加载器会重新加载配置.
      * 配置文件解析出错时会抛出RuntimeException异常.
-     * @param classLoader ClassLoader
+     * @param classLoader ClassLoader 类加载器
      * @return 服务加载器
      */
     public static ServiceLoader newLoader(ClassLoader classLoader) {
@@ -90,11 +89,10 @@ public class ThistleSpi {
      * [非线程安全]<p>
      * 创建服务加载器:
      * 创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类.
-     * 加载器会持有加载过的所有服务和ClassLoader, 重复调用loadService方法会返回同一个实例.
      * 加载多个服务时, 建议使用同一个加载器(避免重复加载相关配置).
      * 如果有动态类加载的需要, 可以在重新加载时, 创建一个新的服务加载器, 新的类加载器会重新加载配置和类.
      * 配置文件解析出错时会抛出RuntimeException异常.
-     * @return 服务加载器
+     * @return 服务加载器(使用上下文类加载器)
      */
     public static ServiceLoader newLoader() {
         return newLoader(null);
@@ -173,7 +171,7 @@ public class ThistleSpi {
     }
 
     /* ************************************************************************************************************
-     * inner logic
+     * Load services
      * ************************************************************************************************************/
 
     private static void loadServiceConfig(
@@ -551,4 +549,9 @@ public class ThistleSpi {
         }
 
     }
+
+    /* ************************************************************************************************************
+     * Load plugins
+     * ************************************************************************************************************/
+
 }

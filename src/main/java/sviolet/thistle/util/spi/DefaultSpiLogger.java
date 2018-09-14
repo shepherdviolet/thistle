@@ -21,6 +21,11 @@ package sviolet.thistle.util.spi;
 
 import sviolet.thistle.util.conversion.DateTimeUtils;
 
+/**
+ * ThistleSpi默认日志实现
+ *
+ * @author S.Violet
+ */
 public class DefaultSpiLogger implements SpiLogger {
 
     @Override
