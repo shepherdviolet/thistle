@@ -35,8 +35,8 @@ public class ThistleSpi {
 
 
     private static final String PROPERTY_DEBUG = "thistle.spi.debug";
-    private static final String PROPERTY_SERVICE_APPLY_PREFIX = "thistle.spi.service.apply.";
-    private static final String PROPERTY_PLUGIN_IGNORE_PREFIX = "thistle.spi.plugin.ignore.";
+    private static final String PROPERTY_SERVICE_APPLY_PREFIX = "thistle.spi.apply.";
+    private static final String PROPERTY_PLUGIN_IGNORE_PREFIX = "thistle.spi.ignore.";
 
     private static final String CONFIG_PATH = "META-INF/thistle-spi/";
     private static final String CONFIG_PATH_LOGGER = "META-INF/thistle-spi-logger/";
@@ -184,7 +184,7 @@ public class ThistleSpi {
 
         if (debug) {
             logger.print("Thistle Spi | -------------------------------------------------------------");
-            logger.print("Thistle Spi | Loading " + (loadLogger ? "logger" : "services") + " from " + configPath + ", DOC: https://github.com/shepherdviolet/thistle/docs/spi-manual.md");
+            logger.print("Thistle Spi | Loading " + (loadLogger ? "logger" : "services") + " from " + configPath + ", DOC: https://github.com/shepherdviolet/thistle");
         }
 
         //loading service.properties
@@ -345,20 +345,20 @@ public class ThistleSpi {
                     } else {
                         //若id不相同, 则需要抛出异常
                         String idFromJvmArgs = System.getProperty(PROPERTY_SERVICE_APPLY_PREFIX + type);
-                        //允许使用-Dthistle.spi.service.apply解决apply冲突
-                        //we can use -Dthistle.spi.service.apply to resolve duplicate error
+                        //允许使用-Dthistle.spi.apply解决apply冲突
+                        //we can use -Dthistle.spi.apply to resolve duplicate error
                         String duplicateError = "Duplicate apply defined with different value, key:" + type + ", value1:" + id + ", value2:" + previous.id + ", url1:" + url + ", url2:" + previous.resource;
                         if (CheckUtils.isEmptyOrBlank(idFromJvmArgs)) {
-                            //如果没有-Dthistle.spi.service.apply, 直接抛出异常
-                            //no -Dthistle.spi.service.apply, throw exception
+                            //如果没有-Dthistle.spi.apply, 直接抛出异常
+                            //no -Dthistle.spi.apply, throw exception
                             logger.print("Thistle Spi | ERROR: " + duplicateError);
                             throw new RuntimeException("ThistleSpi: " + duplicateError);
                         } else {
-                            //如果有-Dthistle.spi.service.apply, 先放一马
-                            //try with -Dthistle.spi.service.apply
+                            //如果有-Dthistle.spi.apply, 先放一马
+                            //try with -Dthistle.spi.apply
                             previous.duplicateError = duplicateError;
                             if (debug) {
-                                logger.print("Thistle Spi | Warning: (Resolve by -Dthistle.spi.service.apply)" + duplicateError);
+                                logger.print("Thistle Spi | Warning: (Resolve by -Dthistle.spi.apply)" + duplicateError);
                             }
                         }
                     }
@@ -395,7 +395,7 @@ public class ThistleSpi {
                     continue;
                 }
                 if (debug) {
-                    logger.print("Thistle Spi | Warning: No service named " + applyId + ", failed to apply service '" + spi.type + "' with id '" + applyId + "' by -D" + PROPERTY_SERVICE_APPLY_PREFIX + spi.type + "=" + applyId);
+                    logger.print("Thistle Spi | Warning: No service named " + applyId + ", failed to apply service '" + spi.type + "' to id '" + applyId + "' by -D" + PROPERTY_SERVICE_APPLY_PREFIX + spi.type + "=" + applyId);
                 }
             }
 
@@ -413,7 +413,7 @@ public class ThistleSpi {
                     continue;
                 }
                 if (debug) {
-                    logger.print("Thistle Spi | Warning: No service named " + applyInfo.id + ", failed to apply service '" + spi.type + "' with id '" + applyInfo.id + "' by " + applyInfo.resource);
+                    logger.print("Thistle Spi | Warning: No service named " + applyInfo.id + ", failed to apply service '" + spi.type + "' to id '" + applyInfo.id + "' by " + applyInfo.resource);
                     logger.print("Thistle Spi | Warning: We will apply '" + spi.type + "' service by level automatically (application > platform > library)");
                 }
             }
