@@ -532,9 +532,9 @@ public class ThistleSpi {
 
                 for (Service service : serviceInfo.definedServices.values()) {
                     if (service == serviceInfo.appliedService) {
-                        logger.print("Thistle Spi | >> " + service);
+                        logger.print("Thistle Spi | + " + service);
                     } else {
-                        logger.print("Thistle Spi | -- " + service);
+                        logger.print("Thistle Spi | - " + service);
                     }
                 }
 
@@ -841,11 +841,11 @@ public class ThistleSpi {
                         if (ignore.ignoreImpl.equals(plugin.implement)) {
                             count++;
                             plugin.enabled = false;
-                            plugin.disableReason = "-D" + PROPERTY_PLUGIN_IGNORE_PREFIX + pluginInfo.type + "=" + ignoreStr;
+                            plugin.disableReason = ignore.resource;
                         }
                     }
                     if (debug && count <= 0) {
-                        logger.print("Thistle Spi | Warning: Plugin implement " + ignore.ignoreImpl + " undefined, failed to ignore implement '" + ignore.ignoreImpl + "' of '" + pluginInfo.type + "' by -D" + PROPERTY_PLUGIN_IGNORE_PREFIX + pluginInfo.type + "=" + ignoreStr);
+                        logger.print("Thistle Spi | Warning: Plugin implement " + ignore.ignoreImpl + " undefined, failed to ignore implement '" + ignore.ignoreImpl + "' of '" + pluginInfo.type + "' by " + ignore.resource);
                     }
                 }
             }
@@ -874,11 +874,11 @@ public class ThistleSpi {
                 logger.print("Thistle Spi | type: " + pluginInfo.type);
                 logger.print("Thistle Spi | Enabled:");
                 for (Plugin plugin : pluginInfo.orderedPlugins) {
-                    logger.print("Thistle Spi | >> " + plugin.toAbstractString());
+                    logger.print("Thistle Spi | + " + plugin.toAbstractString());
                 }
                 logger.print("Thistle Spi | Definitions:");
                 for (Plugin plugin : pluginInfo.plugins) {
-                    logger.print("Thistle Spi | >> " + plugin);
+                    logger.print("Thistle Spi | " + (plugin.enabled ? "+ " : "- ") + plugin);
                 }
 
             }
