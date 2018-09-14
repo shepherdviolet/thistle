@@ -719,7 +719,7 @@ public class ThistleSpi {
                 plugin.priority = priority;
                 plugin.implement = implement;
                 plugin.resource = urlStr;
-                pluginInfo.plugins.put(implement, plugin);
+                pluginInfo.plugins.add(plugin);
 
             }
 
@@ -818,11 +818,15 @@ public class ThistleSpi {
                     if (ignoreImpl.length() <= 0) {
                         continue;
                     }
-                    Plugin plugin = pluginInfo.plugins.get(ignoreImpl);
-                    if (plugin != null) {
-                        plugin.enabled = false;
-                        plugin.disableReason = "-D" + PROPERTY_PLUGIN_IGNORE_PREFIX + pluginInfo.type + "=" + ignoreStr;
-                    } else if (debug) {
+                    int count = 0;
+                    for (Plugin plugin : pluginInfo.plugins) {
+                        if (ignoreImpl.equals(plugin.implement)) {
+                            count++;
+                            plugin.enabled = false;
+                            plugin.disableReason = "-D" + PROPERTY_PLUGIN_IGNORE_PREFIX + pluginInfo.type + "=" + ignoreStr;
+                        }
+                    }
+                    if (debug && count <= 0) {
                         logger.print("Thistle Spi | Warning: Plugin implement " + ignoreImpl + " undefined, failed to ignore implement '" + ignoreImpl + "' of '" + pluginInfo.type + "' by -D" + PROPERTY_PLUGIN_IGNORE_PREFIX + pluginInfo.type + "=" + ignoreStr);
                     }
                 }
@@ -832,18 +836,22 @@ public class ThistleSpi {
             if (ignoreInfos.containsKey(pluginInfo.type)){
                 IgnoreInfo ignoreInfo = ignoreInfos.get(pluginInfo.type);
                 for (Ignore ignore : ignoreInfo.ignores) {
-                    Plugin plugin = pluginInfo.plugins.get(ignore.ignoreImpl);
-                    if (plugin != null) {
-                        plugin.enabled = false;
-                        plugin.disableReason = ignore.resource;
-                    } else if (debug){
-                        logger.print("Thistle Spi | Warning: Plugin implement " + ignore.ignoreImpl + " undefined, failed to ignore implement '" + ignore.ignoreImpl + "' of '" + pluginInfo.type + "' by " + ignore.resource);
+                    int count = 0;
+                    for (Plugin plugin : pluginInfo.plugins) {
+                        if (ignore.ignoreImpl.equals(plugin.implement)) {
+                            count++;
+                            plugin.enabled = false;
+                            plugin.disableReason = "-D" + PROPERTY_PLUGIN_IGNORE_PREFIX + pluginInfo.type + "=" + ignoreStr;
+                        }
+                    }
+                    if (debug && count <= 0) {
+                        logger.print("Thistle Spi | Warning: Plugin implement " + ignore.ignoreImpl + " undefined, failed to ignore implement '" + ignore.ignoreImpl + "' of '" + pluginInfo.type + "' by -D" + PROPERTY_PLUGIN_IGNORE_PREFIX + pluginInfo.type + "=" + ignoreStr);
                     }
                 }
             }
 
             //最后取可用的插件排序
-            for (Plugin plugin : pluginInfo.plugins.values()) {
+            for (Plugin plugin : pluginInfo.plugins) {
                 if (plugin.enabled) {
                     pluginInfo.orderedPlugins.add(plugin);
                 }
@@ -869,7 +877,7 @@ public class ThistleSpi {
                     logger.print("Thistle Spi | >> " + plugin.toAbstractString());
                 }
                 logger.print("Thistle Spi | Definitions:");
-                for (Plugin plugin : pluginInfo.plugins.values()) {
+                for (Plugin plugin : pluginInfo.plugins) {
                     logger.print("Thistle Spi | >> " + plugin);
                 }
 
@@ -883,7 +891,7 @@ public class ThistleSpi {
     private static class PluginInfo {
 
         private String type;
-        private Map<String, Plugin> plugins = new HashMap<>(16);
+        private List<Plugin> plugins = new ArrayList<>(8);
         private List<Plugin> orderedPlugins = new ArrayList<>(8);
 
     }
