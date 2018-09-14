@@ -901,7 +901,7 @@ public class ThistleSpi {
         private int priority;
         private String implement;
         private String resource;
-        private boolean enabled;
+        private boolean enabled = true;
         private String disableReason;
 
         public String toAbstractString(){
@@ -916,7 +916,7 @@ public class ThistleSpi {
         public String toString() {
             return "Plugin{" +
                     "enable=" + enabled +
-                    "priority=" + priority +
+                    ", priority=" + priority +
                     ", impl=" + implement +
                     (enabled ? "" : ", disable by " + disableReason) +
                     ", url=" + resource +
