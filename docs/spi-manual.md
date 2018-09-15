@@ -309,6 +309,56 @@ sample.spi.facade.APlugin=sample.spi.impl.APluginImpl1,sample.spi.impl.APluginIm
 
 * Use SLF4J to print log
 
-> Add dependency `com.github.shepherdviolet:slate-common:<version>` <br>
+> Add dependency `com.github.shepherdviolet:slate-common:<version>` to your application <br>
 
-## 
+## Customize logger implementation
+
+### Implementation
+
+```text
+package sample.spi.logger;
+
+public class CustomSpiLogger implements SpiLogger {
+
+    @Override
+    public void print(String msg) {
+        // print message
+    }
+
+    @Override
+    public void print(String msg, Throwable throwable) {
+        // print message and throwable
+    }
+
+}
+```
+
+### Statement
+
+* Create file `META-INF/thistle-spi-logger/service.properties`
+* Edit:
+
+```text
+sviolet.thistle.util.spi.SpiLogger>sample-app>application=sample.spi.logger.CustomSpiLogger
+```
+
+### Specify logger id if you want (Non-essential)
+
+* If the auto-loaded logger is not what you want, you can specify logger id as follows
+
+#### By config file
+
+* Create file `META-INF/thistle-spi-logger/service-apply.properties`
+* Edit:
+
+```text
+sviolet.thistle.util.spi.SpiLogger=sample-app
+```
+
+#### By JVM argument
+
+* Add argument in your startup shell
+
+```text
+-Dthistle.spi.apply.sviolet.thistle.util.spi.SpiLogger=sample-app
+```
