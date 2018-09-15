@@ -281,8 +281,34 @@ sample.spi.facade.APlugin=sample.spi.impl.APluginImpl1,sample.spi.impl.APluginIm
 
 # 加载自定义路径下的配置
 
-# 日志输出设置
+* 默认情况下, ThistleSpi的加载器会加载`META-INF/thistle-spi/`路径下的配置文件(service.properties/service-apply.properties/plugin.properties/plugin-ignore.properties)
+* 我们可以通过如下方法指定自定义的配置路径
+
+```text
+    private AService aService;
+    private BService bService;
+    private List<APlugin> aPlugins;
+    private List<BPlugin> bPlugins;
+    
+    public void init(){
+        ThistleSpi.ServiceLoader serviceLoader = ThistleSpi.newLoader(Thread.currentThread().getContextClassLoader(), "META-INF/custom-path/");
+        aService = serviceLoader.loadService(AService.class);
+        bService = serviceLoader.loadService(BService.class);
+        aPlugins = serviceLoader.loadPlugins(APlugin.class);
+        bPlugins = serviceLoader.loadPlugins(BPlugin.class);
+    }
+```
+
+* 注意:`META-INF/thistle-spi-logger/`路径无法修改
+
+# Log
 
 * Disable log
 
-> `-Dthistle.spi.debug=false`
+> `-Dthistle.spi.debug=false` <br>
+
+* Use SLF4J to print log
+
+> Add dependency `com.github.shepherdviolet:slate-common:<version>` <br>
+
+## 
