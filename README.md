@@ -1,4 +1,4 @@
-# thistle 9.10
+# thistle 10.0
 * Java common library for private use
 * https://github.com/shepherdviolet/thistle
 
@@ -11,7 +11,7 @@ repositories {
     mavenCentral()
 }
 dependencies {
-    compile 'com.github.shepherdviolet:thistle:9.10'
+    compile 'com.github.shepherdviolet:thistle:10.0'
 }
 
 ```
@@ -20,7 +20,7 @@ dependencies {
     <dependency>    
         <groupId>com.github.shepherdviolet</groupId>
         <artifactId>thistle</artifactId>
-        <version>9.10</version> 
+        <version>10.0</version> 
     </dependency>
 ```
 
@@ -32,7 +32,7 @@ dependencies {
         mavenCentral()
     }
     dependencies {
-        compile ('com.github.shepherdviolet:thistle:9.10') {
+        compile ('com.github.shepherdviolet:thistle:10.0') {
             exclude group:'org.jetbrains.kotlin', module:'kotlin-stdlib-jre7'
             exclude group:'com.google.code.gson'
             exclude group:'org.bouncycastle'
@@ -44,7 +44,7 @@ dependencies {
     <dependency>
         <groupId>com.github.shepherdviolet</groupId>
         <artifactId>thistle</artifactId>
-        <version>9.10</version>
+        <version>10.0</version>
         <exclusions>
              <exclusion>
                  <groupId>org.jetbrains.kotlin</groupId>
