@@ -547,12 +547,12 @@ public class ThistleSpi {
             for (ServiceInfo serviceInfo : serviceInfos.values()) {
 
                 logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
-                logger.print(loaderId + LOG_PREFIX + "Service:");
+                logger.print(loaderId + LOG_PREFIX + "Service Applied:");
                 logger.print(loaderId + LOG_PREFIX + "type: " + serviceInfo.type);
-                logger.print(loaderId + LOG_PREFIX + "impl: " + serviceInfo.appliedService.implement);
+                logger.print(loaderId + LOG_PREFIX + "implement: " + serviceInfo.appliedService.implement);
                 logger.print(loaderId + LOG_PREFIX + "url: " + serviceInfo.appliedService.resource);
                 logger.print(loaderId + LOG_PREFIX + "reason: Applied by " + serviceInfo.applyReason);
-                logger.print(loaderId + LOG_PREFIX + "Definitions:");
+                logger.print(loaderId + LOG_PREFIX + "All Configurations:");
 
                 for (Service service : serviceInfo.definedServices.values()) {
                     if (service == serviceInfo.appliedService) {
@@ -895,13 +895,13 @@ public class ThistleSpi {
             for (PluginInfo pluginInfo : pluginInfos.values()) {
 
                 logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
-                logger.print(loaderId + LOG_PREFIX + "Plugin:");
+                logger.print(loaderId + LOG_PREFIX + "Plugin Applied:");
                 logger.print(loaderId + LOG_PREFIX + "type: " + pluginInfo.type);
-                logger.print(loaderId + LOG_PREFIX + "Enabled:");
+                logger.print(loaderId + LOG_PREFIX + "implements:");
                 for (Plugin plugin : pluginInfo.orderedPlugins) {
                     logger.print(loaderId + LOG_PREFIX + "+ " + plugin.toAbstractString());
                 }
-                logger.print(loaderId + LOG_PREFIX + "Definitions:");
+                logger.print(loaderId + LOG_PREFIX + "All Configurations:");
                 for (Plugin plugin : pluginInfo.plugins) {
                     logger.print(loaderId + LOG_PREFIX + "" + (plugin.enabled ? "+ " : "- ") + plugin);
                 }
