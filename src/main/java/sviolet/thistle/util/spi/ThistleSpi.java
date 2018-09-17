@@ -28,7 +28,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * [非线程安全] <p>
  *
- * Thistle Spi <p>
+ * ThistleSpi<p>
+ *
+ * ThistleSpi不缓存创建出来的加载器和加载出来的服务/插件对象. CachedThistleSpi会缓存创建出来的加载器.
  *
  * @author S.Violet
  */
@@ -58,7 +60,7 @@ public class ThistleSpi {
      * [非线程安全]<p>
      * 创建一个新的服务加载器:
      * 创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.
-     * 加载多个服务/插件时, 建议使用同一个加载器(避免重复加载相关配置).
+     * 加载多个服务/插件时, 请使用同一个加载器, 以避免重复加载相关配置.
      * 如果有动态类加载的需要, 可以在重新加载时, 创建一个新的服务加载器, 新的类加载器会重新加载配置.
      * 配置文件解析出错时会抛出RuntimeException异常.
      * @param classLoader ClassLoader 类加载器
@@ -79,7 +81,7 @@ public class ThistleSpi {
      * [非线程安全]<p>
      * 创建一个新的服务加载器:
      * 创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.
-     * 加载多个服务/插件时, 建议使用同一个加载器(避免重复加载相关配置).
+     * 加载多个服务/插件时, 请使用同一个加载器, 以避免重复加载相关配置.
      * 如果有动态类加载的需要, 可以在重新加载时, 创建一个新的服务加载器, 新的类加载器会重新加载配置.
      * 配置文件解析出错时会抛出RuntimeException异常.
      * @param classLoader ClassLoader 类加载器
@@ -93,13 +95,27 @@ public class ThistleSpi {
      * [非线程安全]<p>
      * 创建一个新的服务加载器:
      * 创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.
-     * 加载多个服务/插件时, 建议使用同一个加载器(避免重复加载相关配置).
+     * 加载多个服务/插件时, 请使用同一个加载器, 以避免重复加载相关配置.
+     * 如果有动态类加载的需要, 可以在重新加载时, 创建一个新的服务加载器, 新的类加载器会重新加载配置.
+     * 配置文件解析出错时会抛出RuntimeException异常.
+     * @param configPath 自定义配置文件路径, 默认META-INF/thistle-spi/
+     * @return 服务加载器(使用上下文类加载器)
+     */
+    public static ServiceLoader newLoader(String configPath) {
+        return newLoader(null, configPath);
+    }
+
+    /**
+     * [非线程安全]<p>
+     * 创建一个新的服务加载器:
+     * 创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.
+     * 加载多个服务/插件时, 请使用同一个加载器, 以避免重复加载相关配置.
      * 如果有动态类加载的需要, 可以在重新加载时, 创建一个新的服务加载器, 新的类加载器会重新加载配置和类.
      * 配置文件解析出错时会抛出RuntimeException异常.
      * @return 服务加载器(使用上下文类加载器)
      */
     public static ServiceLoader newLoader() {
-        return newLoader(null);
+        return newLoader(null, null);
     }
 
     public static class ServiceLoader {
@@ -143,7 +159,7 @@ public class ThistleSpi {
 
         /**
          * [非线程安全]<p>
-         * 加载服务(每次都会重新实例化)<p>
+         * 加载服务(每次都会重新实例化), 请自行持有服务对象<p>
          * 加载失败会抛出RuntimeException, 服务不存在则会返回空<p>
          * @param type 服务类型(接口全限定名)
          * @return 服务(若找不到定义会返回空)
@@ -187,7 +203,7 @@ public class ThistleSpi {
 
         /**
          * [非线程安全]<p>
-         * 加载插件(每次都会重新实例化)<p>
+         * 加载插件(每次都会重新实例化), 请自行持有插件对象<p>
          * 加载失败会抛出RuntimeException, 服务不存在则会返回空<p>
          * @param type 插件类型(接口全限定名)
          * @return 插件(若找不到定义会返回空)
