@@ -56,7 +56,7 @@ public class ThistleSpi {
 
     /**
      * [非线程安全]<p>
-     * 创建服务加载器:
+     * 创建一个新的服务加载器:
      * 创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.
      * 加载多个服务/插件时, 建议使用同一个加载器(避免重复加载相关配置).
      * 如果有动态类加载的需要, 可以在重新加载时, 创建一个新的服务加载器, 新的类加载器会重新加载配置.
@@ -77,7 +77,7 @@ public class ThistleSpi {
 
     /**
      * [非线程安全]<p>
-     * 创建服务加载器:
+     * 创建一个新的服务加载器:
      * 创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.
      * 加载多个服务/插件时, 建议使用同一个加载器(避免重复加载相关配置).
      * 如果有动态类加载的需要, 可以在重新加载时, 创建一个新的服务加载器, 新的类加载器会重新加载配置.
@@ -91,7 +91,7 @@ public class ThistleSpi {
 
     /**
      * [非线程安全]<p>
-     * 创建服务加载器:
+     * 创建一个新的服务加载器:
      * 创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.
      * 加载多个服务/插件时, 建议使用同一个加载器(避免重复加载相关配置).
      * 如果有动态类加载的需要, 可以在重新加载时, 创建一个新的服务加载器, 新的类加载器会重新加载配置和类.
@@ -132,6 +132,10 @@ public class ThistleSpi {
             applyInfos.clear();
             //打印调用者
             printCaller(loaderId);
+            //打印ClassLoader
+            if (debug) {
+                logger.print(loaderId + LOG_PREFIX + "CLASSLOADER " + classLoader.getClass().getName());
+            }
             //加载其他配置文件
             loadServiceConfig(classLoader, logger, loaderId, false, configPath, serviceInfos, applyInfos);
             loadPluginConfig(classLoader, logger, loaderId, configPath, pluginInfos, ignoreInfos);
