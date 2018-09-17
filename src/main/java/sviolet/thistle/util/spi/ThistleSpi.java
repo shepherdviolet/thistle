@@ -23,6 +23,7 @@ import sviolet.thistle.util.judge.CheckUtils;
 
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -30,13 +31,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * ThistleSpi<p>
  *
- * ThistleSpi不缓存创建出来的加载器和加载出来的服务/插件对象. CachedThistleSpi会缓存创建出来的加载器.
- *
  * @author S.Violet
  */
 public class ThistleSpi {
 
     private static final String PROPERTY_DEBUG = "thistle.spi.debug";
+    private static final String PROPERTY_CACHE = "thistle.spi.cache";
     private static final String PROPERTY_SERVICE_APPLY_PREFIX = "thistle.spi.apply.";
     private static final String PROPERTY_PLUGIN_IGNORE_PREFIX = "thistle.spi.ignore.";
 
@@ -50,19 +50,26 @@ public class ThistleSpi {
     private static final String LOG_PREFIX = " ThistleSpi | ";
 
     private static final boolean debug;
+    private static final boolean cache;
     private static final AtomicInteger loaderIdCount = new AtomicInteger(0);
+
+    private static final Map<String, ServiceLoader> loaderCache = new ConcurrentHashMap<>(16);
 
     static {
         debug = "true".equals(System.getProperty(PROPERTY_DEBUG, "true"));
+        cache = "true".equals(System.getProperty(PROPERTY_CACHE, "true"));
+        if (!cache) {
+            System.out.print("?" + LOG_PREFIX + "Cache force disabled by -D" + PROPERTY_CACHE + "=false");
+        }
     }
 
     /**
-     * [非线程安全]<p>
-     * 创建一个新的服务加载器:
-     * 创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.
-     * 加载多个服务/插件时, 请使用同一个加载器, 以避免重复加载相关配置.
-     * 如果有动态类加载的需要, 可以在重新加载时, 创建一个新的服务加载器, 新的类加载器会重新加载配置.
-     * 配置文件解析出错时会抛出RuntimeException异常.
+     * [非线程安全]<br>
+     * 创建一个新的服务加载器.<br>
+     * 1.创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.<br>
+     * 2.加载多个服务/插件时, 请使用同一个加载器, 以避免重复加载相关配置.<br>
+     * 3.如果有动态类加载的需要, 可以重新创建一个新的服务加载器, 新的类加载器会重新加载配置.<br>
+     * 4.配置文件解析出错时会抛出RuntimeException异常.<br>
      * @param classLoader ClassLoader 类加载器
      * @param configPath 自定义配置文件路径, 默认META-INF/thistle-spi/
      * @return 服务加载器
@@ -78,12 +85,12 @@ public class ThistleSpi {
     }
 
     /**
-     * [非线程安全]<p>
-     * 创建一个新的服务加载器:
-     * 创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.
-     * 加载多个服务/插件时, 请使用同一个加载器, 以避免重复加载相关配置.
-     * 如果有动态类加载的需要, 可以在重新加载时, 创建一个新的服务加载器, 新的类加载器会重新加载配置.
-     * 配置文件解析出错时会抛出RuntimeException异常.
+     * [非线程安全]<br>
+     * 创建一个新的服务加载器.<br>
+     * 1.创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.<br>
+     * 2.加载多个服务/插件时, 请使用同一个加载器, 以避免重复加载相关配置.<br>
+     * 3.如果有动态类加载的需要, 可以重新创建一个新的服务加载器, 新的类加载器会重新加载配置.<br>
+     * 4.配置文件解析出错时会抛出RuntimeException异常.<br>
      * @param classLoader ClassLoader 类加载器
      * @return 服务加载器
      */
@@ -92,12 +99,12 @@ public class ThistleSpi {
     }
 
     /**
-     * [非线程安全]<p>
-     * 创建一个新的服务加载器:
-     * 创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.
-     * 加载多个服务/插件时, 请使用同一个加载器, 以避免重复加载相关配置.
-     * 如果有动态类加载的需要, 可以在重新加载时, 创建一个新的服务加载器, 新的类加载器会重新加载配置.
-     * 配置文件解析出错时会抛出RuntimeException异常.
+     * [非线程安全]<br>
+     * 创建一个新的服务加载器.<br>
+     * 1.创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.<br>
+     * 2.加载多个服务/插件时, 请使用同一个加载器, 以避免重复加载相关配置.<br>
+     * 3.如果有动态类加载的需要, 可以重新创建一个新的服务加载器, 新的类加载器会重新加载配置.<br>
+     * 4.配置文件解析出错时会抛出RuntimeException异常.<br>
      * @param configPath 自定义配置文件路径, 默认META-INF/thistle-spi/
      * @return 服务加载器(使用上下文类加载器)
      */
@@ -106,16 +113,59 @@ public class ThistleSpi {
     }
 
     /**
-     * [非线程安全]<p>
-     * 创建一个新的服务加载器:
-     * 创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.
-     * 加载多个服务/插件时, 请使用同一个加载器, 以避免重复加载相关配置.
-     * 如果有动态类加载的需要, 可以在重新加载时, 创建一个新的服务加载器, 新的类加载器会重新加载配置和类.
-     * 配置文件解析出错时会抛出RuntimeException异常.
+     * [非线程安全]<br>
+     * 创建一个新的服务加载器.<br>
+     * 1.创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.<br>
+     * 2.加载多个服务/插件时, 请使用同一个加载器, 以避免重复加载相关配置.<br>
+     * 3.如果有动态类加载的需要, 可以重新创建一个新的服务加载器, 新的类加载器会重新加载配置.<br>
+     * 4.配置文件解析出错时会抛出RuntimeException异常.<br>
      * @return 服务加载器(使用上下文类加载器)
      */
     public static ServiceLoader newLoader() {
         return newLoader(null, null);
+    }
+
+    /**
+     * 获取服务加载器(不能自定义ClassLoader), 第一次获取会有创建过程, 后续从缓存中获得.<br>
+     * 1.创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.<br>
+     * 2.配置文件解析出错时会抛出RuntimeException异常.<br>
+     * 3.若设置启动参数-Dthistle.spi.cache=false, 则每次都会重新创建加载器.<br>
+     * 4.如果有动态类加载的需要, 或使用自定义ClassLoader, 请使用newLoader方法创建并自行维护加载器.<br>
+     * 5.getLoader适合用于用户级项目, 开源库建议使用newLoader方法创建并自行维护加载器.<br>
+     * @param configPath 自定义配置文件路径, 默认META-INF/thistle-spi/
+     * @return 服务加载器(使用上下文类加载器)
+     */
+    public static ServiceLoader getLoader(String configPath) {
+        if (CheckUtils.isEmptyOrBlank(configPath)) {
+            configPath = CONFIG_PATH;
+        }
+        if (!cache) {
+            return newLoader(null, configPath);
+        }
+        ServiceLoader serviceLoader = loaderCache.get(configPath);
+        if (serviceLoader == null) {
+            synchronized (loaderCache) {
+                serviceLoader = loaderCache.get(configPath);
+                if (serviceLoader == null) {
+                    serviceLoader = newLoader(null, configPath);
+                    loaderCache.put(configPath, serviceLoader);
+                }
+            }
+        }
+        return serviceLoader;
+    }
+
+    /**
+     * 获取服务加载器(不能自定义ClassLoader), 第一次获取会有创建过程, 后续从缓存中获得.<br>
+     * 1.创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.<br>
+     * 2.配置文件解析出错时会抛出RuntimeException异常.<br>
+     * 3.若设置启动参数-Dthistle.spi.cache=false, 则每次都会重新创建加载器.<br>
+     * 4.如果有动态类加载的需要, 或使用自定义ClassLoader, 请使用newLoader方法创建, 并自行维护加载器.<br>
+     * 5.getLoader适合用于用户级项目, 开源库建议使用newLoader方法创建并自行维护加载器.<br>
+     * @return 服务加载器(使用上下文类加载器)
+     */
+    public static ServiceLoader getLoader(){
+        return getLoader(null);
     }
 
     public static class ServiceLoader {
