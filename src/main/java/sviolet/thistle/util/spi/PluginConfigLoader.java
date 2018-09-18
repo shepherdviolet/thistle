@@ -89,7 +89,7 @@ class PluginConfigLoader {
         }
 
         if (debug) {
-            StringBuilder stringBuilder = new StringBuilder(loaderId + LOG_PREFIX + "Plugin ");
+            StringBuilder stringBuilder = new StringBuilder(loaderId + LOG_PREFIX_LOADER + "Plugin ");
             stringBuilder.append(pluginInfo.type);
             stringBuilder.append(" (");
             for (Plugin plugin : pluginInfo.orderedPlugins) {
