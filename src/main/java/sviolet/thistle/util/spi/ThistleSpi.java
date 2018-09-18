@@ -628,17 +628,17 @@ public class ThistleSpi {
 
                 logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
                 logger.print(loaderId + LOG_PREFIX + "Service Applied:");
-                logger.print(loaderId + LOG_PREFIX + "type: " + serviceInfo.type);
-                logger.print(loaderId + LOG_PREFIX + "implement: " + serviceInfo.appliedService.implement);
-                logger.print(loaderId + LOG_PREFIX + "url: " + serviceInfo.appliedService.resource);
-                logger.print(loaderId + LOG_PREFIX + "reason: Applied by " + serviceInfo.applyReason);
+                logger.print(loaderId + LOG_PREFIX + "  type: " + serviceInfo.type);
+                logger.print(loaderId + LOG_PREFIX + "  implement: " + serviceInfo.appliedService.implement);
+                logger.print(loaderId + LOG_PREFIX + "  url: " + serviceInfo.appliedService.resource);
+                logger.print(loaderId + LOG_PREFIX + "  reason: Applied by " + serviceInfo.applyReason);
                 logger.print(loaderId + LOG_PREFIX + "All Configurations:");
 
                 for (Service service : serviceInfo.definedServices.values()) {
                     if (service == serviceInfo.appliedService) {
-                        logger.print(loaderId + LOG_PREFIX + "+ " + service);
+                        logger.print(loaderId + LOG_PREFIX + "  + " + service);
                     } else {
-                        logger.print(loaderId + LOG_PREFIX + "- " + service);
+                        logger.print(loaderId + LOG_PREFIX + "  - " + service);
                     }
                 }
 
@@ -970,14 +970,14 @@ public class ThistleSpi {
 
                 logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
                 logger.print(loaderId + LOG_PREFIX + "Plugin Applied:");
-                logger.print(loaderId + LOG_PREFIX + "type: " + pluginInfo.type);
-                logger.print(loaderId + LOG_PREFIX + "implements:");
+                logger.print(loaderId + LOG_PREFIX + "  type: " + pluginInfo.type);
+                logger.print(loaderId + LOG_PREFIX + "  implements:");
                 for (Plugin plugin : pluginInfo.orderedPlugins) {
-                    logger.print(loaderId + LOG_PREFIX + "+ " + plugin.toAbstractString());
+                    logger.print(loaderId + LOG_PREFIX + "  + " + plugin.toAbstractString());
                 }
                 logger.print(loaderId + LOG_PREFIX + "All Configurations:");
                 for (Plugin plugin : pluginInfo.plugins) {
-                    logger.print(loaderId + LOG_PREFIX + "" + (plugin.enabled ? "+ " : "- ") + plugin);
+                    logger.print(loaderId + LOG_PREFIX + (plugin.enabled ? "  + " : "  - ") + plugin);
                 }
 
             }
