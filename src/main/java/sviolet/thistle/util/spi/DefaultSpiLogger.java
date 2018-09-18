@@ -29,12 +29,12 @@ import sviolet.thistle.util.conversion.DateTimeUtils;
 public class DefaultSpiLogger implements SpiLogger {
 
     @Override
-    public void print(String msg) {
+    public final void print(String msg) {
         System.out.println(DateTimeUtils.getDateTime() + " " + msg);
     }
 
     @Override
-    public void print(String msg, Throwable throwable) {
+    public final void print(String msg, Throwable throwable) {
         System.out.println(DateTimeUtils.getDateTime() + " " + msg);
         if (throwable != null) {
             throwable.printStackTrace();
