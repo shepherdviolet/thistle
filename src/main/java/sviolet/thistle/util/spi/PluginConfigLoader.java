@@ -103,6 +103,15 @@ class PluginConfigLoader {
         return plugins;
     }
 
+    void setLogger(SpiLogger logger){
+        this.logger = logger;
+    }
+
+    void invalidConfig(){
+        pluginInfos.clear();
+        ignoreInfos.clear();
+    }
+
     void loadConfig(String configPath){
 
         if (debug) {

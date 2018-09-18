@@ -29,7 +29,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * [非线程安全] <p>
  *
- * ThistleSpi<p>
+ * ThistleSpi<br>
+ * Java Service Provider Interfaces (SPI) 变种实现<br>
+ * 支持`服务装载`和`插件装载`两种方式<br>
+ * `服务装载`:根据启动参数/优先级, 从Classpath下声明的多个服务实现中选择唯一的一个进行装载<br>
+ * `插件装载`:装载Classpath下声明的全部插件实现, 并根据优先级排序(数字越小优先级越高), 允许通过启动参数和配置排除部分实现<br>
  *
  * @author S.Violet
  */
@@ -164,6 +168,14 @@ public class ThistleSpi {
         return getLoader(null);
     }
 
+
+
+    /* ***********************************************************************************************************
+     * ServiceLoader
+     * ***********************************************************************************************************/
+
+
+
     public static class ServiceLoader {
 
         private SpiLogger logger = new DefaultSpiLogger();
@@ -171,7 +183,11 @@ public class ThistleSpi {
         private PluginConfigLoader pluginConfigLoader;
 
         private ServiceLoader(ClassLoader classLoader, String configPath) {
+
+            //加载器编号
             int loaderId = loaderIdCount.getAndIncrement();
+
+            //创建服务配置加载器
             serviceConfigLoader = new ServiceConfigLoader(classLoader, logger, loaderId);
 
             //加载日志打印器配置文件
@@ -184,11 +200,12 @@ public class ThistleSpi {
             //加载自定义日志打印器
             SpiLogger customLogger = serviceConfigLoader.loadService(SpiLogger.class);
             if (customLogger != null) {
+                //替换为自定义的日志打印器
                 logger = customLogger;
                 serviceConfigLoader.setLogger(logger);
             }
 
-            //清除日志打印器的配置
+            //清空服务配置加载器
             serviceConfigLoader.invalidConfig();
 
             //打印调用者
@@ -202,7 +219,10 @@ public class ThistleSpi {
             //加载服务配置文件
             serviceConfigLoader.loadConfig(configPath);
 
+            //创建插件配置加载器
             pluginConfigLoader = new PluginConfigLoader(classLoader, logger, loaderId);
+
+            //加载插件配置文件
             pluginConfigLoader.loadConfig(configPath);
 
             if (debug) {
@@ -232,6 +252,9 @@ public class ThistleSpi {
             return pluginConfigLoader.loadPlugins(type);
         }
 
+        /**
+         * 打印调用者
+         */
         private void printCaller(int loaderId) {
             if (debug) {
                 StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
