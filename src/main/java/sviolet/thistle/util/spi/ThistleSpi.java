@@ -48,7 +48,7 @@ public class ThistleSpi {
     private static final String CONFIG_FILE_PLUGIN_IGNORE = "plugin-ignore.properties";
 
     private static final String LOG_PREFIX = " ThistleSpi | ";
-    private static final String LOG_PREFIX_LOADER = " ThistleSpi | ServiceLoader | ";
+    private static final String LOG_PREFIX_LOADER = " ThistleSpi ServiceLoader | ";
 
     private static final boolean debug;
     private static final boolean cache;
@@ -191,6 +191,10 @@ public class ThistleSpi {
             //加载日志打印器配置文件
             loadServiceConfig(classLoader, logger, loaderId, true, CONFIG_PATH_LOGGER, serviceInfos, applyInfos);
 
+            if (debug) {
+                logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
+            }
+
             //加载自定义日志打印器
             SpiLogger customLogger = loadService(SpiLogger.class);
             if (customLogger != null) {
@@ -206,14 +210,16 @@ public class ThistleSpi {
 
             //打印ClassLoader
             if (debug) {
-                logger.print(loaderId + LOG_PREFIX + "CLASSLOADER " + classLoader.getClass().getName());
+                logger.print(loaderId + LOG_PREFIX + "Classloader " + classLoader.getClass().getName());
             }
 
             //加载其他配置文件
             loadServiceConfig(classLoader, logger, loaderId, false, configPath, serviceInfos, applyInfos);
             loadPluginConfig(classLoader, logger, loaderId, configPath, pluginInfos, ignoreInfos);
 
-            logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
+            if (debug) {
+                logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
+            }
         }
 
         /**
@@ -236,7 +242,7 @@ public class ThistleSpi {
             //不存在服务实现
             if (serviceInfo == null || serviceInfo.appliedService == null) {
                 if (debug) {
-                    logger.print(loaderId + LOG_PREFIX_LOADER + "loadService: no service definition found, type:" + type.getName());
+                    logger.print(loaderId + LOG_PREFIX_LOADER + "No service definition found, type:" + type.getName());
                 }
                 return null;
             }
@@ -247,15 +253,15 @@ public class ThistleSpi {
                 Class clazz = classLoader.loadClass(serviceInfo.appliedService.implement);
                 service = clazz.newInstance();
             } catch (Exception e) {
-                logger.print(loaderId + LOG_PREFIX_LOADER + "loadService: ERROR: Service " + serviceInfo.type + " (" + serviceInfo.appliedService.implement + ") instantiation error, config:" + serviceInfo.appliedService.resource, e);
+                logger.print(loaderId + LOG_PREFIX_LOADER + "ERROR: Service " + serviceInfo.type + " (" + serviceInfo.appliedService.implement + ") instantiation error, config:" + serviceInfo.appliedService.resource, e);
                 throw new RuntimeException("ThistleSpi: Service " + serviceInfo.type + " (" + serviceInfo.appliedService.implement + ") instantiation error, config:" + serviceInfo.appliedService.resource, e);
             }
             if (!type.isAssignableFrom(service.getClass())) {
-                logger.print(loaderId + LOG_PREFIX_LOADER + "loadService: ERROR: " + serviceInfo.appliedService.implement + " is not instance of " + serviceInfo.type + ", illegal config:" + serviceInfo.appliedService.resource);
+                logger.print(loaderId + LOG_PREFIX_LOADER + "ERROR: " + serviceInfo.appliedService.implement + " is not instance of " + serviceInfo.type + ", illegal config:" + serviceInfo.appliedService.resource);
                 throw new RuntimeException("ThistleSpi: " + serviceInfo.appliedService.implement + " is not instance of " + serviceInfo.type + ", illegal config:" + serviceInfo.appliedService.resource);
             }
             if (debug) {
-                logger.print(loaderId + LOG_PREFIX_LOADER + "loadService: Service " + serviceInfo.type + " (" + serviceInfo.appliedService.implement + ") loaded successfully");
+                logger.print(loaderId + LOG_PREFIX_LOADER + "Service " + serviceInfo.type + " (" + serviceInfo.appliedService.implement + ") loaded successfully");
             }
             return (T) service;
         }
@@ -280,7 +286,7 @@ public class ThistleSpi {
             //不存在插件实现
             if (pluginInfo == null || pluginInfo.orderedPlugins == null) {
                 if (debug) {
-                    logger.print(loaderId + LOG_PREFIX_LOADER + "loadPlugins: no enabled plugins found, type:" + type.getName());
+                    logger.print(loaderId + LOG_PREFIX_LOADER + "No enabled plugins found, type:" + type.getName());
                 }
                 return null;
             }
@@ -295,11 +301,11 @@ public class ThistleSpi {
                     Class clazz = classLoader.loadClass(plugin.implement);
                     pluginObj = clazz.newInstance();
                 } catch (Exception e) {
-                    logger.print(loaderId + LOG_PREFIX_LOADER + "loadPlugins: ERROR: Plugin " + pluginInfo.type + " (" + plugin.implement + ") instantiation error, config:" + plugin.resource, e);
+                    logger.print(loaderId + LOG_PREFIX_LOADER + "ERROR: Plugin " + pluginInfo.type + " (" + plugin.implement + ") instantiation error, config:" + plugin.resource, e);
                     throw new RuntimeException("ThistleSpi: Plugin " + pluginInfo.type + " (" + plugin.implement + ") instantiation error, config:" + plugin.resource, e);
                 }
                 if (!type.isAssignableFrom(pluginObj.getClass())) {
-                    logger.print(loaderId + LOG_PREFIX_LOADER + "loadPlugins: ERROR: " + plugin.implement + " is not instance of " + pluginInfo.type + ", illegal config:" + plugin.resource);
+                    logger.print(loaderId + LOG_PREFIX_LOADER + "ERROR: " + plugin.implement + " is not instance of " + pluginInfo.type + ", illegal config:" + plugin.resource);
                     throw new RuntimeException("ThistleSpi: " + plugin.implement + " is not instance of " + pluginInfo.type + ", illegal config:" + plugin.resource);
                 }
 
@@ -308,7 +314,7 @@ public class ThistleSpi {
             }
 
             if (debug) {
-                StringBuilder stringBuilder = new StringBuilder(loaderId + LOG_PREFIX + "loadPlugins: Plugin ");
+                StringBuilder stringBuilder = new StringBuilder(loaderId + LOG_PREFIX + "Plugin ");
                 stringBuilder.append(pluginInfo.type);
                 stringBuilder.append(" (");
                 for (Plugin plugin : pluginInfo.orderedPlugins) {
@@ -330,7 +336,7 @@ public class ThistleSpi {
                     if (ThistleSpi.class.getName().equals(element.getClassName())) {
                         foundThistleSpi = true;
                     } else if (foundThistleSpi){
-                        logger.print(loaderId + LOG_PREFIX + "CREATE LOADER BY " + element.getClassName() + "#" + element.getMethodName());
+                        logger.print(loaderId + LOG_PREFIX + "Loader create by " + element.getClassName() + "#" + element.getMethodName());
                         break;
                     }
                 }
