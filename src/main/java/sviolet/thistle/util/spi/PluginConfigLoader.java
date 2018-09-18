@@ -26,11 +26,19 @@ import java.util.*;
 
 import static sviolet.thistle.util.spi.ThistleSpi.*;
 
+/**
+ * 插件配置加载器
+ *
+ * @author S.Violet
+ */
 class PluginConfigLoader {
 
+    //启动参数忽略插件
     private static final String PROPERTY_PLUGIN_IGNORE_PREFIX = "thistle.spi.ignore.";
 
+    //插件配置文件名
     private static final String CONFIG_FILE_PLUGIN = "plugin.properties";
+    //插件忽略文件名
     private static final String CONFIG_FILE_PLUGIN_IGNORE = "plugin-ignore.properties";
 
     private ClassLoader classLoader;
@@ -39,6 +47,7 @@ class PluginConfigLoader {
 
     //service配置信息
     private Map<String, PluginInfo> pluginInfos = new HashMap<>(8);
+
     //apply配置信息
     private Map<String, IgnoreInfo> ignoreInfos = new HashMap<>(8);
 
@@ -48,6 +57,24 @@ class PluginConfigLoader {
         this.loaderId = loaderId;
     }
 
+    /**
+     * 设置日志打印器
+     */
+    void setLogger(SpiLogger logger){
+        this.logger = logger;
+    }
+
+    /**
+     * 清空配置
+     */
+    void invalidConfig(){
+        pluginInfos.clear();
+        ignoreInfos.clear();
+    }
+
+    /**
+     * 加载插件
+     */
     <T> List<T> loadPlugins(Class<T> type) {
         if (type == null) {
             return null;
@@ -101,15 +128,6 @@ class PluginConfigLoader {
         }
 
         return plugins;
-    }
-
-    void setLogger(SpiLogger logger){
-        this.logger = logger;
-    }
-
-    void invalidConfig(){
-        pluginInfos.clear();
-        ignoreInfos.clear();
     }
 
     void loadConfig(String configPath){

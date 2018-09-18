@@ -39,17 +39,25 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ThistleSpi {
 
+    //日志打印开关
     private static final String PROPERTY_DEBUG = "thistle.spi.debug";
+    //缓存开关
     private static final String PROPERTY_CACHE = "thistle.spi.cache";
 
+    //默认配置路径
     private static final String CONFIG_PATH = "META-INF/thistle-spi/";
+    //自定义日志打印器配置路径
     private static final String CONFIG_PATH_LOGGER = "META-INF/thistle-spi-logger/";
 
+    //日志前缀
     static final String LOG_PREFIX = " ThistleSpi | ";
     static final String LOG_PREFIX_LOADER = " ThistleSpi ServiceLoader | ";
 
+    //是否输出日志
     static final boolean debug;
-    static final boolean cache;
+
+    //是否启用缓存
+    private static final boolean cache;
 
     private static final AtomicInteger loaderIdCount = new AtomicInteger(0);
 

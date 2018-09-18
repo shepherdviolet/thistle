@@ -26,11 +26,19 @@ import java.util.*;
 
 import static sviolet.thistle.util.spi.ThistleSpi.*;
 
+/**
+ * 服务配置文件加载器
+ *
+ * @author S.Violet
+ */
 class ServiceConfigLoader {
 
+    //启动参数指定服务
     private static final String PROPERTY_SERVICE_APPLY_PREFIX = "thistle.spi.apply.";
 
+    //服务配置文件名
     private static final String CONFIG_FILE_SERVICE = "service.properties";
+    //服务指定文件名
     private static final String CONFIG_FILE_SERVICE_APPLY = "service-apply.properties";
 
     private ClassLoader classLoader;
@@ -39,6 +47,7 @@ class ServiceConfigLoader {
 
     //service配置信息
     private Map<String, ServiceInfo> serviceInfos = new HashMap<>(8);
+
     //apply配置信息
     private Map<String, ApplyInfo> applyInfos = new HashMap<>(8);
 
@@ -48,6 +57,24 @@ class ServiceConfigLoader {
         this.loaderId = loaderId;
     }
 
+    /**
+     * 设置日志打印器
+     */
+    void setLogger(SpiLogger logger){
+        this.logger = logger;
+    }
+
+    /**
+     * 清空配置
+     */
+    void invalidConfig(){
+        serviceInfos.clear();
+        applyInfos.clear();
+    }
+
+    /**
+     * 加载服务
+     */
     <T> T loadService(Class<T> type) {
         if (type == null) {
             return null;
@@ -83,15 +110,6 @@ class ServiceConfigLoader {
             logger.print(loaderId + LOG_PREFIX_LOADER + "Service " + serviceInfo.type + " (" + serviceInfo.appliedService.implement + ") loaded successfully");
         }
         return (T) service;
-    }
-
-    void setLogger(SpiLogger logger){
-        this.logger = logger;
-    }
-
-    void invalidConfig(){
-        serviceInfos.clear();
-        applyInfos.clear();
     }
 
     void loadConfig(String configPath){
