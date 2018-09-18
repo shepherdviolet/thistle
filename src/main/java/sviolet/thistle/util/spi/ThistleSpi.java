@@ -73,9 +73,9 @@ public class ThistleSpi {
 
     /**
      * [非线程安全]<br>
-     * 创建一个新的服务加载器.<br>
-     * 1.创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.<br>
-     * 2.加载多个服务/插件时, 请使用同一个加载器, 以避免重复加载相关配置.<br>
+     * 创建一个新的服务加载器(无缓存).<br>
+     * 1.尽量用同一个加载器加载服务和插件, 不要反复创建加载器.<br>
+     * 2.创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.<br>
      * 3.如果有动态类加载的需要, 可以重新创建一个新的服务加载器, 新的类加载器会重新加载配置.<br>
      * 4.配置文件解析出错时会抛出RuntimeException异常.<br>
      * @param classLoader ClassLoader 类加载器
@@ -94,9 +94,9 @@ public class ThistleSpi {
 
     /**
      * [非线程安全]<br>
-     * 创建一个新的服务加载器.<br>
-     * 1.创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.<br>
-     * 2.加载多个服务/插件时, 请使用同一个加载器, 以避免重复加载相关配置.<br>
+     * 创建一个新的服务加载器(无缓存).<br>
+     * 1.尽量用同一个加载器加载服务和插件, 不要反复创建加载器.<br>
+     * 2.创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.<br>
      * 3.如果有动态类加载的需要, 可以重新创建一个新的服务加载器, 新的类加载器会重新加载配置.<br>
      * 4.配置文件解析出错时会抛出RuntimeException异常.<br>
      * @param classLoader ClassLoader 类加载器
@@ -108,9 +108,9 @@ public class ThistleSpi {
 
     /**
      * [非线程安全]<br>
-     * 创建一个新的服务加载器.<br>
-     * 1.创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.<br>
-     * 2.加载多个服务/插件时, 请使用同一个加载器, 以避免重复加载相关配置.<br>
+     * 创建一个新的服务加载器(无缓存).<br>
+     * 1.尽量用同一个加载器加载服务和插件, 不要反复创建加载器.<br>
+     * 2.创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.<br>
      * 3.如果有动态类加载的需要, 可以重新创建一个新的服务加载器, 新的类加载器会重新加载配置.<br>
      * 4.配置文件解析出错时会抛出RuntimeException异常.<br>
      * @param configPath 自定义配置文件路径, 默认META-INF/thistle-spi/
@@ -122,9 +122,9 @@ public class ThistleSpi {
 
     /**
      * [非线程安全]<br>
-     * 创建一个新的服务加载器.<br>
-     * 1.创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.<br>
-     * 2.加载多个服务/插件时, 请使用同一个加载器, 以避免重复加载相关配置.<br>
+     * 创建一个新的服务加载器(无缓存).<br>
+     * 1.尽量用同一个加载器加载服务和插件, 不要反复创建加载器.<br>
+     * 2.创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.<br>
      * 3.如果有动态类加载的需要, 可以重新创建一个新的服务加载器, 新的类加载器会重新加载配置.<br>
      * 4.配置文件解析出错时会抛出RuntimeException异常.<br>
      * @return 服务加载器(使用上下文类加载器)
@@ -135,11 +135,11 @@ public class ThistleSpi {
 
     /**
      * 获取服务加载器(不能自定义ClassLoader), 第一次获取会有创建过程, 后续从缓存中获得.<br>
-     * 1.创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.<br>
-     * 2.配置文件解析出错时会抛出RuntimeException异常.<br>
-     * 3.若设置启动参数-Dthistle.spi.cache=false, 则每次都会重新创建加载器.<br>
-     * 4.如果有动态类加载的需要, 或使用自定义ClassLoader, 请使用newLoader方法创建并自行维护加载器.<br>
-     * 5.getLoader适合用于用户级项目, 开源库建议使用newLoader方法创建并自行维护加载器.<br>
+     * 1.尽量用同一个加载器加载服务和插件, 不要反复创建加载器.<br>
+     * 2.创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.<br>
+     * 3.配置文件解析出错时会抛出RuntimeException异常.<br>
+     * 4.若设置启动参数-Dthistle.spi.cache=false, 则每次都会重新创建加载器.<br>
+     * 5.如果有需要(动态类加载/Jar包热插拔/多ClassLoader/自定义ClassLoader), 请使用newLoader方法创建并自行维护加载器.<br>
      * @param configPath 自定义配置文件路径, 默认META-INF/thistle-spi/
      * @return 服务加载器(使用上下文类加载器)
      */
@@ -151,25 +151,30 @@ public class ThistleSpi {
             return newLoader(null, configPath);
         }
         ServiceLoader serviceLoader = loaderCache.get(configPath);
+        boolean fromCache = true;
         if (serviceLoader == null) {
             synchronized (loaderCache) {
                 serviceLoader = loaderCache.get(configPath);
                 if (serviceLoader == null) {
                     serviceLoader = newLoader(null, configPath);
                     loaderCache.put(configPath, serviceLoader);
+                    fromCache = false;
                 }
             }
+        }
+        if (fromCache) {
+            serviceLoader.printCaller();
         }
         return serviceLoader;
     }
 
     /**
      * 获取服务加载器(不能自定义ClassLoader), 第一次获取会有创建过程, 后续从缓存中获得.<br>
-     * 1.创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.<br>
-     * 2.配置文件解析出错时会抛出RuntimeException异常.<br>
-     * 3.若设置启动参数-Dthistle.spi.cache=false, 则每次都会重新创建加载器.<br>
-     * 4.如果有动态类加载的需要, 或使用自定义ClassLoader, 请使用newLoader方法创建, 并自行维护加载器.<br>
-     * 5.getLoader适合用于用户级项目, 开源库建议使用newLoader方法创建并自行维护加载器.<br>
+     * 1.尽量用同一个加载器加载服务和插件, 不要反复创建加载器.<br>
+     * 2.创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.<br>
+     * 3.配置文件解析出错时会抛出RuntimeException异常.<br>
+     * 4.若设置启动参数-Dthistle.spi.cache=false, 则每次都会重新创建加载器.<br>
+     * 5.如果有需要(动态类加载/Jar包热插拔/多ClassLoader/自定义ClassLoader), 请使用newLoader方法创建并自行维护加载器.<br>
      * @return 服务加载器(使用上下文类加载器)
      */
     public static ServiceLoader getLoader(){
@@ -185,58 +190,6 @@ public class ThistleSpi {
 
 
     public static class ServiceLoader {
-
-        private SpiLogger logger = new DefaultSpiLogger();
-        private ServiceConfigLoader serviceConfigLoader;
-        private PluginConfigLoader pluginConfigLoader;
-
-        private ServiceLoader(ClassLoader classLoader, String configPath) {
-
-            //加载器编号
-            int loaderId = loaderIdCount.getAndIncrement();
-
-            //创建服务配置加载器
-            serviceConfigLoader = new ServiceConfigLoader(classLoader, logger, loaderId);
-
-            //加载日志打印器配置文件
-            serviceConfigLoader.loadConfig(CONFIG_PATH_LOGGER);
-
-            if (debug) {
-                logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
-            }
-
-            //加载自定义日志打印器
-            SpiLogger customLogger = serviceConfigLoader.loadService(SpiLogger.class);
-            if (customLogger != null) {
-                //替换为自定义的日志打印器
-                logger = customLogger;
-                serviceConfigLoader.setLogger(logger);
-            }
-
-            //清空服务配置加载器
-            serviceConfigLoader.invalidConfig();
-
-            //打印调用者
-            printCaller(loaderId);
-
-            //打印ClassLoader
-            if (debug) {
-                logger.print(loaderId + LOG_PREFIX + "Classloader " + classLoader.getClass().getName());
-            }
-
-            //加载服务配置文件
-            serviceConfigLoader.loadConfig(configPath);
-
-            //创建插件配置加载器
-            pluginConfigLoader = new PluginConfigLoader(classLoader, logger, loaderId);
-
-            //加载插件配置文件
-            pluginConfigLoader.loadConfig(configPath);
-
-            if (debug) {
-                logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
-            }
-        }
 
         /**
          * [非线程安全]<p>
@@ -260,10 +213,72 @@ public class ThistleSpi {
             return pluginConfigLoader.loadPlugins(type);
         }
 
+
+
+        /* ***********************************************************************************************************
+         * Logic
+         * ***********************************************************************************************************/
+
+
+
+        private SpiLogger logger = new DefaultSpiLogger();
+        private int loaderId;
+
+        private ServiceConfigLoader serviceConfigLoader;
+        private PluginConfigLoader pluginConfigLoader;
+
+        private ServiceLoader(ClassLoader classLoader, String configPath) {
+
+            //加载器编号
+            loaderId = loaderIdCount.getAndIncrement();
+
+            //创建服务配置加载器
+            serviceConfigLoader = new ServiceConfigLoader(classLoader, logger, loaderId);
+
+            //加载日志打印器配置文件
+            serviceConfigLoader.loadConfig(CONFIG_PATH_LOGGER);
+
+            if (debug) {
+                logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
+            }
+
+            //加载自定义日志打印器
+            SpiLogger customLogger = serviceConfigLoader.loadService(SpiLogger.class);
+            if (customLogger != null) {
+                //替换为自定义的日志打印器
+                logger = customLogger;
+                serviceConfigLoader.setLogger(logger);
+            }
+
+            //清空服务配置加载器
+            serviceConfigLoader.invalidConfig();
+
+            //打印调用者
+            printCaller();
+
+            //打印ClassLoader
+            if (debug) {
+                logger.print(loaderId + LOG_PREFIX + "With classloader " + classLoader.getClass().getName());
+            }
+
+            //加载服务配置文件
+            serviceConfigLoader.loadConfig(configPath);
+
+            //创建插件配置加载器
+            pluginConfigLoader = new PluginConfigLoader(classLoader, logger, loaderId);
+
+            //加载插件配置文件
+            pluginConfigLoader.loadConfig(configPath);
+
+            if (debug) {
+                logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
+            }
+        }
+
         /**
          * 打印调用者
          */
-        private void printCaller(int loaderId) {
+        private void printCaller() {
             if (debug) {
                 StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
                 boolean foundThistleSpi = false;
@@ -271,7 +286,7 @@ public class ThistleSpi {
                     if (ThistleSpi.class.getName().equals(element.getClassName())) {
                         foundThistleSpi = true;
                     } else if (foundThistleSpi){
-                        logger.print(loaderId + LOG_PREFIX + "Loader create by " + element.getClassName() + "#" + element.getMethodName());
+                        logger.print(loaderId + LOG_PREFIX + "Method " + element.getClassName() + "#" + element.getMethodName() + " is trying to load services or plugins");
                         break;
                     }
                 }

@@ -38,11 +38,13 @@ public interface BService {
     public void init(){
         /*
          * [非线程安全]<br>
-         * 创建一个新的服务加载器.<br>
-         * 1.创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.<br>
-         * 2.加载多个服务/插件时, 请使用同一个加载器, 以避免重复加载相关配置.<br>
+         * 创建一个新的服务加载器(无缓存).<br>
+         * 1.尽量用同一个加载器加载服务和插件, 不要反复创建加载器.<br>
+         * 2.创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.<br>
          * 3.如果有动态类加载的需要, 可以重新创建一个新的服务加载器, 新的类加载器会重新加载配置.<br>
          * 4.配置文件解析出错时会抛出RuntimeException异常.<br>
+         *
+         * 另外, ThistleSpi还提供getLoader方法, getLoader方法第一次创建加载器, 后续会从缓存中获取<br>
          */
         ThistleSpi.ServiceLoader serviceLoader = ThistleSpi.newLoader();
         /*
@@ -184,11 +186,13 @@ public interface BPlugin {
     public void init(){
         /*
          * [非线程安全]<br>
-         * 创建一个新的服务加载器.<br>
-         * 1.创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.<br>
-         * 2.加载多个服务/插件时, 请使用同一个加载器, 以避免重复加载相关配置.<br>
+         * 创建一个新的服务加载器(无缓存).<br>
+         * 1.尽量用同一个加载器加载服务和插件, 不要反复创建加载器.<br>
+         * 2.创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.<br>
          * 3.如果有动态类加载的需要, 可以重新创建一个新的服务加载器, 新的类加载器会重新加载配置.<br>
          * 4.配置文件解析出错时会抛出RuntimeException异常.<br>
+         * 
+         * 另外, ThistleSpi还提供getLoader方法, getLoader方法第一次创建加载器, 后续会从缓存中获取<br>
          */
         ThistleSpi.ServiceLoader serviceLoader = ThistleSpi.newLoader();
         /*
