@@ -195,7 +195,10 @@ public interface BPlugin {
          * 3.如果有动态类加载的需要, 可以重新创建一个新的服务加载器, 新的类加载器会重新加载配置.<br>
          * 4.配置文件解析出错时会抛出RuntimeException异常.<br>
          * 
-         * 另外, ThistleSpi还提供getLoader方法, getLoader方法第一次创建加载器, 后续会从缓存中获取<br>
+         * 其他:
+         * newLoader方法:能够自定义配置文件路径和类加载器<br>
+         * getLoader方法:getLoader方法第一次创建加载器, 后续会从缓存中获取<br>
+         * getLoader方法:能够自定义配置文件路径<br>
          */
         ThistleSpi.ServiceLoader serviceLoader = ThistleSpi.newLoader();
         /*
