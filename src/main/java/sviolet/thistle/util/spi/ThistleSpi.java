@@ -39,9 +39,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ThistleSpi {
 
-    //日志打印开关
-    private static final String PROPERTY_DEBUG = "thistle.spi.debug";
-    //缓存开关
+    //日志打印级别(error/debug/verbose, 默认debug)
+    private static final String PROPERTY_LOGLV = "thistle.spi.loglv";
+    //缓存开关(默认true)
     private static final String PROPERTY_CACHE = "thistle.spi.cache";
 
     //默认配置路径
@@ -53,10 +53,15 @@ public class ThistleSpi {
     static final String LOG_PREFIX = " ThistleSpi | ";
     static final String LOG_PREFIX_LOADER = " ThistleSpi ServiceLoader | ";
 
-    //是否输出日志
-    static final boolean debug;
+    //日志级别
+    static final int ERROR = 0;
+    static final int DEBUG = 1;
+    static final int VERBOSE = 2;
 
-    //是否启用缓存
+    //是否输出日志(默认true)
+    static final int loglv;
+
+    //是否启用缓存(默认true)
     private static final boolean cache;
 
     private static final AtomicInteger loaderIdCount = new AtomicInteger(0);
@@ -64,7 +69,20 @@ public class ThistleSpi {
     private static final Map<String, ServiceLoader> loaderCache = new ConcurrentHashMap<>(16);
 
     static {
-        debug = "true".equals(System.getProperty(PROPERTY_DEBUG, "true"));
+        //log level
+        switch (System.getProperty(PROPERTY_LOGLV, "debug").toLowerCase()) {
+            case "error":
+                loglv = ERROR;
+                break;
+            case "verbose":
+                loglv = VERBOSE;
+                break;
+            case "debug":
+            default:
+                loglv = DEBUG;
+                break;
+        }
+        //cache enabled
         cache = "true".equals(System.getProperty(PROPERTY_CACHE, "true"));
         if (!cache) {
             System.out.print("?" + LOG_PREFIX + "Cache force disabled by -D" + PROPERTY_CACHE + "=false");
@@ -236,9 +254,9 @@ public class ThistleSpi {
             serviceConfigLoader = new ServiceConfigLoader(classLoader, logger, loaderId);
 
             //加载日志打印器配置文件
-            serviceConfigLoader.loadConfig(CONFIG_PATH_LOGGER);
+            serviceConfigLoader.loadConfig(CONFIG_PATH_LOGGER, true);
 
-            if (debug) {
+            if (loglv >= VERBOSE) {
                 logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
             }
 
@@ -257,12 +275,12 @@ public class ThistleSpi {
             printCaller();
 
             //打印ClassLoader
-            if (debug) {
+            if (loglv >= DEBUG) {
                 logger.print(loaderId + LOG_PREFIX + "With classloader " + classLoader.getClass().getName());
             }
 
             //加载服务配置文件
-            serviceConfigLoader.loadConfig(configPath);
+            serviceConfigLoader.loadConfig(configPath, false);
 
             //创建插件配置加载器
             pluginConfigLoader = new PluginConfigLoader(classLoader, logger, loaderId);
@@ -270,7 +288,7 @@ public class ThistleSpi {
             //加载插件配置文件
             pluginConfigLoader.loadConfig(configPath);
 
-            if (debug) {
+            if (loglv >= DEBUG) {
                 logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
             }
         }
@@ -279,7 +297,7 @@ public class ThistleSpi {
          * 打印调用者
          */
         private void printCaller() {
-            if (debug) {
+            if (loglv >= DEBUG) {
                 StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
                 boolean foundThistleSpi = false;
                 for (StackTraceElement element : stackTraceElements) {

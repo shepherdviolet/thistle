@@ -87,7 +87,7 @@ class ServiceConfigLoader {
 
         //不存在服务实现
         if (serviceInfo == null || serviceInfo.appliedService == null) {
-            if (debug) {
+            if (loglv >= DEBUG) {
                 logger.print(loaderId + LOG_PREFIX_LOADER + "No service definition found, type:" + type.getName());
             }
             return null;
@@ -106,15 +106,16 @@ class ServiceConfigLoader {
             logger.print(loaderId + LOG_PREFIX_LOADER + "ERROR: " + serviceInfo.appliedService.implement + " is not instance of " + serviceInfo.type + ", illegal config:" + serviceInfo.appliedService.resource);
             throw new RuntimeException("ThistleSpi: " + serviceInfo.appliedService.implement + " is not instance of " + serviceInfo.type + ", illegal config:" + serviceInfo.appliedService.resource);
         }
-        if (debug) {
+        if (loglv >= DEBUG) {
             logger.print(loaderId + LOG_PREFIX_LOADER + "Service " + serviceInfo.type + " (" + serviceInfo.appliedService.implement + ") loaded successfully");
         }
         return (T) service;
     }
 
-    void loadConfig(String configPath){
+    void loadConfig(String configPath, boolean loadingLogger){
 
-        if (debug) {
+        if ((loadingLogger && loglv >= VERBOSE) ||
+                (!loadingLogger && loglv >= DEBUG)) {
             logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
             logger.print(loaderId + LOG_PREFIX + "Loading services from " + configPath + ", DOC: https://github.com/shepherdviolet/thistle");
         }
@@ -132,7 +133,7 @@ class ServiceConfigLoader {
         }
 
         if (urls == null || !urls.hasMoreElements()) {
-            if (debug) {
+            if (loglv >= VERBOSE) {
                 logger.print(loaderId + LOG_PREFIX + "No " + serviceConfigFile + " found in classpath");
             }
             return;
@@ -143,7 +144,7 @@ class ServiceConfigLoader {
             URL url = urls.nextElement();
             String urlStr = String.valueOf(url);
 
-            if (debug) {
+            if (loglv >= VERBOSE) {
                 logger.print(loaderId + LOG_PREFIX + "Loading " + url);
             }
 
@@ -158,7 +159,7 @@ class ServiceConfigLoader {
             }
 
             if (properties.size() <= 0) {
-                if (debug) {
+                if (loglv >= DEBUG) {
                     logger.print(loaderId + LOG_PREFIX + "Warning: No properties in " + url);
                 }
             }
@@ -235,7 +236,7 @@ class ServiceConfigLoader {
             URL url = urls.nextElement();
             String urlStr = String.valueOf(url);
 
-            if (debug) {
+            if (loglv >= VERBOSE) {
                 logger.print(loaderId + LOG_PREFIX + "loading " + url);
             }
 
@@ -250,7 +251,7 @@ class ServiceConfigLoader {
             }
 
             if (properties.size() <= 0) {
-                if (debug) {
+                if (loglv >= DEBUG) {
                     logger.print(loaderId + LOG_PREFIX + "Warning: No properties in " + url);
                 }
             }
@@ -270,7 +271,7 @@ class ServiceConfigLoader {
                     ApplyInfo previous = applyInfos.get(type);
                     if (id.equals(previous.id)){
                         //若id相同, 不抛出错误, 仅做提醒
-                        if (debug) {
+                        if (loglv >= DEBUG) {
                             logger.print(loaderId + LOG_PREFIX + "Warning: Duplicate apply defined with same value, key:" + type + ", value:" + id + ", url1:" + url + ", url2:" + previous.resource);
                         }
                     } else {
@@ -288,7 +289,7 @@ class ServiceConfigLoader {
                             //如果有-Dthistle.spi.apply, 先放一马
                             //try with -Dthistle.spi.apply
                             previous.duplicateError = duplicateError;
-                            if (debug) {
+                            if (loglv >= DEBUG) {
                                 logger.print(loaderId + LOG_PREFIX + "Warning: (Resolve by -Dthistle.spi.apply)" + duplicateError);
                             }
                         }
@@ -321,7 +322,7 @@ class ServiceConfigLoader {
                     spi.applyReason = "-D" + PROPERTY_SERVICE_APPLY_PREFIX + spi.type + "=" + applyId;
                     continue;
                 }
-                if (debug) {
+                if (loglv >= DEBUG) {
                     logger.print(loaderId + LOG_PREFIX + "Warning: No service named " + applyId + ", failed to apply service '" + spi.type + "' to id '" + applyId + "' by -D" + PROPERTY_SERVICE_APPLY_PREFIX + spi.type + "=" + applyId);
                 }
             }
@@ -339,9 +340,9 @@ class ServiceConfigLoader {
                     spi.applyReason = applyInfo.resource;
                     continue;
                 }
-                if (debug) {
+                if (loglv >= DEBUG) {
                     logger.print(loaderId + LOG_PREFIX + "Warning: No service named " + applyInfo.id + ", failed to apply service '" + spi.type + "' to id '" + applyInfo.id + "' by " + applyInfo.resource);
-                    logger.print(loaderId + LOG_PREFIX + "Warning: We will apply '" + spi.type + "' service by level automatically (application > platform > library)");
+                    logger.print(loaderId + LOG_PREFIX + "Warning: We will apply '" + spi.type + "' service by level (application > platform > library)");
                 }
             }
 
@@ -378,7 +379,8 @@ class ServiceConfigLoader {
 
         }
 
-        if (debug) {
+        if ((loadingLogger && loglv >= VERBOSE) ||
+                (!loadingLogger && loglv >= DEBUG)) {
 
             for (ServiceInfo serviceInfo : serviceInfos.values()) {
 
@@ -388,13 +390,15 @@ class ServiceConfigLoader {
                 logger.print(loaderId + LOG_PREFIX + "  implement: " + serviceInfo.appliedService.implement);
                 logger.print(loaderId + LOG_PREFIX + "  url: " + serviceInfo.appliedService.resource);
                 logger.print(loaderId + LOG_PREFIX + "  reason: Applied by " + serviceInfo.applyReason);
-                logger.print(loaderId + LOG_PREFIX + "All Configurations:");
 
-                for (Service service : serviceInfo.definedServices.values()) {
-                    if (service == serviceInfo.appliedService) {
-                        logger.print(loaderId + LOG_PREFIX + "  + " + service);
-                    } else {
-                        logger.print(loaderId + LOG_PREFIX + "  - " + service);
+                if (loglv >= VERBOSE) {
+                    logger.print(loaderId + LOG_PREFIX + "All Configurations:");
+                    for (Service service : serviceInfo.definedServices.values()) {
+                        if (service == serviceInfo.appliedService) {
+                            logger.print(loaderId + LOG_PREFIX + "  + " + service);
+                        } else {
+                            logger.print(loaderId + LOG_PREFIX + "  - " + service);
+                        }
                     }
                 }
 

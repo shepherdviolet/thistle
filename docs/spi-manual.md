@@ -319,9 +319,11 @@ sample.spi.facade.APlugin=sample.spi.impl.APluginImpl1,sample.spi.impl.APluginIm
 
 # Log
 
-* Disable log
+* Change log level (debug by default)
 
-> `-Dthistle.spi.debug=false` <br>
+> `-Dthistle.spi.loglv=error` <br>
+> `-Dthistle.spi.loglv=debug` <br>
+> `-Dthistle.spi.loglv=verbose` <br>
 
 * Use SLF4J to print log
 
@@ -349,7 +351,7 @@ public class CustomSpiLogger implements SpiLogger {
 }
 ```
 
-### Statement
+### Config
 
 * Create file `META-INF/thistle-spi-logger/service.properties`
 * Edit:
