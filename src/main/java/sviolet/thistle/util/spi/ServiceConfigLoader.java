@@ -336,7 +336,7 @@ class ServiceConfigLoader {
                 Service service = spi.definedServices.get(applyInfo.id);
                 if (service != null) {
                     spi.appliedService = service;
-                    spi.applyReason = service.resource;
+                    spi.applyReason = applyInfo.resource;
                     continue;
                 }
                 if (debug) {
@@ -374,7 +374,7 @@ class ServiceConfigLoader {
             }
 
             spi.appliedService = appliedServices.get(0);
-            spi.applyReason = "level automatically (application > platform > library)";
+            spi.applyReason = "level (application > platform > library)";
 
         }
 
