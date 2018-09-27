@@ -28,19 +28,19 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * @author S.Violet
  */
-public class StringHashLock {
+public class StringHashLocks {
 
     private ReentrantLock[] reentrantLocks;
     private int barrier;
 
-    public StringHashLock() {
+    public StringHashLocks() {
         this(128);
     }
 
     /**
      * @param slotQuantity 插槽数量(锁数量), 16 32 64 128 256 512 1024, 数量越多发生碰撞的可能性更低, 但是消耗更多的内存
      */
-    public StringHashLock(int slotQuantity) {
+    public StringHashLocks(int slotQuantity) {
         //limit
         if (slotQuantity < 16 || slotQuantity > 1024 || !MathUtils.isPowerOfTwo(slotQuantity)) {
             throw new IllegalArgumentException("slotQuantity must be 16 32 64 128 256 512 1024");
