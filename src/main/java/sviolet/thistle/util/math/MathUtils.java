@@ -103,4 +103,13 @@ public class MathUtils {
 		return m > 0 ? m : m + 360;
 	}
 
+	/**
+	 * 判断数字是否为2的幂次, 例如1 2 4 8 16 ... 512 1024 ... (0 返回 false)
+	 * @param value 数字
+	 * @return true:为2的幂次
+	 */
+	public static boolean isPowerOfTwo(int value){
+		return value > 0 && (value & value - 1) == 0;
+	}
+
 }
