@@ -34,7 +34,7 @@ public class StringHashLocks {
     private int barrier;
 
     public StringHashLocks() {
-        this(64);
+        this(32);
     }
 
     /**
