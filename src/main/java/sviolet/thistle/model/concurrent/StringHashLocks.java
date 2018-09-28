@@ -38,20 +38,20 @@ public class StringHashLocks {
     }
 
     /**
-     * @param slotQuantity 插槽数量(锁数量), 16 32 64 128 256 512 1024, 数量越多发生碰撞的可能性更低, 但是消耗更多的内存
+     * @param hashLockNum 锁数量, 16 32 64 128 256 512 1024, 数量越多发生碰撞的可能性更低, 但是消耗更多的内存
      */
-    public StringHashLocks(int slotQuantity) {
+    public StringHashLocks(int hashLockNum) {
         //limit
-        if (slotQuantity < 16 || slotQuantity > 1024 || !MathUtils.isPowerOfTwo(slotQuantity)) {
-            throw new IllegalArgumentException("slotQuantity must be 16 32 64 128 256 512 1024");
+        if (hashLockNum < 16 || hashLockNum > 1024 || !MathUtils.isPowerOfTwo(hashLockNum)) {
+            throw new IllegalArgumentException("hashLockNum must be 16 32 64 128 256 512 1024");
         }
         //create lock
-        reentrantLocks = new ReentrantLock[slotQuantity];
-        for (int i = 0 ; i < slotQuantity ; i++) {
+        reentrantLocks = new ReentrantLock[hashLockNum];
+        for (int i = 0 ; i < hashLockNum ; i++) {
             reentrantLocks[i] = new ReentrantLock();
         }
         //build barrier
-        String binStr = Integer.toBinaryString(slotQuantity);
+        String binStr = Integer.toBinaryString(hashLockNum);
         barrier = 0xFFFFFFFF >>> (32 - (binStr.length() - 1));
     }
 
