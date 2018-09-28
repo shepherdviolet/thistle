@@ -388,10 +388,10 @@ class ServiceConfigLoader {
                 logger.print(loaderId + LOG_PREFIX + "Service Applied:");
                 logger.print(loaderId + LOG_PREFIX + "  type: " + serviceInfo.type);
                 logger.print(loaderId + LOG_PREFIX + "  implement: " + serviceInfo.appliedService.implement);
-                logger.print(loaderId + LOG_PREFIX + "  url: " + serviceInfo.appliedService.resource);
-                logger.print(loaderId + LOG_PREFIX + "  reason: Applied by " + serviceInfo.applyReason);
 
                 if (loglv >= VERBOSE) {
+                    logger.print(loaderId + LOG_PREFIX + "  url: " + serviceInfo.appliedService.resource);
+                    logger.print(loaderId + LOG_PREFIX + "  reason: Applied by " + serviceInfo.applyReason);
                     logger.print(loaderId + LOG_PREFIX + "All Configurations:");
                     for (Service service : serviceInfo.definedServices.values()) {
                         if (service == serviceInfo.appliedService) {

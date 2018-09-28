@@ -409,15 +409,13 @@ class PluginConfigLoader {
             return "Plugin{" +
                     "priority=" + priority +
                     ", impl=" + implement +
-                    ", url=" + resource +
                     '}';
         }
 
         @Override
         public String toString() {
             return "Plugin{" +
-                    "enable=" + enabled +
-                    ", priority=" + priority +
+                    "priority=" + priority +
                     ", impl=" + implement +
                     (enabled ? "" : ", disable by " + disableReason) +
                     ", url=" + resource +
