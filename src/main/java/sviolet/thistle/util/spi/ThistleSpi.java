@@ -272,11 +272,11 @@ public class ThistleSpi {
             serviceConfigLoader.invalidConfig();
 
             //打印调用者
-            printCaller();
+            String callerLog = printCaller();
 
             //打印ClassLoader
             if (loglv >= DEBUG) {
-                logger.print(loaderId + LOG_PREFIX + "With classloader " + classLoader.getClass().getName());
+                logger.print(loaderId + LOG_PREFIX + callerLog + "With classloader " + classLoader.getClass().getName());
             }
 
             //加载服务配置文件
@@ -296,7 +296,7 @@ public class ThistleSpi {
         /**
          * 打印调用者
          */
-        private void printCaller() {
+        private String printCaller() {
             if (loglv >= DEBUG) {
                 StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
                 boolean foundThistleSpi = false;
@@ -304,11 +304,11 @@ public class ThistleSpi {
                     if (ThistleSpi.class.getName().equals(element.getClassName())) {
                         foundThistleSpi = true;
                     } else if (foundThistleSpi){
-                        logger.print(loaderId + LOG_PREFIX + "Method " + element.getClassName() + "#" + element.getMethodName() + " is trying to load services or plugins");
-                        break;
+                        return element.getClassName() + "#" + element.getMethodName() + " is trying to load services or plugins. ";
                     }
                 }
             }
+            return "";
         }
 
     }
