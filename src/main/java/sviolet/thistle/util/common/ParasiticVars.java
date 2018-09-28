@@ -277,7 +277,7 @@ public class ParasiticVars {
                 LOCK.lock();
                 if (gcTaskPool == null){
                     //新建gc任务执行线程池
-                    gcTaskPool = ThreadPoolExecutorUtils.createLazy(60L, "svt-pv-gc-%d");
+                    gcTaskPool = ThreadPoolExecutorUtils.createLazy(60L, "Thistle-ParasiticVars-gc-%d");
                 }
             }finally {
                 LOCK.unlock();
