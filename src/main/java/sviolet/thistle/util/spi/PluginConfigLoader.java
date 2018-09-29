@@ -87,7 +87,7 @@ class PluginConfigLoader {
 
         //不存在插件实现
         if (pluginInfo == null || pluginInfo.orderedPlugins == null) {
-            if (loglv >= DEBUG) {
+            if (loglv >= INFO) {
                 logger.print(loaderId + LOG_PREFIX_LOADER + "No enabled plugins found, type:" + type.getName());
             }
             return null;
@@ -115,7 +115,7 @@ class PluginConfigLoader {
 
         }
 
-        if (loglv >= DEBUG) {
+        if (loglv >= INFO) {
             StringBuilder stringBuilder = new StringBuilder(loaderId + LOG_PREFIX_LOADER + "Plugin ");
             stringBuilder.append(pluginInfo.type);
             stringBuilder.append(" (");
@@ -132,7 +132,7 @@ class PluginConfigLoader {
 
     void loadConfig(String configPath){
 
-        if (loglv >= DEBUG) {
+        if (loglv >= INFO) {
             logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
             logger.print(loaderId + LOG_PREFIX + "Loading plugins from " + configPath + ", DOC: https://github.com/shepherdviolet/thistle");
         }
@@ -150,7 +150,7 @@ class PluginConfigLoader {
         }
 
         if (urls == null || !urls.hasMoreElements()) {
-            if (loglv >= VERBOSE) {
+            if (loglv >= DEBUG) {
                 logger.print(loaderId + LOG_PREFIX + "No " + pluginConfigFile + " found in classpath");
             }
             return;
@@ -161,7 +161,7 @@ class PluginConfigLoader {
             URL url = urls.nextElement();
             String urlStr = String.valueOf(url);
 
-            if (loglv >= VERBOSE) {
+            if (loglv >= DEBUG) {
                 logger.print(loaderId + LOG_PREFIX + "Loading " + url);
             }
 
@@ -176,7 +176,7 @@ class PluginConfigLoader {
             }
 
             if (properties.size() <= 0) {
-                if (loglv >= DEBUG) {
+                if (loglv >= INFO) {
                     logger.print(loaderId + LOG_PREFIX + "Warning: No properties in " + url);
                 }
             }
@@ -244,7 +244,7 @@ class PluginConfigLoader {
             URL url = urls.nextElement();
             String urlStr = String.valueOf(url);
 
-            if (loglv >= VERBOSE) {
+            if (loglv >= DEBUG) {
                 logger.print(loaderId + LOG_PREFIX + "loading " + url);
             }
 
@@ -259,7 +259,7 @@ class PluginConfigLoader {
             }
 
             if (properties.size() <= 0) {
-                if (loglv >= DEBUG) {
+                if (loglv >= INFO) {
                     logger.print(loaderId + LOG_PREFIX + "Warning: No properties in " + url);
                 }
             }
@@ -325,7 +325,7 @@ class PluginConfigLoader {
                             plugin.disableReason = "-D" + PROPERTY_PLUGIN_IGNORE_PREFIX + pluginInfo.type + "=" + ignoreStr;
                         }
                     }
-                    if (loglv >= DEBUG && count <= 0) {
+                    if (loglv >= INFO && count <= 0) {
                         logger.print(loaderId + LOG_PREFIX + "Warning: Plugin implement " + ignoreImpl + " undefined, failed to ignore implement '" + ignoreImpl + "' of '" + pluginInfo.type + "' by -D" + PROPERTY_PLUGIN_IGNORE_PREFIX + pluginInfo.type + "=" + ignoreStr);
                     }
                 }
@@ -343,7 +343,7 @@ class PluginConfigLoader {
                             plugin.disableReason = ignore.resource;
                         }
                     }
-                    if (loglv >= DEBUG && count <= 0) {
+                    if (loglv >= INFO && count <= 0) {
                         logger.print(loaderId + LOG_PREFIX + "Warning: Plugin implement " + ignore.ignoreImpl + " undefined, failed to ignore implement '" + ignore.ignoreImpl + "' of '" + pluginInfo.type + "' by " + ignore.resource);
                     }
                 }
@@ -364,7 +364,7 @@ class PluginConfigLoader {
 
         }
 
-        if (loglv >= DEBUG) {
+        if (loglv >= INFO) {
 
             for (PluginInfo pluginInfo : pluginInfos.values()) {
 
@@ -376,7 +376,7 @@ class PluginConfigLoader {
                     logger.print(loaderId + LOG_PREFIX + "  + " + plugin.toAbstractString());
                 }
 
-                if (loglv >= VERBOSE) {
+                if (loglv >= DEBUG) {
                     logger.print(loaderId + LOG_PREFIX + "All Configurations:");
                     for (Plugin plugin : pluginInfo.plugins) {
                         logger.print(loaderId + LOG_PREFIX + (plugin.enabled ? "  + " : "  - ") + plugin);

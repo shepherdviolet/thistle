@@ -55,10 +55,10 @@ public class ThistleSpi {
 
     //日志级别
     static final int ERROR = 0;
-    static final int DEBUG = 1;
-    static final int VERBOSE = 2;
+    static final int INFO = 1;
+    static final int DEBUG = 2;
 
-    //是否输出日志(默认true)
+    //日志级别(error/info/debug), 默认info
     static final int loglv;
 
     //是否启用缓存(默认true)
@@ -70,16 +70,16 @@ public class ThistleSpi {
 
     static {
         //log level
-        switch (System.getProperty(PROPERTY_LOGLV, "debug").toLowerCase()) {
+        switch (System.getProperty(PROPERTY_LOGLV, "info").toLowerCase()) {
             case "error":
                 loglv = ERROR;
                 break;
-            case "verbose":
-                loglv = VERBOSE;
-                break;
             case "debug":
-            default:
                 loglv = DEBUG;
+                break;
+            case "info":
+            default:
+                loglv = INFO;
                 break;
         }
         //cache enabled
@@ -256,7 +256,7 @@ public class ThistleSpi {
             //加载日志打印器配置文件
             serviceConfigLoader.loadConfig(CONFIG_PATH_LOGGER, true);
 
-            if (loglv >= VERBOSE) {
+            if (loglv >= DEBUG) {
                 logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
             }
 
@@ -275,7 +275,7 @@ public class ThistleSpi {
             String callerLog = printCaller();
 
             //打印ClassLoader
-            if (loglv >= DEBUG) {
+            if (loglv >= INFO) {
                 logger.print(loaderId + LOG_PREFIX + callerLog + "With classloader " + classLoader.getClass().getName());
             }
 
@@ -288,7 +288,7 @@ public class ThistleSpi {
             //加载插件配置文件
             pluginConfigLoader.loadConfig(configPath);
 
-            if (loglv >= DEBUG) {
+            if (loglv >= INFO) {
                 logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
             }
         }
@@ -297,7 +297,7 @@ public class ThistleSpi {
          * 打印调用者
          */
         private String printCaller() {
-            if (loglv >= DEBUG) {
+            if (loglv >= INFO) {
                 StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
                 boolean foundThistleSpi = false;
                 for (StackTraceElement element : stackTraceElements) {

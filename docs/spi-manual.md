@@ -319,11 +319,11 @@ sample.spi.facade.APlugin=sample.spi.impl.APluginImpl1,sample.spi.impl.APluginIm
 
 # Log
 
-* Change log level (debug by default)
+* Change log level (info by default)
 
 > `-Dthistle.spi.loglv=error` <br>
+> `-Dthistle.spi.loglv=info` <br>
 > `-Dthistle.spi.loglv=debug` <br>
-> `-Dthistle.spi.loglv=verbose` <br>
 
 * Use SLF4J to print log
 
