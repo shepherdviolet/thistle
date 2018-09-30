@@ -64,6 +64,6 @@ dependencies {
 
 # Contents
 
-* [ThistleSpi](https://github.com/shepherdviolet/thistle/blob/master/docs/spi-manual.md)
-* [Crypto](https://github.com/shepherdviolet/thistle/blob/master/docs/crypto-manual.md)
-* [Utils](https://github.com/shepherdviolet/thistle/tree/master/src/main/java/sviolet/thistle/util)
+* [ThistleSpi | Services and plugins loader (Custom SPI)](https://github.com/shepherdviolet/thistle/blob/master/docs/thistlespi/guide.md)
+* [Crypto | Crypto utils guide](https://github.com/shepherdviolet/thistle/blob/master/docs/crypto/guide.md)
+* [Utils | Other utils are here](https://github.com/shepherdviolet/thistle/tree/master/src/main/java/sviolet/thistle/util)
