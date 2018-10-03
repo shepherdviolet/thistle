@@ -5,9 +5,11 @@
 * `服务装载`:根据启动参数/优先级, 从Classpath下声明的多个服务实现中选择唯一的一个进行装载
 * `插件装载`:装载Classpath下声明的全部插件实现, 并根据优先级排序(数字越小优先级越高), 允许通过启动参数和配置排除部分实现
 
-### 特征信息
+### 日志
 
-* 日志前缀`ThistleSpi`
+* 日志前缀:`ThistleSpi`
+* 日志配置:见本文档`Log Config`章节
+* [日志样例](https://github.com/shepherdviolet/thistle/blob/master/docs/thistlespi/log-sample.md)
 
 # 服务装载
 
@@ -321,7 +323,7 @@ sample.spi.facade.APlugin=sample.spi.impl.APluginImpl1,sample.spi.impl.APluginIm
 <br>
 <br>
 
-# Log
+# Log Config
 
 * Change log level (info by default)
 
