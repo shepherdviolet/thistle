@@ -51,8 +51,7 @@ public class StringHashLocks {
             reentrantLocks[i] = new ReentrantLock();
         }
         //build barrier
-        String binStr = Integer.toBinaryString(hashLockNum);
-        barrier = 0xFFFFFFFF >>> (32 - (binStr.length() - 1));
+        barrier = hashLockNum - 1;
     }
 
     /**
