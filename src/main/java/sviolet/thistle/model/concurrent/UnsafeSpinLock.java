@@ -65,7 +65,6 @@ public class UnsafeSpinLock {
      *
      * @deprecated IT'S UNSAFE !!! Irregular use can cause serious problems !!!
      */
-    @Deprecated
     public void lock(){
         while (true) {
             if (!lock.get() && lock.compareAndSet(false, true)) {
@@ -94,7 +93,6 @@ public class UnsafeSpinLock {
      *
      * @deprecated IT'S UNSAFE !!! Irregular use can cause serious problems !!!
      */
-    @Deprecated
     public void unlock(){
         lock.set(false);
     }
