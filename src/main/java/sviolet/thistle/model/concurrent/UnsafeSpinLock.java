@@ -94,6 +94,7 @@ public class UnsafeSpinLock {
      *
      * @deprecated IT'S UNSAFE !!! Irregular use can cause serious problems !!!
      */
+    @Deprecated
     public void unlock(){
         lock.set(false);
     }
