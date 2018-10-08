@@ -185,7 +185,7 @@ public class ThistleSpi {
             }
         }
         if (fromCache) {
-            serviceLoader.printCaller();
+            serviceLoader.printCallerInfo();
         }
         return serviceLoader;
     }
@@ -246,6 +246,7 @@ public class ThistleSpi {
         private SpiLogger logger = new DefaultSpiLogger();
         private int loaderId;
 
+        private ClassLoader classLoader;
         private ServiceConfigLoader serviceConfigLoader;
         private PluginConfigLoader pluginConfigLoader;
 
@@ -253,6 +254,9 @@ public class ThistleSpi {
 
             //加载器编号
             loaderId = loaderIdCount.getAndIncrement();
+
+            //类加载器
+            this.classLoader = classLoader;
 
             //创建服务配置加载器
             serviceConfigLoader = new ServiceConfigLoader(classLoader, logger, loaderId);
@@ -275,13 +279,8 @@ public class ThistleSpi {
             //清空服务配置加载器
             serviceConfigLoader.invalidConfig();
 
-            //打印调用者
-            String callerLog = printCaller();
-
-            //打印ClassLoader
-            if (loglv >= INFO) {
-                logger.print(loaderId + LOG_PREFIX + callerLog + "With classloader " + classLoader.getClass().getName());
-            }
+            //打印调用者和ClassLoader
+            printCallerInfo();
 
             //加载服务配置文件
             serviceConfigLoader.loadConfig(configPath, false);
@@ -300,7 +299,7 @@ public class ThistleSpi {
         /**
          * 打印调用者
          */
-        private String printCaller() {
+        private void printCallerInfo() {
             if (loglv >= INFO) {
                 StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
                 boolean foundThistleSpi = false;
@@ -308,11 +307,13 @@ public class ThistleSpi {
                     if (ThistleSpi.class.getName().equals(element.getClassName())) {
                         foundThistleSpi = true;
                     } else if (foundThistleSpi){
-                        return element.getClassName() + "#" + element.getMethodName() + " is trying to load services or plugins. ";
+                        logger.print(loaderId + LOG_PREFIX +
+                                element.getClassName() + "#" + element.getMethodName() + " is trying to load services or plugins. With classloader " +
+                                classLoader.getClass().getName());
+                        return ;
                     }
                 }
             }
-            return "";
         }
 
     }
