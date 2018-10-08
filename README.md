@@ -1,5 +1,5 @@
 # thistle 10.1
-* Java common library for private use
+* Java common library (Java 7)
 * https://github.com/shepherdviolet/thistle
 
 # Import dependencies from maven repository
