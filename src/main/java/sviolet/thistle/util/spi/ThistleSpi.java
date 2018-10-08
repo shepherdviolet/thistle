@@ -165,17 +165,21 @@ public class ThistleSpi {
         if (CheckUtils.isEmptyOrBlank(configPath)) {
             configPath = CONFIG_PATH;
         }
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
         if (!cache) {
-            return newLoader(null, configPath);
+            return newLoader(classLoader, configPath);
         }
-        ServiceLoader serviceLoader = loaderCache.get(configPath);
+
+        String cacheKey = classLoader.hashCode() + "#" + configPath;
+        ServiceLoader serviceLoader = loaderCache.get(cacheKey);
         boolean fromCache = true;
         if (serviceLoader == null) {
             synchronized (loaderCache) {
-                serviceLoader = loaderCache.get(configPath);
+                serviceLoader = loaderCache.get(cacheKey);
                 if (serviceLoader == null) {
-                    serviceLoader = newLoader(null, configPath);
-                    loaderCache.put(configPath, serviceLoader);
+                    serviceLoader = newLoader(classLoader, configPath);
+                    loaderCache.put(cacheKey, serviceLoader);
                     fromCache = false;
                 }
             }
@@ -211,8 +215,8 @@ public class ThistleSpi {
 
         /**
          * [非线程安全]<p>
-         * 加载服务(每次都会重新实例化), 请自行持有服务对象<p>
-         * 加载失败会抛出RuntimeException, 服务不存在则会返回空<p>
+         * 加载服务, 每次都会重新实例化, 请自行持有服务对象<p>
+         * 若服务未定义会返回空, 实例化失败会抛出RuntimeException异常<p>
          * @param type 服务类型(接口全限定名)
          * @return 服务(若找不到定义会返回空)
          */
@@ -222,8 +226,8 @@ public class ThistleSpi {
 
         /**
          * [非线程安全]<p>
-         * 加载插件(每次都会重新实例化), 请自行持有插件对象<p>
-         * 加载失败会抛出RuntimeException, 服务不存在则会返回空<p>
+         * 加载插件, 每次都会重新实例化, 请自行持有插件对象<p>
+         * 若插件未定义会返回空列表, 实例化失败会抛出RuntimeException异常<p>
          * @param type 插件类型(接口全限定名)
          * @return 插件(若找不到定义会返回空)
          */

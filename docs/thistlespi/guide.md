@@ -57,7 +57,8 @@ public interface BService {
          */
         ThistleSpi.ServiceLoader serviceLoader = ThistleSpi.newLoader();
         /*
-         * 加载服务, 若服务未定义会返回空, 实例化失败会抛出RuntimeException异常
+         * 加载服务, 每次都会重新实例化, 请自行持有插件对象
+         * 若服务未定义会返回空, 实例化失败会抛出RuntimeException异常
          */
         aService = serviceLoader.loadService(AService.class);
         bService = serviceLoader.loadService(BService.class);
@@ -208,7 +209,8 @@ public interface BPlugin {
          */
         ThistleSpi.ServiceLoader serviceLoader = ThistleSpi.newLoader();
         /*
-         * 加载插件, 若插件未定义会返回空, 实例化失败会抛出RuntimeException异常
+         * 加载插件, 每次都会重新实例化, 请自行持有插件对象
+         * 若插件未定义会返回空列表, 实例化失败会抛出RuntimeException异常
          */
         aPlugins = serviceLoader.loadPlugins(APlugin.class);
         bPlugins = serviceLoader.loadPlugins(BPlugin.class);
