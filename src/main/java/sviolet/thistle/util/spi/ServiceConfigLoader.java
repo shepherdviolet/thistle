@@ -446,10 +446,11 @@ class ServiceConfigLoader {
 
     private enum Level {
 
-        LIBRARY(0),
-        PLATFORM(1),
-        APPLICATION(2),
-        UNDEFINED(-1);
+        DEFAULT(0),
+        LIBRARY(8),
+        PLATFORM(16),
+        APPLICATION(32),
+        UNDEFINED(Integer.MIN_VALUE);
 
         //The higher the value, the higher the priority
         private int priority;
@@ -467,6 +468,8 @@ class ServiceConfigLoader {
                 return null;
             }
             switch (level.toUpperCase()) {
+                case "DEFAULT":
+                    return DEFAULT;
                 case "LIBRARY":
                     return LIBRARY;
                 case "PLATFORM":

@@ -110,9 +110,9 @@ sample.spi.facade.AService>sample-lib-2>library=sample.spi.impl.AServiceImpl2
 
 * `级别`: 服务级别
 
-> 三选一: `application`/`platform`/`library`<br>
-> 优先级: `application`>`platform`>`library`<br>
+> 优先级: `application`>`platform`>`library`>`default`<br>
 > 在一个服务有多个实现时, 程序会使用优先级高的实现<br>
+> 默认实现请使用`default`级别<br>
 > 开源库请使用`library`级别, 使用户能够用`application`/`platform`两个级别覆盖实现<br>
 > 用户项目的基础工程建议使用`platform`级别, 基础工程会被应用工程依赖, 因此存在被覆盖实现的需求<br>
 > 用户项目的应用工程建议使用`application`级别, 应用工程最终用于部署投产, 不会有被覆盖实现的需求<br>
