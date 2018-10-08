@@ -48,7 +48,7 @@ public class UnsafeSpinLock {
     private AtomicBoolean lock = new AtomicBoolean(false);
 
     /**
-     * 上锁<br>
+     * 上锁 IT'S UNSAFE !!! Irregular use can cause serious problems !!!<br>
      *
      * <code>
      *     private UnsafeSpinLock spinLock = new UnsafeSpinLock();
@@ -63,7 +63,6 @@ public class UnsafeSpinLock {
      *     }
      * </code>
      *
-     * @deprecated IT'S UNSAFE !!! Irregular use can cause serious problems !!!
      */
     public void lock(){
         while (true) {
@@ -76,7 +75,7 @@ public class UnsafeSpinLock {
     }
 
     /**
-     * 解锁<br>
+     * 解锁 IT'S UNSAFE !!! Irregular use can cause serious problems !!!<br>
      *
      * <code>
      *     private UnsafeSpinLock spinLock = new UnsafeSpinLock();
@@ -91,7 +90,6 @@ public class UnsafeSpinLock {
      *     }
      * </code>
      *
-     * @deprecated IT'S UNSAFE !!! Irregular use can cause serious problems !!!
      */
     public void unlock(){
         lock.set(false);
