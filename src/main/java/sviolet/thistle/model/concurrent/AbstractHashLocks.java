@@ -21,47 +21,49 @@ package sviolet.thistle.model.concurrent;
 
 import sviolet.thistle.util.math.MathUtils;
 
-import java.util.concurrent.locks.ReentrantLock;
-
 /**
  * 产生指定数量的同步锁, 根据字符串的哈希获取锁对象, 这样可以把同步代码块分散, 提高并发性能
  *
  * @author S.Violet
  */
-public class StringHashLocks {
+abstract class AbstractHashLocks <T> {
 
-    private ReentrantLock[] reentrantLocks;
+    private T[] locks;
     private int barrier;
 
-    public StringHashLocks() {
+    AbstractHashLocks() {
         this(32);
     }
 
     /**
      * @param hashLockNum 锁数量, 16 32 64 128 256 512 1024, 数量越多发生碰撞的可能性更低, 但是消耗更多的内存
      */
-    public StringHashLocks(int hashLockNum) {
+    AbstractHashLocks(int hashLockNum) {
         //limit
         if (hashLockNum < 16 || hashLockNum > 1024 || !MathUtils.isPowerOfTwo(hashLockNum)) {
             throw new IllegalArgumentException("hashLockNum must be 16 32 64 128 256 512 1024");
         }
         //create lock
-        reentrantLocks = new ReentrantLock[hashLockNum];
+        locks = newArray(hashLockNum);
         for (int i = 0 ; i < hashLockNum ; i++) {
-            reentrantLocks[i] = new ReentrantLock();
+            locks[i] = newLock();
         }
         //build barrier
         barrier = hashLockNum - 1;
     }
+
+    abstract T[] newArray(int hashLockNum);
+
+    abstract T newLock();
 
     /**
      * 根据字符串的哈希获取锁对象
      * @param str 字符串, 尽量不要送null
      * @return ReentrantLock
      */
-    public ReentrantLock getLock(String str){
+    public T getLock(String str){
         int slot = hash(str) & barrier;
-        return reentrantLocks[slot];
+        return locks[slot];
     }
 
     /**

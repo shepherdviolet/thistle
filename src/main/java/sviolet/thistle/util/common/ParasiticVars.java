@@ -20,7 +20,7 @@
 package sviolet.thistle.util.common;
 
 import sviolet.thistle.entity.Destroyable;
-import sviolet.thistle.model.concurrent.StringHashLocks;
+import sviolet.thistle.model.concurrent.HashReentrantLocks;
 import sviolet.thistle.util.concurrent.ThreadPoolExecutorUtils;
 
 import java.lang.ref.WeakReference;
@@ -83,7 +83,7 @@ public class ParasiticVars {
 
     private static AtomicBoolean initialized = new AtomicBoolean(false);
     private static AtomicBoolean gcTaskPoolInited = new AtomicBoolean(false);
-    private static StringHashLocks locks = new StringHashLocks(16);
+    private static HashReentrantLocks locks = new HashReentrantLocks(16);
 
     /**
      * 设置寄生变量
