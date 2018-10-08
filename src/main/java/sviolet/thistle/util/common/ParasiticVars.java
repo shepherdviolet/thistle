@@ -238,7 +238,7 @@ public class ParasiticVars {
     private static void init(){
         //宿主Map不存在则新建
         while (hosts == null){
-            if (initialized.compareAndSet(false, true)) {
+            if (!initialized.get() && initialized.compareAndSet(false, true)) {
                 //新建gc事件监听
                 gcHandler = new WeakReference<>(new GcHandler());
                 //新建宿主Map
@@ -251,7 +251,7 @@ public class ParasiticVars {
 
     private static ExecutorService getGcTaskPool(){
         while (gcTaskPool == null){
-            if (gcTaskPoolInited.compareAndSet(false, true)) {
+            if (!gcTaskPoolInited.get() && gcTaskPoolInited.compareAndSet(false, true)) {
                 //新建gc任务执行线程池
                 gcTaskPool = ThreadPoolExecutorUtils.createLazy(60L, "Thistle-ParasiticVars-gc-%d");
             } else {
