@@ -19,14 +19,17 @@
 
 package sviolet.thistle.util.common;
 
+import sviolet.thistle.entity.common.Destroyable;
+import sviolet.thistle.model.concurrent.lock.HashReentrantLocks;
+import sviolet.thistle.util.concurrent.ThreadPoolExecutorUtils;
+
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
-
-import sviolet.thistle.entity.Destroyable;
-import sviolet.thistle.util.concurrent.ThreadPoolExecutorUtils;
 
 /**
  * <p>寄生变量</p>
@@ -76,9 +79,11 @@ public class ParasiticVars {
     /**
      * gc任务执行线程池
      */
-    private static ExecutorService gcTaskPool;
+    private volatile static ExecutorService gcTaskPool;
 
-    private final static ReentrantLock LOCK = new ReentrantLock();
+    private static AtomicBoolean initialized = new AtomicBoolean(false);
+    private static AtomicBoolean gcTaskPoolInited = new AtomicBoolean(false);
+    private static HashReentrantLocks locks = new HashReentrantLocks(16);
 
     /**
      * 设置寄生变量
@@ -102,20 +107,25 @@ public class ParasiticVars {
         //计算宿主Key
         String hostKey = calculateHostKey(host);
 
-        try{
-            LOCK.lock();
-            //获取已存在的宿主
-            HostHolder hostHolder = hosts.get(hostKey);
-            //宿主不存在则加入
-            if (hostHolder == null){
-                hostHolder = new HostHolder(host);
-                hosts.put(hostKey, hostHolder);
+        HostHolder hostHolder = hosts.get(hostKey);
+        if (hostHolder == null) {
+            ReentrantLock lock = locks.getLock(hostKey);
+            try {
+                lock.lock();
+                //获取已存在的宿主
+                hostHolder = hosts.get(hostKey);
+                //宿主不存在则加入
+                if (hostHolder == null) {
+                    hostHolder = new HostHolder(host);
+                    hosts.put(hostKey, hostHolder);
+                }
+            } finally {
+                lock.unlock();
             }
-            //变量存入宿主
-            hostHolder.set(key, param);
-        }finally {
-            LOCK.unlock();
         }
+
+        //变量存入宿主
+        hostHolder.set(key, param);
 
     }
 
@@ -141,16 +151,12 @@ public class ParasiticVars {
         //计算宿主Key
         String hostKey = calculateHostKey(host);
 
-        try{
-            LOCK.lock();
-            //获取已存在的宿主
-            HostHolder hostHolder = hosts.get(hostKey);
-            //宿主存在则获取变量
-            if (hostHolder != null){
-                return hostHolder.get(key);
-            }
-        }finally {
-            LOCK.unlock();
+        //获取已存在的宿主
+        HostHolder hostHolder = hosts.get(hostKey);
+
+        //宿主存在则获取变量
+        if (hostHolder != null){
+            return hostHolder.get(key);
         }
 
         //宿主不存在返回null
@@ -177,15 +183,7 @@ public class ParasiticVars {
 
         //计算宿主Key
         String hostKey = calculateHostKey(host);
-        HostHolder gcHostHolder = null;
-
-        try{
-            LOCK.lock();
-            //获取已存在的宿主
-            gcHostHolder = hosts.get(hostKey);
-        }finally {
-            LOCK.unlock();
-        }
+        HostHolder gcHostHolder = hosts.get(hostKey);
 
         //宿主存在则从中移除变量
         if (gcHostHolder != null) {
@@ -210,15 +208,7 @@ public class ParasiticVars {
 
         //计算宿主Key
         String hostKey = calculateHostKey(host);
-        HostHolder gcHostHolder = null;
-
-        try{
-            LOCK.lock();
-            //移除已存在的宿主
-            gcHostHolder = hosts.remove(hostKey);
-        }finally {
-            LOCK.unlock();
-        }
+        HostHolder gcHostHolder = hosts.remove(hostKey);
 
         //宿主存在则清空其中的变量
         if (gcHostHolder != null) {
@@ -232,16 +222,7 @@ public class ParasiticVars {
      */
     public static void removeAll(){
 
-        Map<String, HostHolder> gcHosts = null;
-
-        try{
-            LOCK.lock();
-            gcHosts = hosts;
-            hosts = null;
-        }finally {
-            LOCK.unlock();
-        }
-
+        Map<String, HostHolder> gcHosts = hosts;
         if (gcHosts != null) {
             for (Map.Entry<String, HostHolder> entry : gcHosts.entrySet()) {
                 entry.getValue().removeAll();
@@ -256,34 +237,27 @@ public class ParasiticVars {
      */
     private static void init(){
         //宿主Map不存在则新建
-        if (hosts == null){
-            try{
-                LOCK.lock();
-                if (hosts == null){
-                    //新建宿主Map
-                    hosts = new HashMap<>(0);
-                    //新建gc事件监听
-                    gcHandler = new WeakReference<>(new GcHandler());
-                }
-            }finally {
-                LOCK.unlock();
+        while (hosts == null){
+            if (!initialized.get() && initialized.compareAndSet(false, true)) {
+                //新建gc事件监听
+                gcHandler = new WeakReference<>(new GcHandler());
+                //新建宿主Map
+                hosts = new ConcurrentHashMap<>();
+            } else {
+                Thread.yield();
             }
         }
     }
 
     private static ExecutorService getGcTaskPool(){
-        if (gcTaskPool == null){
-            try{
-                LOCK.lock();
-                if (gcTaskPool == null){
-                    //新建gc任务执行线程池
-                    gcTaskPool = ThreadPoolExecutorUtils.createLazy(60L, "Thistle-ParasiticVars-gc-%d");
-                }
-            }finally {
-                LOCK.unlock();
+        while (gcTaskPool == null){
+            if (!gcTaskPoolInited.get() && gcTaskPoolInited.compareAndSet(false, true)) {
+                //新建gc任务执行线程池
+                gcTaskPool = ThreadPoolExecutorUtils.createLazy(60L, "Thistle-ParasiticVars-gc-%d");
+            } else {
+                Thread.yield();
             }
         }
-
         return gcTaskPool;
     }
 
@@ -299,22 +273,17 @@ public class ParasiticVars {
         }
 
         //被清理的宿主镜像
-        Map<String, HostHolder> gcHosts = new HashMap<>(0);
+        Map<String, HostHolder> gcHosts = new HashMap<>();
 
-        try{
-            LOCK.lock();
-            //搜索无宿主的宿主镜像
-            for (Map.Entry<String, HostHolder> entry : hosts.entrySet()){
-                if (!entry.getValue().isHostExists()){
-                    gcHosts.put(entry.getKey(), entry.getValue());
-                }
+        //搜索无宿主的宿主镜像
+        for (Map.Entry<String, HostHolder> entry : hosts.entrySet()) {
+            if (!entry.getValue().isHostExists()) {
+                gcHosts.put(entry.getKey(), entry.getValue());
             }
-            //清除无宿主的宿主镜像
-            for (Map.Entry<String, HostHolder> entry : gcHosts.entrySet()){
-                hosts.remove(entry.getKey());
-            }
-        }finally {
-            LOCK.unlock();
+        }
+        //清除无宿主的宿主镜像
+        for (Map.Entry<String, HostHolder> entry : gcHosts.entrySet()) {
+            hosts.remove(entry.getKey());
         }
 
         //清理无宿主的变量
@@ -376,9 +345,7 @@ public class ParasiticVars {
         /**
          * 宿主变量
          */
-        private Map<String, Object> params = new HashMap<>();
-
-        private final ReentrantLock lock = new ReentrantLock();
+        private volatile Map<String, Object> params = new ConcurrentHashMap<>();
 
         HostHolder(Object host){
             //弱引用宿主
@@ -391,30 +358,11 @@ public class ParasiticVars {
                 throw new NullPointerException("[ParasiticVars] key == null || param == null");
             }
 
-            Object destroyable;
+            Object previous = params.put(key, param);
 
-            try{
-                lock.lock();
-                //不存在同名变量
-                if (!params.containsKey(key)){
-                    params.put(key, param);
-                    return;
-                }
-                //存在同名变量
-                if(param == params.get(key)){
-                    //变量相等则不处理
-                    return;
-                }else{
-                    //变量不同则移除并销毁原有变量
-                    destroyable = params.remove(key);
-                    params.put(key, param);
-                }
-            }finally {
-                lock.unlock();
+            if (previous != null && previous != param) {
+                CloseableUtils.closeIfCloseable(previous);
             }
-
-            //销毁原变量
-            destroy(destroyable);
 
         }
 
@@ -424,12 +372,8 @@ public class ParasiticVars {
                 throw new NullPointerException("[ParasiticVars] key == null");
             }
 
-            try{
-                lock.lock();
-                return params.get(key);
-            }finally {
-                lock.unlock();
-            }
+            return params.get(key);
+
         }
 
         void remove(String key){
@@ -438,39 +382,28 @@ public class ParasiticVars {
                 throw new NullPointerException("[ParasiticVars] key == null");
             }
 
-            Object destroyable;
-
-            try{
-                lock.lock();
-                destroyable = params.remove(key);
-            }finally {
-                lock.unlock();
-            }
+            Object destroyable = params.remove(key);
 
             //销毁原变量
-            destroy(destroyable);
+            CloseableUtils.closeIfCloseable(destroyable);
 
         }
 
         void removeAll(){
 
-            Map<String, Object> destroyables;
+            Map<String, Object> destroyables = new HashMap<>();
 
-            try{
-                lock.lock();
-                destroyables = params;
-                params = new HashMap<>(0);
-            }finally {
-                lock.unlock();
+            for (Map.Entry<String, Object> entry : params.entrySet()) {
+                destroyables.put(entry.getKey(), entry.getValue());
             }
 
-            if (destroyables == null) {
-                return;
+            for (Map.Entry<String, Object> entry : destroyables.entrySet()) {
+                params.remove(entry.getKey());
             }
 
             //销毁所有变量
             for (Map.Entry<String, Object> entry : destroyables.entrySet()){
-                destroy(entry.getValue());
+                CloseableUtils.closeIfCloseable(entry.getValue());
             }
 
             destroyables.clear();
@@ -490,12 +423,6 @@ public class ParasiticVars {
          */
         boolean isHostExists(){
             return getHost() != null;
-        }
-
-        void destroy(Object obj){
-            if (obj != null && obj instanceof Destroyable){
-                ((Destroyable) obj).onDestroy();
-            }
         }
 
     }

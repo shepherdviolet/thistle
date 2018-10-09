@@ -17,40 +17,27 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.util.common;
+package sviolet.thistle.x.common.thistlespi;
 
-import sviolet.thistle.entity.common.Destroyable;
-
-import java.io.Closeable;
+import sviolet.thistle.util.conversion.DateTimeUtils;
 
 /**
- * Closeable工具
+ * ThistleSpi默认日志实现
  *
  * @author S.Violet
  */
-public class CloseableUtils {
+public class DefaultSpiLogger implements SpiLogger {
 
-    public static void closeQuiet(Closeable closeable) {
-        if (closeable == null) {
-            return;
-        }
-        try {
-            closeable.close();
-        } catch (Exception ignore) {
-        }
+    @Override
+    public final void print(String msg) {
+        System.out.println(DateTimeUtils.getDateTime() + " " + msg);
     }
 
-    public static void closeIfCloseable(Object obj){
-        if (obj == null) {
-            return;
-        }
-        try {
-            if (obj instanceof Closeable){
-                ((Closeable) obj).close();
-            } else if (obj instanceof Destroyable) {
-                ((Destroyable) obj).onDestroy();
-            }
-        } catch (Exception ignore){
+    @Override
+    public final void print(String msg, Throwable throwable) {
+        System.out.println(DateTimeUtils.getDateTime() + " " + msg);
+        if (throwable != null) {
+            throwable.printStackTrace();
         }
     }
 

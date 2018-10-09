@@ -43,21 +43,21 @@ public interface BService {
     
     public void init(){
         /*
-         * [非线程安全]<br>
-         * 创建一个新的服务加载器(无缓存).<br>
+         * 获取服务加载器, 第一次获取会有创建过程, 后续从缓存中获得.<br>
          * 1.尽量用同一个加载器加载服务和插件, 不要反复创建加载器.<br>
          * 2.创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.<br>
-         * 3.如果有动态类加载的需要, 可以重新创建一个新的服务加载器, 新的类加载器会重新加载配置.<br>
-         * 4.配置文件解析出错时会抛出RuntimeException异常.<br>
+         * 3.配置文件解析出错时会抛出RuntimeException异常.<br>
+         * 4.若设置启动参数-Dthistle.spi.cache=false, 则每次都会重新创建加载器.<br>
+         * 5.如果有需要(动态类加载/Jar包热插拔/多ClassLoader/自定义ClassLoader), 请使用newLoader方法创建并自行维护加载器.<br>
          *
-         * 其他:
+         * 支持:
          * newLoader方法:能够自定义配置文件路径和类加载器<br>
-         * getLoader方法:getLoader方法第一次创建加载器, 后续会从缓存中获取<br>
-         * getLoader方法:能够自定义配置文件路径<br>
+         * getLoader方法:能够自定义配置文件路径, getLoader方法第一次创建加载器, 后续会从缓存中获取<br>
          */
-        ThistleSpi.ServiceLoader serviceLoader = ThistleSpi.newLoader();
+        ThistleSpi.ServiceLoader serviceLoader = ThistleSpi.getLoader();
         /*
-         * 加载服务, 若服务未定义会返回空, 实例化失败会抛出RuntimeException异常
+         * 加载服务, 每次都会重新实例化, 请自行持有插件对象
+         * 若服务未定义会返回空, 实例化失败会抛出RuntimeException异常
          */
         aService = serviceLoader.loadService(AService.class);
         bService = serviceLoader.loadService(BService.class);
@@ -109,10 +109,10 @@ sample.spi.facade.AService>sample-lib-2>library=sample.spi.impl.AServiceImpl2
 
 * `级别`: 服务级别
 
-> 三选一: `application`/`platform`/`library`<br>
-> 优先级: `application`>`platform`>`library`<br>
+> 优先级: `application`>`platform`>`library`>`default`<br>
 > 在一个服务有多个实现时, 程序会使用优先级高的实现<br>
-> 开源库请使用`library`级别, 使用户能够用`application`/`platform`两个级别覆盖实现<br>
+> 默认实现请使用`default`级别, 扩展实现请勿使用该级别<br>
+> 开源扩展库请使用`library`级别, 使用户能够用`application`/`platform`两个级别覆盖实现<br>
 > 用户项目的基础工程建议使用`platform`级别, 基础工程会被应用工程依赖, 因此存在被覆盖实现的需求<br>
 > 用户项目的应用工程建议使用`application`级别, 应用工程最终用于部署投产, 不会有被覆盖实现的需求<br>
 
@@ -194,21 +194,21 @@ public interface BPlugin {
     
     public void init(){
         /*
-         * [非线程安全]<br>
-         * 创建一个新的服务加载器(无缓存).<br>
+         * 获取服务加载器, 第一次获取会有创建过程, 后续从缓存中获得.<br>
          * 1.尽量用同一个加载器加载服务和插件, 不要反复创建加载器.<br>
          * 2.创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.<br>
-         * 3.如果有动态类加载的需要, 可以重新创建一个新的服务加载器, 新的类加载器会重新加载配置.<br>
-         * 4.配置文件解析出错时会抛出RuntimeException异常.<br>
-         * 
-         * 其他:
+         * 3.配置文件解析出错时会抛出RuntimeException异常.<br>
+         * 4.若设置启动参数-Dthistle.spi.cache=false, 则每次都会重新创建加载器.<br>
+         * 5.如果有需要(动态类加载/Jar包热插拔/多ClassLoader/自定义ClassLoader), 请使用newLoader方法创建并自行维护加载器.<br>
+         *
+         * 支持:
          * newLoader方法:能够自定义配置文件路径和类加载器<br>
-         * getLoader方法:getLoader方法第一次创建加载器, 后续会从缓存中获取<br>
-         * getLoader方法:能够自定义配置文件路径<br>
+         * getLoader方法:能够自定义配置文件路径, getLoader方法第一次创建加载器, 后续会从缓存中获取<br>
          */
-        ThistleSpi.ServiceLoader serviceLoader = ThistleSpi.newLoader();
+        ThistleSpi.ServiceLoader serviceLoader = ThistleSpi.getLoader();
         /*
-         * 加载插件, 若插件未定义会返回空, 实例化失败会抛出RuntimeException异常
+         * 加载插件, 每次都会重新实例化, 请自行持有插件对象
+         * 若插件未定义会返回空列表, 实例化失败会抛出RuntimeException异常
          */
         aPlugins = serviceLoader.loadPlugins(APlugin.class);
         bPlugins = serviceLoader.loadPlugins(BPlugin.class);
@@ -363,7 +363,7 @@ public class CustomSpiLogger implements SpiLogger {
 * Edit:
 
 ```text
-sviolet.thistle.util.spi.SpiLogger>sample-app>application=sample.spi.logger.CustomSpiLogger
+sviolet.thistle.x.common.thistlespi.SpiLogger>sample-app>application=sample.spi.logger.CustomSpiLogger
 ```
 
 ### Specify logger id if you want (Non-essential)
@@ -376,7 +376,7 @@ sviolet.thistle.util.spi.SpiLogger>sample-app>application=sample.spi.logger.Cust
 * Edit:
 
 ```text
-sviolet.thistle.util.spi.SpiLogger=sample-app
+sviolet.thistle.x.common.thistlespi.SpiLogger=sample-app
 ```
 
 #### By JVM argument
@@ -384,5 +384,5 @@ sviolet.thistle.util.spi.SpiLogger=sample-app
 * Add argument in your startup shell
 
 ```text
--Dthistle.spi.apply.sviolet.thistle.util.spi.SpiLogger=sample-app
+-Dthistle.spi.apply.sviolet.thistle.x.common.thistlespi.SpiLogger=sample-app
 ```

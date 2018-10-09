@@ -21,7 +21,7 @@ package sviolet.thistle.util.crypto;
 
 import org.junit.Assert;
 import org.junit.Test;
-import sviolet.thistle.entity.IllegalParamException;
+import sviolet.thistle.entity.exception.IllegalParamException;
 
 import java.security.spec.InvalidKeySpecException;
 

@@ -17,41 +17,32 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.util.common;
+package sviolet.thistle.model.concurrent.lock;
 
-import sviolet.thistle.entity.common.Destroyable;
-
-import java.io.Closeable;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Closeable工具
+ * 产生指定数量的同步锁, 根据字符串的哈希获取锁对象, 这样可以把同步代码块分散, 提高并发性能
  *
  * @author S.Violet
  */
-public class CloseableUtils {
+public class HashReentrantLocks extends AbstractHashLocks<ReentrantLock> {
 
-    public static void closeQuiet(Closeable closeable) {
-        if (closeable == null) {
-            return;
-        }
-        try {
-            closeable.close();
-        } catch (Exception ignore) {
-        }
+    public HashReentrantLocks() {
     }
 
-    public static void closeIfCloseable(Object obj){
-        if (obj == null) {
-            return;
-        }
-        try {
-            if (obj instanceof Closeable){
-                ((Closeable) obj).close();
-            } else if (obj instanceof Destroyable) {
-                ((Destroyable) obj).onDestroy();
-            }
-        } catch (Exception ignore){
-        }
+    public HashReentrantLocks(int hashLockNum) {
+        super(hashLockNum);
+    }
+
+    @Override
+    ReentrantLock[] newArray(int hashLockNum) {
+        return new ReentrantLock[hashLockNum];
+    }
+
+    @Override
+    ReentrantLock newLock() {
+        return new ReentrantLock();
     }
 
 }

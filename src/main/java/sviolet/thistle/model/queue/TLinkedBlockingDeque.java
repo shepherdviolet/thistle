@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
-import sviolet.thistle.compat.CompatLinkedBlockingDeque;
+import sviolet.thistle.compat.queue.CompatLinkedBlockingDeque;
 
 /**
  * 强化版LinkedBlockingDeque<Br/>

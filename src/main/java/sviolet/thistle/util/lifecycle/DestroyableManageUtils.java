@@ -19,7 +19,7 @@
 
 package sviolet.thistle.util.lifecycle;
 
-import sviolet.thistle.entity.Destroyable;
+import sviolet.thistle.entity.common.Destroyable;
 
 import java.util.Collections;
 import java.util.Set;

@@ -19,7 +19,6 @@
 
 package sviolet.thistle.util.crypto;
 
-import org.jetbrains.annotations.Nullable;
 import sviolet.thistle.util.conversion.Base64Utils;
 import sviolet.thistle.util.crypto.base.BaseAsymKeyGenerator;
 
@@ -176,12 +175,10 @@ public class RSAKeyGenerator {
             return privateKey.getPrivateExponent();
         }
 
-        @Nullable
         public byte[] getX509EncodedPublicKey() throws InvalidKeySpecException {
             return encodePublicKeyToX509(publicKey);
         }
 
-        @Nullable
         public byte[] getPKCS8EncodedPrivateKey() throws InvalidKeySpecException {
             return encodePrivateKeyToPKCS8(privateKey);
         }
