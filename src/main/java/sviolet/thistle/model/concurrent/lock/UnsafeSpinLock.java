@@ -17,7 +17,7 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.model.concurrent;
+package sviolet.thistle.model.concurrent.lock;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 

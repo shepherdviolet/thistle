@@ -20,7 +20,7 @@
 package sviolet.thistle.util.common;
 
 import sviolet.thistle.entity.common.Destroyable;
-import sviolet.thistle.model.concurrent.HashReentrantLocks;
+import sviolet.thistle.model.concurrent.lock.HashReentrantLocks;
 import sviolet.thistle.util.concurrent.ThreadPoolExecutorUtils;
 
 import java.lang.ref.WeakReference;

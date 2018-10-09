@@ -17,7 +17,7 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.model.concurrent;
+package sviolet.thistle.model.concurrent.lock;
 
 /**
  * 慎用!!! 不规范的使用会导致严重的问题!!!<br>
