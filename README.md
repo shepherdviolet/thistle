@@ -33,7 +33,6 @@ dependencies {
     }
     dependencies {
         compile ('com.github.shepherdviolet:thistle:10.1') {
-            exclude group:'org.jetbrains.kotlin', module:'kotlin-stdlib-jre7'
             exclude group:'com.google.code.gson'
             exclude group:'org.bouncycastle'
         }
@@ -46,10 +45,6 @@ dependencies {
         <artifactId>thistle</artifactId>
         <version>10.1</version>
         <exclusions>
-             <exclusion>
-                 <groupId>org.jetbrains.kotlin</groupId>
-                 <artifactId>kotlin-stdlib-jre7</artifactId>
-             </exclusion>
              <exclusion>
                  <groupId>com.google.code.gson</groupId>
                  <artifactId>*</artifactId>
