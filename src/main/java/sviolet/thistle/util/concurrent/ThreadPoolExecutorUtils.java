@@ -19,7 +19,7 @@
 
 package sviolet.thistle.util.concurrent;
 
-import sviolet.thistle.compat.CompatThreadFactoryBuilder;
+import sviolet.thistle.compat.concurrent.CompatThreadFactoryBuilder;
 
 import java.util.Collections;
 import java.util.Set;
