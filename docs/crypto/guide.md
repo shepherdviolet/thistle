@@ -33,7 +33,7 @@
 
 //依赖
 dependencies {
-    compile 'com.github.shepherdviolet:thistle:9.8'
+    compile 'com.github.shepherdviolet:thistle:11.0'
 }
 ```
 
@@ -41,7 +41,7 @@ dependencies {
 
 ```gradle
 dependencies {
-    compile ('com.github.shepherdviolet:thistle:9.8') {
+    compile ('com.github.shepherdviolet:thistle:11.0') {
         transitive = false
     }
     compile 'org.bouncycastle:bcpkix-jdk15on:1.59'
@@ -54,7 +54,7 @@ dependencies {
     <dependency>
         <groupId>com.github.shepherdviolet</groupId>
         <artifactId>thistle</artifactId>
-        <version>9.8</version>
+        <version>11.0/version>
     </dependency>
 ```
 
@@ -64,7 +64,7 @@ dependencies {
     <dependency>
         <groupId>com.github.shepherdviolet</groupId>
         <artifactId>thistle</artifactId>
-        <version>9.8</version>
+        <version>11.0</version>
         <exclusions>
              <exclusion>
                  <groupId>*</groupId>

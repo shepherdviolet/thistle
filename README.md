@@ -1,4 +1,4 @@
-# thistle 10.1
+# thistle 11.0
 * Java common library (Java 7)
 * https://github.com/shepherdviolet/thistle
 
@@ -11,7 +11,7 @@ repositories {
     mavenCentral()
 }
 dependencies {
-    compile 'com.github.shepherdviolet:thistle:10.1'
+    compile 'com.github.shepherdviolet:thistle:11.0'
 }
 
 ```
@@ -20,7 +20,7 @@ dependencies {
     <dependency>    
         <groupId>com.github.shepherdviolet</groupId>
         <artifactId>thistle</artifactId>
-        <version>10.1</version> 
+        <version>11.0</version> 
     </dependency>
 ```
 
@@ -32,7 +32,7 @@ dependencies {
         mavenCentral()
     }
     dependencies {
-        compile ('com.github.shepherdviolet:thistle:10.1') {
+        compile ('com.github.shepherdviolet:thistle:11.0') {
             exclude group:'com.google.code.gson'
             exclude group:'org.bouncycastle'
         }
@@ -43,7 +43,7 @@ dependencies {
     <dependency>
         <groupId>com.github.shepherdviolet</groupId>
         <artifactId>thistle</artifactId>
-        <version>10.1</version>
+        <version>11.0</version>
         <exclusions>
              <exclusion>
                  <groupId>com.google.code.gson</groupId>
