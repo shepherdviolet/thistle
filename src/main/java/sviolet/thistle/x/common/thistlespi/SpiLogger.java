@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 S.Violet
+ * Copyright (C) 2015-2018 S.Violet
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,34 +17,23 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.x.kotlin.utilx.treebuilder.json
-
-import com.google.gson.JsonObject
+package sviolet.thistle.x.common.thistlespi;
 
 /**
- * Kotlin json 工具
+ * ThistleSpi日志接口
  *
- * Created by S.Violet on 2017/7/31.
+ * @author S.Violet
  */
-class JsonObjectBuilder
-internal constructor() {
-
-    internal val bean = JsonObject()
+public interface SpiLogger {
 
     /**
-     * Build string item or JsonObject item
+     * 打印日志
      */
-    val item: JsonObjectItem
-        get() = JsonObjectItem(bean)
+    void print(String msg);
 
     /**
-     * Build JsonArray item
+     * 打印日志和错误
      */
-    val list: JsonObjectList
-        get() = JsonObjectList(bean)
-
-    fun build(): String {
-        return bean.toString()
-    }
+    void print(String msg, Throwable throwable);
 
 }

@@ -46,14 +46,14 @@ SlfSpiLogger : 1 ThistleSpi ServiceLoader | Service sviolet.slate.common.utilx.t
 1 ThistleSpi | Loading jar:file:/C:/m2repository/repository/com/github/shepherdviolet/slate-common/10.2-SNAPSHOT/slate-common-10.2-20180930.081144-1.jar!/META-INF/thistle-spi-logger/service.properties
 1 ThistleSpi | -------------------------------------------------------------
 1 ThistleSpi | Service Applied:
-1 ThistleSpi |   type: sviolet.thistle.util.spi.SpiLogger
+1 ThistleSpi |   type: sviolet.thistle.x.common.thistlespi.SpiLogger
 1 ThistleSpi |   implement: sviolet.slate.common.util.spi.SlfSpiLogger
 1 ThistleSpi |   url: jar:file:/C:/m2repository/repository/com/github/shepherdviolet/slate-common/10.2-SNAPSHOT/slate-common-10.2-20180930.081144-1.jar!/META-INF/thistle-spi-logger/service.properties
 1 ThistleSpi |   reason: Applied by level (application > platform > library)
 1 ThistleSpi | All Configurations:
 1 ThistleSpi |   + Service{id=slate-common, level=LIBRARY, impl=sviolet.slate.common.util.spi.SlfSpiLogger, url=jar:file:/C:/m2repository/repository/com/github/shepherdviolet/slate-common/10.2-SNAPSHOT/slate-common-10.2-20180930.081144-1.jar!/META-INF/thistle-spi-logger/service.properties}
 1 ThistleSpi | -------------------------------------------------------------
-1 ThistleSpi ServiceLoader | Service sviolet.thistle.util.spi.SpiLogger (sviolet.slate.common.util.spi.SlfSpiLogger) loaded successfully
+1 ThistleSpi ServiceLoader | Service sviolet.thistle.x.common.thistlespi.SpiLogger (sviolet.slate.common.util.spi.SlfSpiLogger) loaded successfully
 SlfSpiLogger: 1 ThistleSpi | sviolet.slate.common.utilx.txtimer.TxTimer#<clinit> is trying to load services or plugins. With classloader jdk.internal.loader.ClassLoaders$AppClassLoader
 SlfSpiLogger: 1 ThistleSpi | -------------------------------------------------------------
 SlfSpiLogger: 1 ThistleSpi | Loading services from META-INF/thistle-spi/, DOC: https://github.com/shepherdviolet/thistle

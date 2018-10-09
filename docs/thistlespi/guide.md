@@ -363,7 +363,7 @@ public class CustomSpiLogger implements SpiLogger {
 * Edit:
 
 ```text
-sviolet.thistle.util.spi.SpiLogger>sample-app>application=sample.spi.logger.CustomSpiLogger
+sviolet.thistle.x.common.thistlespi.SpiLogger>sample-app>application=sample.spi.logger.CustomSpiLogger
 ```
 
 ### Specify logger id if you want (Non-essential)
@@ -376,7 +376,7 @@ sviolet.thistle.util.spi.SpiLogger>sample-app>application=sample.spi.logger.Cust
 * Edit:
 
 ```text
-sviolet.thistle.util.spi.SpiLogger=sample-app
+sviolet.thistle.x.common.thistlespi.SpiLogger=sample-app
 ```
 
 #### By JVM argument
@@ -384,5 +384,5 @@ sviolet.thistle.util.spi.SpiLogger=sample-app
 * Add argument in your startup shell
 
 ```text
--Dthistle.spi.apply.sviolet.thistle.util.spi.SpiLogger=sample-app
+-Dthistle.spi.apply.sviolet.thistle.x.common.thistlespi.SpiLogger=sample-app
 ```

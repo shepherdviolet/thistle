@@ -17,11 +17,13 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.x.kotlin.utilx.treebuilder.map
+package sviolet.thistle.x.kotlin.treebuilder.json
 
-class MapObjectItem
+import com.google.gson.JsonObject
+
+class JsonObjectItem
 internal constructor(
-        val bean: HashMap<String, Any?>
+        val bean: JsonObject
 ){
 
     private var key: String? = null
@@ -29,7 +31,7 @@ internal constructor(
     /**
      * key, required
      */
-    infix fun k(key: String) : MapObjectItem {
+    infix fun k(key: String) : JsonObjectItem {
         this.key = key
         return this
     }
@@ -38,18 +40,22 @@ internal constructor(
      * value(add String)
      */
     infix fun v(value: Any?) {
-        val k = key ?: throw IllegalArgumentException("You should invoke method \"k\" to set key before set value")
-        bean.put(k, value)
+        if (key == null){
+            throw IllegalArgumentException("You should invoke method \"k\" to set key before set value")
+        }
+        bean.addProperty(key, value?.toString() ?: "")
     }
 
     /**
-     * block(to build Map)
+     * block(to build JsonObject)
      */
-    infix fun v(block: MapObjectBuilder.() -> Unit) {
-        val k = key ?: throw IllegalArgumentException("You should invoke method \"k\" to set key before set value")
-        val obj = MapObjectBuilder()
+    infix fun v(block: JsonObjectBuilder.() -> Unit) {
+        if (key == null){
+            throw IllegalArgumentException("You should invoke method \"k\" to set key before set value")
+        }
+        val obj = JsonObjectBuilder()
         obj.block()
-        bean.put(k, obj.bean)
+        bean.add(key, obj.bean)
     }
 
 }

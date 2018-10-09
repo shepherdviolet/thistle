@@ -17,23 +17,28 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.util.spi;
+package sviolet.thistle.x.common.thistlespi;
+
+import sviolet.thistle.util.conversion.DateTimeUtils;
 
 /**
- * ThistleSpi日志接口
+ * ThistleSpi默认日志实现
  *
  * @author S.Violet
  */
-public interface SpiLogger {
+public class DefaultSpiLogger implements SpiLogger {
 
-    /**
-     * 打印日志
-     */
-    void print(String msg);
+    @Override
+    public final void print(String msg) {
+        System.out.println(DateTimeUtils.getDateTime() + " " + msg);
+    }
 
-    /**
-     * 打印日志和错误
-     */
-    void print(String msg, Throwable throwable);
+    @Override
+    public final void print(String msg, Throwable throwable) {
+        System.out.println(DateTimeUtils.getDateTime() + " " + msg);
+        if (throwable != null) {
+            throwable.printStackTrace();
+        }
+    }
 
 }

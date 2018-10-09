@@ -17,7 +17,7 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.util.spi;
+package sviolet.thistle.x.common.thistlespi;
 
 import sviolet.thistle.util.judge.CheckUtils;
 

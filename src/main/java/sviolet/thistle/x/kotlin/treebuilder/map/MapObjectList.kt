@@ -17,22 +17,29 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.x.kotlin.utilx.treebuilder.json
+package sviolet.thistle.x.kotlin.treebuilder.map
 
-import com.google.gson.JsonArray
-
-class JsonArrayList
+class MapObjectList
 internal constructor(
-        val bean: JsonArray
+        val bean: HashMap<String, Any?>
 ){
 
+    private var key: String? = null
     private var hasIterable = false
     private var iterable: Any? = null
 
     /**
-     * iterable, optional
+     * key, required
      */
-    infix fun i(iterable: Iterable<*>): JsonArrayList {
+    infix fun k(key: String?): MapObjectList {
+        this.key = key
+        return this
+    }
+
+    /**
+     * iterable, optional.
+     */
+    infix fun i(iterable: Iterable<*>): MapObjectList {
         this.iterable = iterable
         hasIterable = true
         return this
@@ -41,17 +48,18 @@ internal constructor(
     /**
      * iterable, optional
      */
-    infix fun i(array: Array<*>): JsonArrayList {
+    infix fun i(array: Array<*>): MapObjectList {
         this.iterable = array
         hasIterable = true
         return this
     }
 
     /**
-     * block(to build JsonArray)
+     * block(to build List)
      */
-    infix fun v(block: JsonArrayBuilder.(Any?) -> Unit) {
-        val array = JsonArrayBuilder()
+    infix fun v(block: MapArrayBuilder.(Any?) -> Unit) {
+        val k = key ?: throw IllegalArgumentException("You should invoke method \"k\" to set key before set value")
+        val array = MapArrayBuilder()
         if (hasIterable) {
             val i = iterable
             if (i is Iterable<*>) {
@@ -68,7 +76,6 @@ internal constructor(
         } else {
             array.block(null)
         }
-        bean.add(array.bean)
+        bean.put(k, array.bean)
     }
-
 }

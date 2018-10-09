@@ -17,34 +17,39 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.x.kotlin.utilx.treebuilder
+package sviolet.thistle.x.kotlin.treebuilder.map
 
-import sviolet.thistle.x.kotlin.utilx.treebuilder.json.JsonObjectBuilder
-import sviolet.thistle.x.kotlin.utilx.treebuilder.map.MapObjectBuilder
+class MapObjectItem
+internal constructor(
+        val bean: HashMap<String, Any?>
+){
 
-/**
- * Kotlin 树结构对象构造工具
- * Created by S.Violet on 2017/7/31.
- */
-
-object TreeBuilder {
+    private var key: String? = null
 
     /**
-     * 构造json
+     * key, required
      */
-    fun json(block: JsonObjectBuilder.() -> Unit) : String {
-        val obj = JsonObjectBuilder()
-        obj.block()
-        return obj.build()
+    infix fun k(key: String) : MapObjectItem {
+        this.key = key
+        return this
     }
 
     /**
-     * 构造Map
+     * value(add String)
      */
-    fun map(block: MapObjectBuilder.() -> Unit) : Map<String, Any?> {
+    infix fun v(value: Any?) {
+        val k = key ?: throw IllegalArgumentException("You should invoke method \"k\" to set key before set value")
+        bean.put(k, value)
+    }
+
+    /**
+     * block(to build Map)
+     */
+    infix fun v(block: MapObjectBuilder.() -> Unit) {
+        val k = key ?: throw IllegalArgumentException("You should invoke method \"k\" to set key before set value")
         val obj = MapObjectBuilder()
         obj.block()
-        return obj.build()
+        bean.put(k, obj.bean)
     }
 
 }

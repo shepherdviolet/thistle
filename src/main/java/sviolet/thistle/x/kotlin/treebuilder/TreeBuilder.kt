@@ -17,32 +17,34 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.x.kotlin.utilx.treebuilder.map
+package sviolet.thistle.x.kotlin.treebuilder
+
+import sviolet.thistle.x.kotlin.treebuilder.json.JsonObjectBuilder
+import sviolet.thistle.x.kotlin.treebuilder.map.MapObjectBuilder
 
 /**
- * Kotlin json 工具
- *
+ * Kotlin 树结构对象构造工具
  * Created by S.Violet on 2017/7/31.
  */
-class MapArrayBuilder
-internal constructor() {
 
-    internal val bean = ArrayList<Any?>()
+object TreeBuilder {
 
     /**
-     * Build string item or JsonObject item
+     * 构造json
      */
-    val item: MapArrayItem
-        get() = MapArrayItem(bean)
+    fun json(block: JsonObjectBuilder.() -> Unit) : String {
+        val obj = JsonObjectBuilder()
+        obj.block()
+        return obj.build()
+    }
 
     /**
-     * Build JsonArray item
+     * 构造Map
      */
-    val list: MapArrayList
-        get() = MapArrayList(bean)
-
-    fun build(): String {
-        return bean.toString()
+    fun map(block: MapObjectBuilder.() -> Unit) : Map<String, Any?> {
+        val obj = MapObjectBuilder()
+        obj.block()
+        return obj.build()
     }
 
 }

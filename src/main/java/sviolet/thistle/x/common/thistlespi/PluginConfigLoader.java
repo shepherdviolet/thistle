@@ -17,14 +17,14 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.util.spi;
+package sviolet.thistle.x.common.thistlespi;
 
 import sviolet.thistle.util.judge.CheckUtils;
 
 import java.net.URL;
 import java.util.*;
 
-import static sviolet.thistle.util.spi.ThistleSpi.*;
+import static sviolet.thistle.x.common.thistlespi.ThistleSpi.*;
 
 /**
  * 插件配置加载器

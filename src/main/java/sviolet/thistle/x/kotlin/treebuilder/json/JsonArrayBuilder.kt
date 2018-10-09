@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2018 S.Violet
+ * Copyright (C) 2015-2017 S.Violet
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,28 +17,34 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.util.spi;
+package sviolet.thistle.x.kotlin.treebuilder.json
 
-import sviolet.thistle.util.conversion.DateTimeUtils;
+import com.google.gson.JsonArray
 
 /**
- * ThistleSpi默认日志实现
+ * Kotlin json 工具
  *
- * @author S.Violet
+ * Created by S.Violet on 2017/7/31.
  */
-public class DefaultSpiLogger implements SpiLogger {
+class JsonArrayBuilder
+internal constructor() {
 
-    @Override
-    public final void print(String msg) {
-        System.out.println(DateTimeUtils.getDateTime() + " " + msg);
-    }
+    internal val bean = JsonArray()
 
-    @Override
-    public final void print(String msg, Throwable throwable) {
-        System.out.println(DateTimeUtils.getDateTime() + " " + msg);
-        if (throwable != null) {
-            throwable.printStackTrace();
-        }
+    /**
+     * Build string item or JsonObject item
+     */
+    val item: JsonArrayItem
+        get() = JsonArrayItem(bean)
+
+    /**
+     * Build JsonArray item
+     */
+    val list: JsonArrayList
+        get() = JsonArrayList(bean)
+
+    fun build(): String {
+        return bean.toString()
     }
 
 }

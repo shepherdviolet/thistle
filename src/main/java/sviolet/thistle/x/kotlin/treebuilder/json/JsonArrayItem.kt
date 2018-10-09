@@ -17,45 +17,29 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.x.kotlin.utilx.treebuilder.json
+package sviolet.thistle.x.kotlin.treebuilder.json
 
-import com.google.gson.JsonObject
+import com.google.gson.JsonArray
 
-class JsonObjectItem
+class JsonArrayItem
 internal constructor(
-        val bean: JsonObject
+        val bean: JsonArray
 ){
-
-    private var key: String? = null
-
-    /**
-     * key, required
-     */
-    infix fun k(key: String) : JsonObjectItem {
-        this.key = key
-        return this
-    }
 
     /**
      * value(add String)
      */
     infix fun v(value: Any?) {
-        if (key == null){
-            throw IllegalArgumentException("You should invoke method \"k\" to set key before set value")
-        }
-        bean.addProperty(key, value?.toString() ?: "")
+        bean.add(value?.toString() ?: "")
     }
 
     /**
      * block(to build JsonObject)
      */
     infix fun v(block: JsonObjectBuilder.() -> Unit) {
-        if (key == null){
-            throw IllegalArgumentException("You should invoke method \"k\" to set key before set value")
-        }
         val obj = JsonObjectBuilder()
         obj.block()
-        bean.add(key, obj.bean)
+        bean.add(obj.bean)
     }
 
 }

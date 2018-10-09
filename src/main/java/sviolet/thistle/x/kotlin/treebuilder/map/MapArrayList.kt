@@ -17,31 +17,20 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.x.kotlin.utilx.treebuilder.json
+package sviolet.thistle.x.kotlin.treebuilder.map
 
-import com.google.gson.JsonObject
-
-class JsonObjectList
+class MapArrayList
 internal constructor(
-        val bean: JsonObject
+        val bean: ArrayList<Any?>
 ){
 
-    private var key: String? = null
     private var hasIterable = false
     private var iterable: Any? = null
 
     /**
-     * key, required
+     * iterable, optional
      */
-    infix fun k(key: String?): JsonObjectList {
-        this.key = key
-        return this
-    }
-
-    /**
-     * iterable, optional.
-     */
-    infix fun i(iterable: Iterable<*>): JsonObjectList {
+    infix fun i(iterable: Iterable<*>): MapArrayList {
         this.iterable = iterable
         hasIterable = true
         return this
@@ -50,20 +39,17 @@ internal constructor(
     /**
      * iterable, optional
      */
-    infix fun i(array: Array<*>): JsonObjectList {
+    infix fun i(array: Array<*>): MapArrayList {
         this.iterable = array
         hasIterable = true
         return this
     }
 
     /**
-     * block(to build JsonArray)
+     * block(to build List)
      */
-    infix fun v(block: JsonArrayBuilder.(Any?) -> Unit) {
-        if (key == null){
-            throw IllegalArgumentException("You should invoke method \"k\" to set key before set value")
-        }
-        val array = JsonArrayBuilder()
+    infix fun v(block: MapArrayBuilder.(Any?) -> Unit) {
+        val array = MapArrayBuilder()
         if (hasIterable) {
             val i = iterable
             if (i is Iterable<*>) {
@@ -75,11 +61,12 @@ internal constructor(
                     array.block(it)
                 }
             } else {
-                throw IllegalArgumentException("The \"iterable\" argument cannot be iterate")
+                throw IllegalArgumentException("[TJson]The \"iterable\" argument cannot be iterate")
             }
         } else {
             array.block(null)
         }
-        bean.add(key, array.bean)
+        bean.add(array.bean)
     }
+
 }

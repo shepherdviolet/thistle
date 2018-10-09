@@ -1,4 +1,4 @@
-package sviolet.thistle.x.kotlin.utilx.treebuilder
+package sviolet.thistle.x.kotlin.treebuilder
 
 import org.junit.Assert
 import org.junit.Test
