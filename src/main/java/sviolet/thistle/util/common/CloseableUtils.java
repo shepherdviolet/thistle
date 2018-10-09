@@ -19,7 +19,7 @@
 
 package sviolet.thistle.util.common;
 
-import sviolet.thistle.entity.Destroyable;
+import sviolet.thistle.entity.common.Destroyable;
 
 import java.io.Closeable;
 

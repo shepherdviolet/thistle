@@ -17,7 +17,7 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.entity;
+package sviolet.thistle.entity.exception;
 
 /**
  * 方法参数非法

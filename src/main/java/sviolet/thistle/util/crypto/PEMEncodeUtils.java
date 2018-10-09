@@ -19,7 +19,7 @@
 
 package sviolet.thistle.util.crypto;
 
-import sviolet.thistle.entity.IllegalParamException;
+import sviolet.thistle.entity.exception.IllegalParamException;
 import sviolet.thistle.util.conversion.Base64Utils;
 
 /**
