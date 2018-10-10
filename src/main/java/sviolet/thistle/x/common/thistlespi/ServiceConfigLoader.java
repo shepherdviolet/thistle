@@ -103,8 +103,9 @@ class ServiceConfigLoader {
             throw new RuntimeException("ThistleSpi: Service " + serviceInfo.type + " (" + serviceInfo.appliedService.implement + ") instantiation error, config:" + serviceInfo.appliedService.resource, e);
         }
         if (!type.isAssignableFrom(service.getClass())) {
-            logger.print(loaderId + LOG_PREFIX_LOADER + "ERROR: " + serviceInfo.appliedService.implement + " is not instance of " + serviceInfo.type + ", illegal config:" + serviceInfo.appliedService.resource);
-            throw new RuntimeException("ThistleSpi: " + serviceInfo.appliedService.implement + " is not instance of " + serviceInfo.type + ", illegal config:" + serviceInfo.appliedService.resource);
+            RuntimeException e = new RuntimeException("ThistleSpi: " + serviceInfo.appliedService.implement + " is not instance of " + serviceInfo.type + ", illegal config:" + serviceInfo.appliedService.resource);
+            logger.print(loaderId + LOG_PREFIX_LOADER + "ERROR: " + serviceInfo.appliedService.implement + " is not instance of " + serviceInfo.type + ", illegal config:" + serviceInfo.appliedService.resource, e);
+            throw e;
         }
         if (loglv >= INFO) {
             logger.print(loaderId + LOG_PREFIX_LOADER + "Service " + serviceInfo.type + " (" + serviceInfo.appliedService.implement + ") loaded successfully");
@@ -172,8 +173,9 @@ class ServiceConfigLoader {
                 //拆解key
                 String[] keyItems = key.split(">");
                 if (keyItems.length != 3) {
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal key in config file, key:" + key + ", correct format:interface>id>level=impl, config:" + urlStr);
-                    throw new RuntimeException("ThistleSpi: Illegal key in config file, key:" + key + ", correct format:interface>id>level=impl, config:" + urlStr);
+                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal key in config file, key:" + key + ", correct format:interface>id>level=impl, config:" + urlStr);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal key in config file, key:" + key + ", correct format:interface>id>level=impl, config:" + urlStr, e);
+                    throw e;
                 }
 
                 String type = keyItems[0];
@@ -181,8 +183,9 @@ class ServiceConfigLoader {
                 Level level = Level.parse(keyItems[2]);
 
                 if (level == Level.UNDEFINED) {
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, undefined level " + level + ", should be library/platform/application, in key:" + key + ", config:" + urlStr);
-                    throw new RuntimeException("ThistleSpi: Illegal config, undefined level " + level + ", should be library/platform/application, in key:" + key + ", config:" + urlStr);
+                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, undefined level " + level + ", should be library/platform/application, in key:" + key + ", config:" + urlStr);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, undefined level " + level + ", should be library/platform/application, in key:" + key + ", config:" + urlStr, e);
+                    throw e;
                 }
 
                 //遇到新的服务接口, 则创建一个对象
@@ -196,8 +199,9 @@ class ServiceConfigLoader {
                 //实现类
                 String implement = properties.getProperty(key);
                 if (CheckUtils.isEmptyOrBlank(implement)) {
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " is empty, config:" + urlStr);
-                    throw new RuntimeException("ThistleSpi: Illegal config, value of " + key + " is empty, config:" + urlStr);
+                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + key + " is empty, config:" + urlStr);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " is empty, config:" + urlStr, e);
+                    throw e;
                 }
 
                 //服务接口信息
@@ -210,8 +214,9 @@ class ServiceConfigLoader {
                 Service previous = serviceInfo.definedServices.get(id);
                 //若有重复id, 则抛出异常
                 if (previous != null) {
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: Duplicate service defined with same id, type:" + type + ", id:" + id + ", url1:" + url + ", url2:" + previous.resource);
-                    throw new RuntimeException("ThistleSpi: Duplicate service defined with same id, type:" + type + ", id:" + id + ", url1:" + url + ", url2:" + previous.resource);
+                    RuntimeException e = new RuntimeException("ThistleSpi: Duplicate service defined with same id, type:" + type + ", id:" + id + ", url1:" + url + ", url2:" + previous.resource);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Duplicate service defined with same id, type:" + type + ", id:" + id + ", url1:" + url + ", url2:" + previous.resource, e);
+                    throw e;
                 }
 
                 serviceInfo.definedServices.put(id, service);
@@ -262,8 +267,9 @@ class ServiceConfigLoader {
                 String type = String.valueOf(names.nextElement());
                 String id = properties.getProperty(type);
                 if (CheckUtils.isEmptyOrBlank(id)) {
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + type + " is empty, config:" + urlStr);
-                    throw new RuntimeException("ThistleSpi: Illegal config, value of " + type + " is empty, config:" + urlStr);
+                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + type + " is empty, config:" + urlStr);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + type + " is empty, config:" + urlStr, e);
+                    throw e;
                 }
 
                 if (applyInfos.containsKey(type)) {
@@ -283,8 +289,9 @@ class ServiceConfigLoader {
                         if (CheckUtils.isEmptyOrBlank(idFromJvmArgs)) {
                             //如果没有-Dthistle.spi.apply, 直接抛出异常
                             //no -Dthistle.spi.apply, throw exception
-                            logger.print(loaderId + LOG_PREFIX + "ERROR: " + duplicateError);
-                            throw new RuntimeException("ThistleSpi: " + duplicateError);
+                            RuntimeException e = new RuntimeException("ThistleSpi: " + duplicateError);
+                            logger.print(loaderId + LOG_PREFIX + "ERROR: " + duplicateError, e);
+                            throw e;
                         } else {
                             //如果有-Dthistle.spi.apply, 先放一马
                             //try with -Dthistle.spi.apply
@@ -331,8 +338,9 @@ class ServiceConfigLoader {
             if (applyInfos.containsKey(spi.type)){
                 ApplyInfo applyInfo = applyInfos.get(spi.type);
                 if (applyInfo.duplicateError != null) {
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: " + applyInfo.duplicateError);
-                    throw new RuntimeException("ThistleSpi: " + applyInfo.duplicateError);
+                    RuntimeException e = new RuntimeException("ThistleSpi: " + applyInfo.duplicateError);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: " + applyInfo.duplicateError, e);
+                    throw e;
                 }
                 Service service = spi.definedServices.get(applyInfo.id);
                 if (service != null) {
@@ -370,8 +378,9 @@ class ServiceConfigLoader {
                     stringBuilder.append(service);
                     stringBuilder.append("|");
                 }
-                logger.print(loaderId + LOG_PREFIX + "ERROR: " + stringBuilder.toString());
-                throw new RuntimeException("ThistleSpi: " + stringBuilder.toString());
+                RuntimeException e = new RuntimeException("ThistleSpi: " + stringBuilder.toString());
+                logger.print(loaderId + LOG_PREFIX + "ERROR: " + stringBuilder.toString(), e);
+                throw e;
             }
 
             spi.appliedService = appliedServices.get(0);
