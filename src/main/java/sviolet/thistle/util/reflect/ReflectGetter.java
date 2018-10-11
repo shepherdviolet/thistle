@@ -19,7 +19,7 @@
 
 package sviolet.thistle.util.reflect;
 
-import sviolet.thistle.util.conversion.BeanMethodNameFormatter;
+import sviolet.thistle.util.conversion.BeanMethodNameUtils;
 import sviolet.thistle.util.judge.CheckUtils;
 
 import java.lang.reflect.Array;
@@ -181,7 +181,7 @@ public class ReflectGetter {
                             Method method = null;
                             try {
                                 //ignore private method
-                                method = clazz.getMethod(BeanMethodNameFormatter.toGetterName(currentKeyPath.key));
+                                method = clazz.getMethod(BeanMethodNameUtils.fieldToGetter(currentKeyPath.key));
                                 if(!void.class.isAssignableFrom(method.getReturnType())){
                                     if (!method.isAccessible()){
                                         method.setAccessible(true);
@@ -189,7 +189,7 @@ public class ReflectGetter {
                                     currentObj = method.invoke(currentObj);
                                     break;
                                 }
-                            } catch (BeanMethodNameFormatter.FormatException | NoSuchMethodException ignore) {
+                            } catch (NoSuchMethodException ignore) {
                                 //find field
                             } catch (Throwable t) {
                                 throw new ReflectException("Error while getting field by method, method:" + method.getName() + ", type:" + currentObj.getClass().getName() + ". objType:" + obj.getClass().getName() + ", index:" + index + ", keyPath:" + keyPath, t);
