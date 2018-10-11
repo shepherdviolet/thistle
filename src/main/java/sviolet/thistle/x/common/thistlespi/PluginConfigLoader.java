@@ -376,8 +376,14 @@ class PluginConfigLoader {
                 logger.print(loaderId + LOG_PREFIX + "Plugin Applied:");
                 logger.print(loaderId + LOG_PREFIX + "  type: " + pluginInfo.type);
                 logger.print(loaderId + LOG_PREFIX + "  implements:");
+
+                int i = 0;
                 for (Plugin plugin : pluginInfo.orderedPlugins) {
                     logger.print(loaderId + LOG_PREFIX + "  + " + plugin.toAbstractString());
+                    if (loglv < DEBUG && i++ >= 10) {
+                        logger.print(loaderId + LOG_PREFIX + "    ...... (set -D" + ThistleSpi.PROPERTY_LOGLV + "=debug to show more)");
+                        break;
+                    }
                 }
 
                 if (loglv >= DEBUG) {

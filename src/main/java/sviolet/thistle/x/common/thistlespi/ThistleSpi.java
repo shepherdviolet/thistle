@@ -40,9 +40,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ThistleSpi {
 
     //日志打印级别(error/debug/verbose, 默认debug)
-    private static final String PROPERTY_LOGLV = "thistle.spi.loglv";
+    static final String PROPERTY_LOGLV = "thistle.spi.loglv";
     //缓存开关(默认true)
-    private static final String PROPERTY_CACHE = "thistle.spi.cache";
+    static final String PROPERTY_CACHE = "thistle.spi.cache";
 
     //默认配置路径
     private static final String CONFIG_PATH = "META-INF/thistle-spi/";
