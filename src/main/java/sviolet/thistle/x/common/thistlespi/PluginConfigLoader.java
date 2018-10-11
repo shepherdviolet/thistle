@@ -41,6 +41,8 @@ class PluginConfigLoader {
     //插件忽略文件名
     private static final String CONFIG_FILE_PLUGIN_IGNORE = "plugin-ignore.properties";
 
+    private static final int MAX_INFO_LOG_LINES = 10;
+
     private ClassLoader classLoader;
     private SpiLogger logger;
     private int loaderId;
@@ -380,7 +382,7 @@ class PluginConfigLoader {
                 int i = 0;
                 for (Plugin plugin : pluginInfo.orderedPlugins) {
                     logger.print(loaderId + LOG_PREFIX + "  + " + plugin.toAbstractString());
-                    if (loglv < DEBUG && i++ >= 10) {
+                    if (loglv < DEBUG && i++ >= MAX_INFO_LOG_LINES) {
                         logger.print(loaderId + LOG_PREFIX + "    ...... (set -D" + ThistleSpi.PROPERTY_LOGLV + "=debug to show more)");
                         break;
                     }
