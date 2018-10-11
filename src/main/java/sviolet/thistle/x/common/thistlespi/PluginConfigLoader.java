@@ -122,7 +122,14 @@ class PluginConfigLoader {
             StringBuilder stringBuilder = new StringBuilder(loaderId + LOG_PREFIX_LOADER + "Plugin ");
             stringBuilder.append(pluginInfo.type);
             stringBuilder.append(" (");
+            int i = 0;
             for (Plugin plugin : pluginInfo.orderedPlugins) {
+                if (loglv < DEBUG && i++ >= MAX_INFO_LOG_LINES) {
+                    stringBuilder.append(" ... ");
+                    stringBuilder.append(pluginInfo.orderedPlugins.size() - MAX_INFO_LOG_LINES);
+                    stringBuilder.append(" more");
+                    break;
+                }
                 stringBuilder.append(" ");
                 stringBuilder.append(plugin.implement);
             }
@@ -381,11 +388,12 @@ class PluginConfigLoader {
 
                 int i = 0;
                 for (Plugin plugin : pluginInfo.orderedPlugins) {
-                    logger.print(loaderId + LOG_PREFIX + "  + " + plugin.toAbstractString());
                     if (loglv < DEBUG && i++ >= MAX_INFO_LOG_LINES) {
-                        logger.print(loaderId + LOG_PREFIX + "    ...... (set -D" + ThistleSpi.PROPERTY_LOGLV + "=debug to show more)");
+                        logger.print(loaderId + LOG_PREFIX + "    ...... " + (pluginInfo.orderedPlugins.size() - MAX_INFO_LOG_LINES) +
+                                " more omitted ('-D" + ThistleSpi.PROPERTY_LOGLV + "=debug' to show more)");
                         break;
                     }
+                    logger.print(loaderId + LOG_PREFIX + "  + " + plugin.toAbstractString());
                 }
 
                 if (loglv >= DEBUG) {
