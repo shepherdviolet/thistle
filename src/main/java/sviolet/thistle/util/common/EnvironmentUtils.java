@@ -24,7 +24,7 @@ import java.lang.management.ManagementFactory;
 /**
  * 环境工具
  */
-public class EnvUtils {
+public class EnvironmentUtils {
 
     /**
      * 当前进程PID
