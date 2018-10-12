@@ -203,6 +203,7 @@ class ServiceConfigLoader {
                     logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " is empty, config:" + urlStr, e);
                     throw e;
                 }
+                implement = implement.trim();
 
                 //获取构造参数
                 String arg = null;
