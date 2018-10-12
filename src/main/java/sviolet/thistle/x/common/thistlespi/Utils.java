@@ -96,8 +96,8 @@ class Utils {
                 }
             }
             return new Implementation(
-                    propValue.substring(argStart + 1, propValue.length() - 1),
-                    propValue.substring(0, argStart).trim()
+                    propValue.substring(0, argStart).trim(),
+                    propValue.substring(argStart + 1, propValue.length() - 1)
             );
         }
         return new Implementation(propValue, null);
