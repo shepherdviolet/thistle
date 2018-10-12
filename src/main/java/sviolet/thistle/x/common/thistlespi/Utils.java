@@ -121,7 +121,7 @@ class Utils {
      */
     static boolean checkFileExclusion(String propHash, SpiLogger logger, int loaderId, URL url) {
         if (FILE_EXCLUSION.contains(propHash)) {
-            if (LOG_LV >= DEBUG) {
+            if (LOG_LV >= INFO) {
                 logger.print(loaderId + LOG_PREFIX + "!!! Exclude config " + url + " by -D" + PROPERTY_FILE_EXCLUSION);
             }
             return true;

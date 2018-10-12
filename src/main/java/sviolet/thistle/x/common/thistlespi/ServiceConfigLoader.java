@@ -246,13 +246,6 @@ class ServiceConfigLoader {
             throw new RuntimeException("ThistleSpi: Error while loading classpath " + applyConfigFile, e);
         }
 
-        if (urls == null || !urls.hasMoreElements()) {
-            if (LOG_LV >= DEBUG) {
-                logger.print(loaderId + LOG_PREFIX + "No config " + applyConfigFile + " found in classpath");
-            }
-            return;
-        }
-
         //遍历所有service-apply.properties配置文件
         while (urls != null && urls.hasMoreElements()) {
             URL url = urls.nextElement();

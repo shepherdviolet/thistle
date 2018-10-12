@@ -261,13 +261,6 @@ class PluginConfigLoader {
             throw new RuntimeException("ThistleSpi: Error while loading classpath " + ignoreConfigFile, e);
         }
 
-        if (urls == null || !urls.hasMoreElements()) {
-            if (LOG_LV >= DEBUG) {
-                logger.print(loaderId + LOG_PREFIX + "No config " + ignoreConfigFile + " found in classpath");
-            }
-            return;
-        }
-
         //遍历所有plugin-ignore.properties配置文件
         while (urls != null && urls.hasMoreElements()) {
             URL url = urls.nextElement();
