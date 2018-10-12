@@ -19,6 +19,8 @@
 
 package sviolet.thistle.x.common.thistlespi;
 
+import sviolet.thistle.util.conversion.ByteUtils;
+import sviolet.thistle.util.crypto.DigestCipher;
 import sviolet.thistle.util.judge.CheckUtils;
 
 import java.net.URL;
@@ -155,13 +157,13 @@ class PluginConfigLoader {
         try {
             urls = classLoader.getResources(pluginConfigFile);
         } catch (Exception e) {
-            logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading " + pluginConfigFile, e);
-            throw new RuntimeException("ThistleSpi: Error while loading " + pluginConfigFile, e);
+            logger.print(loaderId + LOG_PREFIX + "ERROR: Error while classpath " + pluginConfigFile, e);
+            throw new RuntimeException("ThistleSpi: Error while classpath " + pluginConfigFile, e);
         }
 
         if (urls == null || !urls.hasMoreElements()) {
             if (LOG_LV >= DEBUG) {
-                logger.print(loaderId + LOG_PREFIX + "No " + pluginConfigFile + " found in classpath");
+                logger.print(loaderId + LOG_PREFIX + "No config " + pluginConfigFile + " found in classpath");
             }
             return;
         }
@@ -171,13 +173,11 @@ class PluginConfigLoader {
             URL url = urls.nextElement();
             String urlStr = String.valueOf(url);
 
-            if (LOG_LV >= DEBUG) {
-                logger.print(loaderId + LOG_PREFIX + "Loading " + url);
-            }
-
             //装载配置
+            String propHash;
             Properties properties;
             try {
+                propHash = ByteUtils.bytesToHex(DigestCipher.digestInputStream(url.openStream(), DigestCipher.TYPE_MD5));
                 properties = new Properties();
                 properties.load(url.openStream());
             } catch (Exception e) {
@@ -185,9 +185,14 @@ class PluginConfigLoader {
                 throw new RuntimeException("ThistleSpi: Error while loading config " + urlStr, e);
             }
 
+            //检查文件是否被强制排除
+            if (Utils.checkFileExclusion(propHash, logger, loaderId, url)) {
+                continue;
+            }
+
             if (properties.size() <= 0) {
                 if (LOG_LV >= INFO) {
-                    logger.print(loaderId + LOG_PREFIX + "Warning: No properties in " + url);
+                    logger.print(loaderId + LOG_PREFIX + "Warning: No properties in config " + url);
                 }
             }
 
@@ -252,8 +257,15 @@ class PluginConfigLoader {
         try {
             urls = classLoader.getResources(ignoreConfigFile);
         } catch (Exception e) {
-            logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading config " + ignoreConfigFile, e);
-            throw new RuntimeException("ThistleSpi: Error while loading config " + ignoreConfigFile, e);
+            logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading classpath " + ignoreConfigFile, e);
+            throw new RuntimeException("ThistleSpi: Error while loading classpath " + ignoreConfigFile, e);
+        }
+
+        if (urls == null || !urls.hasMoreElements()) {
+            if (LOG_LV >= DEBUG) {
+                logger.print(loaderId + LOG_PREFIX + "No config " + ignoreConfigFile + " found in classpath");
+            }
+            return;
         }
 
         //遍历所有plugin-ignore.properties配置文件
@@ -261,18 +273,21 @@ class PluginConfigLoader {
             URL url = urls.nextElement();
             String urlStr = String.valueOf(url);
 
-            if (LOG_LV >= DEBUG) {
-                logger.print(loaderId + LOG_PREFIX + "loading " + url);
-            }
-
             //装载配置文件
+            String propHash;
             Properties properties;
             try {
+                propHash = ByteUtils.bytesToHex(DigestCipher.digestInputStream(url.openStream(), DigestCipher.TYPE_MD5));
                 properties = new Properties();
                 properties.load(url.openStream());
             } catch (Exception e) {
                 logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading config " + urlStr, e);
                 throw new RuntimeException("ThistleSpi: Error while loading config " + urlStr, e);
+            }
+
+            //检查文件是否被强制排除
+            if (Utils.checkFileExclusion(propHash, logger, loaderId, url)) {
+                continue;
             }
 
             if (properties.size() <= 0) {

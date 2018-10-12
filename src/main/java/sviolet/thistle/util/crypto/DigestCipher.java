@@ -24,6 +24,7 @@ import sviolet.thistle.util.crypto.base.BaseDigestCipher;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -110,6 +111,16 @@ public class DigestCipher {
 			throw new NullPointerException("[DigestCipher]digestHexStr: hexStr is null");
 		}
         return BaseDigestCipher.digest(ByteUtils.hexToBytes(hexStr), type);
+	}
+
+	/**
+	 * 摘要输入流, 处理完毕会关闭流
+	 * @param inputStream 输入流(处理完毕会关闭流)
+	 * @param type 摘要算法
+	 * @return 摘要bytes
+	 */
+	public static byte[] digestInputStream(InputStream inputStream, String type) throws IOException {
+		return BaseDigestCipher.digestInputStream(inputStream, type);
 	}
 
 	/**

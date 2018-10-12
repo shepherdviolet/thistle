@@ -19,7 +19,9 @@
 
 package sviolet.thistle.x.common.thistlespi;
 
-import static sviolet.thistle.x.common.thistlespi.ThistleSpi.LOG_PREFIX;
+import java.net.URL;
+
+import static sviolet.thistle.x.common.thistlespi.ThistleSpi.*;
 
 class Utils {
 
@@ -27,6 +29,8 @@ class Utils {
 
     /**
      * 类型实例化, 可包含一个String构造参数
+     * @param clazz 需要实例化的类
+     * @param arg 构造参数, 可选
      */
     static Object newInstance(Class<?> clazz, String arg) throws Exception {
         if (arg == null) {
@@ -55,6 +59,13 @@ class Utils {
 
     /**
      * 将参数值解析为实现信息(实现类和构造参数)
+     * @param propValue 参数值
+     * @param fromConfig (日志相关)true:来自配置文件 false:来自启动参数
+     * @param logger (日志相关)日志打印器
+     * @param loaderId (日志相关)加载器ID
+     * @param propKey (日志相关)参数键, 或启动参数名
+     * @param propUrl (日志相关)配置文件URL, 可为空
+     * @return
      */
     static Implementation parseImplementation(String propValue, boolean fromConfig, SpiLogger logger, int loaderId, String propKey, String propUrl){
         int argStart = propValue.indexOf("(");
@@ -99,6 +110,27 @@ class Utils {
             this.implement = implement;
             this.arg = arg;
         }
+    }
+
+    /**
+     * 检查配置文件是否被强制排除
+     * @param propHash 配置文件的hash
+     * @param logger (日志相关)日志打印器
+     * @param loaderId (日志相关)加载器ID
+     * @param url (日志相关)被排除的配置文件的URL
+     */
+    static boolean checkFileExclusion(String propHash, SpiLogger logger, int loaderId, URL url) {
+        if (FILE_EXCLUSION.contains(propHash)) {
+            if (LOG_LV >= DEBUG) {
+                logger.print(loaderId + LOG_PREFIX + "!!! Exclude config " + url + " by -D" + PROPERTY_FILE_EXCLUSION);
+            }
+            return true;
+        } else {
+            if (LOG_LV >= DEBUG) {
+                logger.print(loaderId + LOG_PREFIX + "Loading config " + url + " <hash> " + propHash);
+            }
+        }
+        return false;
     }
 
 }

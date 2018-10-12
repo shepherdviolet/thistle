@@ -19,12 +19,14 @@
 
 package sviolet.thistle.util.crypto.base;
 
+import sviolet.thistle.util.common.CloseableUtils;
 import sviolet.thistle.util.common.PlatformUtils;
 import sviolet.thistle.util.file.FileUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
@@ -59,6 +61,31 @@ public class BaseDigestCipher {
             return cipher.digest(bytes);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("[DigestCipher]No Such Algorithm:" + type, e);
+        }
+    }
+
+    /**
+     * 摘要输入流(处理完毕会关闭输入流)
+     *
+     * @param inputStream 输入流
+     * @param type 摘要算法
+     * @return 摘要bytes
+     */
+    public static byte[] digestInputStream(InputStream inputStream, String type) throws IOException {
+        try {
+            MessageDigest cipher = MessageDigest.getInstance(type);
+            byte[] buff = new byte[1024];
+            int size;
+            while((size = inputStream.read(buff)) != -1){
+                cipher.update(buff, 0, size);
+            }
+            return cipher.digest();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("[DigestCipher]No Such Algorithm:" + type, e);
+        } catch (IOException e) {
+            throw e;
+        }finally {
+            CloseableUtils.closeQuiet(inputStream);
         }
     }
 
@@ -113,18 +140,8 @@ public class BaseDigestCipher {
         } catch (IOException e) {
             throw e;
         }finally {
-            if (inputStream != null){
-                try {
-                    inputStream.close();
-                } catch (IOException ignored) {
-                }
-            }
-            if (channel != null){
-                try {
-                    channel.close();
-                } catch (IOException ignored) {
-                }
-            }
+            CloseableUtils.closeQuiet(inputStream);
+            CloseableUtils.closeQuiet(channel);
             //尝试将MappedByteBuffer回收, 解决后续文件无法被读写删除的问题
             FileUtils.cleanMappedByteBuffer(byteBuffer);
         }
@@ -153,12 +170,7 @@ public class BaseDigestCipher {
         } catch (IOException e) {
             throw e;
         }finally {
-            if (inputStream != null){
-                try {
-                    inputStream.close();
-                } catch (IOException ignored) {
-                }
-            }
+            CloseableUtils.closeQuiet(inputStream);
         }
     }
 
