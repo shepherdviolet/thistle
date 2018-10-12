@@ -97,7 +97,7 @@ class ServiceConfigLoader {
         Object service;
         try {
             Class clazz = classLoader.loadClass(serviceInfo.appliedService.implement);
-            service = clazz.newInstance();
+            service = Utils.newInstance(clazz, serviceInfo.appliedService.arg);
         } catch (Exception e) {
             logger.print(loaderId + LOG_PREFIX_LOADER + "ERROR: Service " + serviceInfo.type + " (" + serviceInfo.appliedService.implement + ") instantiation error, config:" + serviceInfo.appliedService.resource, e);
             throw new RuntimeException("ThistleSpi: Service " + serviceInfo.type + " (" + serviceInfo.appliedService.implement + ") instantiation error, config:" + serviceInfo.appliedService.resource, e);
@@ -204,11 +204,33 @@ class ServiceConfigLoader {
                     throw e;
                 }
 
+                //获取构造参数
+                String arg = null;
+                int argStart = implement.indexOf("(");
+                //value第一个字符就是(, 非法
+                if (argStart == 0) {
+                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + key + " starts with (, config:" + urlStr);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " starts with (, config:" + urlStr, e);
+                    throw e;
+                }
+                //存在(字符, 尝试截取构造参数
+                if (argStart > 0) {
+                    //value最后一个字符不是), 非法
+                    if (')' != implement.charAt(implement.length() - 1)) {
+                        RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + key + " has ( but no ) at last, config:" + urlStr);
+                        logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " has ( but no ) at last, config:" + urlStr, e);
+                        throw e;
+                    }
+                    arg = implement.substring(argStart + 1);
+                    implement = implement.substring(0, argStart);
+                }
+
                 //服务接口信息
                 Service service = new Service();
                 service.id = id;
                 service.level = level;
                 service.implement = implement;
+                service.arg = arg;
                 service.resource = urlStr;
 
                 Service previous = serviceInfo.definedServices.get(id);
@@ -431,6 +453,7 @@ class ServiceConfigLoader {
         private String id;
         private Level level;
         private String implement;
+        private String arg;
         private String resource;
 
         @Override
@@ -439,6 +462,7 @@ class ServiceConfigLoader {
                     "id=" + id +
                     ", level=" + level +
                     ", impl=" + implement +
+                    ", arg=" + arg +
                     ", url=" + resource +
                     '}';
         }

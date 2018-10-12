@@ -103,7 +103,7 @@ class PluginConfigLoader {
             Object pluginObj;
             try {
                 Class clazz = classLoader.loadClass(plugin.implement);
-                pluginObj = clazz.newInstance();
+                pluginObj = Utils.newInstance(clazz, plugin.arg);
             } catch (Exception e) {
                 logger.print(loaderId + LOG_PREFIX_LOADER + "ERROR: Plugin " + pluginInfo.type + " (" + plugin.implement + ") instantiation error, config:" + plugin.resource, e);
                 throw new RuntimeException("ThistleSpi: Plugin " + pluginInfo.type + " (" + plugin.implement + ") instantiation error, config:" + plugin.resource, e);
@@ -229,10 +229,32 @@ class PluginConfigLoader {
                     throw e;
                 }
 
+                //获取构造参数
+                String arg = null;
+                int argStart = implement.indexOf("(");
+                //value第一个字符就是(, 非法
+                if (argStart == 0) {
+                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + key + " starts with (, config:" + urlStr);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " starts with (, config:" + urlStr, e);
+                    throw e;
+                }
+                //存在(字符, 尝试截取构造参数
+                if (argStart > 0) {
+                    //value最后一个字符不是), 非法
+                    if (')' != implement.charAt(implement.length() - 1)) {
+                        RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + key + " has ( but no ) at last, config:" + urlStr);
+                        logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " has ( but no ) at last, config:" + urlStr, e);
+                        throw e;
+                    }
+                    arg = implement.substring(argStart + 1);
+                    implement = implement.substring(0, argStart);
+                }
+
                 //服务接口信息
                 Plugin plugin = new Plugin();
                 plugin.priority = priority;
                 plugin.implement = implement;
+                plugin.arg = arg;
                 plugin.resource = urlStr;
                 pluginInfo.plugins.add(plugin);
 
@@ -421,6 +443,7 @@ class PluginConfigLoader {
 
         private int priority;
         private String implement;
+        private String arg;
         private String resource;
         private boolean enabled = true;
         private String disableReason;
@@ -429,6 +452,7 @@ class PluginConfigLoader {
             return "Plugin{" +
                     "priority=" + priority +
                     ", impl=" + implement +
+                    ", arg=" + arg +
                     '}';
         }
 
@@ -437,6 +461,7 @@ class PluginConfigLoader {
             return "Plugin{" +
                     "priority=" + priority +
                     ", impl=" + implement +
+                    ", arg=" + arg +
                     (enabled ? "" : ", disable by " + disableReason) +
                     ", url=" + resource +
                     '}';
