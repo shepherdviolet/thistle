@@ -189,6 +189,7 @@ public class BaseBCCertificateUtils {
      *
      * @param inputStream X509证书输入流, ASN.1编码, 非Base64编码
      */
+    @SuppressWarnings("deprecation")
     public static X509CertificateStructure parseX509ToStructure(InputStream inputStream) throws IOException {
         try {
             ASN1InputStream asn1InputStream = new ASN1InputStream(inputStream);

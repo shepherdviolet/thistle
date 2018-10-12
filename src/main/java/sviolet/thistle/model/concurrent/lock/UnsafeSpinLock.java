@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * 慎用!!! 不规范的使用会导致严重的问题!!!<br>
+ * IT'S UNSAFE !!! Irregular use can cause serious problems !!!<br>
  *
  * 简易自旋锁, 未提供任何保护措施, 需要仔细阅读源码并谨慎使用.<br>
  *
@@ -39,10 +40,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *     }
  * </code>
  *
- * @deprecated IT'S UNSAFE !!! Irregular use can cause serious problems !!!
  * @author S.Violet
  */
-@Deprecated
 public class UnsafeSpinLock {
 
     private AtomicBoolean lock = new AtomicBoolean(false);

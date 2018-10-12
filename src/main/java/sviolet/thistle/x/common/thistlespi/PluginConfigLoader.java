@@ -89,7 +89,7 @@ class PluginConfigLoader {
 
         //不存在插件实现
         if (pluginInfo == null || pluginInfo.orderedPlugins == null) {
-            if (loglv >= INFO) {
+            if (LOG_LV >= INFO) {
                 logger.print(loaderId + LOG_PREFIX_LOADER + "No enabled plugins found, type:" + type.getName());
             }
             return null;
@@ -118,13 +118,13 @@ class PluginConfigLoader {
 
         }
 
-        if (loglv >= INFO) {
+        if (LOG_LV >= INFO) {
             StringBuilder stringBuilder = new StringBuilder(loaderId + LOG_PREFIX_LOADER + "Plugin ");
             stringBuilder.append(pluginInfo.type);
             stringBuilder.append(" (");
             int i = 0;
             for (Plugin plugin : pluginInfo.orderedPlugins) {
-                if (loglv < DEBUG && i++ >= MAX_INFO_LOG_LINES) {
+                if (LOG_LV < DEBUG && i++ >= MAX_INFO_LOG_LINES) {
                     stringBuilder.append(" ... ");
                     stringBuilder.append(pluginInfo.orderedPlugins.size() - MAX_INFO_LOG_LINES);
                     stringBuilder.append(" more");
@@ -142,7 +142,7 @@ class PluginConfigLoader {
 
     void loadConfig(String configPath){
 
-        if (loglv >= INFO) {
+        if (LOG_LV >= INFO) {
             logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
             logger.print(loaderId + LOG_PREFIX + "Loading plugins from " + configPath + ", DOC: https://github.com/shepherdviolet/thistle");
         }
@@ -160,7 +160,7 @@ class PluginConfigLoader {
         }
 
         if (urls == null || !urls.hasMoreElements()) {
-            if (loglv >= DEBUG) {
+            if (LOG_LV >= DEBUG) {
                 logger.print(loaderId + LOG_PREFIX + "No " + pluginConfigFile + " found in classpath");
             }
             return;
@@ -171,7 +171,7 @@ class PluginConfigLoader {
             URL url = urls.nextElement();
             String urlStr = String.valueOf(url);
 
-            if (loglv >= DEBUG) {
+            if (LOG_LV >= DEBUG) {
                 logger.print(loaderId + LOG_PREFIX + "Loading " + url);
             }
 
@@ -186,7 +186,7 @@ class PluginConfigLoader {
             }
 
             if (properties.size() <= 0) {
-                if (loglv >= INFO) {
+                if (LOG_LV >= INFO) {
                     logger.print(loaderId + LOG_PREFIX + "Warning: No properties in " + url);
                 }
             }
@@ -256,7 +256,7 @@ class PluginConfigLoader {
             URL url = urls.nextElement();
             String urlStr = String.valueOf(url);
 
-            if (loglv >= DEBUG) {
+            if (LOG_LV >= DEBUG) {
                 logger.print(loaderId + LOG_PREFIX + "loading " + url);
             }
 
@@ -271,7 +271,7 @@ class PluginConfigLoader {
             }
 
             if (properties.size() <= 0) {
-                if (loglv >= INFO) {
+                if (LOG_LV >= INFO) {
                     logger.print(loaderId + LOG_PREFIX + "Warning: No properties in " + url);
                 }
             }
@@ -338,7 +338,7 @@ class PluginConfigLoader {
                             plugin.disableReason = "-D" + PROPERTY_PLUGIN_IGNORE_PREFIX + pluginInfo.type + "=" + ignoreStr;
                         }
                     }
-                    if (loglv >= INFO && count <= 0) {
+                    if (LOG_LV >= INFO && count <= 0) {
                         logger.print(loaderId + LOG_PREFIX + "Warning: Plugin implement " + ignoreImpl + " undefined, failed to ignore implement '" + ignoreImpl + "' of '" + pluginInfo.type + "' by -D" + PROPERTY_PLUGIN_IGNORE_PREFIX + pluginInfo.type + "=" + ignoreStr);
                     }
                 }
@@ -356,7 +356,7 @@ class PluginConfigLoader {
                             plugin.disableReason = ignore.resource;
                         }
                     }
-                    if (loglv >= INFO && count <= 0) {
+                    if (LOG_LV >= INFO && count <= 0) {
                         logger.print(loaderId + LOG_PREFIX + "Warning: Plugin implement " + ignore.ignoreImpl + " undefined, failed to ignore implement '" + ignore.ignoreImpl + "' of '" + pluginInfo.type + "' by " + ignore.resource);
                     }
                 }
@@ -377,7 +377,7 @@ class PluginConfigLoader {
 
         }
 
-        if (loglv >= INFO) {
+        if (LOG_LV >= INFO) {
 
             for (PluginInfo pluginInfo : pluginInfos.values()) {
 
@@ -388,7 +388,7 @@ class PluginConfigLoader {
 
                 int i = 0;
                 for (Plugin plugin : pluginInfo.orderedPlugins) {
-                    if (loglv < DEBUG && i++ >= MAX_INFO_LOG_LINES) {
+                    if (LOG_LV < DEBUG && i++ >= MAX_INFO_LOG_LINES) {
                         logger.print(loaderId + LOG_PREFIX + "    ...... " + (pluginInfo.orderedPlugins.size() - MAX_INFO_LOG_LINES) +
                                 " more omitted ('-D" + ThistleSpi.PROPERTY_LOGLV + "=debug' to show more)");
                         break;
@@ -396,7 +396,7 @@ class PluginConfigLoader {
                     logger.print(loaderId + LOG_PREFIX + "  + " + plugin.toAbstractString());
                 }
 
-                if (loglv >= DEBUG) {
+                if (LOG_LV >= DEBUG) {
                     logger.print(loaderId + LOG_PREFIX + "All Configurations:");
                     for (Plugin plugin : pluginInfo.plugins) {
                         logger.print(loaderId + LOG_PREFIX + (plugin.enabled ? "  + " : "  - ") + plugin);

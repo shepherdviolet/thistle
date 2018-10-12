@@ -21,6 +21,7 @@ package sviolet.thistle.model.concurrent.lock;
 
 /**
  * 慎用!!! 不规范的使用会导致严重的问题!!!<br>
+ * IT'S UNSAFE !!! Irregular use can cause serious problems !!!<br>
  *
  * 产生指定数量的同步锁, 根据字符串的哈希获取锁对象, 这样可以把同步代码块分散, 提高并发性能<br>
  *
@@ -38,7 +39,6 @@ package sviolet.thistle.model.concurrent.lock;
  *     }
  * </code>
  *
- * @deprecated IT'S UNSAFE !!! Irregular use can cause serious problems !!!
  * @author S.Violet
  */
 public class UnsafeHashSpinLocks extends AbstractHashLocks<UnsafeSpinLock> {

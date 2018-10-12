@@ -59,32 +59,32 @@ public class ThistleSpi {
     static final int DEBUG = 2;
 
     //日志级别(error/info/debug), 默认info
-    static final int loglv;
+    static final int LOG_LV;
 
     //是否启用缓存(默认true)
-    private static final boolean cache;
+    private static final boolean CACHE;
 
-    private static final AtomicInteger loaderIdCount = new AtomicInteger(0);
+    private static final AtomicInteger LOADER_ID_COUNT = new AtomicInteger(0);
 
-    private static final Map<String, ServiceLoader> loaderCache = new ConcurrentHashMap<>(16);
+    private static final Map<String, ServiceLoader> LOADER_CACHE = new ConcurrentHashMap<>(16);
 
     static {
         //log level
         switch (System.getProperty(PROPERTY_LOGLV, "info").toLowerCase()) {
             case "error":
-                loglv = ERROR;
+                LOG_LV = ERROR;
                 break;
             case "debug":
-                loglv = DEBUG;
+                LOG_LV = DEBUG;
                 break;
             case "info":
             default:
-                loglv = INFO;
+                LOG_LV = INFO;
                 break;
         }
-        //cache enabled
-        cache = "true".equals(System.getProperty(PROPERTY_CACHE, "true"));
-        if (!cache) {
+        //CACHE enabled
+        CACHE = "true".equals(System.getProperty(PROPERTY_CACHE, "true"));
+        if (!CACHE) {
             System.out.print("?" + LOG_PREFIX + "Cache force disabled by -D" + PROPERTY_CACHE + "=false");
         }
     }
@@ -167,19 +167,19 @@ public class ThistleSpi {
         }
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
-        if (!cache) {
+        if (!CACHE) {
             return newLoader(classLoader, configPath);
         }
 
         String cacheKey = classLoader.hashCode() + "#" + configPath;
-        ServiceLoader serviceLoader = loaderCache.get(cacheKey);
+        ServiceLoader serviceLoader = LOADER_CACHE.get(cacheKey);
         boolean fromCache = true;
         if (serviceLoader == null) {
-            synchronized (loaderCache) {
-                serviceLoader = loaderCache.get(cacheKey);
+            synchronized (LOADER_CACHE) {
+                serviceLoader = LOADER_CACHE.get(cacheKey);
                 if (serviceLoader == null) {
                     serviceLoader = newLoader(classLoader, configPath);
-                    loaderCache.put(cacheKey, serviceLoader);
+                    LOADER_CACHE.put(cacheKey, serviceLoader);
                     fromCache = false;
                 }
             }
@@ -253,7 +253,7 @@ public class ThistleSpi {
         private ServiceLoader(ClassLoader classLoader, String configPath) {
 
             //加载器编号
-            loaderId = loaderIdCount.getAndIncrement();
+            loaderId = LOADER_ID_COUNT.getAndIncrement();
 
             //类加载器
             this.classLoader = classLoader;
@@ -264,7 +264,7 @@ public class ThistleSpi {
             //加载日志打印器配置文件
             serviceConfigLoader.loadConfig(CONFIG_PATH_LOGGER, true);
 
-            if (loglv >= DEBUG) {
+            if (LOG_LV >= DEBUG) {
                 logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
             }
 
@@ -291,7 +291,7 @@ public class ThistleSpi {
             //加载插件配置文件
             pluginConfigLoader.loadConfig(configPath);
 
-            if (loglv >= INFO) {
+            if (LOG_LV >= INFO) {
                 logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
             }
         }
@@ -300,7 +300,7 @@ public class ThistleSpi {
          * 打印调用者
          */
         private void printCallerInfo() {
-            if (loglv >= INFO) {
+            if (LOG_LV >= INFO) {
                 StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
                 boolean foundThistleSpi = false;
                 for (StackTraceElement element : stackTraceElements) {

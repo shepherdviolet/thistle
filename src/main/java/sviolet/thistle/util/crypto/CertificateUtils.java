@@ -142,6 +142,7 @@ public class CertificateUtils {
      *
      * @param certBase64 X509证书数据, ASN.1编码, Base64编码
      */
+    @SuppressWarnings("deprecation")
     public static X509CertificateStructure parseX509ToStructure(String certBase64) throws IOException {
         return parseX509ToStructure(Base64Utils.decode(certBase64));
     }
@@ -151,6 +152,7 @@ public class CertificateUtils {
      *
      * @param certData X509证书数据, ASN.1编码, 非Base64编码
      */
+    @SuppressWarnings("deprecation")
     public static X509CertificateStructure parseX509ToStructure(byte[] certData) throws IOException {
         return parseX509ToStructure(new ByteArrayInputStream(certData));
     }
@@ -195,6 +197,7 @@ public class CertificateUtils {
      *
      * @param inputStream X509证书输入流, ASN.1编码, 非Base64编码
      */
+    @SuppressWarnings("deprecation")
     public static X509CertificateStructure parseX509ToStructure(InputStream inputStream) throws IOException {
         return BaseBCCertificateUtils.parseX509ToStructure(inputStream);
     }
