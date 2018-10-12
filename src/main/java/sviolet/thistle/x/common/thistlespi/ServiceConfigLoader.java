@@ -196,42 +196,24 @@ class ServiceConfigLoader {
                     serviceInfos.put(type, serviceInfo);
                 }
 
-                //实现类
-                String implement = properties.getProperty(key);
-                if (CheckUtils.isEmptyOrBlank(implement)) {
+                //参数值
+                String propValue = properties.getProperty(key);
+                if (CheckUtils.isEmptyOrBlank(propValue)) {
                     RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + key + " is empty, config:" + urlStr);
                     logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " is empty, config:" + urlStr, e);
                     throw e;
                 }
-                implement = implement.trim();
+                propValue = propValue.trim();
 
-                //获取构造参数
-                String arg = null;
-                int argStart = implement.indexOf("(");
-                //value第一个字符就是(, 非法
-                if (argStart == 0) {
-                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + key + " starts with '(', config:" + urlStr);
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " starts with '(', config:" + urlStr, e);
-                    throw e;
-                }
-                //存在(字符, 尝试截取构造参数
-                if (argStart > 0) {
-                    //value最后一个字符不是), 非法
-                    if (')' != implement.charAt(implement.length() - 1)) {
-                        RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + key + " has '(' but no ')' at last, config:" + urlStr);
-                        logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " has '(' but no ')' at last, config:" + urlStr, e);
-                        throw e;
-                    }
-                    arg = implement.substring(argStart + 1, implement.length() - 1);
-                    implement = implement.substring(0, argStart);
-                }
+                //实现类信息
+                Utils.Implementation implementation = Utils.parseImplementation(propValue, true, logger, loaderId, key, urlStr);
 
                 //服务接口信息
                 Service service = new Service();
                 service.id = id;
                 service.level = level;
-                service.implement = implement;
-                service.arg = arg;
+                service.implement = implementation.implement;
+                service.arg = implementation.arg;
                 service.resource = urlStr;
 
                 Service previous = serviceInfo.definedServices.get(id);
@@ -287,13 +269,14 @@ class ServiceConfigLoader {
             //遍历所有key-value
             Enumeration<?> names = properties.propertyNames();
             while (names.hasMoreElements()) {
-                String type = String.valueOf(names.nextElement());
+                String type = String.valueOf(names.nextElement()).trim();
                 String id = properties.getProperty(type);
                 if (CheckUtils.isEmptyOrBlank(id)) {
                     RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + type + " is empty, config:" + urlStr);
                     logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + type + " is empty, config:" + urlStr, e);
                     throw e;
                 }
+                id = id.trim();
 
                 if (applyInfos.containsKey(type)) {
                     //apply配置重复处理

@@ -221,41 +221,23 @@ class PluginConfigLoader {
                     pluginInfos.put(type, pluginInfo);
                 }
 
-                //实现类
-                String implement = properties.getProperty(key);
-                if (CheckUtils.isEmptyOrBlank(implement)) {
+                //参数值
+                String propValue = properties.getProperty(key);
+                if (CheckUtils.isEmptyOrBlank(propValue)) {
                     RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + key + " is empty, config:" + urlStr);
                     logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " is empty, config:" + urlStr, e);
                     throw e;
                 }
-                implement = implement.trim();
+                propValue = propValue.trim();
 
-                //获取构造参数
-                String arg = null;
-                int argStart = implement.indexOf("(");
-                //value第一个字符就是(, 非法
-                if (argStart == 0) {
-                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + key + " starts with '(', config:" + urlStr);
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " starts with '(', config:" + urlStr, e);
-                    throw e;
-                }
-                //存在(字符, 尝试截取构造参数
-                if (argStart > 0) {
-                    //value最后一个字符不是), 非法
-                    if (')' != implement.charAt(implement.length() - 1)) {
-                        RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + key + " has '(' but no ')' at last, config:" + urlStr);
-                        logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " has '(' but no ')' at last, config:" + urlStr, e);
-                        throw e;
-                    }
-                    arg = implement.substring(argStart + 1, implement.length() - 1);
-                    implement = implement.substring(0, argStart);
-                }
+                //实现类信息
+                Utils.Implementation implementation = Utils.parseImplementation(propValue, true, logger, loaderId, key, urlStr);
 
                 //服务接口信息
                 Plugin plugin = new Plugin();
                 plugin.priority = priority;
-                plugin.implement = implement;
-                plugin.arg = arg;
+                plugin.implement = implementation.implement;
+                plugin.arg = implementation.arg;
                 plugin.resource = urlStr;
                 pluginInfo.plugins.add(plugin);
 
@@ -263,9 +245,9 @@ class PluginConfigLoader {
 
         }
 
-        //loading plugin-ignoreImpl.properties
+        //loading plugin-ignore.properties
 
-        //加载所有plugin-ignoreImpl.properties配置文件
+        //加载所有plugin-ignore.properties配置文件
         String ignoreConfigFile = configPath + CONFIG_FILE_PLUGIN_IGNORE;
         try {
             urls = classLoader.getResources(ignoreConfigFile);
@@ -274,7 +256,7 @@ class PluginConfigLoader {
             throw new RuntimeException("ThistleSpi: Error while loading config " + ignoreConfigFile, e);
         }
 
-        //遍历所有plugin-ignoreImpl.properties配置文件
+        //遍历所有plugin-ignore.properties配置文件
         while (urls != null && urls.hasMoreElements()) {
             URL url = urls.nextElement();
             String urlStr = String.valueOf(url);
@@ -302,13 +284,14 @@ class PluginConfigLoader {
             //遍历所有key-value
             Enumeration<?> names = properties.propertyNames();
             while (names.hasMoreElements()) {
-                String type = String.valueOf(names.nextElement());
+                String type = String.valueOf(names.nextElement()).trim();
                 String ignoreStr = properties.getProperty(type);
                 if (CheckUtils.isEmptyOrBlank(ignoreStr)) {
                     RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + type + " is empty, config:" + urlStr);
                     logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + type + " is empty, config:" + urlStr, e);
                     throw e;
                 }
+                ignoreStr = ignoreStr.trim();
 
                 IgnoreInfo ignoreInfo = ignoreInfos.get(type);
                 if (ignoreInfo == null) {
@@ -336,9 +319,9 @@ class PluginConfigLoader {
 
         }
 
-        //apply service
+        //ignore plugins
 
-        //遍历所有服务
+        //遍历所有插件
         for (PluginInfo pluginInfo : pluginInfos.values()) {
 
             //优先用-Dthistle.spi.ignore忽略插件实现
@@ -346,16 +329,16 @@ class PluginConfigLoader {
             if (!CheckUtils.isEmptyOrBlank(ignoreStr)) {
                 String[] ignoreImpls = ignoreStr.split(",");
                 for (String ignoreImpl : ignoreImpls) {
-                    if (ignoreImpl == null) {
+                    if (CheckUtils.isEmptyOrBlank(ignoreImpl)) {
                         continue;
                     }
                     ignoreImpl = ignoreImpl.trim();
-                    if (ignoreImpl.length() <= 0) {
-                        continue;
-                    }
+                    Utils.Implementation implementation = Utils.parseImplementation(ignoreImpl, false, logger, loaderId, ignoreStr, null);
                     int count = 0;
                     for (Plugin plugin : pluginInfo.plugins) {
-                        if (ignoreImpl.equals(plugin.implement)) {
+                        //ignore中未指定构造参数时排除所有实现, ignore中指定构造参数则排除相同参数的实现
+                        if (implementation.implement.equals(plugin.implement) &&
+                                (implementation.arg == null || implementation.arg.equals(plugin.arg))) {
                             count++;
                             plugin.enabled = false;
                             plugin.disableReason = "-D" + PROPERTY_PLUGIN_IGNORE_PREFIX + pluginInfo.type + "=" + ignoreStr;
@@ -371,9 +354,11 @@ class PluginConfigLoader {
             if (ignoreInfos.containsKey(pluginInfo.type)){
                 IgnoreInfo ignoreInfo = ignoreInfos.get(pluginInfo.type);
                 for (Ignore ignore : ignoreInfo.ignores) {
+                    Utils.Implementation implementation = Utils.parseImplementation(ignore.ignoreImpl, false, logger, loaderId, pluginInfo.type, ignore.resource);
                     int count = 0;
                     for (Plugin plugin : pluginInfo.plugins) {
-                        if (ignore.ignoreImpl.equals(plugin.implement)) {
+                        if (implementation.implement.equals(plugin.implement) &&
+                                (implementation.arg == null || implementation.arg.equals(plugin.arg))) {
                             count++;
                             plugin.enabled = false;
                             plugin.disableReason = ignore.resource;
