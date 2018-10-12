@@ -5,7 +5,7 @@
 * `服务装载`:根据启动参数/优先级, 从Classpath下声明的多个服务实现中选择唯一的一个进行装载
 * `插件装载`:装载Classpath下声明的全部插件实现, 并根据优先级排序(数字越小优先级越高), 允许通过启动参数和配置排除部分实现
 
-### 日志
+## 日志
 
 * 日志前缀:`ThistleSpi`
 * 日志配置:见本文档`Log Config`章节
@@ -68,10 +68,31 @@ public interface BService {
 
 ## 服务实现类
 
+* 实现类支持`无参构造器`
+* 实现类支持`只有一个参数, 且参数类型为String的构造器`(简称`有参构造器`), 注意该参数可能传入空值
+* 服务声明中无`构造参数`时, 实例化时优先调用`无参构造器`, 若不存在则调用`有参构造器`
+* 服务声明中有`构造参数`时, 实例化时优先调用`有参构造器`, 若不存在则调用`无参构造器`
+* 有无`构造参数`见`声明服务的实现`章节
+
 ```text
 package sample.spi.impl;
 
 public class AServiceImpl1 implements AService {
+    /**
+     * 无参构造器
+     */
+    //public AServiceImpl1() {
+    //
+    //}
+    
+    /**
+     * 只有一个参数, 且参数类型为String的构造器
+     * 注意该参数可能为空
+     */
+    //public AServiceImpl1(String arg) {
+    //
+    //}
+    
     @Override
     public String invoke(String input) {
         // do something
@@ -96,11 +117,12 @@ public class AServiceImpl2 implements AService {
 * 编辑文件:
 
 ```text
-sample.spi.facade.AService>sample-lib-1>library=sample.spi.impl.AServiceImpl1
+sample.spi.facade.AService>sample-lib-1>library=sample.spi.impl.AServiceImpl1(yyyy-MM-dd HH:mm:ss.SSS)
 sample.spi.facade.AService>sample-lib-2>library=sample.spi.impl.AServiceImpl2
 ```
 
-* 格式: `服务接口名`>`ID`>`级别`=`服务实现类名`
+* 格式(无构造参数): `服务接口名`>`ID`>`级别`=`服务实现类名`
+* 格式(有构造参数): `服务接口名`>`ID`>`级别`=`服务实现类名`(`构造参数`)
 * `服务接口名`: 服务的接口类全限定名
 * `ID`: 实现ID
 
@@ -124,6 +146,12 @@ sample.spi.facade.AService>sample-lib-2>library=sample.spi.impl.AServiceImpl2
 > 冲突解决方法1: 将不需要的实现提供库(jar)排除依赖<br>
 > 冲突解决方法2: 使用`service-apply.properties`配置指定服务实现ID<br>
 > 冲突解决方法3: 使用`-Dthistle.spi.apply.<interface>=<id>`指定服务实现ID<br>
+
+* `构造参数`: 服务实例化时会传入构造方法
+
+> 只支持一个构造参数, 无需用""包裹, 有参构造方法会获得括号内的值<br>
+> 如果实现类没有有参构造器(只有一个参数, 且类型为String), 则会调用无参构造器实例化服务<br>
+> 如果实现类没有无参构造器, 但声明中无构造参数, 程序会尝试调用有参构造器实例化服务, 并传入null值<br>
 
 ## 指定服务实现
 
@@ -219,10 +247,31 @@ public interface BPlugin {
 
 ## 插件实现类
 
+* 实现类支持`无参构造器`
+* 实现类支持`只有一个参数, 且参数类型为String的构造器`(简称`有参构造器`), 注意该参数可能传入空值
+* 插件声明中无`构造参数`时, 实例化时优先调用`无参构造器`, 若不存在则调用`有参构造器`
+* 插件声明中有`构造参数`时, 实例化时优先调用`有参构造器`, 若不存在则调用`无参构造器`
+* 有无`构造参数`见`声明插件的实现`章节
+
 ```text
 package sample.spi.impl;
 
 public class APluginImpl1 implements APlugin {
+    /**
+     * 无参构造器
+     */
+    //public APluginImpl1() {
+    //
+    //}
+    
+    /**
+     * 只有一个参数, 且参数类型为String的构造器
+     * 注意该参数可能为空
+     */
+    //public APluginImpl1(String arg) {
+    //
+    //}
+    
     @Override
     public String invoke(String input) {
         // do something
@@ -247,11 +296,12 @@ public class APluginImpl2 implements APlugin {
 * 编辑文件:
 
 ```text
-sample.spi.facade.APlugin>64=sample.spi.impl.APluginImpl1
+sample.spi.facade.APlugin>64=sample.spi.impl.APluginImpl1(yyyy-MM-dd HH:mm:ss.SSS)
 sample.spi.facade.APlugin>128=sample.spi.impl.APluginImpl2
 ```
 
-* 格式: `插件接口名`>`优先级`=`插件实现类名`
+* 格式(无构造参数): `插件接口名`>`优先级`=`插件实现类名`
+* 格式(有构造参数): `插件接口名`>`优先级`=`插件实现类名`(`构造参数`)
 * `插件接口名`: 插件的接口类全限定名
 * `优先级`: 插件优先级
 
@@ -262,6 +312,12 @@ sample.spi.facade.APlugin>128=sample.spi.impl.APluginImpl2
 > 插件实现类必须实现插件接口<br>
 > 每个插件接口允许有多个实现, 且不会进行去重<br>
 > 若同一个插件实现被声明了多次, loadPlugins返回的List中也会存在多个相同的插件实例<br>
+
+* `构造参数`: 服务实例化时会传入构造方法
+
+> 只支持一个构造参数, 无需用""包裹, 有参构造方法会获得括号内的值<br>
+> 如果实现类没有有参构造器(只有一个参数, 且类型为String), 则会调用无参构造器实例化插件<br>
+> 如果实现类没有无参构造器, 但声明中无构造参数, 程序会尝试调用有参构造器实例化插件, 并传入null值<br>
 
 * 注意:
 
@@ -278,15 +334,33 @@ sample.spi.facade.APlugin>128=sample.spi.impl.APluginImpl2
 * 创建文件`META-INF/thistle-spi/plugin-ignore.properties`
 * 编辑文件:
 
+#### 排除任意构造参数的全部实现
+
 ```text
-sample.spi.facade.APlugin=sample.spi.impl.APluginImpl1,sample.spi.impl.APluginImpl2
+sample.spi.facade.APlugin=sample.spi.impl.APluginImpl1,sample.spi.impl.APluginImpl1
 ```
 
 * 格式:`插件接口名`=`插件实现类名1`,`插件实现类名2`...
 
-> 以上面为例, 将`sample.spi.facade.APlugin`插件的`sample.spi.impl.APluginImpl1`和`sample.spi.impl.APluginImpl2`实现排除<br>
+> 以上面为例<br>
+> 将任意构造参数的`sample.spi.impl.APluginImpl1`实现全部排除<br>
+> 将任意构造参数的`sample.spi.impl.APluginImpl2`实现全部排除<br>
+
+#### 排除指定构造参数的实现
+
+```text
+sample.spi.facade.APlugin=sample.spi.impl.APluginImpl1(true),sample.spi.impl.APluginImpl2(yyyy-MM-dd HH:mm:ss.SSS)
+```
+
+* 格式:`插件接口名`=`插件实现类名1`(`指定构造参数1`),`插件实现类名2`(`指定构造参数2`)...
+
+> 以上面为例<br>
+> 将构造参数为`true`的`sample.spi.impl.APluginImpl1`实现排除<br>
+> 将构造参数为`yyyy-MM-dd HH:mm:ss.SSS`的`sample.spi.impl.APluginImpl2`实现排除<br>
 
 ### 启动参数方式
+
+#### 排除任意构造参数的全部实现
 
 * 添加启动参数
 
@@ -296,7 +370,23 @@ sample.spi.facade.APlugin=sample.spi.impl.APluginImpl1,sample.spi.impl.APluginIm
 
 * 格式: -Dthistle.spi.ignore.`插件接口名`=`插件实现类名1`,`插件实现类名2`...
 
-> 以上面为例, 将`sample.spi.facade.APlugin`插件的`sample.spi.impl.APluginImpl1`和`sample.spi.impl.APluginImpl2`实现排除<br>
+> 以上面为例<br>
+> 将任意构造参数的`sample.spi.impl.APluginImpl1`实现全部排除<br>
+> 将任意构造参数的`sample.spi.impl.APluginImpl2`实现全部排除<br>
+
+#### 排除指定构造参数的实现
+
+* 添加启动参数
+
+```text
+-Dthistle.spi.ignore.sample.spi.facade.APlugin=sample.spi.impl.APluginImpl1(true),sample.spi.impl.APluginImpl2(yyyy-MM-dd HH:mm:ss.SSS)
+```
+
+* 格式: -Dthistle.spi.ignore.`插件接口名`=`插件实现类名1`(`指定构造参数1`),`插件实现类名2`(`指定构造参数2`)...
+
+> 以上面为例<br>
+> 将构造参数为`true`的`sample.spi.impl.APluginImpl1`实现排除<br>
+> 将构造参数为`yyyy-MM-dd HH:mm:ss.SSS`的`sample.spi.impl.APluginImpl2`实现排除<br>
 
 <br>
 <br>
