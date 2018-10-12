@@ -331,10 +331,10 @@ sample.spi.facade.APlugin>128=sample.spi.impl.APluginImpl2
 
 ### 配置文件方式
 
+#### 排除任意构造参数的全部实现
+
 * 创建文件`META-INF/thistle-spi/plugin-ignore.properties`
 * 编辑文件:
-
-#### 排除任意构造参数的全部实现
 
 ```text
 sample.spi.facade.APlugin=sample.spi.impl.APluginImpl1,sample.spi.impl.APluginImpl1
@@ -347,6 +347,9 @@ sample.spi.facade.APlugin=sample.spi.impl.APluginImpl1,sample.spi.impl.APluginIm
 > 将任意构造参数的`sample.spi.impl.APluginImpl2`实现全部排除<br>
 
 #### 排除指定构造参数的实现
+
+* 创建文件`META-INF/thistle-spi/plugin-ignore.properties`
+* 编辑文件:
 
 ```text
 sample.spi.facade.APlugin=sample.spi.impl.APluginImpl1(true),sample.spi.impl.APluginImpl2(yyyy-MM-dd HH:mm:ss.SSS)
