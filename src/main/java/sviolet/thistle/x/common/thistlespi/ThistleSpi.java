@@ -19,6 +19,7 @@
 
 package sviolet.thistle.x.common.thistlespi;
 
+import sviolet.thistle.util.conversion.DateTimeUtils;
 import sviolet.thistle.util.judge.CheckUtils;
 
 import java.util.HashSet;
@@ -92,7 +93,7 @@ public class ThistleSpi {
         //Cache enabled
         CACHE = "true".equals(System.getProperty(PROPERTY_CACHE, "true"));
         if (LOG_LV >= INFO && !CACHE) {
-            System.out.println("?" + LOG_PREFIX + "Loader cache force disabled by -D" + PROPERTY_CACHE + "=false");
+            System.out.println(DateTimeUtils.getDateTime() + " ?" + LOG_PREFIX + "Loader cache force disabled by -D" + PROPERTY_CACHE + "=false");
         }
         //Config file exclude by hash
         String fileExclusionStr = System.getProperty(PROPERTY_FILE_EXCLUSION, null);
@@ -102,7 +103,7 @@ public class ThistleSpi {
                 if (!CheckUtils.isEmptyOrBlank(item)) {
                     FILE_EXCLUSION.add(item.trim());
                     if (LOG_LV >= INFO) {
-                        System.out.println("?" + LOG_PREFIX + "Config file with hash '" + item + "' will be excluded, by -D" + PROPERTY_FILE_EXCLUSION + "=" + fileExclusionStr);
+                        System.out.println(DateTimeUtils.getDateTime() + " ?" + LOG_PREFIX + "Config file with hash '" + item + "' will be excluded, by -D" + PROPERTY_FILE_EXCLUSION + "=" + fileExclusionStr);
                     }
                 }
             }
