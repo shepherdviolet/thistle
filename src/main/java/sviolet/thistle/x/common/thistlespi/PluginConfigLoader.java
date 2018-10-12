@@ -194,7 +194,7 @@ class PluginConfigLoader {
             //遍历所有key-value
             Enumeration<?> names = properties.propertyNames();
             while (names.hasMoreElements()) {
-                String key = String.valueOf(names.nextElement());
+                String key = String.valueOf(names.nextElement()).trim();
 
                 //拆解key
                 String[] keyItems = key.split(">");
@@ -235,19 +235,19 @@ class PluginConfigLoader {
                 int argStart = implement.indexOf("(");
                 //value第一个字符就是(, 非法
                 if (argStart == 0) {
-                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + key + " starts with (, config:" + urlStr);
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " starts with (, config:" + urlStr, e);
+                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + key + " starts with '(', config:" + urlStr);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " starts with '(', config:" + urlStr, e);
                     throw e;
                 }
                 //存在(字符, 尝试截取构造参数
                 if (argStart > 0) {
                     //value最后一个字符不是), 非法
                     if (')' != implement.charAt(implement.length() - 1)) {
-                        RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + key + " has ( but no ) at last, config:" + urlStr);
-                        logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " has ( but no ) at last, config:" + urlStr, e);
+                        RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + key + " has '(' but no ')' at last, config:" + urlStr);
+                        logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " has '(' but no ')' at last, config:" + urlStr, e);
                         throw e;
                     }
-                    arg = implement.substring(argStart + 1);
+                    arg = implement.substring(argStart + 1, implement.length() - 1);
                     implement = implement.substring(0, argStart);
                 }
 
@@ -453,7 +453,7 @@ class PluginConfigLoader {
             return "Plugin{" +
                     "priority=" + priority +
                     ", impl=" + implement +
-                    ", arg=" + arg +
+                    (arg != null ? "(" + arg + ")" : "")+
                     '}';
         }
 
@@ -462,7 +462,7 @@ class PluginConfigLoader {
             return "Plugin{" +
                     "priority=" + priority +
                     ", impl=" + implement +
-                    ", arg=" + arg +
+                    (arg != null ? "(" + arg + ")" : "")+
                     (enabled ? "" : ", disable by " + disableReason) +
                     ", url=" + resource +
                     '}';

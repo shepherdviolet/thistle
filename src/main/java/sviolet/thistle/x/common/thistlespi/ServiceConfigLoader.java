@@ -168,7 +168,7 @@ class ServiceConfigLoader {
             //遍历所有key-value
             Enumeration<?> names = properties.propertyNames();
             while (names.hasMoreElements()) {
-                String key = String.valueOf(names.nextElement());
+                String key = String.valueOf(names.nextElement()).trim();
 
                 //拆解key
                 String[] keyItems = key.split(">");
@@ -210,19 +210,19 @@ class ServiceConfigLoader {
                 int argStart = implement.indexOf("(");
                 //value第一个字符就是(, 非法
                 if (argStart == 0) {
-                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + key + " starts with (, config:" + urlStr);
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " starts with (, config:" + urlStr, e);
+                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + key + " starts with '(', config:" + urlStr);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " starts with '(', config:" + urlStr, e);
                     throw e;
                 }
                 //存在(字符, 尝试截取构造参数
                 if (argStart > 0) {
                     //value最后一个字符不是), 非法
                     if (')' != implement.charAt(implement.length() - 1)) {
-                        RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + key + " has ( but no ) at last, config:" + urlStr);
-                        logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " has ( but no ) at last, config:" + urlStr, e);
+                        RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + key + " has '(' but no ')' at last, config:" + urlStr);
+                        logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " has '(' but no ')' at last, config:" + urlStr, e);
                         throw e;
                     }
-                    arg = implement.substring(argStart + 1);
+                    arg = implement.substring(argStart + 1, implement.length() - 1);
                     implement = implement.substring(0, argStart);
                 }
 
@@ -419,7 +419,8 @@ class ServiceConfigLoader {
                 logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
                 logger.print(loaderId + LOG_PREFIX + "Service Applied:");
                 logger.print(loaderId + LOG_PREFIX + "  type: " + serviceInfo.type);
-                logger.print(loaderId + LOG_PREFIX + "  implement: " + serviceInfo.appliedService.implement);
+                logger.print(loaderId + LOG_PREFIX + "  implement: " + serviceInfo.appliedService.implement +
+                        (serviceInfo.appliedService.arg != null ? "(" + serviceInfo.appliedService.arg + ")" : ""));
 
                 if (LOG_LV >= DEBUG) {
                     logger.print(loaderId + LOG_PREFIX + "  url: " + serviceInfo.appliedService.resource);
