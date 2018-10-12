@@ -455,10 +455,29 @@ class ServiceConfigLoader {
 
     private enum Level {
 
+        /**
+         * 默认级
+         */
         DEFAULT(0),
+
+        /**
+         * 开源扩展库 开源插件库 级别
+         */
         LIBRARY(8),
+
+        /**
+         * 用户项目的平台框架 级别
+         */
         PLATFORM(16),
+
+        /**
+         * 用户项目的应用 级别
+         */
         APPLICATION(32),
+
+        /**
+         * 未定义的级别
+         */
         UNDEFINED(Integer.MIN_VALUE);
 
         //The higher the value, the higher the priority
