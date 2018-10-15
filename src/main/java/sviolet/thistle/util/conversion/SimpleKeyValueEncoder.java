@@ -82,23 +82,23 @@ public class SimpleKeyValueEncoder {
             if (c == SPLIT ||
                     c == EQUAL ||
                     c == ESCAPE){
-                stringBuilder.append(chars, start, i);
+                stringBuilder.append(chars, start, i - start);
                 stringBuilder.append(ESCAPE);
                 stringBuilder.append(c);
                 start = i + 1;
             } else if (c == SPACE) {
-                stringBuilder.append(chars, start, i);
+                stringBuilder.append(chars, start, i - start);
                 stringBuilder.append(ESCAPE_SPACE);
                 start = i + 1;
             } else if (c == TAB) {
-                stringBuilder.append(chars, start, i);
+                stringBuilder.append(chars, start, i - start);
                 stringBuilder.append(ESCAPE_TAB);
                 start = i + 1;
             }
         }
 
         if (start < chars.length) {
-            stringBuilder.append(chars, start, chars.length);
+            stringBuilder.append(chars, start, chars.length - start);
         }
     }
 
@@ -120,11 +120,12 @@ public class SimpleKeyValueEncoder {
                 //handle escape
                 visitor.onEscape(resultMap, chars, start, i, c);
                 start = i + 1;
+                escaping = false;
             } else {
                 if (c == ESCAPE) {
                     //find escape
                     escaping = true;
-                } else if (c == SPLIT) {
+                }else if (c == SPLIT) {
                     //element finish
                     visitor.onElementFinish(resultMap, chars, start, i);
                     start = i + 1;
@@ -275,13 +276,13 @@ public class SimpleKeyValueEncoder {
                     if (keyNull) {
                         throw new DecodeException("Invalid data, '\\0' can only be used alone, example \\0=abc or abc=\\0, data:" + new String(chars));
                     }
-                    keyBuilder.append(chars, startIndex, currentIndex);
+                    keyBuilder.append(chars, startIndex, currentIndex - startIndex);
                 } else {
                     //space escape can only be used alone
                     if (valueNull) {
                         throw new DecodeException("Invalid data, '\\0' can only be used alone, example \\0=abc or abc=\\0, data:" + new String(chars));
                     }
-                    valueBuilder.append(chars, startIndex, currentIndex);
+                    valueBuilder.append(chars, startIndex, currentIndex - startIndex);
                 }
             }
         }
