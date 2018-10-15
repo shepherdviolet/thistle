@@ -183,9 +183,9 @@ class ServiceConfigLoader {
                     throw e;
                 }
 
-                String type = keyItems[0];
-                String id = keyItems[1];
-                Level level = Level.parse(keyItems[2]);
+                String type = keyItems[0].trim();
+                String id = keyItems[1].trim();
+                Level level = Level.parse(keyItems[2].trim());
 
                 if (level == Level.UNDEFINED) {
                     RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, undefined level " + level + ", should be library/platform/application, in key:" + key + ", config:" + urlStr);

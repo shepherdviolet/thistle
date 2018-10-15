@@ -209,10 +209,10 @@ class PluginConfigLoader {
                     throw e;
                 }
 
-                String type = keyItems[0];
+                String type = keyItems[0].trim();
                 int priority;
                 try {
-                    priority = Integer.valueOf(keyItems[1]);
+                    priority = Integer.valueOf(keyItems[1].trim());
                 } catch (Exception e) {
                     logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, invalid priority " + keyItems[1] + ", should be integer, in key:" + key + ", config:" + urlStr, e);
                     throw new RuntimeException("ThistleSpi: Illegal config, invalid priority " + keyItems[1] + ", should be integer, in key:" + key + ", config:" + urlStr, e);
