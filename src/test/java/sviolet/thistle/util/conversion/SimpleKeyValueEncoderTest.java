@@ -37,6 +37,7 @@ public class SimpleKeyValueEncoderTest {
         map.put("split,key", "split,value");
         map.put("eq=key=", "=eq=value");
         map.put(" blank  key ", " blank  value ");
+        map.put("\tblank\t\tkey\t", "\tblank\t\tvalue\t");
 
         System.out.println(map);
         String encoded = SimpleKeyValueEncoder.encode(map);

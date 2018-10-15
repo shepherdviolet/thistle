@@ -171,15 +171,15 @@ public class SimpleKeyValueEncoder {
                 //normal escape
                 appendChar(chars, c);
             } else if (c == ESCAPE_VALUE_SPACE) {
+                //record position of valid space or tab, avoid to trimmed
+                recordStartEnd();
                 //space escape
                 appendChar(chars, SPACE);
+            } else if (c == ESCAPE_VALUE_TAB) {
                 //record position of valid space or tab, avoid to trimmed
                 recordStartEnd();
-            } else if (c == ESCAPE_VALUE_TAB) {
                 //tab escape
                 appendChar(chars, TAB);
-                //record position of valid space or tab, avoid to trimmed
-                recordStartEnd();
             } else if (c == ESCAPE_VALUE_NULL) {
                 //null escape
                 if (keyDecoding) {
@@ -241,14 +241,14 @@ public class SimpleKeyValueEncoder {
         private String trim(String value, int start, int end){
             char[] chars = value.toCharArray();
             int from = 0;
-            int to = chars.length;
-            while (from < to && chars[from] <= SPACE && from < start) {
+            while (from < chars.length && chars[from] <= SPACE && from < start) {
                 from++;
             }
-            while (to > from && chars[to - 1] <= SPACE) {
+            int to = chars.length - 1;
+            while (to >= from && chars[to] <= SPACE && to > end) {
                 to--;
             }
-            return from <= 0 && to >= chars.length ? value : value.substring(from, to);
+            return from <= 0 && to >= chars.length - 1 ? value : value.substring(from, to + 1);
         }
 
         /**
