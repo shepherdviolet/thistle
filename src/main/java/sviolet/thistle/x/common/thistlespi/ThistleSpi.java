@@ -42,6 +42,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ThistleSpi {
 
+    public static final String PROPERTIES_URL = "_PROPERTIES_URL_";
+
     //日志打印级别(error/debug/verbose, 默认debug)
     static final String PROPERTY_LOGLV = "thistle.spi.loglv";
     //缓存开关(默认true)

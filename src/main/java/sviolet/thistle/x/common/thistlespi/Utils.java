@@ -93,6 +93,7 @@ class Utils {
         //config file url prefix
         String urlPrefix = String.valueOf(configUrl);
         urlPrefix = urlPrefix.substring(0, urlPrefix.lastIndexOf('/') + 1);
+        //find in classpath
         Enumeration<URL> urls;
         try {
             urls = classLoader.getResources(configPath + propertiesPath);
@@ -104,9 +105,11 @@ class Utils {
             throw new RuntimeException("ThistleSpi: Illegal Service/Plugin definition, the parameter type of constructor is java.util.Properties in " +
                     clazz.getName() + ", so you have to define a properties file at " + urlPrefix + propertiesPath + ", definitions:" + configUrl);
         }
+        //find url starts with specified prefix
         while (urls.hasMoreElements()) {
             URL url = urls.nextElement();
             if (String.valueOf(url).startsWith(urlPrefix)) {
+                //found
                 Properties properties;
                 try {
                     properties = new Properties();
@@ -115,12 +118,15 @@ class Utils {
                     throw new RuntimeException("ThistleSpi: Error while loading properties for constructor of " + clazz.getName() +
                             ", properties path:" + url + ", definitions:" + configUrl, e);
                 }
+                //set url to properties
+                properties.setProperty(PROPERTIES_URL, String.valueOf(url));
                 if (LOG_LV >= INFO) {
                     logger.print(loaderId + LOG_PREFIX_LOADER + "Parameters load successfully: " + clazz.getName() + "(" + arg + ") params:" + properties + (LOG_LV >= DEBUG ? " definitions:" + url : ""));
                 }
                 return constructor.newInstance(properties);
             }
         }
+        //not found
         throw new RuntimeException("ThistleSpi: Illegal definition, the param type of constructor is Properties in " + clazz.getName() +
                 ", you have to define a properties file at " + urlPrefix + propertiesPath +
                 ", NOTICE!!! MUST BE in the SAME project as the definition file (See https://github.com/shepherdviolet/thistle/blob/master/docs/thistlespi/guide.md)" +
