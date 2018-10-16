@@ -19,29 +19,12 @@
 
 package sviolet.thistle.util.conversion;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * 基本类型转换工具
  *
  * @author S.Violet
  */
 public class PrimitiveUtils {
-
-    private static final Map<Class<?>, Class<?>> primitiveWrappers = new HashMap<>();
-
-    static {
-        primitiveWrappers.put(boolean.class, Boolean.class);
-        primitiveWrappers.put(char.class, Character.class);
-        primitiveWrappers.put(byte.class, Byte.class);
-        primitiveWrappers.put(short.class, Short.class);
-        primitiveWrappers.put(int.class, Integer.class);
-        primitiveWrappers.put(long.class, Long.class);
-        primitiveWrappers.put(float.class, Float.class);
-        primitiveWrappers.put(double.class, Double.class);
-        primitiveWrappers.put(void.class, Void.class);
-    }
 
     public static Class<?> toWrapperType(Class<?> clazz) {
         if (clazz == null) {
@@ -50,8 +33,26 @@ public class PrimitiveUtils {
         if (!clazz.isPrimitive()){
             return clazz;
         }
-        Class<?> result = primitiveWrappers.get(clazz);
-        return result != null ? result : clazz;
+        if (boolean.class.isAssignableFrom(clazz)) {
+            return Boolean.class;
+        } else if (int.class.isAssignableFrom(clazz)) {
+            return Integer.class;
+        } else if (long.class.isAssignableFrom(clazz)) {
+            return Long.class;
+        } else if (float.class.isAssignableFrom(clazz)) {
+            return Float.class;
+        } else if (double.class.isAssignableFrom(clazz)) {
+            return Double.class;
+        } else if (byte.class.isAssignableFrom(clazz)) {
+            return Byte.class;
+        } else if (char.class.isAssignableFrom(clazz)) {
+            return Character.class;
+        } else if (short.class.isAssignableFrom(clazz)) {
+            return Short.class;
+        } else if (void.class.isAssignableFrom(clazz)) {
+            return Void.class;
+        }
+        return clazz;
     }
 
 }
