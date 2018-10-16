@@ -29,7 +29,8 @@ import java.util.Map;
 public class PollGettingMap {
 
     private Map[] maps;
-    private String[] keyPrefixs;
+    private String[] keyPrefixes;
+    private ParseExceptionHandler exceptionHandler;
 
     /**
      * 内置数个Map, 按指定顺序轮询获取参数, 第一个优先级最高
@@ -47,13 +48,18 @@ public class PollGettingMap {
                 }
             }
             this.maps = new Map[followingMaps.length + 1];
-            this.keyPrefixs = new String[followingMaps.length + 1];
+            this.keyPrefixes = new String[followingMaps.length + 1];
             this.maps[0] = leadingMap;
             System.arraycopy(followingMaps, 0, this.maps, 1, followingMaps.length);
         } else {
             this.maps = new Map[]{leadingMap};
-            this.keyPrefixs = new String[1];
+            this.keyPrefixes = new String[1];
         }
+    }
+
+    public PollGettingMap setExceptionHandler(ParseExceptionHandler exceptionHandler){
+        this.exceptionHandler = exceptionHandler;
+        return this;
     }
 
     /**
@@ -62,10 +68,10 @@ public class PollGettingMap {
      * @param keyPrefix key前缀
      */
     public PollGettingMap setKeyPrefix(int index, String keyPrefix) {
-        if (index < 0 || index >= this.keyPrefixs.length) {
+        if (index < 0 || index >= this.keyPrefixes.length) {
             throw new ArrayIndexOutOfBoundsException("index out of bound when you setKeyPrefix, array length:" + keyPrefix.length() + ", your index:" + index);
         }
-        this.keyPrefixs[index] = keyPrefix;
+        this.keyPrefixes[index] = keyPrefix;
         return this;
     }
 
@@ -81,7 +87,7 @@ public class PollGettingMap {
             Object k = key;
             if (k instanceof String) {
                 String keyPrefix;
-                if ((keyPrefix = this.keyPrefixs[i]) != null) {
+                if ((keyPrefix = this.keyPrefixes[i]) != null) {
                     k = keyPrefix + k;
                 }
             }
@@ -120,24 +126,7 @@ public class PollGettingMap {
         try {
             return Integer.parseInt(String.valueOf(value));
         } catch (Exception e) {
-            throw new ParseException("Error while parsing " + value + " to int", e);
-        }
-    }
-
-    /**
-     * 按顺序从一系列Map中取int, 取到为止, 若类型不为int会转换成int返回, 转换失败返回默认值
-     * @param key key
-     * @param def 默认值
-     * @return value
-     */
-    public int safeGetInt(Object key, int def) {
-        Object value = get(key, def);
-        if (value instanceof Integer) {
-            return (int) value;
-        }
-        try {
-            return Integer.parseInt(String.valueOf(value));
-        } catch (Exception e) {
+            handleException(value, int.class.getName(), e);
             return def;
         }
     }
@@ -156,24 +145,7 @@ public class PollGettingMap {
         try {
             return Long.parseLong(String.valueOf(value));
         } catch (Exception e) {
-            throw new ParseException("Error while parsing " + value + " to long", e);
-        }
-    }
-
-    /**
-     * 按顺序从一系列Map中取long, 取到为止, 若类型不为long会转换成long返回, 转换失败返回默认值
-     * @param key key
-     * @param def 默认值
-     * @return value
-     */
-    public long safeGetLong(Object key, long def) {
-        Object value = get(key, def);
-        if (value instanceof Long) {
-            return (long) value;
-        }
-        try {
-            return Long.parseLong(String.valueOf(value));
-        } catch (Exception e) {
+            handleException(value, long.class.getName(), e);
             return def;
         }
     }
@@ -192,24 +164,7 @@ public class PollGettingMap {
         try {
             return Float.parseFloat(String.valueOf(value));
         } catch (Exception e) {
-            throw new ParseException("Error while parsing " + value + " to float", e);
-        }
-    }
-
-    /**
-     * 按顺序从一系列Map中取float, 取到为止, 若类型不为float会转换成float返回, 转换失败返回默认值
-     * @param key key
-     * @param def 默认值
-     * @return value
-     */
-    public float safeGetFloat(Object key, float def) {
-        Object value = get(key, def);
-        if (value instanceof Float) {
-            return (float) value;
-        }
-        try {
-            return Float.parseFloat(String.valueOf(value));
-        } catch (Exception e) {
+            handleException(value, float.class.getName(), e);
             return def;
         }
     }
@@ -228,30 +183,20 @@ public class PollGettingMap {
         try {
             return Double.parseDouble(String.valueOf(value));
         } catch (Exception e) {
-            throw new ParseException("Error while parsing " + value + " to double", e);
-        }
-    }
-
-    /**
-     * 按顺序从一系列Map中取double, 取到为止, 若类型不为double会转换成double返回, 转换失败返回默认值
-     * @param key key
-     * @param def 默认值
-     * @return value
-     */
-    public double safeGetDouble(Object key, double def) {
-        Object value = get(key, def);
-        if (value instanceof Double) {
-            return (double) value;
-        }
-        try {
-            return Double.parseDouble(String.valueOf(value));
-        } catch (Exception e) {
+            handleException(value, double.class.getName(), e);
             return def;
         }
     }
 
+    private void handleException(Object value, String toType, Exception e) throws ParseException {
+        if (exceptionHandler == null) {
+            throw new ParseException("Error while parsing " + value + " to " + toType, e);
+        }
+        exceptionHandler.onParseException(value, toType, e);
+    }
+
     /**
-     * 类型转换失败
+     * 当value解析为所需类型失败时抛出的异常
      */
     public static class ParseException extends Exception {
 
@@ -262,6 +207,23 @@ public class PollGettingMap {
         public ParseException(String message, Throwable cause) {
             super(message, cause);
         }
+
+    }
+
+    /**
+     * 当value解析为所需类型失败时的自定义处理逻辑, 可以抛出ParseException异常, 可以抛出其他RuntimeException, 可以打印日志后返回默认值,
+     * 也可以不处理(返回默认值)
+     */
+    public interface ParseExceptionHandler {
+
+        /**
+         * 当value解析为所需类型失败时的自定义处理逻辑, 可以抛出ParseException异常, 可以抛出其他RuntimeException, 可以打印日志后返回默认值,
+         * 也可以不处理(返回默认值). 只要不在onParseException方法中抛出异常, 就会返回默认值.
+         * @param value 无法转换的value
+         * @param toType 所需类型
+         * @param e 异常
+         */
+        void onParseException(Object value, String toType, Exception e) throws ParseException;
 
     }
 
