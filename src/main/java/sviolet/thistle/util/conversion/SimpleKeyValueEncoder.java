@@ -23,7 +23,23 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
+ * <p>Encode Map<String, String> to String, Decode String to Map<String, String></p>
+ * <p>Map<String, String>对转String, String转Map<String, String></p>
  *
+ * <p>For simple configuration, or message payload</p>
+ * <p>用于简单的配置, 或消息报文体</p>
+ *
+ * <p>Format 1</p>
+ * <pre><code>
+ *     key1=value1,key2=value2,key3=value3
+ * </code></pre>
+ *
+ * <p>Format 2</p>
+ * <pre><code>
+ *     key1=value1
+ *     key2=value2
+ *     key3=value3
+ * </code></pre>
  *
  * @author S.Violet
  */
@@ -60,10 +76,39 @@ public class SimpleKeyValueEncoder {
     private static final String FULL_ESCAPE_SPACE = "\\s";
     private static final String FULL_ESCAPE_TAB = "\\t";
 
+    /**
+     * <p>Encode Map<String, String> to String</p>
+     *
+     * <pre><code>
+     *     key1=value1,key2=value2,key3=value3
+     * </code></pre>
+     *
+     * @param keyValue Map<String, String>
+     * @return Encoded string
+     */
     public static String encode(Map<String, String> keyValue){
         return encode(keyValue, false);
     }
 
+    /**
+     * <p>Encode Map<String, String> to String</p>
+     *
+     * <p>newLineSplit == false</p>
+     * <pre><code>
+     *     key1=value1,key2=value2,key3=value3
+     * </code></pre>
+     *
+     * <p>newLineSplit == true</p>
+     * <pre><code>
+     *     key1=value1
+     *     key2=value2
+     *     key3=value3
+     * </code></pre>
+     *
+     * @param keyValue Map<String, String>
+     * @param newLineSplit true: Using \n to split key-value element, false: Using , to split key-value element
+     * @return Encoded string
+     */
     public static String encode(Map<String, String> keyValue, boolean newLineSplit){
         if (keyValue == null || keyValue.size() <= 0) {
             return "";
@@ -124,6 +169,25 @@ public class SimpleKeyValueEncoder {
         }
     }
 
+    /**
+     * <p>Decode String to Map<String, String></p>
+     *
+     * <p>Format 1</p>
+     * <pre><code>
+     *     key1=value1,key2=value2,key3=value3
+     * </code></pre>
+     *
+     * <p>Format 2</p>
+     * <pre><code>
+     *     key1=value1
+     *     key2=value2
+     *     key3=value3
+     * </code></pre>
+     *
+     * @param encoded encoded string
+     * @return Map<String, String>
+     * @throws DecodeException throw if encoded string invalid
+     */
     public static Map<String, String> decode(String encoded) throws DecodeException {
         if (encoded == null || encoded.length() <= 0) {
             return new LinkedHashMap<>(0);
