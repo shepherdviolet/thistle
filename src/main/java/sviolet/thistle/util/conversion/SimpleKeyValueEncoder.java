@@ -61,10 +61,10 @@ public class SimpleKeyValueEncoder {
     private static final String FULL_ESCAPE_TAB = "\\t";
 
     public static String encode(Map<String, String> keyValue){
-        return encode(keyValue, 0);
+        return encode(keyValue, false);
     }
 
-    public static String encode(Map<String, String> keyValue, int spaceInterval){
+    public static String encode(Map<String, String> keyValue, boolean newLineSplit){
         if (keyValue == null || keyValue.size() <= 0) {
             return "";
         }
@@ -73,10 +73,7 @@ public class SimpleKeyValueEncoder {
         int i = 0;
         for (Map.Entry<String, String> entry : keyValue.entrySet()) {
             if (i++ > 0) {
-                stringBuilder.append(RAW_SPLIT);
-                for (int si = 0 ; si < spaceInterval ; si++) {
-                    stringBuilder.append(RAW_SPACE);
-                }
+                stringBuilder.append(newLineSplit ? RAW_NEWLINE : RAW_SPLIT);
             }
             encodeAppend(stringBuilder, entry.getKey());
             stringBuilder.append(RAW_EQUAL);
@@ -111,6 +108,14 @@ public class SimpleKeyValueEncoder {
                 stringBuilder.append(chars, start, i - start);
                 stringBuilder.append(FULL_ESCAPE_TAB);
                 start = i + 1;
+            } else if (c == RAW_NEWLINE) {
+                stringBuilder.append(chars, start, i - start);
+                stringBuilder.append(FULL_ESCAPE_NEWLINE);
+                start = i + 1;
+            } else if (c == RAW_RETURN) {
+                stringBuilder.append(chars, start, i - start);
+                stringBuilder.append(FULL_ESCAPE_RETURN);
+                start = i + 1;
             }
         }
 
@@ -129,28 +134,46 @@ public class SimpleKeyValueEncoder {
 
         Visitor visitor = new Visitor();
         boolean escaping = false;
+        boolean splitting = false;
         int start = 0;
 
         for (int i = 0 ; i < chars.length ; i++) {
             char c = chars[i];
+            if (splitting) {
+                //handle splitting, to skip duplicate split char
+                if (c <= RAW_SPACE) {
+                    //skip control char
+                    start = i + 1;
+                    continue;
+                } else {
+                    //finish splitting, find normal char
+                    splitting = false;
+                }
+            }
             if (escaping) {
                 //handle escape
                 visitor.onEscape(resultMap, chars, start, i, c);
                 start = i + 1;
+                //finish escape
                 escaping = false;
-            } else {
-                if (c == RAW_ESCAPE) {
-                    //find escape
-                    escaping = true;
-                }else if (c == RAW_SPLIT) {
-                    //element finish
-                    visitor.onElementFinish(resultMap, chars, start, i);
-                    start = i + 1;
-                } else if (c == RAW_EQUAL) {
-                    //find equal
-                    visitor.onEqual(resultMap, chars, start, i);
-                    start = i + 1;
-                }
+                //next char
+                continue;
+            }
+            if (c == RAW_ESCAPE) {
+                //find escape
+                escaping = true;
+            } else if (c == RAW_SPLIT ||
+                    c == RAW_NEWLINE ||
+                    c == RAW_RETURN) {
+                //element finish
+                visitor.onElementFinish(resultMap, chars, start, i);
+                start = i + 1;
+                //mark is splitting, to skip duplicate split char
+                splitting = true;
+            } else if (c == RAW_EQUAL) {
+                //find equal
+                visitor.onEqual(resultMap, chars, start, i);
+                start = i + 1;
             }
         }
 
@@ -197,6 +220,16 @@ public class SimpleKeyValueEncoder {
                 recordStartEnd();
                 //tab escape
                 appendChar(chars, RAW_TAB);
+            } else if (c == ESCAPE_NEWLINE) {
+                //record position of valid space or tab, avoid to trimmed
+                recordStartEnd();
+                //newline escape
+                appendChar(chars, RAW_NEWLINE);
+            } else if (c == ESCAPE_RETURN) {
+                //record position of valid space or tab, avoid to trimmed
+                recordStartEnd();
+                //return escape
+                appendChar(chars, RAW_RETURN);
             } else if (c == ESCAPE_NULL) {
                 //null escape
                 if (keyDecoding) {
