@@ -116,7 +116,7 @@ class Utils {
                             ", properties path:" + url + ", definitions:" + configUrl, e);
                 }
                 if (LOG_LV >= DEBUG) {
-                    logger.print(loaderId + LOG_PREFIX_LOADER + "Constructor parameters bind successfully: " + clazz.getName() + "(" + arg + ") <- " + url);
+                    logger.print(loaderId + LOG_PREFIX_LOADER + "Parameters load successfully: " + clazz.getName() + "(" + arg + ") params:" + properties + " url:" + url);
                 }
                 return constructor.newInstance(properties);
             }
