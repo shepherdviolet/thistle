@@ -128,6 +128,9 @@ public class ThistleSpi {
         if (CheckUtils.isEmptyOrBlank(configPath)) {
             configPath = CONFIG_PATH;
         }
+        if (!configPath.endsWith("/")) {
+            configPath = configPath + "/";
+        }
         return new ServiceLoader(classLoader, configPath);
     }
 
@@ -185,6 +188,9 @@ public class ThistleSpi {
     public static ServiceLoader getLoader(String configPath) {
         if (CheckUtils.isEmptyOrBlank(configPath)) {
             configPath = CONFIG_PATH;
+        }
+        if (!configPath.endsWith("/")) {
+            configPath = configPath + "/";
         }
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
