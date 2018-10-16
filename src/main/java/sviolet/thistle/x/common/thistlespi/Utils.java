@@ -24,14 +24,13 @@ import sviolet.thistle.util.judge.CheckUtils;
 import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
 import static sviolet.thistle.x.common.thistlespi.ThistleSpi.*;
 
 class Utils {
-
-    private static final Object[] NULLS = new Object[]{null};
 
     /**
      * 类型实例化, 可包含一个String构造参数
@@ -64,8 +63,12 @@ class Utils {
         } else if (Map.class.isAssignableFrom(paramTypes[0])) {
             //paramType length == 1 and is instance of Map
             if (CheckUtils.isEmptyOrBlank(arg)) {
-                //input null
-                return constructor.newInstance(NULLS);
+                //input empty map
+                if (LOG_LV >= DEBUG) {
+                    logger.print(loaderId + LOG_PREFIX_LOADER + "The parameter type of constructor is java.util.Map in " +
+                            clazz.getName() + ", But no constructor arg defined in definitions:" + configPath);
+                }
+                return constructor.newInstance(new HashMap());
             }
             return newInstanceForPropConstructor(clazz, arg, classLoader, configPath, configUrl, logger, loaderId, constructor);
         } else {
@@ -92,11 +95,7 @@ class Utils {
         //config file url prefix
         String urlPrefix = String.valueOf(configUrl);
         urlPrefix = urlPrefix.substring(0, urlPrefix.lastIndexOf('/') + 1);
-        if (LOG_LV >= DEBUG) {
-            logger.print(loaderId + LOG_PREFIX_LOADER + "Finding properties for constructor of " + clazz.getName() +
-                    ", seeking " + propertiesPath + " in " + urlPrefix);
-        }
-        Enumeration<URL> urls = null;
+        Enumeration<URL> urls;
         try {
             urls = classLoader.getResources(configPath + propertiesPath);
         } catch (Exception e) {
@@ -110,17 +109,16 @@ class Utils {
         while (urls.hasMoreElements()) {
             URL url = urls.nextElement();
             if (String.valueOf(url).startsWith(urlPrefix)) {
-                if (LOG_LV >= DEBUG) {
-                    logger.print(loaderId + LOG_PREFIX_LOADER + "Loading properties for constructor of " + clazz.getName() +
-                            ", properties path:" + url);
-                }
                 Properties properties;
                 try {
                     properties = new Properties();
                     properties.load(url.openStream());
                 } catch (Exception e) {
                     throw new RuntimeException("ThistleSpi: Error while loading properties for constructor of " + clazz.getName() +
-                            ", seeking " + propertiesPath + " in " + urlPrefix + ", definitions:" + configUrl, e);
+                            ", properties path:" + url + ", definitions:" + configUrl, e);
+                }
+                if (LOG_LV >= DEBUG) {
+                    logger.print(loaderId + LOG_PREFIX_LOADER + "Constructor parameters bind successfully: " + clazz.getName() + "(" + arg + ") <- " + url);
                 }
                 return constructor.newInstance(properties);
             }
