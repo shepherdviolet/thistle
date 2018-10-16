@@ -51,8 +51,10 @@ public class ThistleSpi {
 
     //默认配置路径
     private static final String CONFIG_PATH = "META-INF/thistle-spi/";
-    //自定义日志打印器配置路径
+    //[固定]自定义日志打印器配置路径
     private static final String CONFIG_PATH_LOGGER = "META-INF/thistle-spi-logger/";
+    //[固定]构造参数引用配置文件路径(相对路径)
+    static final String CONFIG_PATH_PARAMETER = "parameter/";
 
     //日志前缀
     static final String LOG_PREFIX = " ThistleSpi | ";

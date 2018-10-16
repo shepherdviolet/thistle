@@ -105,7 +105,7 @@ class PluginConfigLoader {
             Object pluginObj;
             try {
                 Class clazz = classLoader.loadClass(plugin.implement);
-                pluginObj = Utils.newInstance(clazz, plugin.arg);
+                pluginObj = Utils.newInstance(clazz, plugin.arg, classLoader, plugin.configPath, plugin.resource, logger, loaderId);
             } catch (Exception e) {
                 logger.print(loaderId + LOG_PREFIX_LOADER + "ERROR: Plugin " + pluginInfo.type + " (" + plugin.implement + ") instantiation error, definitions:" + plugin.resource, e);
                 throw new RuntimeException("ThistleSpi: Plugin " + pluginInfo.type + " (" + plugin.implement + ") instantiation error, definitions:" + plugin.resource, e);
@@ -242,6 +242,7 @@ class PluginConfigLoader {
                 plugin.priority = priority;
                 plugin.implement = implementation.implement;
                 plugin.arg = implementation.arg;
+                plugin.configPath = configPath;
                 plugin.resource = url;
                 pluginInfo.plugins.add(plugin);
 
@@ -436,6 +437,7 @@ class PluginConfigLoader {
         private int priority;
         private String implement;
         private String arg;
+        private String configPath;
         private URL resource;
         private boolean enabled = true;
         private String disableReason;

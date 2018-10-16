@@ -99,7 +99,8 @@ class ServiceConfigLoader {
         Object service;
         try {
             Class clazz = classLoader.loadClass(serviceInfo.appliedService.implement);
-            service = Utils.newInstance(clazz, serviceInfo.appliedService.arg);
+            service = Utils.newInstance(clazz, serviceInfo.appliedService.arg, classLoader,
+                    serviceInfo.appliedService.configPath, serviceInfo.appliedService.resource, logger, loaderId);
         } catch (Exception e) {
             logger.print(loaderId + LOG_PREFIX_LOADER + "ERROR: Service " + serviceInfo.type + " (" + serviceInfo.appliedService.implement + ") instantiation error, config:" + serviceInfo.appliedService.resource, e);
             throw new RuntimeException("ThistleSpi: Service " + serviceInfo.type + " (" + serviceInfo.appliedService.implement + ") instantiation error, config:" + serviceInfo.appliedService.resource, e);
@@ -218,6 +219,7 @@ class ServiceConfigLoader {
                 service.level = level;
                 service.implement = implementation.implement;
                 service.arg = implementation.arg;
+                service.configPath = configPath;
                 service.resource = url;
 
                 Service previous = serviceInfo.definedServices.get(id);
@@ -445,6 +447,7 @@ class ServiceConfigLoader {
         private Level level;
         private String implement;
         private String arg;
+        private String configPath;
         private URL resource;
 
         @Override
