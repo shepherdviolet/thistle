@@ -29,22 +29,28 @@ import java.util.Map;
  */
 public class SimpleKeyValueEncoder {
 
+    //raw split
     private static final char RAW_SPLIT = ',';
     private static final char RAW_NEWLINE = '\n';
     private static final char RAW_RETURN = '\r';
 
+    //raw equal
     private static final char RAW_EQUAL = '=';
+
+    //raw others
     private static final char RAW_ESCAPE = '\\';
     private static final char RAW_SPACE = ' ';
     private static final char RAW_TAB = '\t';
 
-    private static final String ESCAPE_RAW_NULL = "\\0";
-    private static final String ESCAPE_RAW_SPACE = "\\s";
-    private static final String ESCAPE_RAW_TAB = "\\t";
-
+    //escape others
     private static final char ESCAPE_NULL = '0';
     private static final char ESCAPE_SPACE = 's';
     private static final char ESCAPE_TAB = 't';
+
+    //others
+    private static final String FULL_ESCAPE_NULL = "\\0";
+    private static final String FULL_ESCAPE_SPACE = "\\s";
+    private static final String FULL_ESCAPE_TAB = "\\t";
 
     public static String encode(Map<String, String> keyValue){
         return encode(keyValue, 0);
@@ -74,7 +80,7 @@ public class SimpleKeyValueEncoder {
 
     private static void append(StringBuilder stringBuilder, String str){
         if (str == null) {
-            stringBuilder.append(ESCAPE_RAW_NULL);
+            stringBuilder.append(FULL_ESCAPE_NULL);
             return;
         }
 
@@ -91,11 +97,11 @@ public class SimpleKeyValueEncoder {
                 start = i + 1;
             } else if (c == RAW_SPACE) {
                 stringBuilder.append(chars, start, i - start);
-                stringBuilder.append(ESCAPE_RAW_SPACE);
+                stringBuilder.append(FULL_ESCAPE_SPACE);
                 start = i + 1;
             } else if (c == RAW_TAB) {
                 stringBuilder.append(chars, start, i - start);
-                stringBuilder.append(ESCAPE_RAW_TAB);
+                stringBuilder.append(FULL_ESCAPE_TAB);
                 start = i + 1;
             }
         }
