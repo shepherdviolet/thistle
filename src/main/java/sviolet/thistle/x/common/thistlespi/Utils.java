@@ -115,8 +115,8 @@ class Utils {
                     throw new RuntimeException("ThistleSpi: Error while loading properties for constructor of " + clazz.getName() +
                             ", properties path:" + url + ", definitions:" + configUrl, e);
                 }
-                if (LOG_LV >= DEBUG) {
-                    logger.print(loaderId + LOG_PREFIX_LOADER + "Parameters load successfully: " + clazz.getName() + "(" + arg + ") params:" + properties + " url:" + url);
+                if (LOG_LV >= INFO) {
+                    logger.print(loaderId + LOG_PREFIX_LOADER + "Parameters load successfully: " + clazz.getName() + "(" + arg + ") params:" + properties + (LOG_LV >= DEBUG ? " definitions:" + url : ""));
                 }
                 return constructor.newInstance(properties);
             }
