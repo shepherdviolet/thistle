@@ -111,7 +111,7 @@ class ServiceConfigLoader {
             throw e;
         }
         if (LOG_LV >= INFO) {
-            logger.print(loaderId + LOG_PREFIX_LOADER + "Service " + serviceInfo.type + " (" + serviceInfo.appliedService.implement + ") loaded successfully");
+            logger.print(loaderId + LOG_PREFIX_LOADER + "Service loaded successfully: " + serviceInfo.type + " (" + serviceInfo.appliedService.implement + ")");
         }
         return (T) service;
     }

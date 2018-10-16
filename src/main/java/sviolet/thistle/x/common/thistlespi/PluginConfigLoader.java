@@ -121,7 +121,7 @@ class PluginConfigLoader {
         }
 
         if (LOG_LV >= INFO) {
-            StringBuilder stringBuilder = new StringBuilder(loaderId + LOG_PREFIX_LOADER + "Plugin ");
+            StringBuilder stringBuilder = new StringBuilder(loaderId + LOG_PREFIX_LOADER + "Plugin loaded successfully: ");
             stringBuilder.append(pluginInfo.type);
             stringBuilder.append(" (");
             int i = 0;
@@ -135,7 +135,7 @@ class PluginConfigLoader {
                 stringBuilder.append(" ");
                 stringBuilder.append(plugin.implement);
             }
-            stringBuilder.append(" ) loaded successfully");
+            stringBuilder.append(" )");
             logger.print(stringBuilder.toString());
         }
 
