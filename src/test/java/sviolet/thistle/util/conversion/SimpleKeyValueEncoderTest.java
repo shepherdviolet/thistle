@@ -28,7 +28,30 @@ import java.util.Map;
 public class SimpleKeyValueEncoderTest {
 
     @Test
-    public void test() throws SimpleKeyValueEncoder.DecodeException {
+    public void test1() throws SimpleKeyValueEncoder.DecodeException {
+        Map<String, String> map = new LinkedHashMap<>();
+        map.put("key", "value");
+        map.put(null, "nullsvalue");
+        map.put("nullskey", null);
+        map.put("escape\\key", "escape\\value");
+        map.put("split,key", "split,value");
+        map.put("eq=key=", "=eq=value");
+        map.put(" blank  key ", " blank  value ");
+        map.put("\tblankkey\t", "\tblankvalue\t");
+        map.put("newline\n", "\nreturn");
+
+//        System.out.println(map);
+        String encoded = SimpleKeyValueEncoder.encode(map);
+//        System.out.println(encoded);
+
+        Map<String, String> result = SimpleKeyValueEncoder.decode(encoded);
+//        System.out.println(result);
+
+        Assert.assertEquals(map.toString(), result.toString());
+    }
+
+    @Test
+    public void test2() throws SimpleKeyValueEncoder.DecodeException {
         Map<String, String> map = new LinkedHashMap<>();
         map.put("key", "value");
         map.put(null, "nullsvalue");
