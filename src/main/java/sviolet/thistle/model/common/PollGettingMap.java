@@ -29,6 +29,7 @@ import java.util.Map;
 public class PollGettingMap {
 
     private Map[] maps;
+    private String[] keyPrefixs;
 
     /**
      * 内置数个Map, 按指定顺序轮询获取参数, 第一个优先级最高
@@ -46,11 +47,26 @@ public class PollGettingMap {
                 }
             }
             this.maps = new Map[followingMaps.length + 1];
+            this.keyPrefixs = new String[followingMaps.length + 1];
             this.maps[0] = leadingMap;
             System.arraycopy(followingMaps, 0, this.maps, 1, followingMaps.length);
         } else {
             this.maps = new Map[]{leadingMap};
+            this.keyPrefixs = new String[1];
         }
+    }
+
+    /**
+     * 给指定Map添加key前缀, 从该Map中取值时, 会加上前缀, 然后再去get (仅在key类型为String时有效)
+     * @param index map编号
+     * @param keyPrefix key前缀
+     */
+    public PollGettingMap setKeyPrefix(int index, String keyPrefix) {
+        if (index < 0 || index >= this.keyPrefixs.length) {
+            throw new ArrayIndexOutOfBoundsException("index out of bound when you setKeyPrefix, array length:" + keyPrefix.length() + ", your index:" + index);
+        }
+        this.keyPrefixs[index] = keyPrefix;
+        return this;
     }
 
     /**
@@ -61,8 +77,15 @@ public class PollGettingMap {
      */
     public Object get(Object key, Object def) {
         Object value;
-        for (Map map : maps) {
-            if ((value = map.get(key)) != null) {
+        for (int i = 0 ; i < maps.length ; i++) {
+            Object k = key;
+            if (k instanceof String) {
+                String keyPrefix;
+                if ((keyPrefix = this.keyPrefixs[i]) != null) {
+                    k = keyPrefix + k;
+                }
+            }
+            if ((value = maps[i].get(k)) != null) {
                 return value;
             }
         }
