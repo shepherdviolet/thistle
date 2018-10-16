@@ -26,6 +26,11 @@ package sviolet.thistle.util.conversion;
  */
 public class PrimitiveUtils {
 
+    /**
+     * 获得基本类型的包装类型
+     * @param clazz 类
+     * @return 若入参是基本类型, 则返回对应的包装类型
+     */
     public static Class<?> toWrapperType(Class<?> clazz) {
         if (clazz == null) {
             return null;
