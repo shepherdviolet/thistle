@@ -44,6 +44,9 @@ public class PrimitiveUtils {
     }
 
     public static Class<?> toWrapperType(Class<?> clazz) {
+        if (clazz == null) {
+            return null;
+        }
         if (!clazz.isPrimitive()){
             return clazz;
         }
