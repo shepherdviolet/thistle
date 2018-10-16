@@ -171,7 +171,6 @@ class PluginConfigLoader {
         //遍历所有plugin.properties配置文件
         while (urls.hasMoreElements()) {
             URL url = urls.nextElement();
-            String urlStr = String.valueOf(url);
 
             //装载配置
             String propHash;
@@ -181,8 +180,8 @@ class PluginConfigLoader {
                 properties = new Properties();
                 properties.load(url.openStream());
             } catch (Exception e) {
-                logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading config " + urlStr, e);
-                throw new RuntimeException("ThistleSpi: Error while loading config " + urlStr, e);
+                logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading config " + url, e);
+                throw new RuntimeException("ThistleSpi: Error while loading config " + url, e);
             }
 
             //检查文件是否被强制排除
@@ -204,8 +203,8 @@ class PluginConfigLoader {
                 //拆解key
                 String[] keyItems = key.split(">");
                 if (keyItems.length != 2) {
-                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal key in config file, key:" + key + ", correct format:interface>priority=impl, config:" + urlStr);
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal key in config file, key:" + key + ", correct format:interface>priority=impl, config:" + urlStr, e);
+                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal key in config file, key:" + key + ", correct format:interface>priority=impl, config:" + url);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal key in config file, key:" + key + ", correct format:interface>priority=impl, config:" + url, e);
                     throw e;
                 }
 
@@ -214,8 +213,8 @@ class PluginConfigLoader {
                 try {
                     priority = Integer.valueOf(keyItems[1].trim());
                 } catch (Exception e) {
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, invalid priority " + keyItems[1] + ", should be integer, in key:" + key + ", config:" + urlStr, e);
-                    throw new RuntimeException("ThistleSpi: Illegal config, invalid priority " + keyItems[1] + ", should be integer, in key:" + key + ", config:" + urlStr, e);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, invalid priority " + keyItems[1] + ", should be integer, in key:" + key + ", config:" + url, e);
+                    throw new RuntimeException("ThistleSpi: Illegal config, invalid priority " + keyItems[1] + ", should be integer, in key:" + key + ", config:" + url, e);
                 }
 
                 //遇到新的服务接口, 则创建一个对象
@@ -229,21 +228,21 @@ class PluginConfigLoader {
                 //参数值
                 String propValue = properties.getProperty(key);
                 if (CheckUtils.isEmptyOrBlank(propValue)) {
-                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + key + " is empty, config:" + urlStr);
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " is empty, config:" + urlStr, e);
+                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + key + " is empty, config:" + url);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " is empty, config:" + url, e);
                     throw e;
                 }
                 propValue = propValue.trim();
 
                 //实现类信息
-                Utils.Implementation implementation = Utils.parseImplementation(propValue, true, logger, loaderId, key, urlStr);
+                Utils.Implementation implementation = Utils.parseImplementation(propValue, true, logger, loaderId, key, url);
 
                 //服务接口信息
                 Plugin plugin = new Plugin();
                 plugin.priority = priority;
                 plugin.implement = implementation.implement;
                 plugin.arg = implementation.arg;
-                plugin.resource = urlStr;
+                plugin.resource = url;
                 pluginInfo.plugins.add(plugin);
 
             }
@@ -264,7 +263,6 @@ class PluginConfigLoader {
         //遍历所有plugin-ignore.properties配置文件
         while (urls != null && urls.hasMoreElements()) {
             URL url = urls.nextElement();
-            String urlStr = String.valueOf(url);
 
             //装载配置文件
             String propHash;
@@ -274,8 +272,8 @@ class PluginConfigLoader {
                 properties = new Properties();
                 properties.load(url.openStream());
             } catch (Exception e) {
-                logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading config " + urlStr, e);
-                throw new RuntimeException("ThistleSpi: Error while loading config " + urlStr, e);
+                logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading config " + url, e);
+                throw new RuntimeException("ThistleSpi: Error while loading config " + url, e);
             }
 
             //检查文件是否被强制排除
@@ -295,8 +293,8 @@ class PluginConfigLoader {
                 String type = String.valueOf(names.nextElement()).trim();
                 String ignoreStr = properties.getProperty(type);
                 if (CheckUtils.isEmptyOrBlank(ignoreStr)) {
-                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + type + " is empty, config:" + urlStr);
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + type + " is empty, config:" + urlStr, e);
+                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + type + " is empty, config:" + url);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + type + " is empty, config:" + url, e);
                     throw e;
                 }
                 ignoreStr = ignoreStr.trim();
@@ -320,7 +318,7 @@ class PluginConfigLoader {
                     }
                     Ignore ignore = new Ignore();
                     ignore.ignoreImpl = ignoreImpl;
-                    ignore.resource = urlStr;
+                    ignore.resource = url;
                     ignoreInfo.ignores.add(ignore);
                 }
             }
@@ -369,7 +367,7 @@ class PluginConfigLoader {
                                 (implementation.arg == null || implementation.arg.equals(plugin.arg))) {
                             count++;
                             plugin.enabled = false;
-                            plugin.disableReason = ignore.resource;
+                            plugin.disableReason = String.valueOf(ignore.resource);
                         }
                     }
                     if (LOG_LV >= INFO && count <= 0) {
@@ -438,7 +436,7 @@ class PluginConfigLoader {
         private int priority;
         private String implement;
         private String arg;
-        private String resource;
+        private URL resource;
         private boolean enabled = true;
         private String disableReason;
 
@@ -473,7 +471,7 @@ class PluginConfigLoader {
     private static class Ignore {
 
         private String ignoreImpl;
-        private String resource;
+        private URL resource;
 
         @Override
         public String toString() {

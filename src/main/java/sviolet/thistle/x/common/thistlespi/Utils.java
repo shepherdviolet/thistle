@@ -19,13 +19,13 @@
 
 package sviolet.thistle.x.common.thistlespi;
 
+import java.lang.reflect.Constructor;
 import java.net.URL;
+import java.util.Properties;
 
 import static sviolet.thistle.x.common.thistlespi.ThistleSpi.*;
 
 class Utils {
-
-    private static final Object[] NULL_OBJ_ARRAY = new Object[]{null};
 
     /**
      * 类型实例化, 可包含一个String构造参数
@@ -33,28 +33,25 @@ class Utils {
      * @param arg 构造参数, 可选
      */
     static Object newInstance(Class<?> clazz, String arg) throws Exception {
-        if (arg == null) {
-            try {
-                return clazz.getConstructor().newInstance();
-            } catch (NoSuchMethodException e) {
-                try {
-                    return clazz.getConstructor(String.class).newInstance(NULL_OBJ_ARRAY);
-                } catch (NoSuchMethodException e2) {
-                    throw e;
-                }
-            }
-        } else {
-            try {
-                return clazz.getConstructor(String.class).newInstance(arg);
-            } catch (NoSuchMethodException e) {
-                try {
-                    clazz.getConstructor().newInstance();
-                } catch (NoSuchMethodException e2) {
-                    throw e;
-                }
-            }
+        Constructor[] constructors = clazz.getConstructors();
+        if (constructors.length != 1) {
+            throw new RuntimeException("Illegal Service/Plugin implementation " + clazz.getName() + ", the implementation must have one and only one public constructor, now it has " + constructors.length);
         }
-        return null;
+        Constructor constructor = constructors[0];
+        Class[] paramTypes = constructor.getParameterTypes();
+        if (paramTypes.length > 1) {
+            throw new RuntimeException("Illegal Service/Plugin implementation " + clazz.getName() + ", the constructor can only have 0 or 1 parameter, now it has " + paramTypes.length);
+        } else if (paramTypes.length == 0) {
+            return constructor.newInstance();
+        } else if (String.class.isAssignableFrom(paramTypes[0])){
+            //paramType length == 1 and is instance of String
+            return constructor.newInstance(arg);
+        } else if (Properties.class.isAssignableFrom(paramTypes[0])) {
+            //TODO
+            return null;
+        } else {
+            throw new RuntimeException("Illegal Service/Plugin implementation " + clazz.getName() + ", the parameter type of constructor must be java.lang.String or java.util.Properties, now it it " + paramTypes[0].getName());
+        }
     }
 
     /**
@@ -65,9 +62,8 @@ class Utils {
      * @param loaderId (日志相关)加载器ID
      * @param propKey (日志相关)参数键, 或启动参数名
      * @param propUrl (日志相关)配置文件URL, 可为空
-     * @return
      */
-    static Implementation parseImplementation(String propValue, boolean fromConfig, SpiLogger logger, int loaderId, String propKey, String propUrl){
+    static Implementation parseImplementation(String propValue, boolean fromConfig, SpiLogger logger, int loaderId, String propKey, URL propUrl){
         int argStart = propValue.indexOf("(");
         //value第一个字符就是(, 非法
         if (argStart == 0) {

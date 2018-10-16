@@ -145,7 +145,6 @@ class ServiceConfigLoader {
         //遍历所有service.properties配置文件
         while (urls.hasMoreElements()) {
             URL url = urls.nextElement();
-            String urlStr = String.valueOf(url);
 
             //装载配置
             String propHash;
@@ -155,8 +154,8 @@ class ServiceConfigLoader {
                 properties = new Properties();
                 properties.load(url.openStream());
             } catch (Exception e) {
-                logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading config " + urlStr, e);
-                throw new RuntimeException("ThistleSpi: Error while loading config " + urlStr, e);
+                logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading config " + url, e);
+                throw new RuntimeException("ThistleSpi: Error while loading config " + url, e);
             }
 
             //检查文件是否被强制排除
@@ -178,8 +177,8 @@ class ServiceConfigLoader {
                 //拆解key
                 String[] keyItems = key.split(">");
                 if (keyItems.length != 3) {
-                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal key in config file, key:" + key + ", correct format:interface>id>level=impl, config:" + urlStr);
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal key in config file, key:" + key + ", correct format:interface>id>level=impl, config:" + urlStr, e);
+                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal key in config file, key:" + key + ", correct format:interface>id>level=impl, config:" + url);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal key in config file, key:" + key + ", correct format:interface>id>level=impl, config:" + url, e);
                     throw e;
                 }
 
@@ -188,8 +187,8 @@ class ServiceConfigLoader {
                 Level level = Level.parse(keyItems[2].trim());
 
                 if (level == Level.UNDEFINED) {
-                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, undefined level " + level + ", should be library/platform/application, in key:" + key + ", config:" + urlStr);
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, undefined level " + level + ", should be library/platform/application, in key:" + key + ", config:" + urlStr, e);
+                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, undefined level " + level + ", should be library/platform/application, in key:" + key + ", config:" + url);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, undefined level " + level + ", should be library/platform/application, in key:" + key + ", config:" + url, e);
                     throw e;
                 }
 
@@ -204,14 +203,14 @@ class ServiceConfigLoader {
                 //参数值
                 String propValue = properties.getProperty(key);
                 if (CheckUtils.isEmptyOrBlank(propValue)) {
-                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + key + " is empty, config:" + urlStr);
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " is empty, config:" + urlStr, e);
+                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + key + " is empty, config:" + url);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " is empty, config:" + url, e);
                     throw e;
                 }
                 propValue = propValue.trim();
 
                 //实现类信息
-                Utils.Implementation implementation = Utils.parseImplementation(propValue, true, logger, loaderId, key, urlStr);
+                Utils.Implementation implementation = Utils.parseImplementation(propValue, true, logger, loaderId, key, url);
 
                 //服务接口信息
                 Service service = new Service();
@@ -219,7 +218,7 @@ class ServiceConfigLoader {
                 service.level = level;
                 service.implement = implementation.implement;
                 service.arg = implementation.arg;
-                service.resource = urlStr;
+                service.resource = url;
 
                 Service previous = serviceInfo.definedServices.get(id);
                 //若有重复id, 则抛出异常
@@ -249,7 +248,6 @@ class ServiceConfigLoader {
         //遍历所有service-apply.properties配置文件
         while (urls != null && urls.hasMoreElements()) {
             URL url = urls.nextElement();
-            String urlStr = String.valueOf(url);
 
             //装载配置文件
             String propHash;
@@ -259,8 +257,8 @@ class ServiceConfigLoader {
                 properties = new Properties();
                 properties.load(url.openStream());
             } catch (Exception e) {
-                logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading config " + urlStr, e);
-                throw new RuntimeException("ThistleSpi: Error while loading config " + urlStr, e);
+                logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading config " + url, e);
+                throw new RuntimeException("ThistleSpi: Error while loading config " + url, e);
             }
 
             //检查文件是否被强制排除
@@ -280,8 +278,8 @@ class ServiceConfigLoader {
                 String type = String.valueOf(names.nextElement()).trim();
                 String id = properties.getProperty(type);
                 if (CheckUtils.isEmptyOrBlank(id)) {
-                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + type + " is empty, config:" + urlStr);
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + type + " is empty, config:" + urlStr, e);
+                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + type + " is empty, config:" + url);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + type + " is empty, config:" + url, e);
                     throw e;
                 }
                 id = id.trim();
@@ -322,7 +320,7 @@ class ServiceConfigLoader {
                 ApplyInfo applyInfo = new ApplyInfo();
                 applyInfo.type = type;
                 applyInfo.id = properties.getProperty(type);
-                applyInfo.resource = urlStr;
+                applyInfo.resource = url;
                 applyInfos.put(type, applyInfo);
 
             }
@@ -359,7 +357,7 @@ class ServiceConfigLoader {
                 Service service = spi.definedServices.get(applyInfo.id);
                 if (service != null) {
                     spi.appliedService = service;
-                    spi.applyReason = applyInfo.resource;
+                    spi.applyReason = String.valueOf(applyInfo.resource);
                     continue;
                 }
                 if (LOG_LV >= INFO) {
@@ -447,7 +445,7 @@ class ServiceConfigLoader {
         private Level level;
         private String implement;
         private String arg;
-        private String resource;
+        private URL resource;
 
         @Override
         public String toString() {
@@ -465,7 +463,7 @@ class ServiceConfigLoader {
 
         private String type;
         private String id;
-        private String resource;
+        private URL resource;
         private String duplicateError;
 
     }
