@@ -107,12 +107,12 @@ class PluginConfigLoader {
                 Class clazz = classLoader.loadClass(plugin.implement);
                 pluginObj = Utils.newInstance(clazz, plugin.arg);
             } catch (Exception e) {
-                logger.print(loaderId + LOG_PREFIX_LOADER + "ERROR: Plugin " + pluginInfo.type + " (" + plugin.implement + ") instantiation error, config:" + plugin.resource, e);
-                throw new RuntimeException("ThistleSpi: Plugin " + pluginInfo.type + " (" + plugin.implement + ") instantiation error, config:" + plugin.resource, e);
+                logger.print(loaderId + LOG_PREFIX_LOADER + "ERROR: Plugin " + pluginInfo.type + " (" + plugin.implement + ") instantiation error, definitions:" + plugin.resource, e);
+                throw new RuntimeException("ThistleSpi: Plugin " + pluginInfo.type + " (" + plugin.implement + ") instantiation error, definitions:" + plugin.resource, e);
             }
             if (!type.isAssignableFrom(pluginObj.getClass())) {
-                RuntimeException e = new RuntimeException("ThistleSpi: " + plugin.implement + " is not instance of " + pluginInfo.type + ", illegal config:" + plugin.resource);
-                logger.print(loaderId + LOG_PREFIX_LOADER + "ERROR: " + plugin.implement + " is not instance of " + pluginInfo.type + ", illegal config:" + plugin.resource, e);
+                RuntimeException e = new RuntimeException("ThistleSpi: " + plugin.implement + " is not instance of " + pluginInfo.type + ", illegal definitions:" + plugin.resource);
+                logger.print(loaderId + LOG_PREFIX_LOADER + "ERROR: " + plugin.implement + " is not instance of " + pluginInfo.type + ", illegal definitions:" + plugin.resource, e);
                 throw e;
             }
 
@@ -203,8 +203,8 @@ class PluginConfigLoader {
                 //拆解key
                 String[] keyItems = key.split(">");
                 if (keyItems.length != 2) {
-                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal key in config file, key:" + key + ", correct format:interface>priority=impl, config:" + url);
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal key in config file, key:" + key + ", correct format:interface>priority=impl, config:" + url, e);
+                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal key in config file, key:" + key + ", correct format:interface>priority=impl, definitions:" + url);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal key in config file, key:" + key + ", correct format:interface>priority=impl, definitions:" + url, e);
                     throw e;
                 }
 
@@ -213,8 +213,8 @@ class PluginConfigLoader {
                 try {
                     priority = Integer.valueOf(keyItems[1].trim());
                 } catch (Exception e) {
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, invalid priority " + keyItems[1] + ", should be integer, in key:" + key + ", config:" + url, e);
-                    throw new RuntimeException("ThistleSpi: Illegal config, invalid priority " + keyItems[1] + ", should be integer, in key:" + key + ", config:" + url, e);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, invalid priority " + keyItems[1] + ", should be integer, in key:" + key + ", definitions:" + url, e);
+                    throw new RuntimeException("ThistleSpi: Illegal config, invalid priority " + keyItems[1] + ", should be integer, in key:" + key + ", definitions:" + url, e);
                 }
 
                 //遇到新的服务接口, 则创建一个对象
@@ -228,8 +228,8 @@ class PluginConfigLoader {
                 //参数值
                 String propValue = properties.getProperty(key);
                 if (CheckUtils.isEmptyOrBlank(propValue)) {
-                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + key + " is empty, config:" + url);
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " is empty, config:" + url, e);
+                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + key + " is empty, definitions:" + url);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " is empty, definitions:" + url, e);
                     throw e;
                 }
                 propValue = propValue.trim();
@@ -293,8 +293,8 @@ class PluginConfigLoader {
                 String type = String.valueOf(names.nextElement()).trim();
                 String ignoreStr = properties.getProperty(type);
                 if (CheckUtils.isEmptyOrBlank(ignoreStr)) {
-                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + type + " is empty, config:" + url);
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + type + " is empty, config:" + url, e);
+                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + type + " is empty, definitions:" + url);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + type + " is empty, definitions:" + url, e);
                     throw e;
                 }
                 ignoreStr = ignoreStr.trim();

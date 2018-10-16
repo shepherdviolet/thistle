@@ -177,8 +177,8 @@ class ServiceConfigLoader {
                 //拆解key
                 String[] keyItems = key.split(">");
                 if (keyItems.length != 3) {
-                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal key in config file, key:" + key + ", correct format:interface>id>level=impl, config:" + url);
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal key in config file, key:" + key + ", correct format:interface>id>level=impl, config:" + url, e);
+                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal key in config file, key:" + key + ", correct format:interface>id>level=impl, definitions:" + url);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal key in config file, key:" + key + ", correct format:interface>id>level=impl, definitions:" + url, e);
                     throw e;
                 }
 
@@ -187,8 +187,8 @@ class ServiceConfigLoader {
                 Level level = Level.parse(keyItems[2].trim());
 
                 if (level == Level.UNDEFINED) {
-                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, undefined level " + level + ", should be library/platform/application, in key:" + key + ", config:" + url);
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, undefined level " + level + ", should be library/platform/application, in key:" + key + ", config:" + url, e);
+                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, undefined level " + level + ", should be library/platform/application, in key:" + key + ", definitions:" + url);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, undefined level " + level + ", should be library/platform/application, in key:" + key + ", definitions:" + url, e);
                     throw e;
                 }
 
@@ -203,8 +203,8 @@ class ServiceConfigLoader {
                 //参数值
                 String propValue = properties.getProperty(key);
                 if (CheckUtils.isEmptyOrBlank(propValue)) {
-                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + key + " is empty, config:" + url);
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " is empty, config:" + url, e);
+                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + key + " is empty, definitions:" + url);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " is empty, definitions:" + url, e);
                     throw e;
                 }
                 propValue = propValue.trim();
@@ -278,8 +278,8 @@ class ServiceConfigLoader {
                 String type = String.valueOf(names.nextElement()).trim();
                 String id = properties.getProperty(type);
                 if (CheckUtils.isEmptyOrBlank(id)) {
-                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + type + " is empty, config:" + url);
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + type + " is empty, config:" + url, e);
+                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + type + " is empty, definitions:" + url);
+                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + type + " is empty, definitions:" + url, e);
                     throw e;
                 }
                 id = id.trim();
