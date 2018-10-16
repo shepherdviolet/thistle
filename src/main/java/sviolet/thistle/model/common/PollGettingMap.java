@@ -126,7 +126,7 @@ public class PollGettingMap {
         try {
             return Integer.parseInt(String.valueOf(value));
         } catch (Exception e) {
-            handleException(key, value, int.class.getName(), e);
+            handleException(key, value, int.class.getName(), def, e);
             return def;
         }
     }
@@ -145,7 +145,7 @@ public class PollGettingMap {
         try {
             return Long.parseLong(String.valueOf(value));
         } catch (Exception e) {
-            handleException(key, value, long.class.getName(), e);
+            handleException(key, value, long.class.getName(), def, e);
             return def;
         }
     }
@@ -164,7 +164,7 @@ public class PollGettingMap {
         try {
             return Float.parseFloat(String.valueOf(value));
         } catch (Exception e) {
-            handleException(key, value, float.class.getName(), e);
+            handleException(key, value, float.class.getName(), def, e);
             return def;
         }
     }
@@ -183,16 +183,16 @@ public class PollGettingMap {
         try {
             return Double.parseDouble(String.valueOf(value));
         } catch (Exception e) {
-            handleException(key, value, double.class.getName(), e);
+            handleException(key, value, double.class.getName(), def, e);
             return def;
         }
     }
 
-    private void handleException(Object key, Object value, String toType, Exception e) throws ParseException {
+    private void handleException(Object key, Object value, String toType, Object def, Exception e) throws ParseException {
         if (exceptionHandler == null) {
             throw new ParseException("Error while parsing " + value + " to " + toType, e);
         }
-        exceptionHandler.onParseException(key, value, toType, e);
+        exceptionHandler.onParseException(key, value, toType, def, e);
     }
 
     /**
@@ -220,11 +220,12 @@ public class PollGettingMap {
          * 当value解析为所需类型失败时的自定义处理逻辑, 可以抛出ParseException异常, 可以抛出其他RuntimeException, 可以打印日志后返回默认值,
          * 也可以不处理(返回默认值). 只要不在onParseException方法中抛出异常, 就会返回默认值.
          * @param key key
-         * @param value 无法转换的value
+         * @param value value(就是将它转换为toType时发生了异常)
          * @param toType 应该返回的类型
+         * @param def 如果不抛出异常, 会返回该默认值
          * @param e 异常
          */
-        void onParseException(Object key, Object value, String toType, Exception e) throws ParseException;
+        void onParseException(Object key, Object value, String toType, Object def, Exception e) throws ParseException;
 
     }
 
