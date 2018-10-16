@@ -42,12 +42,20 @@ public class SimpleKeyValueEncoder {
     private static final char RAW_SPACE = ' ';
     private static final char RAW_TAB = '\t';
 
+    //escape split
+    private static final char ESCAPE_NEWLINE = 'n';
+    private static final char ESCAPE_RETURN = 'r';
+
     //escape others
     private static final char ESCAPE_NULL = '0';
     private static final char ESCAPE_SPACE = 's';
     private static final char ESCAPE_TAB = 't';
 
-    //others
+    //full escape
+    private static final String FULL_ESCAPE_NEWLINE = "\\n";
+    private static final String FULL_ESCAPE_RETURN = "\\r";
+
+    //full others
     private static final String FULL_ESCAPE_NULL = "\\0";
     private static final String FULL_ESCAPE_SPACE = "\\s";
     private static final String FULL_ESCAPE_TAB = "\\t";
@@ -70,15 +78,15 @@ public class SimpleKeyValueEncoder {
                     stringBuilder.append(RAW_SPACE);
                 }
             }
-            append(stringBuilder, entry.getKey());
+            encodeAppend(stringBuilder, entry.getKey());
             stringBuilder.append(RAW_EQUAL);
-            append(stringBuilder, entry.getValue());
+            encodeAppend(stringBuilder, entry.getValue());
         }
 
         return stringBuilder.toString();
     }
 
-    private static void append(StringBuilder stringBuilder, String str){
+    private static void encodeAppend(StringBuilder stringBuilder, String str){
         if (str == null) {
             stringBuilder.append(FULL_ESCAPE_NULL);
             return;
