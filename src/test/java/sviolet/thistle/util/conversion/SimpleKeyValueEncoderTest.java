@@ -37,14 +37,15 @@ public class SimpleKeyValueEncoderTest {
         map.put("split,key", "split,value");
         map.put("eq=key=", "=eq=value");
         map.put(" blank  key ", " blank  value ");
-        map.put("\tblank\t\tkey\t", "\tblank\t\tvalue\t");
+        map.put("\tblankkey\t", "\tblankvalue\t");
+        map.put("newline\n", "\nreturn");
 
-        System.out.println(map);
-        String encoded = SimpleKeyValueEncoder.encode(map);
-        System.out.println(encoded);
+//        System.out.println(map);
+        String encoded = SimpleKeyValueEncoder.encode(map, true);
+//        System.out.println(encoded);
 
         Map<String, String> result = SimpleKeyValueEncoder.decode(encoded);
-        System.out.println(result);
+//        System.out.println(result);
 
         Assert.assertEquals(map.toString(), result.toString());
     }
