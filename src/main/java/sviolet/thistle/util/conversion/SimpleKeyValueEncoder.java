@@ -29,19 +29,22 @@ import java.util.Map;
  */
 public class SimpleKeyValueEncoder {
 
-    private static final char SPLIT = ',';
-    private static final char EQUAL = '=';
-    private static final char ESCAPE = '\\';
-    private static final char SPACE = ' ';
-    private static final char TAB = '\t';
+    private static final char RAW_SPLIT = ',';
+    private static final char RAW_NEWLINE = '\n';
+    private static final char RAW_RETURN = '\r';
 
-    private static final String ESCAPE_NULL = "\\0";
-    private static final String ESCAPE_SPACE = "\\s";
-    private static final String ESCAPE_TAB = "\\t";
+    private static final char RAW_EQUAL = '=';
+    private static final char RAW_ESCAPE = '\\';
+    private static final char RAW_SPACE = ' ';
+    private static final char RAW_TAB = '\t';
 
-    private static final char ESCAPE_VALUE_NULL = '0';
-    private static final char ESCAPE_VALUE_SPACE = 's';
-    private static final char ESCAPE_VALUE_TAB = 't';
+    private static final String ESCAPE_RAW_NULL = "\\0";
+    private static final String ESCAPE_RAW_SPACE = "\\s";
+    private static final String ESCAPE_RAW_TAB = "\\t";
+
+    private static final char ESCAPE_NULL = '0';
+    private static final char ESCAPE_SPACE = 's';
+    private static final char ESCAPE_TAB = 't';
 
     public static String encode(Map<String, String> keyValue){
         return encode(keyValue, 0);
@@ -56,13 +59,13 @@ public class SimpleKeyValueEncoder {
         int i = 0;
         for (Map.Entry<String, String> entry : keyValue.entrySet()) {
             if (i++ > 0) {
-                stringBuilder.append(SPLIT);
+                stringBuilder.append(RAW_SPLIT);
                 for (int si = 0 ; si < spaceInterval ; si++) {
-                    stringBuilder.append(SPACE);
+                    stringBuilder.append(RAW_SPACE);
                 }
             }
             append(stringBuilder, entry.getKey());
-            stringBuilder.append(EQUAL);
+            stringBuilder.append(RAW_EQUAL);
             append(stringBuilder, entry.getValue());
         }
 
@@ -71,7 +74,7 @@ public class SimpleKeyValueEncoder {
 
     private static void append(StringBuilder stringBuilder, String str){
         if (str == null) {
-            stringBuilder.append(ESCAPE_NULL);
+            stringBuilder.append(ESCAPE_RAW_NULL);
             return;
         }
 
@@ -79,20 +82,20 @@ public class SimpleKeyValueEncoder {
         int start = 0;
         for (int i = 0 ; i < chars.length ; i++) {
             char c = chars[i];
-            if (c == SPLIT ||
-                    c == EQUAL ||
-                    c == ESCAPE){
+            if (c == RAW_SPLIT ||
+                    c == RAW_EQUAL ||
+                    c == RAW_ESCAPE){
                 stringBuilder.append(chars, start, i - start);
-                stringBuilder.append(ESCAPE);
+                stringBuilder.append(RAW_ESCAPE);
                 stringBuilder.append(c);
                 start = i + 1;
-            } else if (c == SPACE) {
+            } else if (c == RAW_SPACE) {
                 stringBuilder.append(chars, start, i - start);
-                stringBuilder.append(ESCAPE_SPACE);
+                stringBuilder.append(ESCAPE_RAW_SPACE);
                 start = i + 1;
-            } else if (c == TAB) {
+            } else if (c == RAW_TAB) {
                 stringBuilder.append(chars, start, i - start);
-                stringBuilder.append(ESCAPE_TAB);
+                stringBuilder.append(ESCAPE_RAW_TAB);
                 start = i + 1;
             }
         }
@@ -122,14 +125,14 @@ public class SimpleKeyValueEncoder {
                 start = i + 1;
                 escaping = false;
             } else {
-                if (c == ESCAPE) {
+                if (c == RAW_ESCAPE) {
                     //find escape
                     escaping = true;
-                }else if (c == SPLIT) {
+                }else if (c == RAW_SPLIT) {
                     //element finish
                     visitor.onElementFinish(resultMap, chars, start, i);
                     start = i + 1;
-                } else if (c == EQUAL) {
+                } else if (c == RAW_EQUAL) {
                     //find equal
                     visitor.onEqual(resultMap, chars, start, i);
                     start = i + 1;
@@ -165,22 +168,22 @@ public class SimpleKeyValueEncoder {
             //append previous chars (skip previous escape char \)
             appendPrevious(chars, startIndex, currentIndex - 1);
             //append escape char
-            if (c == SPLIT ||
-                    c == EQUAL ||
-                    c == ESCAPE){
+            if (c == RAW_SPLIT ||
+                    c == RAW_EQUAL ||
+                    c == RAW_ESCAPE){
                 //normal escape
                 appendChar(chars, c);
-            } else if (c == ESCAPE_VALUE_SPACE) {
+            } else if (c == ESCAPE_SPACE) {
                 //record position of valid space or tab, avoid to trimmed
                 recordStartEnd();
                 //space escape
-                appendChar(chars, SPACE);
-            } else if (c == ESCAPE_VALUE_TAB) {
+                appendChar(chars, RAW_SPACE);
+            } else if (c == ESCAPE_TAB) {
                 //record position of valid space or tab, avoid to trimmed
                 recordStartEnd();
                 //tab escape
-                appendChar(chars, TAB);
-            } else if (c == ESCAPE_VALUE_NULL) {
+                appendChar(chars, RAW_TAB);
+            } else if (c == ESCAPE_NULL) {
                 //null escape
                 if (keyDecoding) {
                     //space escape can only be used alone
@@ -241,11 +244,11 @@ public class SimpleKeyValueEncoder {
         private String trim(String value, int start, int end){
             char[] chars = value.toCharArray();
             int from = 0;
-            while (from < chars.length && chars[from] <= SPACE && from < start) {
+            while (from < chars.length && chars[from] <= RAW_SPACE && from < start) {
                 from++;
             }
             int to = chars.length - 1;
-            while (to >= from && chars[to] <= SPACE && to > end) {
+            while (to >= from && chars[to] <= RAW_SPACE && to > end) {
                 to--;
             }
             return from <= 0 && to >= chars.length - 1 ? value : value.substring(from, to + 1);
