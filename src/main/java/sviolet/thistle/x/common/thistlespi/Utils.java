@@ -24,8 +24,6 @@ import sviolet.thistle.util.judge.CheckUtils;
 import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import static sviolet.thistle.x.common.thistlespi.ThistleSpi.*;
@@ -60,20 +58,20 @@ class Utils {
         } else if (String.class.isAssignableFrom(paramTypes[0])){
             //paramType length == 1 and is instance of String
             return constructor.newInstance(arg);
-        } else if (Map.class.isAssignableFrom(paramTypes[0])) {
-            //paramType length == 1 and is instance of Map
+        } else if (Properties.class.isAssignableFrom(paramTypes[0])) {
+            //paramType length == 1 and is instance of Properties
             if (CheckUtils.isEmptyOrBlank(arg)) {
-                //input empty map
+                //input empty Properties
                 if (LOG_LV >= DEBUG) {
-                    logger.print(loaderId + LOG_PREFIX_LOADER + "The parameter type of constructor is java.util.Map in " +
+                    logger.print(loaderId + LOG_PREFIX_LOADER + "The parameter type of constructor is java.util.Properties in " +
                             clazz.getName() + ", But no constructor arg defined in definitions:" + configPath);
                 }
-                return constructor.newInstance(new HashMap());
+                return constructor.newInstance(new Properties());
             }
             return newInstanceForPropConstructor(clazz, arg, classLoader, configPath, configUrl, logger, loaderId, constructor);
         } else {
             throw new RuntimeException("ThistleSpi: Illegal Service/Plugin implementation " + clazz.getName() +
-                    ", the parameter type of constructor must be java.lang.String or java.util.Map, now it it " +
+                    ", the parameter type of constructor must be java.lang.String or java.util.Properties, now it it " +
                     paramTypes[0].getName() + ", definitions:" + configUrl);
         }
     }
@@ -103,7 +101,7 @@ class Utils {
                     ", seeking " + propertiesPath + " in " + urlPrefix + ", definitions:" + configUrl, e);
         }
         if (urls == null || !urls.hasMoreElements()) {
-            throw new RuntimeException("ThistleSpi: Illegal Service/Plugin definition, the parameter type of constructor is java.util.Map in " +
+            throw new RuntimeException("ThistleSpi: Illegal Service/Plugin definition, the parameter type of constructor is java.util.Properties in " +
                     clazz.getName() + ", so you have to define a properties file at " + urlPrefix + propertiesPath + ", definitions:" + configUrl);
         }
         while (urls.hasMoreElements()) {
@@ -123,7 +121,7 @@ class Utils {
                 return constructor.newInstance(properties);
             }
         }
-        throw new RuntimeException("ThistleSpi: Illegal definition, the param type of constructor is Map in " + clazz.getName() +
+        throw new RuntimeException("ThistleSpi: Illegal definition, the param type of constructor is Properties in " + clazz.getName() +
                 ", you have to define a properties file at " + urlPrefix + propertiesPath +
                 ", NOTICE!!! MUST BE in the SAME project as the definition file (See https://github.com/shepherdviolet/thistle/blob/master/docs/thistlespi/guide.md)" +
                 ", definition file:" + configUrl);
