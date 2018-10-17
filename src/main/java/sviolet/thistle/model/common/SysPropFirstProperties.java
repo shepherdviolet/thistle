@@ -182,7 +182,7 @@ public class SysPropFirstProperties {
                 propValue = properties.getProperty(propKey, null);
                 if (exceptionHandler != null) {
                     exceptionHandler.onParseException(true, sysPropKey, sysPropValue, parser.toType(),
-                            propValue != null ? propValue : String.valueOf(def), properties);
+                            propValue != null ? propValue : String.valueOf(def), properties, e);
                 }
             }
         } else {
@@ -196,7 +196,7 @@ public class SysPropFirstProperties {
         } catch (Exception e) {
             if (exceptionHandler != null) {
                 exceptionHandler.onParseException(false, propKey, propValue, parser.toType(),
-                        String.valueOf(def), properties);
+                        String.valueOf(def), properties, e);
             }
         }
         return def;
@@ -261,9 +261,10 @@ public class SysPropFirstProperties {
          * @param value 发生错误的value
          * @param toType 尝试将value转换为该类型时出错
          * @param defValue 尝试使用的默认值
-         * @param properties (额外参数)内置的Properties(不是系统参数)
+         * @param properties 内置的Properties对象(不是系统参数)
+         * @param e 异常
          */
-        void onParseException(boolean parsingSysProp, String key, String value, Class<?> toType, String defValue, Properties properties);
+        void onParseException(boolean parsingSysProp, String key, String value, Class<?> toType, String defValue, Properties properties, Exception e);
 
     }
 
