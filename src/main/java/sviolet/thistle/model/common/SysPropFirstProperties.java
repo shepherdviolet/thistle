@@ -31,19 +31,19 @@ import java.util.Properties;
 public class SysPropFirstProperties {
 
     private Properties properties;
-    private ExceptionHandler exceptionHandler;
+    private LogHandler logHandler;
 
     /**
      * 先从系统参数(启动参数)中取值, 若取值失败(不存在或解析失败), 从内置的Properties中取值, 若取值失败(不存在或解析失败), 返回默认值
      * @param properties 先从系统参数(启动参数)中取值, 然后从这个properties中取值
-     * @param exceptionHandler 异常处理器, 用于输出解析失败的日志(设为null则什么都不做, 返回默认值)
+     * @param logHandler 日志处理器, 用于输出: 系统参数覆盖了内置参数 / 数据解析失败 等日志
      */
-    public SysPropFirstProperties(Properties properties, ExceptionHandler exceptionHandler) {
+    public SysPropFirstProperties(Properties properties, LogHandler logHandler) {
         if (properties == null) {
             throw new NullPointerException("properties is null");
         }
         this.properties = properties;
-        this.exceptionHandler = exceptionHandler;
+        this.logHandler = logHandler;
     }
 
     /**
@@ -177,12 +177,16 @@ public class SysPropFirstProperties {
         String propValue;
         if (sysPropValue != null) {
             try {
-                return parser.parse(sysPropValue);
+                Object result = parser.parse(sysPropValue);
+                if (logHandler != null) {
+                    logHandler.onOverwrittenBySysProp(sysPropKey, sysPropValue, propKey, properties.getProperty(propKey, null), def, properties);
+                }
+                return result;
             } catch (Exception e) {
                 propValue = properties.getProperty(propKey, null);
-                if (exceptionHandler != null) {
-                    exceptionHandler.onParseException(true, sysPropKey, sysPropValue, parser.toType(),
-                            propValue != null ? propValue : String.valueOf(def), properties, e);
+                if (logHandler != null) {
+                    logHandler.onParseException(true, sysPropKey, sysPropValue, parser.toType(),
+                            propValue != null ? propValue : def, properties, e);
                 }
             }
         } else {
@@ -194,10 +198,13 @@ public class SysPropFirstProperties {
         try {
             return parser.parse(propValue);
         } catch (Exception e) {
-            if (exceptionHandler != null) {
-                exceptionHandler.onParseException(false, propKey, propValue, parser.toType(),
-                        String.valueOf(def), properties, e);
+            if (logHandler != null) {
+                logHandler.onParseException(false, propKey, propValue, parser.toType(),
+                        def, properties, e);
             }
+        }
+        if (logHandler != null) {
+            logHandler.onUsingDefault(sysPropKey, sysPropValue, propKey, propValue, def, properties);
         }
         return def;
     }
@@ -251,11 +258,35 @@ public class SysPropFirstProperties {
         Class<?> toType();
     }
 
-    public interface ExceptionHandler{
+    /**
+     * 日志处理器, 用于输出: 系统参数覆盖了内置参数 / 数据解析失败 等日志
+     */
+    public interface LogHandler {
 
         /**
-         * 当value从String转为指定类型时发生异常.
-         * 你可以在这里打印日志, get方法会返回默认值, 或抛出RuntimeException, get方法就会抛出该异常.
+         * 当系统参数(启动参数)存在, 并覆盖了内置参数时
+         * @param sysPropKey 系统参数key
+         * @param sysPropValue 系统参数的值
+         * @param propKey 内置参数的key
+         * @param propValue 内置参数的值
+         * @param defValue 预设的默认值
+         * @param properties 内置的Properties对象(不是系统参数)
+         */
+        void onOverwrittenBySysProp(String sysPropKey, String sysPropValue, String propKey, String propValue, Object defValue, Properties properties);
+
+        /**
+         * 当使用默认值时
+         * @param sysPropKey 系统参数key
+         * @param sysPropValue 系统参数的值
+         * @param propKey 内置参数的key
+         * @param propValue 内置参数的值
+         * @param defValue 预设的默认值
+         * @param properties 内置的Properties对象(不是系统参数)
+         */
+        void onUsingDefault(String sysPropKey, String sysPropValue, String propKey, String propValue, Object defValue, Properties properties);
+
+        /**
+         * 当value从String转为指定类型时发生异常. 你可以在这里打印日志(get方法会返回默认值)
          * @param parsingSysProp true:解析系统参数(启动参数)发生错误 false:解析内置的Properties参数发生错误
          * @param key 发生错误的key
          * @param value 发生错误的value
@@ -264,7 +295,7 @@ public class SysPropFirstProperties {
          * @param properties 内置的Properties对象(不是系统参数)
          * @param e 异常
          */
-        void onParseException(boolean parsingSysProp, String key, String value, Class<?> toType, String defValue, Properties properties, Exception e);
+        void onParseException(boolean parsingSysProp, String key, String value, Class<?> toType, Object defValue, Properties properties, Exception e);
 
     }
 
