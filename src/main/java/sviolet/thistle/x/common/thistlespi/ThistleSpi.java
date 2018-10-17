@@ -60,7 +60,7 @@ public class ThistleSpi {
 
     //日志前缀
     static final String LOG_PREFIX = " ThistleSpi | ";
-    static final String LOG_PREFIX_LOADER = " ThistleSpi ServiceLoader | ";
+    static final String LOG_PREFIX_LOADER = " ThistleSpi Loader | ";
 
     //日志级别
     static final int ERROR = 0;
