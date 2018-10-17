@@ -1,6 +1,7 @@
 # ThistleSpi 日志样例
 
 * 在使用`slate-common`库的`SlfSpiLogger`输出日志时, SLF4J日志级别`INFO`, 日志包路径`sviolet.slate.common.x.common.thistlespi`
+* 在未使用`slate-common`库的`SlfSpiLogger`输出日志时, 默认使用System.out.println()输出
 * ThistleSpi可以改变自身日志打印器的实现, 详见[ThistleSpi文档的`Log Config`章节](https://github.com/shepherdviolet/thistle/blob/master/docs/thistlespi/guide.md)
 
 # -Dthistle.spi.loglv=info
