@@ -59,8 +59,8 @@ public class ThistleSpi {
     static final String CONFIG_PATH_PARAMETER = "parameter/";
 
     //日志前缀
-    public static final String LOG_PREFIX = " ThistleSpi | ";
-    public static final String LOG_PREFIX_LOADER = " ThistleSpi Loader | ";
+    static final String LOG_PREFIX = " ThistleSpi | ";
+    static final String LOG_PREFIX_LOADER = " ThistleSpi Loader | ";
 
     //日志级别
     static final int ERROR = 0;
