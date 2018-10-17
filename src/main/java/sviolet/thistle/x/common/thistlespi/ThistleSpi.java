@@ -59,8 +59,8 @@ public class ThistleSpi {
     static final String CONFIG_PATH_PARAMETER = "parameter/";
 
     //日志前缀
-    static final String LOG_PREFIX = " ThistleSpi | ";
-    static final String LOG_PREFIX_LOADER = " ThistleSpi Loader | ";
+    public static final String LOG_PREFIX = " ThistleSpi | ";
+    public static final String LOG_PREFIX_LOADER = " ThistleSpi Loader | ";
 
     //日志级别
     static final int ERROR = 0;
@@ -71,7 +71,7 @@ public class ThistleSpi {
     static final int LOG_LV;
 
     //是否启用缓存(默认true)
-    static final boolean CACHE;
+    private static final boolean CACHE;
 
     //被强制禁用的配置文件的hash
     static final Set<String> FILE_EXCLUSION = new HashSet<>();
