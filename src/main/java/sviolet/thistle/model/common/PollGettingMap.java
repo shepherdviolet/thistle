@@ -118,7 +118,7 @@ public class PollGettingMap {
      * @param def 默认值
      * @return value
      */
-    public int getInt(Object key, int def) throws ParseException {
+    public int getInt(Object key, int def) {
         Object value = get(key, def);
         if (value instanceof Integer) {
             return (int) value;
@@ -137,7 +137,7 @@ public class PollGettingMap {
      * @param def 默认值
      * @return value
      */
-    public long getLong(Object key, long def) throws ParseException {
+    public long getLong(Object key, long def) {
         Object value = get(key, def);
         if (value instanceof Long) {
             return (long) value;
@@ -156,7 +156,7 @@ public class PollGettingMap {
      * @param def 默认值
      * @return value
      */
-    public float getFloat(Object key, float def) throws ParseException {
+    public float getFloat(Object key, float def) {
         Object value = get(key, def);
         if (value instanceof Float) {
             return (float) value;
@@ -175,7 +175,7 @@ public class PollGettingMap {
      * @param def 默认值
      * @return value
      */
-    public double getDouble(Object key, double def) throws ParseException {
+    public double getDouble(Object key, double def) {
         Object value = get(key, def);
         if (value instanceof Double) {
             return (double) value;
@@ -198,7 +198,7 @@ public class PollGettingMap {
     /**
      * 当value解析为所需类型失败时抛出的异常
      */
-    public static class ParseException extends Exception {
+    public static class ParseException extends RuntimeException {
 
         public ParseException(String message) {
             super(message);
