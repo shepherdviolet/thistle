@@ -19,6 +19,8 @@
 
 package sviolet.thistle.model.common;
 
+import sviolet.thistle.util.judge.CheckUtils;
+
 import java.util.Properties;
 
 /**
@@ -53,12 +55,45 @@ public class SysPropFirstProperties {
         return getStringByDiffKey(key, key, def);
     }
 
+    /**
+     * 取值
+     * @param sysPropKey 系统参数(启动参数)的取值key
+     * @param propKey 内置的Properties的取值key
+     * @param def 默认值
+     */
     public String getStringByDiffKey(String sysPropKey, String propKey, String def) {
         String value = System.getProperty(sysPropKey, null);
         if (value != null) {
             return value;
         }
         return properties.getProperty(propKey, def);
+    }
+
+    /**
+     * 取值
+     * @param key key, 系统参数(启动参数)和内置的Properties都用这个key取值
+     * @param def 默认值
+     */
+    public boolean getBoolean(String key, boolean def) {
+        return getBooleanByDiffKey(key, key, def);
+    }
+
+    /**
+     * 取值
+     * @param sysPropKey 系统参数(启动参数)的取值key
+     * @param propKey 内置的Properties的取值key
+     * @param def 默认值
+     */
+    public boolean getBooleanByDiffKey(String sysPropKey, String propKey, boolean def) {
+        String value = System.getProperty(sysPropKey, null);
+        if (!CheckUtils.isEmptyOrBlank(value)) {
+            return Boolean.parseBoolean(value);
+        }
+        value = properties.getProperty(propKey, null);
+        if (!CheckUtils.isEmptyOrBlank(value)) {
+            return Boolean.parseBoolean(value);
+        }
+        return def;
     }
 
     /**
@@ -139,14 +174,15 @@ public class SysPropFirstProperties {
 
     private Object getInner(String sysPropKey, String propKey, Object def, Parser parser) {
         String sysPropValue = System.getProperty(sysPropKey, null);
-        String propValue = null;
+        String propValue;
         if (sysPropValue != null) {
             try {
                 return parser.parse(sysPropValue);
             } catch (Exception e) {
                 propValue = properties.getProperty(propKey, null);
                 if (exceptionHandler != null) {
-                    exceptionHandler.onParseException(true, sysPropKey, sysPropValue, propValue != null ? propValue : String.valueOf(def), properties);
+                    exceptionHandler.onParseException(true, sysPropKey, sysPropValue, parser.toType(),
+                            propValue != null ? propValue : String.valueOf(def), properties);
                 }
             }
         } else {
@@ -159,7 +195,8 @@ public class SysPropFirstProperties {
             return parser.parse(propValue);
         } catch (Exception e) {
             if (exceptionHandler != null) {
-                exceptionHandler.onParseException(false, propKey, propValue, String.valueOf(def), properties);
+                exceptionHandler.onParseException(false, propKey, propValue, parser.toType(),
+                        String.valueOf(def), properties);
             }
         }
         return def;
@@ -170,12 +207,20 @@ public class SysPropFirstProperties {
         public Object parse(String value) {
             return Integer.parseInt(value);
         }
+        @Override
+        public Class<?> toType() {
+            return int.class;
+        }
     };
 
     private static final Parser LONG_PARSER = new Parser() {
         @Override
         public Object parse(String value) {
             return Long.parseLong(value);
+        }
+        @Override
+        public Class<?> toType() {
+            return long.class;
         }
     };
 
@@ -184,6 +229,10 @@ public class SysPropFirstProperties {
         public Object parse(String value) {
             return Float.parseFloat(value);
         }
+        @Override
+        public Class<?> toType() {
+            return float.class;
+        }
     };
 
     private static final Parser DOUBLE_PARSER = new Parser() {
@@ -191,10 +240,15 @@ public class SysPropFirstProperties {
         public Object parse(String value) {
             return Double.parseDouble(value);
         }
+        @Override
+        public Class<?> toType() {
+            return double.class;
+        }
     };
 
     private interface Parser {
         Object parse(String value);
+        Class<?> toType();
     }
 
     public interface ExceptionHandler{
@@ -205,10 +259,11 @@ public class SysPropFirstProperties {
          * @param parsingSysProp true:解析系统参数(启动参数)发生错误 false:解析内置的Properties参数发生错误
          * @param key 发生错误的key
          * @param value 发生错误的value
+         * @param toType 尝试将value转换为该类型时出错
          * @param defValue 尝试使用的默认值
-         * @param properties 内置的Properties(不是系统Properties)
+         * @param properties (额外参数)内置的Properties(不是系统参数)
          */
-        void onParseException(boolean parsingSysProp, String key, String value, String defValue, Properties properties);
+        void onParseException(boolean parsingSysProp, String key, String value, Class<?> toType, String defValue, Properties properties);
 
     }
 
