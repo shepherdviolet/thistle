@@ -118,11 +118,13 @@ class Utils {
                     throw new RuntimeException("ThistleSpi: Error while loading properties for constructor of " + clazz.getName() +
                             ", properties path:" + url + ", definitions:" + configUrl, e);
                 }
-                //set url to properties
-                properties.setProperty(PROPERTIES_URL, String.valueOf(url));
+                //set url to properties (key only)
+                properties.setProperty(PROPERTIES_URL, "...");
                 if (LOG_LV >= INFO) {
                     logger.print(loaderId + LOG_PREFIX_LOADER + "Parameters load successfully: " + clazz.getName() + "(" + arg + ") params:" + properties + (LOG_LV >= DEBUG ? " definitions:" + url : ""));
                 }
+                //set url to properties (with value)
+                properties.setProperty(PROPERTIES_URL, String.valueOf(url));
                 return constructor.newInstance(properties);
             }
         }
