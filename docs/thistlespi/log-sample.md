@@ -73,7 +73,7 @@
 ... 0 ThistleSpi |   type: sviolet.thistle.x.common.thistlespi.SpiLogger
 ... 0 ThistleSpi |   implement: sviolet.slate.common.x.common.thistlespi.SlfSpiLogger
 ... 0 ThistleSpi |   url: jar:file:/C:/m2repository/repository/com/github/shepherdviolet/slate-common/11.1-SNAPSHOT/slate-common-11.1-20181012.155613-8.jar!/META-INF/thistle-spi-logger/service.properties
-... 0 ThistleSpi |   reason: Applied by level (application > platform > library)
+... 0 ThistleSpi |   reason: Applied by level (application > platform > library > default)
 ... 0 ThistleSpi | All Configurations:
 ... 0 ThistleSpi |   + Service{id=slate-common, level=DEFAULT, impl=sviolet.slate.common.x.common.thistlespi.SlfSpiLogger, arg=null, url=jar:file:/C:/m2repository/repository/com/github/shepherdviolet/slate-common/11.1-SNAPSHOT/slate-common-11.1-20181012.155613-8.jar!/META-INF/thistle-spi-logger/service.properties}
 ... 0 ThistleSpi | -------------------------------------------------------------
@@ -89,7 +89,7 @@
 ...SlfSpiLogger : 0 ThistleSpi |   type: sviolet.slate.common.x.monitor.txtimer.TxTimerProvider
 ...SlfSpiLogger : 0 ThistleSpi |   implement: sviolet.slate.common.x.monitor.txtimer.def.DefaultTxTimerProvider
 ...SlfSpiLogger : 0 ThistleSpi |   url: jar:file:/C:/m2repository/repository/com/github/shepherdviolet/slate-common/11.1-SNAPSHOT/slate-common-11.1-20181012.155613-8.jar!/META-INF/thistle-spi/service.properties
-...SlfSpiLogger : 0 ThistleSpi |   reason: Applied by level (application > platform > library)
+...SlfSpiLogger : 0 ThistleSpi |   reason: Applied by level (application > platform > library > default)
 ...SlfSpiLogger : 0 ThistleSpi | All Configurations:
 ...SlfSpiLogger : 0 ThistleSpi |   + Service{id=slate-common, level=DEFAULT, impl=sviolet.slate.common.x.monitor.txtimer.def.DefaultTxTimerProvider, arg=null, url=jar:file:/C:/m2repository/repository/com/github/shepherdviolet/slate-common/11.1-SNAPSHOT/slate-common-11.1-20181012.155613-8.jar!/META-INF/thistle-spi/service.properties}
 ...SlfSpiLogger : 0 ThistleSpi | -------------------------------------------------------------
@@ -97,7 +97,7 @@
 ...SlfSpiLogger : 0 ThistleSpi |   type: beet.scrunchy.proxy.BeanNameResolver
 ...SlfSpiLogger : 0 ThistleSpi |   implement: beet.scrunchy.proxy.DefaultBeanNameResolver
 ...SlfSpiLogger : 0 ThistleSpi |   url: file:/E:/C_Workspace/j2ee-3-test/beet-scrunchy-incubator/beet-scrunchy/out/production/resources/META-INF/thistle-spi/service.properties
-...SlfSpiLogger : 0 ThistleSpi |   reason: Applied by level (application > platform > library)
+...SlfSpiLogger : 0 ThistleSpi |   reason: Applied by level (application > platform > library > default)
 ...SlfSpiLogger : 0 ThistleSpi | All Configurations:
 ...SlfSpiLogger : 0 ThistleSpi |   + Service{id=beet-root-scrunchies, level=LIBRARY, impl=beet.scrunchy.proxy.DefaultBeanNameResolver, arg=null, url=file:/E:/C_Workspace/j2ee-3-test/beet-scrunchy-incubator/beet-scrunchy/out/production/resources/META-INF/thistle-spi/service.properties}
 ...SlfSpiLogger : 0 ThistleSpi | -------------------------------------------------------------
@@ -105,7 +105,7 @@
 ...SlfSpiLogger : 0 ThistleSpi |   type: beet.common.trace.TraceProvider
 ...SlfSpiLogger : 0 ThistleSpi |   implement: beet.common.trace.DefaultTraceProvider
 ...SlfSpiLogger : 0 ThistleSpi |   url: file:/E:/C_Workspace/j2ee-3-test/beet-scrunchy-incubator/beet-common/out/production/resources/META-INF/thistle-spi/service.properties
-...SlfSpiLogger : 0 ThistleSpi |   reason: Applied by level (application > platform > library)
+...SlfSpiLogger : 0 ThistleSpi |   reason: Applied by level (application > platform > library > default)
 ...SlfSpiLogger : 0 ThistleSpi | All Configurations:
 ...SlfSpiLogger : 0 ThistleSpi |   + Service{id=beet-root-common, level=LIBRARY, impl=beet.common.trace.DefaultTraceProvider, arg=null, url=file:/E:/C_Workspace/j2ee-3-test/beet-scrunchy-incubator/beet-common/out/production/resources/META-INF/thistle-spi/service.properties}
 ...SlfSpiLogger : 0 ThistleSpi | -------------------------------------------------------------
@@ -113,7 +113,7 @@
 ...SlfSpiLogger : 0 ThistleSpi |   type: sviolet.slate.common.x.conversion.beanutil.BeanConverter
 ...SlfSpiLogger : 0 ThistleSpi |   implement: sviolet.slate.common.x.conversion.beanutil.DefaultBeanConverter(logEnabled)
 ...SlfSpiLogger : 0 ThistleSpi |   url: jar:file:/C:/m2repository/repository/com/github/shepherdviolet/slate-common/11.1-SNAPSHOT/slate-common-11.1-20181012.155613-8.jar!/META-INF/thistle-spi/service.properties
-...SlfSpiLogger : 0 ThistleSpi |   reason: Applied by level (application > platform > library)
+...SlfSpiLogger : 0 ThistleSpi |   reason: Applied by level (application > platform > library > default)
 ...SlfSpiLogger : 0 ThistleSpi | All Configurations:
 ...SlfSpiLogger : 0 ThistleSpi |   + Service{id=slate-common, level=DEFAULT, impl=sviolet.slate.common.x.conversion.beanutil.DefaultBeanConverter, arg=logEnabled, url=jar:file:/C:/m2repository/repository/com/github/shepherdviolet/slate-common/11.1-SNAPSHOT/slate-common-11.1-20181012.155613-8.jar!/META-INF/thistle-spi/service.properties}
 ...SlfSpiLogger : 0 ThistleSpi | -------------------------------------------------------------

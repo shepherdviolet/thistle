@@ -364,7 +364,7 @@ class ServiceConfigLoader {
                 }
                 if (LOG_LV >= INFO) {
                     logger.print(loaderId + LOG_PREFIX + "Warning: No service named " + applyInfo.id + ", failed to apply service '" + spi.type + "' to id '" + applyInfo.id + "' by " + applyInfo.resource);
-                    logger.print(loaderId + LOG_PREFIX + "Warning: We will apply '" + spi.type + "' service by level (application > platform > library)");
+                    logger.print(loaderId + LOG_PREFIX + "Warning: We will apply '" + spi.type + "' service by level (application > platform > library > default)");
                 }
             }
 
@@ -398,7 +398,7 @@ class ServiceConfigLoader {
             }
 
             spi.appliedService = appliedServices.get(0);
-            spi.applyReason = "level (application > platform > library)";
+            spi.applyReason = "level (application > platform > library > default)";
 
         }
 
