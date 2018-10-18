@@ -30,8 +30,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * [非线程安全] <p>
- *
  * ThistleSpi<br>
  * Java Service Provider Interfaces (SPI) 变种实现<br>
  * 支持`服务装载`和`插件装载`两种方式<br>
@@ -115,7 +113,6 @@ public class ThistleSpi {
     }
 
     /**
-     * [非线程安全]<br>
      * 创建一个新的服务加载器(无缓存).<br>
      * 1.尽量用同一个加载器加载服务和插件, 不要反复创建加载器.<br>
      * 2.创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.<br>
@@ -139,7 +136,6 @@ public class ThistleSpi {
     }
 
     /**
-     * [非线程安全]<br>
      * 创建一个新的服务加载器(无缓存).<br>
      * 1.尽量用同一个加载器加载服务和插件, 不要反复创建加载器.<br>
      * 2.创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.<br>
@@ -153,7 +149,6 @@ public class ThistleSpi {
     }
 
     /**
-     * [非线程安全]<br>
      * 创建一个新的服务加载器(无缓存).<br>
      * 1.尽量用同一个加载器加载服务和插件, 不要反复创建加载器.<br>
      * 2.创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.<br>
@@ -167,7 +162,6 @@ public class ThistleSpi {
     }
 
     /**
-     * [非线程安全]<br>
      * 创建一个新的服务加载器(无缓存).<br>
      * 1.尽量用同一个加载器加载服务和插件, 不要反复创建加载器.<br>
      * 2.创建过程会加载所有jar包中的相关配置文件, 根据策略决定每个服务的实现类, 决定每个插件的实现列表.<br>
@@ -245,7 +239,6 @@ public class ThistleSpi {
     public static class ServiceLoader {
 
         /**
-         * [非线程安全]<p>
          * 加载服务, 每次都会重新实例化, 请自行持有服务对象<p>
          * 若服务未定义会返回空, 实例化失败会抛出RuntimeException异常<p>
          * @param type 服务类型(接口全限定名)
@@ -256,7 +249,6 @@ public class ThistleSpi {
         }
 
         /**
-         * [非线程安全]<p>
          * 加载插件, 每次都会重新实例化, 请自行持有插件对象<p>
          * 若插件未定义会返回空列表, 实例化失败会抛出RuntimeException异常<p>
          * @param type 插件类型(接口全限定名)
