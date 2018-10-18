@@ -162,7 +162,7 @@ sviolet.thistle.x.common.thistlespi.SpiLogger=sample-app
 
 ```text
 ...SlfSpiLogger : 0 ThistleSpi | -------------------------------------------------------------
-...SlfSpiLogger : 0 ThistleSpi | Loading services from META-INF/thistle-spi/, DOC: https://github.com/shepherdviolet/thistle
+...SlfSpiLogger : 0 ThistleSpi | Loading services from META-INF/thistle-spi/, DOC: github.com/shepherdviolet/thistle/blob/master/docs/thistlespi/guide.md
 ...SlfSpiLogger : 0 ThistleSpi | Loading config file:/E:/C_Workspace/j2ee-3-test/beet-scrunchy-incubator/beet-scrunchy/out/production/resources/META-INF/thistle-spi/service.properties <hash> 3cf41de0f0d4bdc24970c7b834e2b5c7
 ...SlfSpiLogger : 0 ThistleSpi | Loading config file:/E:/C_Workspace/j2ee-3-test/beet-scrunchy-incubator/beet-common/out/production/resources/META-INF/thistle-spi/service.properties <hash> 8e3d1cbd3f828ba2a7822581416e97e0
 ...SlfSpiLogger : 0 ThistleSpi | Loading config jar:file:/C:/m2repository/repository/com/github/shepherdviolet/slate-common/11.1-SNAPSHOT/slate-common-11.1-20181012.155613-8.jar!/META-INF/thistle-spi/service.properties <hash> ec8a407a18cb9646b2330dc66bc294b5
@@ -180,7 +180,7 @@ sviolet.thistle.x.common.thistlespi.SpiLogger=sample-app
 
 ```text
 ...SlfSpiLogger : 0 ThistleSpi | -------------------------------------------------------------
-...SlfSpiLogger : 0 ThistleSpi | Loading services from META-INF/thistle-spi/, DOC: https://github.com/shepherdviolet/thistle
+...SlfSpiLogger : 0 ThistleSpi | Loading services from META-INF/thistle-spi/, DOC: github.com/shepherdviolet/thistle/blob/master/docs/thistlespi/guide.md
 ...SlfSpiLogger : 0 ThistleSpi | !!! Exclude config file:/E:/C_Workspace/j2ee-3-test/beet-scrunchy-incubator/beet-scrunchy/out/production/resources/META-INF/thistle-spi/service.properties by -Dthistle.spi.file.exclusion
 ...SlfSpiLogger : 0 ThistleSpi | !!! Exclude config file:/E:/C_Workspace/j2ee-3-test/beet-scrunchy-incubator/beet-common/out/production/resources/META-INF/thistle-spi/service.properties by -Dthistle.spi.file.exclusion
 ...SlfSpiLogger : 0 ThistleSpi | Loading config jar:file:/C:/m2repository/repository/com/github/shepherdviolet/slate-common/11.1-SNAPSHOT/slate-common-11.1-20181012.155613-8.jar!/META-INF/thistle-spi/service.properties <hash> ec8a407a18cb9646b2330dc66bc294b5

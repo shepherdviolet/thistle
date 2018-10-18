@@ -121,7 +121,7 @@ class ServiceConfigLoader {
         if ((loadingLogger && LOG_LV >= DEBUG) ||
                 (!loadingLogger && LOG_LV >= INFO)) {
             logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
-            logger.print(loaderId + LOG_PREFIX + "Loading services from " + configPath + ", DOC: https://github.com/shepherdviolet/thistle");
+            logger.print(loaderId + LOG_PREFIX + "Loading services from " + configPath + ", DOC: github.com/shepherdviolet/thistle/blob/master/docs/thistlespi/guide.md");
         }
 
         //loading service.properties

@@ -146,7 +146,7 @@ class PluginConfigLoader {
 
         if (LOG_LV >= INFO) {
             logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
-            logger.print(loaderId + LOG_PREFIX + "Loading plugins from " + configPath + ", DOC: https://github.com/shepherdviolet/thistle");
+            logger.print(loaderId + LOG_PREFIX + "Loading plugins from " + configPath + ", DOC: github.com/shepherdviolet/thistle/blob/master/docs/thistlespi/guide.md");
         }
 
         //loading plugin.properties
