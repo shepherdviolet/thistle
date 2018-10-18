@@ -1,6 +1,26 @@
-# ThistleSpi 插件装载
+# ThistleSpi 插件加载指南
 
-# 定义接口类
+```text
+当开源库或框架层(以下简称底层)的程序中, 需要有序的一系列实现时, 可以使用插件加载模式, 例如: 过滤器 / 拦截器 / 处理器等场景. 
+底层定义接口, 用户工程或插件库(以下简称上层)实现接口后, 添加插件定义文件, 声明插件的接口/优先度/实现, 底层使用ThistleSpi加载
+插件时, 会扫描classpath, 默认根据插件的优先度排序后返回一个插件列表, 用户可以使用配置文件或启动参数排除指定的插件. 
+在处理器场景时, 接口中定义一个方法, 返回处理器接收的数据类型, 底层可以根据这个方法决定处理器何时使用. 
+```
+
+* 本指南分三个章节`开源库或框架层(底层)加载插件` `用户工程或插件库(上层)实现插件` `用户排除不想要的插件`
+* 开源库或框架层开发者请阅读全部内容
+* 用户工程或插件库开发者请阅读`用户工程或插件库(上层)实现插件` `用户排除不想要的插件`
+* 单纯想了解指定服务/排除插件/解决冲突的方法请阅读`用户排除不想要的插件`
+
+<br>
+<br>
+<br>
+
+# 开源库或框架层(底层)加载插件
+
+* 本章节供 开源库或框架层开发者 阅读
+
+## 定义插件接口
 
 ```text
 package sample.spi.facade;
@@ -22,7 +42,7 @@ public interface BPlugin {
 }
 ```
 
-# 加载插件
+## 加载插件
 
 ```text
     private List<APlugin> aPlugins;
@@ -37,7 +57,6 @@ public interface BPlugin {
          * 4.若设置启动参数-Dthistle.spi.cache=false, 则每次都会重新创建加载器.<br>
          * 5.如果有需要(动态类加载/Jar包热插拔/多ClassLoader/自定义ClassLoader), 请使用newLoader方法创建并自行维护加载器.<br>
          *
-         * 支持:
          * newLoader方法:能够自定义配置文件路径和类加载器<br>
          * getLoader方法:能够自定义配置文件路径, getLoader方法第一次创建加载器, 后续会从缓存中获取<br>
          */
@@ -52,6 +71,34 @@ public interface BPlugin {
         // ......
     }
 ```
+
+## 加载自定义路径下的插件
+
+* 默认情况下, 加载器会加载`META-INF/thistle-spi/`路径下的:service.properties, service-apply.properties, plugin.properties, plugin-ignore.properties, parameter/*.properties
+* 我们可以通过如下方法指定自定义的配置路径
+
+```text
+    private AService aService;
+    private BService bService;
+    private List<APlugin> aPlugins;
+    private List<BPlugin> bPlugins;
+    
+    public void init(){
+        ThistleSpi.ServiceLoader serviceLoader = ThistleSpi.newLoader(Thread.currentThread().getContextClassLoader(), "META-INF/custom-path/");
+        aService = serviceLoader.loadService(AService.class);
+        bService = serviceLoader.loadService(BService.class);
+        aPlugins = serviceLoader.loadPlugins(APlugin.class);
+        bPlugins = serviceLoader.loadPlugins(BPlugin.class);
+    }
+```
+
+* 注意:ThistleSpi自身日志打印器的`META-INF/thistle-spi-logger/`路径无法修改
+
+<br>
+<br>
+<br>
+
+//TODO 未完待续
 
 # 插件实现类
 
@@ -199,24 +246,4 @@ sample.spi.facade.APlugin=sample.spi.impl.APluginImpl1(true),sample.spi.impl.APl
 > 将构造参数为`true`的`sample.spi.impl.APluginImpl1`实现排除<br>
 > 将构造参数为`yyyy-MM-dd HH:mm:ss.SSS`的`sample.spi.impl.APluginImpl2`实现排除<br>
 
-# 加载自定义路径下的配置
 
-* 默认情况下, ThistleSpi的加载器会加载`META-INF/thistle-spi/`路径下的配置文件(service.properties/service-apply.properties/plugin.properties/plugin-ignore.properties)
-* 我们可以通过如下方法指定自定义的配置路径
-
-```text
-    private AService aService;
-    private BService bService;
-    private List<APlugin> aPlugins;
-    private List<BPlugin> bPlugins;
-    
-    public void init(){
-        ThistleSpi.ServiceLoader serviceLoader = ThistleSpi.newLoader(Thread.currentThread().getContextClassLoader(), "META-INF/custom-path/");
-        aService = serviceLoader.loadService(AService.class);
-        bService = serviceLoader.loadService(BService.class);
-        aPlugins = serviceLoader.loadPlugins(APlugin.class);
-        bPlugins = serviceLoader.loadPlugins(BPlugin.class);
-    }
-```
-
-* 注意:`META-INF/thistle-spi-logger/`路径无法修改
