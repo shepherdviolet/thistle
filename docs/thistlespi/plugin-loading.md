@@ -7,10 +7,10 @@
 在处理器场景时, 接口中定义一个方法, 返回处理器接收的数据类型, 底层可以根据这个方法决定处理器何时使用. 
 ```
 
-* 本指南分三个章节`开源库或框架层(底层)加载插件` `用户工程或插件库(上层)实现插件` `用户排除不想要的插件`
+* 本指南分三个章节`开源库或框架层(底层)加载插件` `用户工程或插件库(上层)实现插件` `用户排除不需要的插件实现`
 * 开源库或框架层开发者请阅读全部内容
 * 用户工程或插件库开发者请阅读`用户工程或插件库(上层)实现插件` `用户排除不想要的插件`
-* 单纯想了解指定服务/排除插件/解决冲突的方法请阅读`用户排除不想要的插件`
+* 单纯想了解排除插件的方法请阅读`用户排除不需要的插件实现`
 
 <br>
 <br>
@@ -98,35 +98,24 @@ public interface BPlugin {
 <br>
 <br>
 
-//TODO 未完待续
+# 用户工程或插件库(上层)实现插件
 
-# 插件实现类
+* 本章节供 开源库或框架层开发者 和 用户工程或插件库开发者 阅读
 
-* 实现类支持`无参构造器`
-* 实现类支持`只有一个参数, 且参数类型为String的构造器`(简称`有参构造器`), 注意该参数可能传入空值
-* 插件声明中无`构造参数`时, 实例化时优先调用`无参构造器`, 若不存在则调用`有参构造器`
-* 插件声明中有`构造参数`时, 实例化时优先调用`有参构造器`, 若不存在则调用`无参构造器`
-* 有无`构造参数`见`声明插件的实现`章节
+## 实现插件接口
+
+* 实现类只能有一个public构造器(构造方法), 否则在插件加载时会报错
+* 未编写构造器的类, 编译器会自动生成一个public无参构造器
+* 目前构造器支持的参数为: 无构造参数 / 一个String构造参数 / 一个Properties构造参数, 拥有其他构造参数会报错
+
+### 实现插件接口(无构造参数)
+
+* 无显式声明的构造器
 
 ```text
 package sample.spi.impl;
 
-public class APluginImpl1 implements APlugin {
-    /**
-     * 无参构造器
-     */
-    //public APluginImpl1() {
-    //
-    //}
-    
-    /**
-     * 只有一个参数, 且参数类型为String的构造器
-     * 注意该参数可能为空
-     */
-    //public APluginImpl1(String arg) {
-    //
-    //}
-    
+public class APluginImpl implements APlugin {
     @Override
     public String invoke(String input) {
         // do something
@@ -134,10 +123,15 @@ public class APluginImpl1 implements APlugin {
 }
 ```
 
+* 有显式声明的无参构造器, 插件实例化时会调用该构造器
+
 ```text
 package sample.spi.impl;
 
-public class APluginImpl2 implements APlugin {
+public class APluginImpl implements APlugin {
+    public APluginImpl() {
+        // do init
+    }
     @Override
     public String invoke(String input) {
         // do something
@@ -145,22 +139,114 @@ public class APluginImpl2 implements APlugin {
 }
 ```
 
-# 声明插件的实现
+### 实现插件接口(一个String构造参数)
 
-* 创建文件`META-INF/thistle-spi/plugin.properties`
-* 编辑文件:
+* 只有一个参数, 且参数类型为String的构造器
+* 插件实例化时, 会将插件定义文件中的构造参数传入这个构造器
+* 注意: 这个构造参数可能为空(如果插件定义文件中未设置构造参数)
 
 ```text
-sample.spi.facade.APlugin>64=sample.spi.impl.APluginImpl1(yyyy-MM-dd HH:mm:ss.SSS)
-sample.spi.facade.APlugin>128=sample.spi.impl.APluginImpl2
+package sample.spi.impl;
+
+public class APluginImpl implements APlugin {
+    public APluginImpl(String arg) {
+        // do init
+    }
+    @Override
+    public String invoke(String input) {
+        // do something
+    }
+}
 ```
 
-* 格式(无构造参数): `插件接口名`>`优先级`=`插件实现类名`
-* 格式(有构造参数): `插件接口名`>`优先级`=`插件实现类名`(`构造参数`)
+### 实现插件接口(一个Properties构造参数)
+
+* 只有一个参数, 且参数类型为java.util.Properties的构造器
+* 插件实例化时, 会根据插件定义文件中的构造参数的值, 作为配置文件名, 找到插件定义文件所在路径下的配置文件, 加载其中的配置, 最后将Properties传入这个构造器
+* 注意这个构造参数可能为空(如果插件定义文件中未设置构造参数)
+
+```text
+package sample.spi.impl;
+import java.util.Properties;
+
+public class APluginImpl implements APlugin {
+    public APluginImpl(Properties arg) {
+        // do init
+    }
+    @Override
+    public String invoke(String input) {
+        // do something
+    }
+}
+```
+
+<br>
+
+## 插件定义
+
+### 无构造参数的定义
+
+* 创建定义文件`META-INF/thistle-spi/plugin.properties`, 并编辑
+
+```text
+sample.spi.facade.APlugin>64=sample.spi.impl.APluginImpl
+```
+
+* 格式: `插件接口名`>`优先度`=`插件实现类名`
+
+### 有构造参数的定义(普通字符串构造参数)
+
+* 创建定义文件`META-INF/thistle-spi/plugin.properties`, 并编辑
+
+```text
+sample.spi.facade.APlugin>128=sample.spi.impl.APluginImpl(yyyy-MM-dd HH:mm:ss.SSS)
+```
+
+* 格式: `插件接口名`>`优先度`=`插件实现类名`(`构造参数`)
+* 插件实现类构造器能够获得这里定义的构造参数(构造器有且仅有一个String入参时)
+
+### 有构造参数的定义(引用配置文件名)
+
+* 创建定义文件`META-INF/thistle-spi/plugin.properties`, 并编辑
+
+```text
+sample.spi.facade.APlugin>256=sample.spi.impl.APluginImpl(mypluginconfig.properties)
+```
+
+* 格式: `插件接口名`>`优先度`=`插件实现类名`(`构造参数`)
+* 在定义文件所在路径`META-INF/thistle-spi/`下创建目录`parameter/`, 然后在目录中创建配置文件`mypluginconfig.properties`
+* 编辑配置文件: 
+
+```text
+# 添加插件所需配置参数
+parameter1=value1
+parameter2=value2
+```
+
+* 最终目录结构如下: 
+
+```text
+    myproject/module1/src/main/resources/META-INF/thistle-spi/plugin.properties
+    myproject/module1/src/main/resources/META-INF/thistle-spi/parameter/mypluginconfig.properties
+```
+
+* 配置文件`META-INF/thistle-spi/parameter/mypluginconfig.properties`必须创建, 找不到会报错
+* 配置文件与定义文件必须在同一个路径下, 因为插件加载时只查找定义文件所在路径下的 `parameter/`目录
+
+```text
+    # 错误示例!!! 定义文件与配置文件在不同的路径下(module1和module2), 这样会报找不到配置文件!!!
+    myproject/module1/src/main/resources/META-INF/thistle-spi/plugin.properties
+    myproject/module2/src/main/resources/META-INF/thistle-spi/parameter/mypluginconfig.properties
+```
+
+* 定义完成后, 插件实现类构造器能够获得配置文件中的配置(构造器有且仅有一个Properties入参时)
+
+### 字段说明
+
 * `插件接口名`: 插件的接口类全限定名
-* `优先级`: 插件优先级
+* `优先度`: 插件优先度
 
-> 整数, 数字越小优先级越高, loadPlugins返回的List中第一个元素优先级最高<br>
+> 整数, 数字越小优先度越高, loadPlugins返回的List中第一个元素优先度最高<br>
 
 * `插件实现类名`: 插件实现类全限定名
 
@@ -168,40 +254,50 @@ sample.spi.facade.APlugin>128=sample.spi.impl.APluginImpl2
 > 每个插件接口允许有多个实现, 且不会进行去重<br>
 > 若同一个插件实现被声明了多次, loadPlugins返回的List中也会存在多个相同的插件实例<br>
 
-* `构造参数`: 服务实例化时会传入构造方法
+* `构造参数`: 插件实例化时会将该值作为构造参数传入构造器
 
-> 只支持一个构造参数, 无需用""包裹, 有参构造方法会获得括号内的值<br>
-> 如果实现类没有有参构造器(只有一个参数, 且类型为String), 则会调用无参构造器实例化插件<br>
-> 如果实现类没有无参构造器, 但声明中无构造参数, 程序会尝试调用有参构造器实例化插件, 并传入null值<br>
+> 以构造参数(yyyy-MM-dd HH:mm:ss.SSS)为例:<br>
+> 1.插件实现类构造器有且仅有一个String构造参数时, 构造器会获得字符串"yyyy-MM-dd HH:mm:ss.SSS"<br>
+> 2.插件实现类构造器没有构造参数时, 插件能够实例化, 但构造器无从获得字符串"yyyy-MM-dd HH:mm:ss.SSS"<br>
+> 3.插件实现类构造器有且仅有一个Properties构造参数时, 插件实例化报错! 因为定义文件所在路径下的parameter/目录中不存在名为yyyy-MM-dd HH:mm:ss.SSS的配置文件<br>
+
+> 以构造参数(mypluginconfig.properties)为例:<br>
+> 1.插件实现类构造器有且仅有一个Properties构造参数时, 会在定义文件所在路径下的parameter/目录中寻找mypluginconfig.properties配置文件并加载, 构造器会获得配置(Properties)<br>
+> 2.插件实现类构造器没有构造参数时, 插件能够实例化, 但构造器无从获得配置(Properties)<br>
+> 3.插件实现类构造器有且仅有一个String构造参数时, 插件能够实例化, 但构造器会获得字符串"mypluginconfig.properties"<br>
 
 * 注意:
 
-> 同一个配置文件中, 不允许出现`插件接口名`与`优先级`都相同的配置, 会发生配置丢失. 
-> 如果需要在一个配置文件中给一个`插件接口名`配置多个实现时, 请编写不同的优先级, 避免冲突.
+> 同一个配置文件中, 不允许出现`插件接口名`与`优先度`都相同的配置, 会发生配置丢失. 
+> 如果需要在一个配置文件中给一个`插件接口名`配置多个实现时, 请编写不同的优先度, 避免冲突.
 
-# 排除插件实现
+<br>
+<br>
+<br>
 
-* 默认情况下, 程序会应用所有声明了的实现
+# 用户排除不需要的插件实现
+
+* 默认情况下, ThistleSpi会加载所有定义的实现, 并按优先级排序(数值从小到大)
 * 可以通过两种方法排除指定的实现
 
 ## 配置文件方式
 
-### 排除任意构造参数的全部实现
+### 排除插件实现(任何构造参数)
 
 * 创建文件`META-INF/thistle-spi/plugin-ignore.properties`
 * 编辑文件:
 
 ```text
-sample.spi.facade.APlugin=sample.spi.impl.APluginImpl1,sample.spi.impl.APluginImpl1
+sample.spi.facade.APlugin=sample.spi.impl.APluginImpl1,sample.spi.impl.APluginImpl2
 ```
 
 * 格式:`插件接口名`=`插件实现类名1`,`插件实现类名2`...
 
 > 以上面为例<br>
-> 将任意构造参数的`sample.spi.impl.APluginImpl1`实现全部排除<br>
-> 将任意构造参数的`sample.spi.impl.APluginImpl2`实现全部排除<br>
+> 将`sample.spi.impl.APluginImpl1`插件实现排除(任何构造参数)<br>
+> 将`sample.spi.impl.APluginImpl2`插件实现排除(任何构造参数)<br>
 
-### 排除指定构造参数的实现
+### 排除插件实现(指定构造参数)
 
 * 创建文件`META-INF/thistle-spi/plugin-ignore.properties`
 * 编辑文件:
@@ -213,12 +309,12 @@ sample.spi.facade.APlugin=sample.spi.impl.APluginImpl1(true),sample.spi.impl.APl
 * 格式:`插件接口名`=`插件实现类名1`(`指定构造参数1`),`插件实现类名2`(`指定构造参数2`)...
 
 > 以上面为例<br>
-> 将构造参数为`true`的`sample.spi.impl.APluginImpl1`实现排除<br>
-> 将构造参数为`yyyy-MM-dd HH:mm:ss.SSS`的`sample.spi.impl.APluginImpl2`实现排除<br>
+> 将构造参数定义为`true`的`sample.spi.impl.APluginImpl1`插件实现排除<br>
+> 将构造参数定义为`yyyy-MM-dd HH:mm:ss.SSS`的`sample.spi.impl.APluginImpl2`插件实现排除<br>
 
 ## 启动参数方式
 
-### 排除任意构造参数的全部实现
+### 排除插件实现(任何构造参数)
 
 * 添加启动参数
 
@@ -229,10 +325,10 @@ sample.spi.facade.APlugin=sample.spi.impl.APluginImpl1(true),sample.spi.impl.APl
 * 格式: -Dthistle.spi.ignore.`插件接口名`=`插件实现类名1`,`插件实现类名2`...
 
 > 以上面为例<br>
-> 将任意构造参数的`sample.spi.impl.APluginImpl1`实现全部排除<br>
-> 将任意构造参数的`sample.spi.impl.APluginImpl2`实现全部排除<br>
+> 将`sample.spi.impl.APluginImpl1`插件实现排除(任何构造参数)<br>
+> 将`sample.spi.impl.APluginImpl2`插件实现排除(任何构造参数)<br>
 
-### 排除指定构造参数的实现
+### 排除插件实现(指定构造参数)
 
 * 添加启动参数
 
@@ -243,7 +339,5 @@ sample.spi.facade.APlugin=sample.spi.impl.APluginImpl1(true),sample.spi.impl.APl
 * 格式: -Dthistle.spi.ignore.`插件接口名`=`插件实现类名1`(`指定构造参数1`),`插件实现类名2`(`指定构造参数2`)...
 
 > 以上面为例<br>
-> 将构造参数为`true`的`sample.spi.impl.APluginImpl1`实现排除<br>
-> 将构造参数为`yyyy-MM-dd HH:mm:ss.SSS`的`sample.spi.impl.APluginImpl2`实现排除<br>
-
-
+> 将构造参数为`true`的`sample.spi.impl.APluginImpl1`插件实现排除<br>
+> 将构造参数为`yyyy-MM-dd HH:mm:ss.SSS`的`sample.spi.impl.APluginImpl2`插件实现排除<br>
