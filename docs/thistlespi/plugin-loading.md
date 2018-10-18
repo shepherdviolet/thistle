@@ -341,3 +341,11 @@ sample.spi.facade.APlugin=sample.spi.impl.APluginImpl1(true),sample.spi.impl.APl
 > 以上面为例<br>
 > 将构造参数为`true`的`sample.spi.impl.APluginImpl1`插件实现排除<br>
 > 将构造参数为`yyyy-MM-dd HH:mm:ss.SSS`的`sample.spi.impl.APluginImpl2`插件实现排除<br>
+
+## 如何查看哪些插件被应用, 哪些被排除? 
+
+* 开启debug级别日志: 添加启动参数`-Dthistle.spi.loglv=debug`
+* 如果使用SLF4J打印日志, 还需要确保包路径`sviolet.slate.common.x.common.thistlespi`日志级别在`INFO`级以上
+* 运行程序, 观察日志
+
+

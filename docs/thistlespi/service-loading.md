@@ -317,7 +317,7 @@ sample.spi.facade.AService=sample-lib-1
 > 指定服务使用哪个实现(指定ID)<br>
 > 注意:若一个服务被指定使用两个不同的ID, 会抛出异常<br>
 
-## 如何查看一个实现为何被应用, 还有那些备选实现
+## 如何查看一个实现为何被应用? 还有那些备选实现?
 
 * 开启debug级别日志: 添加启动参数`-Dthistle.spi.loglv=debug`
 * 如果使用SLF4J打印日志, 还需要确保包路径`sviolet.slate.common.x.common.thistlespi`日志级别在`INFO`级以上
