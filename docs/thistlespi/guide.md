@@ -9,6 +9,10 @@ Java本身提供了一个SPI规范, 但它没有过滤机制, 当多个实现在
 ThistleSpi增加了过滤机制, 支持构造参数, 在使用上更为便捷. 
 ```
 
+<br>
+<br>
+<br>
+
 # 服务加载模式
 
 ```text
@@ -20,6 +24,10 @@ ThistleSpi增加了过滤机制, 支持构造参数, 在使用上更为便捷.
 
 * [服务加载指南](https://github.com/shepherdviolet/thistle/blob/master/docs/thistlespi/service-loading.md)
 
+<br>
+<br>
+<br>
+
 # 插件加载模式
 
 ```text
@@ -30,6 +38,10 @@ ThistleSpi增加了过滤机制, 支持构造参数, 在使用上更为便捷.
 ```
 
 * [插件加载指南](https://github.com/shepherdviolet/thistle/blob/master/docs/thistlespi/plugin-loading.md)
+
+<br>
+<br>
+<br>
 
 # 关于日志
 
@@ -54,6 +66,8 @@ dependencies {
 * 使用`slate-common`库输出日志时, SLF4J日志级别`INFO`和`ERROR`, 日志包路径`sviolet.slate.common.x.common.thistlespi`
 * ThistleSpi支持自定义自身日志打印器
 
+<br>
+
 ## 调整日志级别
 
 * ThistleSpi自身有日志级别的概念, 这个方法是调整自身的级别, 非SLF4J的级别
@@ -62,6 +76,8 @@ dependencies {
 > `-Dthistle.spi.loglv=error` <br>
 > `-Dthistle.spi.loglv=info` <br>
 > `-Dthistle.spi.loglv=debug` <br>
+
+<br>
 
 ## 自定义日志打印器
 
@@ -99,9 +115,12 @@ sviolet.thistle.x.common.thistlespi.SpiLogger>sample-app>application=sample.spi.
 
 * 其中ID`sample-app`和优先级`application`的设置请参考[服务加载指南](https://github.com/shepherdviolet/thistle/blob/master/docs/thistlespi/service-loading.md)
 
+<br>
+
 ## 指定应用的日志打印器
 
 * 如果自动加载的日志打印器不是你想要的, 或者相同优先级的日志打印器发生了冲突, 我们可以使用以下方法指定用哪个
+* 请先阅读[服务加载指南](https://github.com/shepherdviolet/thistle/blob/master/docs/thistlespi/service-loading.md)
 
 ### 配置文件方式
 
@@ -123,6 +142,10 @@ sviolet.thistle.x.common.thistlespi.SpiLogger=sample-app
 ```
 
 * 其中ID`sample-app`为你想应用的日志打印器ID, 可以把日志级别开到debug, 观察日志获得ID
+
+<br>
+<br>
+<br>
 
 # 临时排除配置文件
 
