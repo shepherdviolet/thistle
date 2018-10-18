@@ -1,10 +1,6 @@
 # ThistleSpi 日志样例
 
-* 在使用`slate-common`库的`SlfSpiLogger`输出日志时, SLF4J日志级别`INFO`, 日志包路径`sviolet.slate.common.x.common.thistlespi`
-* 在未使用`slate-common`库的`SlfSpiLogger`输出日志时, 默认使用System.out.println()输出
-* ThistleSpi可以改变自身日志打印器的实现, 详见[ThistleSpi文档的`Log Config`章节](https://github.com/shepherdviolet/thistle/blob/master/docs/thistlespi/guide.md)
-
-# -Dthistle.spi.loglv=info
+### -Dthistle.spi.loglv=info
 
 * `... is trying to load ...`: 哪个类的方法在利用ThistleSpi加载服务和插件, 使用哪个类加载器
 * `Loading services / plugins from`: 加载了哪个类路径下的配置文件
@@ -60,7 +56,7 @@
 ...SlfSpiLogger : 0 ThistleSpi ServiceLoader | Service beet.scrunchy.proxy.BeanNameResolver (beet.scrunchy.proxy.DefaultBeanNameResolver) loaded successfully
 ```
 
-# -Dthistle.spi.loglv=debug
+### -Dthistle.spi.loglv=debug
 
 * debug级别下, 日志先打印ThistleSpi加载自身日志打印器的过程, 使用System.out打印, 然后再打印加载用户服务的过程
 * `... is trying to load ...`: 哪个类的方法在利用ThistleSpi加载服务和插件, 使用哪个类加载器
