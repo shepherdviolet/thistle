@@ -162,7 +162,7 @@ public class APluginImpl implements APlugin {
 ### 实现插件接口(一个Properties构造参数)
 
 * 只有一个参数, 且参数类型为java.util.Properties的构造器
-* 插件实例化时, 会根据插件定义文件中的构造参数的值, 作为配置文件名, 找到插件定义文件所在路径下的配置文件, 加载其中的配置, 最后将Properties传入这个构造器
+* 插件实例化时, 会根据插件定义文件中的构造参数的值, 作为配置文件名, 找到插件定义文件所在路径下的配置文件, 加载为Properties传入这个构造器
 
 ```text
 package sample.spi.impl;
@@ -177,6 +177,16 @@ public class APluginImpl implements APlugin {
         // do something
     }
 }
+```
+
+* 构造器获得的`Properties`对象中会有一个key为`_PROPERTIES_URL_`的参数, 该参数的值为配置文件的路径. 当构造器中发生异常时, 建议将该值打印到日志中便于定位问题, 如果需要遍历Properties, 请先移除这个参数.
+
+```text
+    public APluginImpl(Properties parameter) {
+        //get and remove _PROPERTIES_URL_
+        String propertiesUrl = (String) parameter.remove(ThistleSpi.PROPERTIES_URL);
+        // do init
+    }
 ```
 
 <br>
