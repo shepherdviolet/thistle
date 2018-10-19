@@ -27,6 +27,27 @@ package sviolet.thistle.util.conversion;
 public class PrimitiveUtils {
 
     /**
+     * 判断一个类是否是基本类型或基本类型的包装类型
+     * @param clazz 类
+     * @return true: 是基本类型或基本类型的包装类型
+     */
+    public static boolean isPrimitiveOrWrapper(Class<?> clazz) {
+        if (clazz == null) {
+            return false;
+        }
+        return clazz.isPrimitive() ||
+                Boolean.class.isAssignableFrom(clazz) ||
+                Integer.class.isAssignableFrom(clazz) ||
+                Long.class.isAssignableFrom(clazz) ||
+                Float.class.isAssignableFrom(clazz) ||
+                Double.class.isAssignableFrom(clazz) ||
+                Byte.class.isAssignableFrom(clazz) ||
+                Character.class.isAssignableFrom(clazz) ||
+                Short.class.isAssignableFrom(clazz) ||
+                Void.class.isAssignableFrom(clazz);
+    }
+
+    /**
      * 获得基本类型的包装类型
      * @param clazz 类
      * @return 若入参是基本类型, 则返回对应的包装类型
