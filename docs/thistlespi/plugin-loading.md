@@ -163,7 +163,6 @@ public class APluginImpl implements APlugin {
 
 * 只有一个参数, 且参数类型为java.util.Properties的构造器
 * 插件实例化时, 会根据插件定义文件中的构造参数的值, 作为配置文件名, 找到插件定义文件所在路径下的配置文件, 加载其中的配置, 最后将Properties传入这个构造器
-* 注意这个构造参数可能为空(如果插件定义文件中未设置构造参数)
 
 ```text
 package sample.spi.impl;
