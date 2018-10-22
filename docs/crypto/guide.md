@@ -1,8 +1,8 @@
 # 国际算法加解密/加解签手册
 
-* 包路径:sviolet.thistle.util.crypto
 * 这些加密工具`线程安全`
 * 国密算法请参考https://github.com/shepherdviolet/smcrypto
+* `Maven/Gradle依赖配置`在本文最后
 
 # 小知识
 
@@ -24,60 +24,6 @@
 * ECDSA对比RSA, 拥有更短的密钥长度, 更快的签名速度, 和理论上更高的安全性
 * RSA算法密钥长度通常为1024位和2048位, `私钥`自己保管, `公钥`提供给对方
 * RSA签名方式有`MD5withRSA`/`SHA1withRSA`/`SHA256withRSA`, 建议使用SHA256withRSA
-
-# 依赖
-
-* gradle
-
-```gradle
-
-//依赖
-dependencies {
-    compile 'com.github.shepherdviolet:thistle:11.0'
-}
-```
-
-* gradle(最少依赖)
-
-```gradle
-dependencies {
-    compile ('com.github.shepherdviolet:thistle:11.0') {
-        transitive = false
-    }
-    compile 'org.bouncycastle:bcpkix-jdk15on:1.59'
-}
-```
-
-* maven
-
-```maven
-    <dependency>
-        <groupId>com.github.shepherdviolet</groupId>
-        <artifactId>thistle</artifactId>
-        <version>11.0/version>
-    </dependency>
-```
-
-* maven(最少依赖)
-
-```maven
-    <dependency>
-        <groupId>com.github.shepherdviolet</groupId>
-        <artifactId>thistle</artifactId>
-        <version>11.0</version>
-        <exclusions>
-             <exclusion>
-                 <groupId>*</groupId>
-                 <artifactId>*</artifactId>
-             </exclusion>
-        </exclusions>
-    </dependency>
-    <dependency>
-        <groupId>org.bouncycastle</groupId>
-        <artifactId>bcpkix-jdk15on</artifactId>
-        <version>1.59</version>
-    </dependency>
-```
 
 # RSA 加解密/加解签
 
@@ -185,4 +131,64 @@ dependencies {
         //证书别名
         "alias"
         );
+```
+
+<br>
+<br>
+<br>
+
+# 依赖
+
+* gradle
+
+```gradle
+//version替换为具体版本
+dependencies {
+    compile 'com.github.shepherdviolet:thistle:version'
+}
+```
+
+* gradle(最少依赖)
+
+```gradle
+//version替换为具体版本
+dependencies {
+    compile ('com.github.shepherdviolet:thistle:version') {
+        transitive = false
+    }
+    compile 'org.bouncycastle:bcpkix-jdk15on:1.59'
+}
+```
+
+* maven
+
+```maven
+    <!--version替换为具体版本-->
+    <dependency>
+        <groupId>com.github.shepherdviolet</groupId>
+        <artifactId>thistle</artifactId>
+        <version>version/version>
+    </dependency>
+```
+
+* maven(最少依赖)
+
+```maven
+    <!--version替换为具体版本-->
+    <dependency>
+        <groupId>com.github.shepherdviolet</groupId>
+        <artifactId>thistle</artifactId>
+        <version>version</version>
+        <exclusions>
+             <exclusion>
+                 <groupId>*</groupId>
+                 <artifactId>*</artifactId>
+             </exclusion>
+        </exclusions>
+    </dependency>
+    <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcpkix-jdk15on</artifactId>
+        <version>1.59</version>
+    </dependency>
 ```

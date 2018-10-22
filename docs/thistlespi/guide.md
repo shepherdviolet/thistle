@@ -1,6 +1,7 @@
 # ThistleSpi 使用指南
 
 * ThistleSpi是一种SPI(Service Provider Interfaces)的变种实现
+* `Maven/Gradle依赖配置`在本文最后
 
 ```text
 在我们开发开源库或框架层的时候, 通常会希望我们的程序能够: 1.支持用户工程自定义部分逻辑(替换默认实现); 2.支持第三方插件的扩展; 
@@ -187,3 +188,57 @@ sviolet.thistle.x.common.thistlespi.SpiLogger=sample-app
 ```
 
 * 指定配置文件已被排除
+
+<br>
+<br>
+<br>
+
+# 依赖
+
+* gradle
+
+```gradle
+//version替换为具体版本
+dependencies {
+    compile 'com.github.shepherdviolet:thistle:version'
+}
+```
+
+* gradle(最少依赖)
+
+```gradle
+//version替换为具体版本
+dependencies {
+    compile ('com.github.shepherdviolet:thistle:version') {
+        transitive = false
+    }
+}
+```
+
+* maven
+
+```maven
+    <!--version替换为具体版本-->
+    <dependency>
+        <groupId>com.github.shepherdviolet</groupId>
+        <artifactId>thistle</artifactId>
+        <version>version/version>
+    </dependency>
+```
+
+* maven(最少依赖)
+
+```maven
+    <!--version替换为具体版本-->
+    <dependency>
+        <groupId>com.github.shepherdviolet</groupId>
+        <artifactId>thistle</artifactId>
+        <version>version</version>
+        <exclusions>
+             <exclusion>
+                 <groupId>*</groupId>
+                 <artifactId>*</artifactId>
+             </exclusion>
+        </exclusions>
+    </dependency>
+```
