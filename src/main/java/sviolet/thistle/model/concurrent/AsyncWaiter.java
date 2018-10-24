@@ -19,18 +19,21 @@
 
 package sviolet.thistle.model.concurrent;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 import sviolet.thistle.entity.common.Destroyable;
+import sviolet.thistle.util.common.CloseableUtils;
 
 /**
  * 挂起当前线程等待异步线程的结果
  *
  * @author S.Violet
  */
-public class AsyncWaiter <T> implements Destroyable {
+public class AsyncWaiter <T> implements Closeable, Destroyable {
 
     /**
      * 超时时间ms
@@ -164,9 +167,15 @@ public class AsyncWaiter <T> implements Destroyable {
 
     @Override
     public void onDestroy() {
-        if (this.value instanceof Destroyable) {
-            ((Destroyable) this.value).onDestroy();
+        try {
+            close();
+        } catch (IOException ignore) {
         }
+    }
+
+    @Override
+    public void close() throws IOException {
+        CloseableUtils.closeIfCloseable(this.value);
         this.value = null;
     }
 

@@ -40,6 +40,16 @@ public class CloseableUtils {
         }
     }
 
+    public static void closeQuiet(Destroyable destroyable) {
+        if (destroyable == null) {
+            return;
+        }
+        try {
+            destroyable.onDestroy();
+        } catch (Exception ignore) {
+        }
+    }
+
     public static void closeIfCloseable(Object obj){
         if (obj == null) {
             return;
