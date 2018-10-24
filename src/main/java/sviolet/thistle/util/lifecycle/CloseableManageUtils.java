@@ -19,8 +19,9 @@
 
 package sviolet.thistle.util.lifecycle;
 
-import sviolet.thistle.entity.common.Destroyable;
+import sviolet.thistle.util.common.CloseableUtils;
 
+import java.io.Closeable;
 import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -29,39 +30,37 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * <p>[高级/慎用]</p>
  * <p>
- *     Destroyable实例管理工具:<br>
- *     1.注册Destroyable实例<br>
- *     2.将所有注册的Destroyable实例销毁<br>
+ *     Closeable实例管理工具:<br>
+ *     1.注册Closeable实例<br>
+ *     2.将所有注册的Closeable实例销毁<br>
  * </p>
  */
-public class DestroyableManageUtils {
+public class CloseableManageUtils {
 
-    private static final Set<Destroyable> POOL = Collections.newSetFromMap(new WeakHashMap<Destroyable, Boolean>());
+    private static final Set<Closeable> POOL = Collections.newSetFromMap(new WeakHashMap<Closeable, Boolean>());
     private static final ReentrantLock LOCK = new ReentrantLock();
 
     /**
      * 注册Destroyable实例(弱引用持有)
-     * @param destroyable Destroyable实例
+     * @param closeable Closeable实例
      */
-    public static void register(Destroyable destroyable){
+    public static void register(Closeable closeable){
         try {
             LOCK.lock();
-            POOL.add(destroyable);
+            POOL.add(closeable);
         } finally {
             LOCK.unlock();
         }
     }
 
     /**
-     * 调用所有注册的Destroyable实例的onDestroy()方法
+     * 调用所有注册的Closeable实例的close()方法
      */
-    public static void destroyAll(){
+    public static void closeAll(){
         try {
             LOCK.lock();
-            for (Destroyable destroyable : POOL) {
-                if (destroyable != null){
-                    destroyable.onDestroy();
-                }
+            for (Closeable closeable : POOL) {
+                CloseableUtils.closeQuiet(closeable);
             }
         } finally {
             LOCK.unlock();
