@@ -63,3 +63,16 @@ key3=value3
 ```text
     Map<String, String> result = SimpleKeyValueEncoder.decode(encoded);
 ```
+
+* 转义符
+
+```text
+空值  -> \0
+逗号, -> \,
+等号= => \=
+反斜\ => \\
+空格  -> \s
+TAB   -> \t
+换行  -> \n
+回车  -> \r
+```
