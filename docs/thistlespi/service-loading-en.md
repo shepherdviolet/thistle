@@ -254,7 +254,7 @@ parameter2=value2
 
 ### Glossary of definition
 
-* `interface-class`: Class name of Service Interface
+* `interface-class`: Class name of service interface
 * `ID`: Implementation ID
 
 > Letters and horizontal lines, don't duplicate with other service providers, otherwise an exception will be thrown<br>
