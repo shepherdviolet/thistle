@@ -5,7 +5,7 @@
 * `Maven/Gradle Dependencies` at the end of this article
 
 ```text
-In open source libraries or framework layers, we usually hope that our programs can: 1.Support for custom logic in user 
+In open source libraries or framework layers, we usually want our programs to be able to: 1.Support for custom logic in user 
 application (Replace the default implementation). 2.Support for extensions from third-party plugins. 
 The open source or framework layer provides interfaces, user application or plug-in libraries to implement interfaces. 
 By configuration, the program finally loads custom logic or plug-ins. That is SPI. 
@@ -118,7 +118,7 @@ public class CustomSpiLogger implements SpiLogger {
 
 ### Declare in definition file
 
-* Add a file `META-INF/thistle-spi-logger/service.properties`
+* Create a file `META-INF/thistle-spi-logger/service.properties`
 * Edit:
 
 ```text
@@ -136,7 +136,7 @@ sviolet.thistle.x.common.thistlespi.SpiLogger>sample-app>application=sample.spi.
 
 ### By definition file
 
-* Add a file `META-INF/thistle-spi-logger/service-apply.properties`
+* Create a file `META-INF/thistle-spi-logger/service-apply.properties`
 * Edit:
 
 ```text
