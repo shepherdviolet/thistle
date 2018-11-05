@@ -269,7 +269,7 @@ parameter2=value2
 > Infrastructure project of user application is recommended to use the `platform` level, because application project will depend on it, user can override it by `application` level<br>
 > Application project is recommended to use the `application` level. It's finally used for deployment and production<br>
 
-* `implementation-class`: Class name of Service implementation
+* `implementation-class`: Class name of service implementation
 
 > The implementation class must implement the service interface<br>
 > Multiple implementations are allowed per service, but different IDs are required<br>
