@@ -1,5 +1,6 @@
 # ThistleSpi 使用指南
 
+* [English Guide](https://github.com/shepherdviolet/thistle/blob/master/docs/thistlespi/guide-en.md)
 * ThistleSpi是一种SPI(Service Provider Interfaces)的变种实现
 * `Maven/Gradle依赖配置`在本文最后
 
