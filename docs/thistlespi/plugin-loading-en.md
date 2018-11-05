@@ -257,30 +257,30 @@ parameter2=value2
 * `interface-class`: Class name of plugin interface
 * `priority`: Priority of implementation
 
-> 整数, 数字越小优先度越高, loadPlugins返回的List中第一个元素优先度最高<br>
+> Integer, the smaller the number, the higher the priority. The first element in the list returned from loadPlugins() method has the highest priority<br>
 
-* `插件实现类名`: 插件实现类全限定名
+* `implementation-class`: Class name of plugin implementation
 
-> 插件实现类必须实现插件接口<br>
-> 每个插件接口允许有多个实现, 且不会进行去重<br>
-> 若同一个插件实现被声明了多次, loadPlugins返回的List中也会存在多个相同的插件实例<br>
+> The implementation class must implement the plugin interface<br>
+> Multiple implementations are allowed per plugin, and it will not remove duplicates<br>
+> if an implementation is declared multiple times, there will be duplicate instances in the List returned from the loadPlugins() method<br>
 
-* `构造参数`: 插件实例化时会将该值作为构造参数传入构造器
+* `construct-param`: Constructor parameter, this value will passed as a parameter to the constructor when plugin instantiating
 
-> 以构造参数(yyyy-MM-dd HH:mm:ss.SSS)为例:<br>
-> 1.插件实现类构造器有且仅有一个String构造参数时, 构造器会获得字符串"yyyy-MM-dd HH:mm:ss.SSS"<br>
-> 2.插件实现类构造器没有构造参数时, 插件能够实例化, 但构造器无从获得字符串"yyyy-MM-dd HH:mm:ss.SSS"<br>
-> 3.插件实现类构造器有且仅有一个Properties构造参数时, 插件实例化报错! 因为定义文件所在路径下的parameter/目录中不存在名为yyyy-MM-dd HH:mm:ss.SSS的配置文件<br>
+> Take `yyyy-MM-dd HH:mm:ss.SSS` as an example:<br>
+> 1.If the implementation class has a String parameter constructor, the constructor will get a string "yyyy-MM-dd HH:mm:ss.SSS"<br>
+> 2.If the implementation class has a no parameter constructor, it can be instantiated, but it does not get the string "yyyy-MM-dd HH:mm:ss.SSS"<br>
+> 3.If the implementation class has a Properties parameter constructor, an exception will be thrown, because the properties file named yyyy-MM-dd HH:mm:ss.SSS does not exists<br>
 
-> 以构造参数(mypluginconfig.properties)为例:<br>
-> 1.插件实现类构造器有且仅有一个Properties构造参数时, 会在定义文件所在路径下的parameter/目录中寻找mypluginconfig.properties配置文件并加载, 构造器会获得配置(Properties)<br>
-> 2.插件实现类构造器没有构造参数时, 插件能够实例化, 但构造器无从获得配置(Properties)<br>
-> 3.插件实现类构造器有且仅有一个String构造参数时, 插件能够实例化, 但构造器会获得字符串"mypluginconfig.properties"<br>
+> Take `mypluginconfig.properties` as an example:<br>
+> 1.If the implementation class has a Properties parameter constructor, it will loads the mypluginconfig.properties file in the `parameter/` directory under the path where the definition file is located. And constructor can get a Properties instance which parsed from it<br>
+> 2.If the implementation class has a no parameter constructor, it can be instantiated, but it does not get Properties instance which parsed from it<br>
+> 3.If the implementation class has a String parameter constructor, it can be instantiated, but the constructor will get a string "mypluginconfig.properties"<br>
 
-* 注意:
+* Note:
 
-> 同一个配置文件中, 不允许出现`插件接口名`与`优先度`都相同的配置, 会发生配置丢失. 
-> 如果需要在一个配置文件中给一个`插件接口名`配置多个实现时, 请编写不同的优先度, 避免冲突.
+> In the same `plugin.properties` file, definitions with the same `interface-class` and `priority` is not allowed (Because Properties does not allow duplicate keys). 
+> If you need to define multiple implementations with the same `interface-class` in the same file, use different priorities to avoid conflicts. 
 
 <br>
 <br>
@@ -288,10 +288,10 @@ parameter2=value2
 
 # Ignore plugins (User)
 
-* 默认情况下, ThistleSpi会加载所有定义的实现, 并按优先级排序(数值从小到大)
-* 可以通过两种方法排除指定的实现
+* By default, ThistleSpi loads all defined implementations and sorts by priority (From small to large)
+* There are two ways to exclude the specified implementation.
 
-## 配置文件方式
+## By definition file
 
 ### 排除插件实现(任何构造参数)
 
@@ -323,7 +323,7 @@ sample.spi.facade.APlugin=sample.spi.impl.APluginImpl1(true),sample.spi.impl.APl
 > 将构造参数定义为`true`的`sample.spi.impl.APluginImpl1`插件实现排除<br>
 > 将构造参数定义为`yyyy-MM-dd HH:mm:ss.SSS`的`sample.spi.impl.APluginImpl2`插件实现排除<br>
 
-## 启动参数方式
+## By startup parameter
 
 ### 排除插件实现(任何构造参数)
 
