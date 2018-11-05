@@ -76,6 +76,7 @@ dependencies {
 
 * When printing log by `slate-common`, the SLF4J log level will be `INFO` and `ERROR`, package `sviolet.slate.common.x.common.thistlespi`
 * ThistleSpi supports customizing its own log printer
+* [Log sample](https://github.com/shepherdviolet/thistle/blob/master/docs/thistlespi/log-sample-en.md)
 
 <br>
 
