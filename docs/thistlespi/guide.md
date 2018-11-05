@@ -67,6 +67,7 @@ dependencies {
 
 * 使用`slate-common`库输出日志时, SLF4J日志级别`INFO`和`ERROR`, 日志包路径`sviolet.slate.common.x.common.thistlespi`
 * ThistleSpi支持自定义自身日志打印器
+* [日志样例](https://github.com/shepherdviolet/thistle/blob/master/docs/thistlespi/log-sample.md)
 
 <br>
 
