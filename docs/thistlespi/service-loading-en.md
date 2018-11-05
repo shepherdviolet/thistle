@@ -1,4 +1,4 @@
-# ThistleSpi 服务加载指南
+# ThistleSpi Service loading guide
 
 ```text
 When the open source library or framework layer (hereinafter referred to as the underlying) program only needs a unique 
@@ -10,18 +10,18 @@ one by default. When there are multiple implementations with the highest priorit
 to use with the configuration file or startup parameters.
 ```
 
-* This guide is divided into three chapters `Open source library or framework layer (bottom layer) loading service` `User application or plugin library (upper layer) implements service` `User specified which service to use`
+* This guide is divided into three chapters `Loading service (Bottom layer)` `Implements service (Upper layer)` `Specify which implementation to apply (User)`
 * Open source library or framework layer developers please read the entire content
-* Application or plugin library developers please read the `User application or plugin library (upper layer) implements service` `User specified which service to use`
-* Just want to know how to specify a service impl or resolve conflicts. Please read `User specified which service to use`
+* Application or plugin library developers please read the `Implements service (Upper layer)` `Specify which implementation to apply (User)`
+* Just want to know how to specify a service impl or resolve conflicts. Please read `Specify which implementation to apply (User)`
 
 <br>
 <br>
 <br>
 
-# Open source library or framework layer (bottom layer) loading service
+# Loading service (Bottom layer)
 
-* This section is for open source libraries / framework layer developers.
+* This section is for open source library / framework layer developers
 
 ## Define service interface
 
@@ -99,9 +99,9 @@ public interface BService {
 <br>
 <br>
 
-# User application or plugin library (upper layer) implements service
+# Implements service (Upper layer)
 
-* This section is for open source libraries / framework layer developers and application / plugin library developers.
+* This section is for open source library / framework layer / extension library / application developers.
 
 ## Implements service interface
 
@@ -294,7 +294,7 @@ parameter2=value2
 <br>
 <br>
 
-# User specified which service to use
+# Specify which implementation to apply (User)
 
 * By default, ThistleSpi loads the highest priority implementation, no need to specify (Priority `application`>`platform`>`library`>`default`)
 * If the highest level of implementation is more than one (implementation conflict), or if you want to apply a low-priority implementation, you can specify it in two ways
