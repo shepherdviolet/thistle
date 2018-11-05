@@ -293,71 +293,71 @@ parameter2=value2
 
 ## By definition file
 
-### 排除插件实现(任何构造参数)
+### Ignore any `construct-param` plugins
 
-* 创建文件`META-INF/thistle-spi/plugin-ignore.properties`
-* 编辑文件:
+* Create a file `META-INF/thistle-spi/plugin-ignore.properties`
+* Edit:
 
 ```text
 sample.spi.facade.APlugin=sample.spi.impl.APluginImpl1,sample.spi.impl.APluginImpl2
 ```
 
-* 格式:`插件接口名`=`插件实现类名1`,`插件实现类名2`...
+* Format:`interface-class`=`implementation-class-1`,`implementation-class-2`...
 
-> 以上面为例<br>
-> 将`sample.spi.impl.APluginImpl1`插件实现排除(任何构造参数)<br>
-> 将`sample.spi.impl.APluginImpl2`插件实现排除(任何构造参数)<br>
+> Take the above as an example<br>
+> Exclude implementation `sample.spi.impl.APluginImpl1` (include any `construct-param`)<br>
+> Exclude implementation `sample.spi.impl.APluginImpl2` (include any `construct-param`)<br>
 
-### 排除插件实现(指定构造参数)
+### Ignore specified `construct-param` plugins
 
-* 创建文件`META-INF/thistle-spi/plugin-ignore.properties`
-* 编辑文件:
+* Create a file `META-INF/thistle-spi/plugin-ignore.properties`
+* Edit:
 
 ```text
 sample.spi.facade.APlugin=sample.spi.impl.APluginImpl1(true),sample.spi.impl.APluginImpl2(yyyy-MM-dd HH:mm:ss.SSS)
 ```
 
-* 格式:`插件接口名`=`插件实现类名1`(`指定构造参数1`),`插件实现类名2`(`指定构造参数2`)...
+* Format:`interface-class`=`implementation-class-1`(`construct-param-1`),`implementation-class-2`(`construct-param-2`)...
 
-> 以上面为例<br>
-> 将构造参数定义为`true`的`sample.spi.impl.APluginImpl1`插件实现排除<br>
-> 将构造参数定义为`yyyy-MM-dd HH:mm:ss.SSS`的`sample.spi.impl.APluginImpl2`插件实现排除<br>
+> Take the above as an example<br>
+> Exclude implementation `sample.spi.impl.APluginImpl1` if `construct-param` = "true"<br>
+> Exclude implementation `sample.spi.impl.APluginImpl2` if `construct-param` = "yyyy-MM-dd HH:mm:ss.SSS"<br>
 
 ## By startup parameter
 
-### 排除插件实现(任何构造参数)
+### Ignore any `construct-param` plugins
 
-* 添加启动参数
+* Add a startup parameter
 
 ```text
 -Dthistle.spi.ignore.sample.spi.facade.APlugin=sample.spi.impl.APluginImpl1,sample.spi.impl.APluginImpl2
 ```
 
-* 格式: -Dthistle.spi.ignore.`插件接口名`=`插件实现类名1`,`插件实现类名2`...
+* Format: -Dthistle.spi.ignore.`interface-class`=`implementation-class-1`,`implementation-class-2`...
 
-> 以上面为例<br>
-> 将`sample.spi.impl.APluginImpl1`插件实现排除(任何构造参数)<br>
-> 将`sample.spi.impl.APluginImpl2`插件实现排除(任何构造参数)<br>
+> Take the above as an example<br>
+> Exclude implementation `sample.spi.impl.APluginImpl1` (include any `construct-param`)<br>
+> Exclude implementation `sample.spi.impl.APluginImpl2` (include any `construct-param`)<br>
 
-### 排除插件实现(指定构造参数)
+### Ignore specified `construct-param` plugins
 
-* 添加启动参数
+* Add a startup parameter
 
 ```text
 -Dthistle.spi.ignore.sample.spi.facade.APlugin=sample.spi.impl.APluginImpl1(true),sample.spi.impl.APluginImpl2(yyyy-MM-dd HH:mm:ss.SSS)
 ```
 
-* 格式: -Dthistle.spi.ignore.`插件接口名`=`插件实现类名1`(`指定构造参数1`),`插件实现类名2`(`指定构造参数2`)...
+* Format: -Dthistle.spi.ignore.`interface-class`=`implementation-class-1`(`construct-param-1`),`implementation-class-2`(`construct-param-2`)...
 
-> 以上面为例<br>
-> 将构造参数为`true`的`sample.spi.impl.APluginImpl1`插件实现排除<br>
-> 将构造参数为`yyyy-MM-dd HH:mm:ss.SSS`的`sample.spi.impl.APluginImpl2`插件实现排除<br>
+> Take the above as an example<br>
+> Exclude implementation `sample.spi.impl.APluginImpl1` if `construct-param` = "true"<br>
+> Exclude implementation `sample.spi.impl.APluginImpl2` if `construct-param` = "yyyy-MM-dd HH:mm:ss.SSS"<br>
 
-## 如何查看哪些插件被应用, 哪些被排除? 
+## How do I see which plugins are being applied and which ones are being excluded?
 
-* 开启debug级别日志: 添加启动参数`-Dthistle.spi.loglv=debug`
-* 如果使用SLF4J打印日志, 还需要确保包路径`sviolet.slate.common.x.common.thistlespi`日志级别在`INFO`级以上
-* 运行程序, 观察日志
+* Adjust log-level to debug: Add a startup parameter `-Dthistle.spi.loglv=debug`
+* When printing log by `slate-common`, you should adjust SLF4J log-level `sviolet.slate.common.x.common.thistlespi` to `INFO`+
+* Run the program, observe the log
 
 ```text
 ...SlfSpiLogger : 0 ThistleSpi | -------------------------------------------------------------
@@ -393,8 +393,8 @@ sample.spi.facade.APlugin=sample.spi.impl.APluginImpl1(true),sample.spi.impl.APl
 ...SlfSpiLogger : 0 ThistleSpi |   + Plugin{priority=101001, impl=sviolet.slate.common.x.conversion.beanutil.safe.num.SBUMapperAllNumber2String, url=jar:file:/C:/m2repository/repository/com/github/shepherdviolet/slate-common/11.2-SNAPSHOT/slate-common-11.2-20181018.120813-5.jar!/META-INF/thistle-spi/plugin.properties}
 ```
 
-* 上面的示例中我们可以看到:
+* In the example above we can see:
 
-> 插件接口为: sviolet.slate.common.x.conversion.beanutil.PropMapper<br>
-> `implements:`为目前生效的插件列表(已排序)<br>
-> `All Configurations:`为所有插件定义, -开头的是未生效的, 其中disable by是被禁用的原因, url为插件定义文件路径<br>
+> Plugin interface is: sviolet.slate.common.x.conversion.beanutil.PropMapper<br>
+> `implements:` is a list of plugins currently in effect (sorted)<br>
+> `All Configurations:` is all plugin definitions, `-` the beginning is not valid, `disable by` shows why it was disabled, `url` is the plugin definition file path<br>
