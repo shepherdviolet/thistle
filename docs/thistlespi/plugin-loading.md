@@ -395,4 +395,4 @@ sample.spi.facade.APlugin=sample.spi.impl.APluginImpl1(true),sample.spi.impl.APl
 
 > 插件接口为: sviolet.slate.common.x.conversion.beanutil.PropMapper<br>
 > `implements:`为目前生效的插件列表(已排序)<br>
-> `All Configurations:`为所有插件定义, -开头的是未生效的, 其中disable by是被禁用的原因, url为插件定义文件路径<br>
+> `All Configurations:`为所有插件定义, `-`开头的是未生效的, 其中`disable by`是被禁用的原因, `url`为插件定义文件路径<br>
