@@ -160,56 +160,7 @@ class PluginFactory {
 
         //遍历所有plugin-ignore.properties配置文件
         while (urls != null && urls.hasMoreElements()) {
-            URL url = urls.nextElement();
-
-            //装载配置文件
-            Properties properties = ParseUtils.loadProperties(url, logger, loaderId);
-            if (properties == null) {
-                continue;
-            }
-
-            if (properties.size() <= 0) {
-                if (LOG_LV >= INFO) {
-                    logger.print(loaderId + LOG_PREFIX + "Warning: No properties in " + url);
-                }
-            }
-
-            //遍历所有key-value
-            Enumeration<?> names = properties.propertyNames();
-            while (names.hasMoreElements()) {
-                String type = String.valueOf(names.nextElement()).trim();
-                String ignoreStr = properties.getProperty(type);
-                if (CheckUtils.isEmptyOrBlank(ignoreStr)) {
-                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + type + " is empty, definitions:" + url);
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + type + " is empty, definitions:" + url, e);
-                    throw e;
-                }
-                ignoreStr = ignoreStr.trim();
-
-                IgnoreInfo ignoreInfo = ignoreInfos.get(type);
-                if (ignoreInfo == null) {
-                    ignoreInfo = new IgnoreInfo();
-                    ignoreInfo.type = type;
-                    ignoreInfos.put(type, ignoreInfo);
-                }
-
-                String[] ignoreImpls = ignoreStr.split(",");
-
-                for (String ignoreImpl : ignoreImpls) {
-                    if (ignoreImpl == null) {
-                        continue;
-                    }
-                    ignoreImpl = ignoreImpl.trim();
-                    if (ignoreImpl.length() <= 0) {
-                        continue;
-                    }
-                    Ignore ignore = new Ignore();
-                    ignore.ignoreImpl = ignoreImpl;
-                    ignore.resource = url;
-                    ignoreInfo.ignores.add(ignore);
-                }
-            }
-
+            loadPluginIgnoreProperties(urls.nextElement());
         }
 
         //ignore plugins
@@ -310,6 +261,9 @@ class PluginFactory {
 
     }
 
+    /**
+     * 解析插件定义文件为插件信息
+     */
     private void loadPluginProperties(URL url, String configPath) {
         //装载配置文件
         Properties properties = ParseUtils.loadProperties(url, logger, loaderId);
@@ -374,6 +328,60 @@ class PluginFactory {
             plugin.resource = url;
             pluginInfo.plugins.add(plugin);
 
+        }
+    }
+
+    /**
+     * 解析插件忽略定义文件为忽略信息
+     */
+    private void loadPluginIgnoreProperties(URL url) {
+        //装载配置文件
+        Properties properties = ParseUtils.loadProperties(url, logger, loaderId);
+        if (properties == null) {
+            return;
+        }
+
+        if (properties.size() <= 0) {
+            if (LOG_LV >= INFO) {
+                logger.print(loaderId + LOG_PREFIX + "Warning: No properties in " + url);
+            }
+            return;
+        }
+
+        //遍历所有key-value
+        Enumeration<?> names = properties.propertyNames();
+        while (names.hasMoreElements()) {
+            String type = String.valueOf(names.nextElement()).trim();
+            String ignoreStr = properties.getProperty(type);
+            if (CheckUtils.isEmptyOrBlank(ignoreStr)) {
+                RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + type + " is empty, definitions:" + url);
+                logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + type + " is empty, definitions:" + url, e);
+                throw e;
+            }
+            ignoreStr = ignoreStr.trim();
+
+            IgnoreInfo ignoreInfo = ignoreInfos.get(type);
+            if (ignoreInfo == null) {
+                ignoreInfo = new IgnoreInfo();
+                ignoreInfo.type = type;
+                ignoreInfos.put(type, ignoreInfo);
+            }
+
+            String[] ignoreImpls = ignoreStr.split(",");
+
+            for (String ignoreImpl : ignoreImpls) {
+                if (ignoreImpl == null) {
+                    continue;
+                }
+                ignoreImpl = ignoreImpl.trim();
+                if (ignoreImpl.length() <= 0) {
+                    continue;
+                }
+                Ignore ignore = new Ignore();
+                ignore.ignoreImpl = ignoreImpl;
+                ignore.resource = url;
+                ignoreInfo.ignores.add(ignore);
+            }
         }
     }
 

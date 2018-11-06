@@ -136,73 +136,7 @@ class ServiceFactory {
 
         //遍历所有service-apply.properties配置文件
         while (urls != null && urls.hasMoreElements()) {
-            URL url = urls.nextElement();
-
-            //装载配置文件
-            Properties properties = ParseUtils.loadProperties(url, logger, loaderId);
-            if (properties == null) {
-                continue;
-            }
-
-            if (properties.size() <= 0) {
-                if (LOG_LV >= INFO) {
-                    logger.print(loaderId + LOG_PREFIX + "Warning: No properties in config " + url);
-                }
-            }
-
-            //遍历所有key-value
-            Enumeration<?> names = properties.propertyNames();
-            while (names.hasMoreElements()) {
-                String type = String.valueOf(names.nextElement()).trim();
-                String id = properties.getProperty(type);
-                if (CheckUtils.isEmptyOrBlank(id)) {
-                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + type + " is empty, definitions:" + url);
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + type + " is empty, definitions:" + url, e);
-                    throw e;
-                }
-                id = id.trim();
-
-                if (applyInfos.containsKey(type)) {
-                    //apply配置重复处理
-                    ApplyInfo previous = applyInfos.get(type);
-                    if (id.equals(previous.id)){
-                        //若id相同, 不抛出错误, 仅做提醒
-                        if (LOG_LV >= INFO) {
-                            logger.print(loaderId + LOG_PREFIX + "Warning: Duplicate apply defined with same value, key:" + type + ", value:" + id + ", url1:" + url + ", url2:" + previous.resource);
-                        }
-                    } else {
-                        //若id不相同, 则需要抛出异常
-                        String idFromJvmArgs = System.getProperty(STARTUP_PROP_SERVICE_APPLY_PREFIX + type);
-                        //允许使用-Dthistle.spi.apply解决apply冲突
-                        //we can use -Dthistle.spi.apply to resolve duplicate error
-                        String duplicateError = "Duplicate apply defined with different value, key:" + type + ", value1:" + id + ", value2:" + previous.id + ", url1:" + url + ", url2:" + previous.resource;
-                        if (CheckUtils.isEmptyOrBlank(idFromJvmArgs)) {
-                            //如果没有-Dthistle.spi.apply, 直接抛出异常
-                            //no -Dthistle.spi.apply, throw exception
-                            RuntimeException e = new RuntimeException("ThistleSpi: " + duplicateError);
-                            logger.print(loaderId + LOG_PREFIX + "ERROR: " + duplicateError, e);
-                            throw e;
-                        } else {
-                            //如果有-Dthistle.spi.apply, 先放一马
-                            //try with -Dthistle.spi.apply
-                            previous.duplicateError = duplicateError;
-                            if (LOG_LV >= INFO) {
-                                logger.print(loaderId + LOG_PREFIX + "Warning: (Resolve by -Dthistle.spi.apply)" + duplicateError);
-                            }
-                        }
-                    }
-                    continue;
-                }
-
-                //创建apply信息
-                ApplyInfo applyInfo = new ApplyInfo();
-                applyInfo.type = type;
-                applyInfo.id = properties.getProperty(type);
-                applyInfo.resource = url;
-                applyInfos.put(type, applyInfo);
-
-            }
-
+            loadServiceApplyProperties(urls.nextElement());
         }
 
         //apply service
@@ -308,6 +242,9 @@ class ServiceFactory {
 
     }
 
+    /**
+     * 解析服务定义文件为服务信息
+     */
     private void loadServiceProperties(URL url, String configPath) {
         //装载配置文件
         Properties properties = ParseUtils.loadProperties(url, logger, loaderId);
@@ -382,6 +319,77 @@ class ServiceFactory {
             }
 
             serviceInfo.definedServices.put(id, service);
+
+        }
+    }
+
+    /**
+     * 解析服务应用定义文件为应用信息
+     */
+    private void loadServiceApplyProperties(URL url) {
+        //装载配置文件
+        Properties properties = ParseUtils.loadProperties(url, logger, loaderId);
+        if (properties == null) {
+            return;
+        }
+
+        if (properties.size() <= 0) {
+            if (LOG_LV >= INFO) {
+                logger.print(loaderId + LOG_PREFIX + "Warning: No properties in config " + url);
+            }
+            return;
+        }
+
+        //遍历所有key-value
+        Enumeration<?> names = properties.propertyNames();
+        while (names.hasMoreElements()) {
+            String type = String.valueOf(names.nextElement()).trim();
+            String id = properties.getProperty(type);
+            if (CheckUtils.isEmptyOrBlank(id)) {
+                RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + type + " is empty, definitions:" + url);
+                logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + type + " is empty, definitions:" + url, e);
+                throw e;
+            }
+            id = id.trim();
+
+            if (applyInfos.containsKey(type)) {
+                //apply配置重复处理
+                ApplyInfo previous = applyInfos.get(type);
+                if (id.equals(previous.id)){
+                    //若id相同, 不抛出错误, 仅做提醒
+                    if (LOG_LV >= INFO) {
+                        logger.print(loaderId + LOG_PREFIX + "Warning: Duplicate apply defined with same value, key:" + type + ", value:" + id + ", url1:" + url + ", url2:" + previous.resource);
+                    }
+                } else {
+                    //若id不相同, 则需要抛出异常
+                    String idFromJvmArgs = System.getProperty(STARTUP_PROP_SERVICE_APPLY_PREFIX + type);
+                    //允许使用-Dthistle.spi.apply解决apply冲突
+                    //we can use -Dthistle.spi.apply to resolve duplicate error
+                    String duplicateError = "Duplicate apply defined with different value, key:" + type + ", value1:" + id + ", value2:" + previous.id + ", url1:" + url + ", url2:" + previous.resource;
+                    if (CheckUtils.isEmptyOrBlank(idFromJvmArgs)) {
+                        //如果没有-Dthistle.spi.apply, 直接抛出异常
+                        //no -Dthistle.spi.apply, throw exception
+                        RuntimeException e = new RuntimeException("ThistleSpi: " + duplicateError);
+                        logger.print(loaderId + LOG_PREFIX + "ERROR: " + duplicateError, e);
+                        throw e;
+                    } else {
+                        //如果有-Dthistle.spi.apply, 先放一马
+                        //try with -Dthistle.spi.apply
+                        previous.duplicateError = duplicateError;
+                        if (LOG_LV >= INFO) {
+                            logger.print(loaderId + LOG_PREFIX + "Warning: (Resolve by -Dthistle.spi.apply)" + duplicateError);
+                        }
+                    }
+                }
+                continue;
+            }
+
+            //创建apply信息
+            ApplyInfo applyInfo = new ApplyInfo();
+            applyInfo.type = type;
+            applyInfo.id = properties.getProperty(type);
+            applyInfo.resource = url;
+            applyInfos.put(type, applyInfo);
 
         }
     }
