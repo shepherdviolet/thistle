@@ -19,8 +19,6 @@
 
 package sviolet.thistle.x.common.thistlespi;
 
-import sviolet.thistle.util.conversion.ByteUtils;
-import sviolet.thistle.util.crypto.DigestCipher;
 import sviolet.thistle.util.judge.CheckUtils;
 
 import java.net.URL;
@@ -95,7 +93,7 @@ class PluginConfigLoader {
             Object pluginObj;
             try {
                 Class clazz = classLoader.loadClass(plugin.implement);
-                pluginObj = Utils.newInstance(clazz, plugin.arg, classLoader, plugin.configPath, plugin.resource, logger, loaderId);
+                pluginObj = InstantiationUtils.newInstance(clazz, plugin.arg, classLoader, plugin.configPath, plugin.resource, logger, loaderId);
             } catch (Exception e) {
                 logger.print(loaderId + LOG_PREFIX_LOADER + "ERROR: Plugin " + pluginInfo.type + " (" + plugin.implement + ") instantiation error, definitions:" + plugin.resource, e);
                 throw new RuntimeException("ThistleSpi: Plugin " + pluginInfo.type + " (" + plugin.implement + ") instantiation error, definitions:" + plugin.resource, e);

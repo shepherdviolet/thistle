@@ -29,7 +29,7 @@ import java.util.Properties;
 import static sviolet.thistle.x.common.thistlespi.Constants.*;
 import static sviolet.thistle.x.common.thistlespi.ThistleSpi.PROPERTIES_URL;
 
-class Utils {
+class InstantiationUtils {
 
     /**
      * 类型实例化, 可包含一个String构造参数

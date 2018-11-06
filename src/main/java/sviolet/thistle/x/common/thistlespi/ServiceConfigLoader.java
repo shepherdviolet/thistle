@@ -19,8 +19,6 @@
 
 package sviolet.thistle.x.common.thistlespi;
 
-import sviolet.thistle.util.conversion.ByteUtils;
-import sviolet.thistle.util.crypto.DigestCipher;
 import sviolet.thistle.util.judge.CheckUtils;
 
 import java.net.URL;
@@ -91,7 +89,7 @@ class ServiceConfigLoader {
         Object service;
         try {
             Class clazz = classLoader.loadClass(serviceInfo.appliedService.implement);
-            service = Utils.newInstance(clazz, serviceInfo.appliedService.arg, classLoader,
+            service = InstantiationUtils.newInstance(clazz, serviceInfo.appliedService.arg, classLoader,
                     serviceInfo.appliedService.configPath, serviceInfo.appliedService.resource, logger, loaderId);
         } catch (Exception e) {
             logger.print(loaderId + LOG_PREFIX_LOADER + "ERROR: Service " + serviceInfo.type + " (" + serviceInfo.appliedService.implement + ") instantiation error, config:" + serviceInfo.appliedService.resource, e);
