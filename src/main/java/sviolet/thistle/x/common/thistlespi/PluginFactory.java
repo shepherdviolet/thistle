@@ -167,66 +167,7 @@ class PluginFactory {
 
         //遍历所有插件
         for (PluginInfo pluginInfo : pluginInfos.values()) {
-
-            //优先用-Dthistle.spi.ignore忽略插件实现
-            String ignoreStr = System.getProperty(STARTUP_PROP_PLUGIN_IGNORE_PREFIX + pluginInfo.type);
-            if (!CheckUtils.isEmptyOrBlank(ignoreStr)) {
-                String[] ignoreImpls = ignoreStr.split(",");
-                for (String ignoreImpl : ignoreImpls) {
-                    if (CheckUtils.isEmptyOrBlank(ignoreImpl)) {
-                        continue;
-                    }
-                    ignoreImpl = ignoreImpl.trim();
-                    ParseUtils.Implementation implementation = ParseUtils.parseImplementation(ignoreImpl, false, logger, loaderId, ignoreStr, null);
-                    int count = 0;
-                    for (Plugin plugin : pluginInfo.plugins) {
-                        //ignore中未指定构造参数时排除所有实现, ignore中指定构造参数则排除相同参数的实现
-                        if (implementation.implement.equals(plugin.implement) &&
-                                (implementation.arg == null || implementation.arg.equals(plugin.arg))) {
-                            count++;
-                            plugin.enabled = false;
-                            plugin.disableReason = "-D" + STARTUP_PROP_PLUGIN_IGNORE_PREFIX + pluginInfo.type + "=" + ignoreStr;
-                        }
-                    }
-                    if (LOG_LV >= INFO && count <= 0) {
-                        logger.print(loaderId + LOG_PREFIX + "Warning: Plugin implement " + ignoreImpl + " undefined, failed to ignore implement '" + ignoreImpl + "' of '" + pluginInfo.type + "' by -D" + STARTUP_PROP_PLUGIN_IGNORE_PREFIX + pluginInfo.type + "=" + ignoreStr);
-                    }
-                }
-            }
-
-            //然后用配置忽略插件实现
-            if (ignoreInfos.containsKey(pluginInfo.type)){
-                IgnoreInfo ignoreInfo = ignoreInfos.get(pluginInfo.type);
-                for (Ignore ignore : ignoreInfo.ignores) {
-                    ParseUtils.Implementation implementation = ParseUtils.parseImplementation(ignore.ignoreImpl, false, logger, loaderId, pluginInfo.type, ignore.resource);
-                    int count = 0;
-                    for (Plugin plugin : pluginInfo.plugins) {
-                        if (implementation.implement.equals(plugin.implement) &&
-                                (implementation.arg == null || implementation.arg.equals(plugin.arg))) {
-                            count++;
-                            plugin.enabled = false;
-                            plugin.disableReason = String.valueOf(ignore.resource);
-                        }
-                    }
-                    if (LOG_LV >= INFO && count <= 0) {
-                        logger.print(loaderId + LOG_PREFIX + "Warning: Plugin implement " + ignore.ignoreImpl + " undefined, failed to ignore implement '" + ignore.ignoreImpl + "' of '" + pluginInfo.type + "' by " + ignore.resource);
-                    }
-                }
-            }
-
-            //最后取可用的插件排序
-            for (Plugin plugin : pluginInfo.plugins) {
-                if (plugin.enabled) {
-                    pluginInfo.orderedPlugins.add(plugin);
-                }
-            }
-            Collections.sort(pluginInfo.orderedPlugins, new Comparator<Plugin>() {
-                @Override
-                public int compare(Plugin o1, Plugin o2) {
-                    return o1.priority - o2.priority;
-                }
-            });
-
+            handlePlugins(pluginInfo);
         }
 
         if (LOG_LV >= INFO) {
@@ -383,6 +324,70 @@ class PluginFactory {
                 ignoreInfo.ignores.add(ignore);
             }
         }
+    }
+
+    /**
+     * 决定最终应用那些插件实现, 并排序
+     */
+    private void handlePlugins(PluginInfo pluginInfo) {
+        //优先用-Dthistle.spi.ignore忽略插件实现
+        String ignoreStr = System.getProperty(STARTUP_PROP_PLUGIN_IGNORE_PREFIX + pluginInfo.type);
+        if (!CheckUtils.isEmptyOrBlank(ignoreStr)) {
+            String[] ignoreImpls = ignoreStr.split(",");
+            for (String ignoreImpl : ignoreImpls) {
+                if (CheckUtils.isEmptyOrBlank(ignoreImpl)) {
+                    continue;
+                }
+                ignoreImpl = ignoreImpl.trim();
+                ParseUtils.Implementation implementation = ParseUtils.parseImplementation(ignoreImpl, false, logger, loaderId, ignoreStr, null);
+                int count = 0;
+                for (Plugin plugin : pluginInfo.plugins) {
+                    //ignore中未指定构造参数时排除所有实现, ignore中指定构造参数则排除相同参数的实现
+                    if (implementation.implement.equals(plugin.implement) &&
+                            (implementation.arg == null || implementation.arg.equals(plugin.arg))) {
+                        count++;
+                        plugin.enabled = false;
+                        plugin.disableReason = "-D" + STARTUP_PROP_PLUGIN_IGNORE_PREFIX + pluginInfo.type + "=" + ignoreStr;
+                    }
+                }
+                if (LOG_LV >= INFO && count <= 0) {
+                    logger.print(loaderId + LOG_PREFIX + "Warning: Plugin implement " + ignoreImpl + " undefined, failed to ignore implement '" + ignoreImpl + "' of '" + pluginInfo.type + "' by -D" + STARTUP_PROP_PLUGIN_IGNORE_PREFIX + pluginInfo.type + "=" + ignoreStr);
+                }
+            }
+        }
+
+        //然后用配置忽略插件实现
+        if (ignoreInfos.containsKey(pluginInfo.type)){
+            IgnoreInfo ignoreInfo = ignoreInfos.get(pluginInfo.type);
+            for (Ignore ignore : ignoreInfo.ignores) {
+                ParseUtils.Implementation implementation = ParseUtils.parseImplementation(ignore.ignoreImpl, false, logger, loaderId, pluginInfo.type, ignore.resource);
+                int count = 0;
+                for (Plugin plugin : pluginInfo.plugins) {
+                    if (implementation.implement.equals(plugin.implement) &&
+                            (implementation.arg == null || implementation.arg.equals(plugin.arg))) {
+                        count++;
+                        plugin.enabled = false;
+                        plugin.disableReason = String.valueOf(ignore.resource);
+                    }
+                }
+                if (LOG_LV >= INFO && count <= 0) {
+                    logger.print(loaderId + LOG_PREFIX + "Warning: Plugin implement " + ignore.ignoreImpl + " undefined, failed to ignore implement '" + ignore.ignoreImpl + "' of '" + pluginInfo.type + "' by " + ignore.resource);
+                }
+            }
+        }
+
+        //最后取可用的插件排序
+        for (Plugin plugin : pluginInfo.plugins) {
+            if (plugin.enabled) {
+                pluginInfo.orderedPlugins.add(plugin);
+            }
+        }
+        Collections.sort(pluginInfo.orderedPlugins, new Comparator<Plugin>() {
+            @Override
+            public int compare(Plugin o1, Plugin o2) {
+                return o1.priority - o2.priority;
+            }
+        });
     }
 
     /* ***************************************************************************************************************** */
