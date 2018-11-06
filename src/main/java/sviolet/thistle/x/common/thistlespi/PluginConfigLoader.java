@@ -222,7 +222,7 @@ class PluginConfigLoader {
                 propValue = propValue.trim();
 
                 //实现类信息
-                Utils.Implementation implementation = Utils.parseImplementation(propValue, true, logger, loaderId, key, url);
+                ParseUtils.Implementation implementation = ParseUtils.parseImplementation(propValue, true, logger, loaderId, key, url);
 
                 //服务接口信息
                 Plugin plugin = new Plugin();
@@ -324,7 +324,7 @@ class PluginConfigLoader {
                         continue;
                     }
                     ignoreImpl = ignoreImpl.trim();
-                    Utils.Implementation implementation = Utils.parseImplementation(ignoreImpl, false, logger, loaderId, ignoreStr, null);
+                    ParseUtils.Implementation implementation = ParseUtils.parseImplementation(ignoreImpl, false, logger, loaderId, ignoreStr, null);
                     int count = 0;
                     for (Plugin plugin : pluginInfo.plugins) {
                         //ignore中未指定构造参数时排除所有实现, ignore中指定构造参数则排除相同参数的实现
@@ -345,7 +345,7 @@ class PluginConfigLoader {
             if (ignoreInfos.containsKey(pluginInfo.type)){
                 IgnoreInfo ignoreInfo = ignoreInfos.get(pluginInfo.type);
                 for (Ignore ignore : ignoreInfo.ignores) {
-                    Utils.Implementation implementation = Utils.parseImplementation(ignore.ignoreImpl, false, logger, loaderId, pluginInfo.type, ignore.resource);
+                    ParseUtils.Implementation implementation = ParseUtils.parseImplementation(ignore.ignoreImpl, false, logger, loaderId, pluginInfo.type, ignore.resource);
                     int count = 0;
                     for (Plugin plugin : pluginInfo.plugins) {
                         if (implementation.implement.equals(plugin.implement) &&

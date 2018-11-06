@@ -200,7 +200,7 @@ class ServiceConfigLoader {
                 propValue = propValue.trim();
 
                 //实现类信息
-                Utils.Implementation implementation = Utils.parseImplementation(propValue, true, logger, loaderId, key, url);
+                ParseUtils.Implementation implementation = ParseUtils.parseImplementation(propValue, true, logger, loaderId, key, url);
 
                 //服务接口信息
                 Service service = new Service();
