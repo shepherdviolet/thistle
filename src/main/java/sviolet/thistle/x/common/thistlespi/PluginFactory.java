@@ -409,25 +409,41 @@ class PluginFactory {
 
     }
 
+    /**
+     * 一个接口的所有插件信息
+     */
     private static class PluginInfo {
 
+        //接口类
         private String type;
+        //所有插件定义
         private List<Plugin> plugins = new ArrayList<>(8);
+        //所有生效的插件定义(已排序)
         private List<Plugin> orderedPlugins = new ArrayList<>(8);
 
     }
 
+    /**
+     * 插件信息
+     */
     private static class Plugin {
 
+        //插件优先级
         private int priority;
+        //实现类
         private String implement;
+        //构造参数
         private String arg;
+        //配置文件所在路径
         private String configPath;
+        //配置文件URL
         private URL resource;
+        //是否启用
         private boolean enabled = true;
+        //禁用原因
         private String disableReason;
 
-        public String toAbstractString(){
+        String toAbstractString(){
             return "Plugin{" +
                     "priority=" + priority +
                     ", impl=" + implement +
@@ -448,16 +464,26 @@ class PluginFactory {
 
     }
 
+    /**
+     * 一个接口的所有忽略信息
+     */
     private static class IgnoreInfo {
 
+        //接口类
         private String type;
+        //所有忽略信息
         private List<Ignore> ignores = new ArrayList<>(8);
 
     }
 
+    /**
+     * 忽略信息
+     */
     private static class Ignore {
 
+        //忽略的实现类
         private String ignoreImpl;
+        //配置文件URL
         private URL resource;
 
         @Override

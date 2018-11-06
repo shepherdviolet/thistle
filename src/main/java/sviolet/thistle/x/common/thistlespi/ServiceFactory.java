@@ -418,22 +418,38 @@ class ServiceFactory {
 
     }
 
+    /**
+     * 一个接口的所有服务信息
+     */
     private static class ServiceInfo {
 
+        //接口类
         private String type;
+        //应用的服务
         private Service appliedService;
+        //应用的原因
         private String applyReason;
+        //所有服务定义
         private Map<String, Service> definedServices = new HashMap<>(1);
 
     }
 
+    /**
+     * 服务信息
+     */
     private static class Service {
 
+        //id
         private String id;
+        //级别
         private Level level;
+        //实现类
         private String implement;
+        //构造参数
         private String arg;
+        //配置文件所在路径
         private String configPath;
+        //配置文件URL
         private URL resource;
 
         @Override
@@ -448,15 +464,25 @@ class ServiceFactory {
         }
     }
 
+    /**
+     * 应用信息
+     */
     private static class ApplyInfo {
 
+        //接口类
         private String type;
+        //指定的id
         private String id;
+        //配置文件URL
         private URL resource;
+        //重复错误
         private String duplicateError;
 
     }
 
+    /**
+     * 扩展级别
+     */
     private enum Level {
 
         /**
