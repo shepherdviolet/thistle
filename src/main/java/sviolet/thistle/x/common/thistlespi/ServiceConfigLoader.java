@@ -26,7 +26,7 @@ import sviolet.thistle.util.judge.CheckUtils;
 import java.net.URL;
 import java.util.*;
 
-import static sviolet.thistle.x.common.thistlespi.ThistleSpi.*;
+import static sviolet.thistle.x.common.thistlespi.Constants.*;
 
 /**
  * 服务配置文件加载器

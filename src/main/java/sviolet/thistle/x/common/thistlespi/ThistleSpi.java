@@ -19,15 +19,14 @@
 
 package sviolet.thistle.x.common.thistlespi;
 
-import sviolet.thistle.util.conversion.DateTimeUtils;
 import sviolet.thistle.util.judge.CheckUtils;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static sviolet.thistle.x.common.thistlespi.Constants.*;
 
 /**
  * ThistleSpi<br>
@@ -42,75 +41,9 @@ public class ThistleSpi {
 
     public static final String PROPERTIES_URL = "_PROPERTIES_URL_";
 
-    //日志打印级别(error/debug/verbose, 默认debug)
-    static final String PROPERTY_LOGLV = "thistle.spi.loglv";
-    //缓存开关(默认true)
-    static final String PROPERTY_CACHE = "thistle.spi.cache";
-    //强制禁用配置文件(根据文件hash值)
-    static final String PROPERTY_FILE_EXCLUSION = "thistle.spi.file.exclusion";
-
-    //默认配置路径
-    private static final String CONFIG_PATH = "META-INF/thistle-spi/";
-    //[固定]自定义日志打印器配置路径
-    private static final String CONFIG_PATH_LOGGER = "META-INF/thistle-spi-logger/";
-    //[固定]构造参数引用配置文件路径(相对路径)
-    static final String CONFIG_PATH_PARAMETER = "parameter/";
-
-    //日志前缀
-    static final String LOG_PREFIX = " ThistleSpi | ";
-    static final String LOG_PREFIX_LOADER = " ThistleSpi Loader | ";
-
-    //日志级别
-    static final int ERROR = 0;
-    static final int INFO = 1;
-    static final int DEBUG = 2;
-
-    //日志级别(error/info/debug), 默认info
-    static final int LOG_LV;
-
-    //是否启用缓存(默认true)
-    private static final boolean CACHE;
-
-    //被强制禁用的配置文件的hash
-    static final Set<String> FILE_EXCLUSION = new HashSet<>();
-
     private static final AtomicInteger LOADER_ID_COUNT = new AtomicInteger(0);
 
     private static final Map<String, ServiceLoader> LOADER_CACHE = new ConcurrentHashMap<>(16);
-
-    static {
-        //Log level
-        switch (System.getProperty(PROPERTY_LOGLV, "info").toLowerCase()) {
-            case "error":
-                LOG_LV = ERROR;
-                break;
-            case "debug":
-                LOG_LV = DEBUG;
-                break;
-            case "info":
-            default:
-                LOG_LV = INFO;
-                break;
-        }
-        //Cache enabled
-        CACHE = "true".equals(System.getProperty(PROPERTY_CACHE, "true"));
-        if (LOG_LV >= INFO && !CACHE) {
-            System.out.println(DateTimeUtils.getDateTime() + " ?" + LOG_PREFIX + "Loader cache force disabled by -D" + PROPERTY_CACHE + "=false");
-        }
-        //Config file exclude by hash
-        String fileExclusionStr = System.getProperty(PROPERTY_FILE_EXCLUSION, null);
-        if (!CheckUtils.isEmptyOrBlank(fileExclusionStr)) {
-            String[] array = fileExclusionStr.split(",");
-            for (String item : array) {
-                if (!CheckUtils.isEmptyOrBlank(item)) {
-                    FILE_EXCLUSION.add(item.trim());
-                    if (LOG_LV >= INFO) {
-                        System.out.println(DateTimeUtils.getDateTime() + " ?" + LOG_PREFIX + "Config file with hash '" + item + "' will be excluded, by -D" + PROPERTY_FILE_EXCLUSION + "=" + fileExclusionStr);
-                    }
-                }
-            }
-        }
-    }
 
     /**
      * 创建一个新的服务加载器(无缓存).<br>

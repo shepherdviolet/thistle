@@ -26,7 +26,8 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.Properties;
 
-import static sviolet.thistle.x.common.thistlespi.ThistleSpi.*;
+import static sviolet.thistle.x.common.thistlespi.Constants.*;
+import static sviolet.thistle.x.common.thistlespi.ThistleSpi.PROPERTIES_URL;
 
 class Utils {
 

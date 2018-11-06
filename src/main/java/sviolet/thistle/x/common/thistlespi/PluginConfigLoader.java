@@ -26,7 +26,7 @@ import sviolet.thistle.util.judge.CheckUtils;
 import java.net.URL;
 import java.util.*;
 
-import static sviolet.thistle.x.common.thistlespi.ThistleSpi.*;
+import static sviolet.thistle.x.common.thistlespi.Constants.*;
 
 /**
  * 插件配置加载器
@@ -405,7 +405,7 @@ class PluginConfigLoader {
                 for (Plugin plugin : pluginInfo.orderedPlugins) {
                     if (LOG_LV < DEBUG && i++ >= MAX_INFO_LOG_LINES) {
                         logger.print(loaderId + LOG_PREFIX + "    ...... " + (pluginInfo.orderedPlugins.size() - MAX_INFO_LOG_LINES) +
-                                " more omitted ('-D" + ThistleSpi.PROPERTY_LOGLV + "=debug' to show more)");
+                                " more omitted ('-D" + PROPERTY_LOGLV + "=debug' to show more)");
                         break;
                     }
                     logger.print(loaderId + LOG_PREFIX + "  + " + plugin.toAbstractString());
