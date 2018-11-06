@@ -90,11 +90,15 @@ class ServiceFactory {
             logger.print(loaderId + LOG_PREFIX_LOADER + "ERROR: Service " + serviceInfo.type + " (" + serviceInfo.appliedService.implement + ") instantiation error, config:" + serviceInfo.appliedService.resource, e);
             throw new RuntimeException("ThistleSpi: Service " + serviceInfo.type + " (" + serviceInfo.appliedService.implement + ") instantiation error, config:" + serviceInfo.appliedService.resource, e);
         }
+
+        //check instance type
         if (!type.isAssignableFrom(service.getClass())) {
             RuntimeException e = new RuntimeException("ThistleSpi: " + serviceInfo.appliedService.implement + " is not instance of " + serviceInfo.type + ", illegal config:" + serviceInfo.appliedService.resource);
             logger.print(loaderId + LOG_PREFIX_LOADER + "ERROR: " + serviceInfo.appliedService.implement + " is not instance of " + serviceInfo.type + ", illegal config:" + serviceInfo.appliedService.resource, e);
             throw e;
         }
+
+        //log
         if (LOG_LV >= INFO) {
             logger.print(loaderId + LOG_PREFIX_LOADER + "Service loaded successfully: " + serviceInfo.type + " (" + serviceInfo.appliedService.implement + ")");
         }

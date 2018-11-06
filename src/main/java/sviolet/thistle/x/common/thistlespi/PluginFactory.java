@@ -80,6 +80,7 @@ class PluginFactory {
             return null;
         }
 
+        //plugins instance list
         List<T> plugins = new ArrayList<>(pluginInfo.orderedPlugins.size());
 
         for (Plugin plugin : pluginInfo.orderedPlugins) {
@@ -93,16 +94,20 @@ class PluginFactory {
                 logger.print(loaderId + LOG_PREFIX_LOADER + "ERROR: Plugin " + pluginInfo.type + " (" + plugin.implement + ") instantiation error, definitions:" + plugin.resource, e);
                 throw new RuntimeException("ThistleSpi: Plugin " + pluginInfo.type + " (" + plugin.implement + ") instantiation error, definitions:" + plugin.resource, e);
             }
+
+            //check instance type
             if (!type.isAssignableFrom(pluginObj.getClass())) {
                 RuntimeException e = new RuntimeException("ThistleSpi: " + plugin.implement + " is not instance of " + pluginInfo.type + ", illegal definitions:" + plugin.resource);
                 logger.print(loaderId + LOG_PREFIX_LOADER + "ERROR: " + plugin.implement + " is not instance of " + pluginInfo.type + ", illegal definitions:" + plugin.resource, e);
                 throw e;
             }
 
+            //add to list
             plugins.add((T) pluginObj);
 
         }
 
+        //log
         if (LOG_LV >= INFO) {
             StringBuilder stringBuilder = new StringBuilder(loaderId + LOG_PREFIX_LOADER + "Plugin loaded successfully: ");
             stringBuilder.append(pluginInfo.type);
