@@ -20,7 +20,7 @@
 package sviolet.thistle.x.common.thistlespi;
 
 /**
- * 日志
+ * 日志相关
  *
  * @author S.Violet
  */

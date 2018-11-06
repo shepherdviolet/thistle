@@ -140,20 +140,17 @@ class ServiceConfigLoader {
             URL url = urls.nextElement();
 
             //装载配置
-            String propHash;
             Properties properties;
             try {
-                propHash = ByteUtils.bytesToHex(DigestCipher.digestInputStream(url.openStream(), DigestCipher.TYPE_MD5));
+                //检查文件是否被强制排除
+                if (ExclusionUtils.checkFileExclusion(url, logger, loaderId)) {
+                    continue;
+                }
                 properties = new Properties();
                 properties.load(url.openStream());
             } catch (Exception e) {
                 logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading config " + url, e);
                 throw new RuntimeException("ThistleSpi: Error while loading config " + url, e);
-            }
-
-            //检查文件是否被强制排除
-            if (Utils.checkFileExclusion(propHash, logger, loaderId, url)) {
-                continue;
             }
 
             if (properties.size() <= 0) {
@@ -244,20 +241,17 @@ class ServiceConfigLoader {
             URL url = urls.nextElement();
 
             //装载配置文件
-            String propHash;
             Properties properties;
             try {
-                propHash = ByteUtils.bytesToHex(DigestCipher.digestInputStream(url.openStream(), DigestCipher.TYPE_MD5));
+                //检查文件是否被强制排除
+                if (ExclusionUtils.checkFileExclusion(url, logger, loaderId)) {
+                    continue;
+                }
                 properties = new Properties();
                 properties.load(url.openStream());
             } catch (Exception e) {
                 logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading config " + url, e);
                 throw new RuntimeException("ThistleSpi: Error while loading config " + url, e);
-            }
-
-            //检查文件是否被强制排除
-            if (Utils.checkFileExclusion(propHash, logger, loaderId, url)) {
-                continue;
             }
 
             if (properties.size() <= 0) {

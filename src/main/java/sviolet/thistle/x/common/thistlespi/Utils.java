@@ -192,25 +192,4 @@ class Utils {
         }
     }
 
-    /**
-     * 检查配置文件是否被强制排除
-     * @param propHash 配置文件的hash
-     * @param logger (日志相关)日志打印器
-     * @param loaderId (日志相关)加载器ID
-     * @param configUrl (日志相关)被排除的配置文件的URL
-     */
-    static boolean checkFileExclusion(String propHash, SpiLogger logger, int loaderId, URL configUrl) {
-        if (FILE_EXCLUSION_SET.contains(propHash)) {
-            if (LOG_LV >= INFO) {
-                logger.print(loaderId + LOG_PREFIX + "!!! Exclude config " + configUrl + " by -D" + STARTUP_PROP_FILE_EXCLUSION);
-            }
-            return true;
-        } else {
-            if (LOG_LV >= DEBUG) {
-                logger.print(loaderId + LOG_PREFIX + "Loading config " + configUrl + " <hash> " + propHash);
-            }
-        }
-        return false;
-    }
-
 }
