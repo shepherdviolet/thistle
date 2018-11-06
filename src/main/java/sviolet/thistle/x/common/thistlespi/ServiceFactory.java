@@ -27,11 +27,11 @@ import java.util.*;
 import static sviolet.thistle.x.common.thistlespi.Constants.*;
 
 /**
- * 服务配置文件加载器
+ * 服务加载工厂
  *
  * @author S.Violet
  */
-class ServiceConfigLoader {
+class ServiceFactory {
 
     private ClassLoader classLoader;
     private SpiLogger logger;
@@ -43,7 +43,7 @@ class ServiceConfigLoader {
     //apply配置信息
     private Map<String, ApplyInfo> applyInfos = new HashMap<>(8);
 
-    ServiceConfigLoader(ClassLoader classLoader, SpiLogger logger, int loaderId) {
+    ServiceFactory(ClassLoader classLoader, SpiLogger logger, int loaderId) {
         this.classLoader = classLoader;
         this.logger = logger;
         this.loaderId = loaderId;

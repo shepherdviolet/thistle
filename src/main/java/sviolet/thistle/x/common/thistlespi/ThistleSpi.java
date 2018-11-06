@@ -191,7 +191,7 @@ public class ThistleSpi {
          * @return 服务(若找不到定义会返回空)
          */
         public <T> T loadService(Class<T> type) {
-            return serviceConfigLoader.loadService(type);
+            return serviceFactory.loadService(type);
         }
 
         /**
@@ -201,7 +201,7 @@ public class ThistleSpi {
          * @return 插件(若找不到定义会返回空)
          */
         public <T> List<T> loadPlugins(Class<T> type) {
-            return pluginConfigLoader.loadPlugins(type);
+            return pluginFactory.loadPlugins(type);
         }
 
         // ************************************************************************************************
@@ -212,39 +212,39 @@ public class ThistleSpi {
         private int loaderId;
 
         private ClassLoader classLoader;
-        private ServiceConfigLoader serviceConfigLoader;
-        private PluginConfigLoader pluginConfigLoader;
+        private ServiceFactory serviceFactory;
+        private PluginFactory pluginFactory;
 
         private ServiceLoader(ClassLoader classLoader, String configPath) {
             //加载器编号
             loaderId = LOADER_ID_COUNTER.getAndIncrement();
             //类加载器
             this.classLoader = classLoader;
-            //创建服务配置加载器
-            serviceConfigLoader = new ServiceConfigLoader(classLoader, logger, loaderId);
+            //创建服务加载工厂
+            serviceFactory = new ServiceFactory(classLoader, logger, loaderId);
             //加载日志打印器配置文件
-            serviceConfigLoader.loadConfig(CONFIG_PATH_LOGGER, true);
+            serviceFactory.loadConfig(CONFIG_PATH_LOGGER, true);
             //log
             if (LOG_LV >= DEBUG) {
                 logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
             }
-            //加载自定义日志打印器
-            SpiLogger customLogger = serviceConfigLoader.loadService(SpiLogger.class);
+            //加载内置日志打印器
+            SpiLogger customLogger = serviceFactory.loadService(SpiLogger.class);
             if (customLogger != null) {
                 //替换为自定义的日志打印器
                 logger = customLogger;
-                serviceConfigLoader.setLogger(logger);
+                serviceFactory.setLogger(logger);
             }
             //清空服务配置加载器
-            serviceConfigLoader.invalidConfig();
+            serviceFactory.invalidConfig();
             //打印调用者和ClassLoader
             printCallerInfo();
             //加载服务配置文件
-            serviceConfigLoader.loadConfig(configPath, false);
-            //创建插件配置加载器
-            pluginConfigLoader = new PluginConfigLoader(classLoader, logger, loaderId);
+            serviceFactory.loadConfig(configPath, false);
+            //创建插件加载工厂
+            pluginFactory = new PluginFactory(classLoader, logger, loaderId);
             //加载插件配置文件
-            pluginConfigLoader.loadConfig(configPath);
+            pluginFactory.loadConfig(configPath);
             //log
             if (LOG_LV >= INFO) {
                 logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");

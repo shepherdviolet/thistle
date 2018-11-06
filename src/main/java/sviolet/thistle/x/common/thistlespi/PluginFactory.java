@@ -27,11 +27,11 @@ import java.util.*;
 import static sviolet.thistle.x.common.thistlespi.Constants.*;
 
 /**
- * 插件配置加载器
+ * 插件加载工厂
  *
  * @author S.Violet
  */
-class PluginConfigLoader {
+class PluginFactory {
 
     private ClassLoader classLoader;
     private SpiLogger logger;
@@ -43,7 +43,7 @@ class PluginConfigLoader {
     //apply配置信息
     private Map<String, IgnoreInfo> ignoreInfos = new HashMap<>(8);
 
-    PluginConfigLoader(ClassLoader classLoader, SpiLogger logger, int loaderId) {
+    PluginFactory(ClassLoader classLoader, SpiLogger logger, int loaderId) {
         this.classLoader = classLoader;
         this.logger = logger;
         this.loaderId = loaderId;
