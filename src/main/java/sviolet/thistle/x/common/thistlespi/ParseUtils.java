@@ -20,7 +20,10 @@
 package sviolet.thistle.x.common.thistlespi;
 
 import java.net.URL;
+import java.util.Enumeration;
 
+import static sviolet.thistle.x.common.thistlespi.Constants.DEBUG;
+import static sviolet.thistle.x.common.thistlespi.Constants.LOG_LV;
 import static sviolet.thistle.x.common.thistlespi.Constants.LOG_PREFIX;
 
 /**
@@ -31,7 +34,32 @@ import static sviolet.thistle.x.common.thistlespi.Constants.LOG_PREFIX;
 class ParseUtils {
 
     /**
-     * 将参数值解析为实现信息(实现类和构造参数)
+     * 从Classpath中找到所有配置文件的URL
+     * @param configPath 配置文件路径
+     * @param classLoader 类加载器
+     * @param logger (日志相关)日志打印器
+     * @param loaderId (日志相关)加载器ID
+     */
+    static Enumeration<URL> loadAllUrls(String configPath, ClassLoader classLoader, SpiLogger logger, int loaderId) {
+        Enumeration<URL> urls;
+        try {
+            urls = classLoader.getResources(configPath);
+        } catch (Exception e) {
+            logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading classpath " + configPath, e);
+            throw new RuntimeException("ThistleSpi: Error while loading classpath " + configPath, e);
+        }
+
+        if (urls == null || !urls.hasMoreElements()) {
+            if (LOG_LV >= DEBUG) {
+                logger.print(loaderId + LOG_PREFIX + "No config " + configPath + " found in classpath");
+            }
+            return null;
+        }
+        return urls;
+    }
+
+    /**
+     * 将参数值(即配置文件中的value)解析为实现信息(实现类和构造参数)
      * @param propValue 参数值
      * @param fromConfig (日志相关)true:来自配置文件 false:来自启动参数
      * @param logger (日志相关)日志打印器

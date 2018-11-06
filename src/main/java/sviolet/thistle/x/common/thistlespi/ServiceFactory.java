@@ -119,19 +119,8 @@ class ServiceFactory {
         //loading service.properties
 
         //加载所有service.properties配置文件
-        String serviceConfigFile = configPath + CONFIG_FILE_SERVICE;
-        Enumeration<URL> urls;
-        try {
-            urls = classLoader.getResources(serviceConfigFile);
-        } catch (Exception e) {
-            logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading classpath " + serviceConfigFile, e);
-            throw new RuntimeException("ThistleSpi: Error while loading classpath " + serviceConfigFile, e);
-        }
-
-        if (urls == null || !urls.hasMoreElements()) {
-            if (LOG_LV >= DEBUG) {
-                logger.print(loaderId + LOG_PREFIX + "No config " + serviceConfigFile + " found in classpath");
-            }
+        Enumeration<URL> urls = ParseUtils.loadAllUrls(configPath + CONFIG_FILE_SERVICE, classLoader, logger, loaderId);
+        if (urls == null) {
             return;
         }
 
@@ -417,6 +406,8 @@ class ServiceFactory {
         }
 
     }
+
+    /* ***************************************************************************************************************** */
 
     /**
      * 一个接口的所有服务信息

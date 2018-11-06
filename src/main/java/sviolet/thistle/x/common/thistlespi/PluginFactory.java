@@ -143,19 +143,8 @@ class PluginFactory {
         //loading plugin.properties
 
         //加载所有plugin.properties配置文件
-        String pluginConfigFile = configPath + CONFIG_FILE_PLUGIN;
-        Enumeration<URL> urls;
-        try {
-            urls = classLoader.getResources(pluginConfigFile);
-        } catch (Exception e) {
-            logger.print(loaderId + LOG_PREFIX + "ERROR: Error while classpath " + pluginConfigFile, e);
-            throw new RuntimeException("ThistleSpi: Error while classpath " + pluginConfigFile, e);
-        }
-
-        if (urls == null || !urls.hasMoreElements()) {
-            if (LOG_LV >= DEBUG) {
-                logger.print(loaderId + LOG_PREFIX + "No config " + pluginConfigFile + " found in classpath");
-            }
+        Enumeration<URL> urls = ParseUtils.loadAllUrls(configPath + CONFIG_FILE_PLUGIN, classLoader, logger, loaderId);
+        if (urls == null) {
             return;
         }
 
@@ -408,6 +397,8 @@ class PluginFactory {
         }
 
     }
+
+    /* ***************************************************************************************************************** */
 
     /**
      * 一个接口的所有插件信息
