@@ -143,7 +143,7 @@ class PluginFactory {
         //loading plugin.properties
 
         //加载所有plugin.properties配置文件
-        Enumeration<URL> urls = ParseUtils.loadAllUrls(configPath + CONFIG_FILE_PLUGIN, classLoader, logger, loaderId);
+        Enumeration<URL> urls = ParseUtils.loadAllUrls(configPath + CONFIG_FILE_PLUGIN, classLoader, true, logger, loaderId);
         if (urls == null) {
             return;
         }
@@ -156,13 +156,7 @@ class PluginFactory {
         //loading plugin-ignore.properties
 
         //加载所有plugin-ignore.properties配置文件
-        String ignoreConfigFile = configPath + CONFIG_FILE_PLUGIN_IGNORE;
-        try {
-            urls = classLoader.getResources(ignoreConfigFile);
-        } catch (Exception e) {
-            logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading classpath " + ignoreConfigFile, e);
-            throw new RuntimeException("ThistleSpi: Error while loading classpath " + ignoreConfigFile, e);
-        }
+        urls = ParseUtils.loadAllUrls(configPath + CONFIG_FILE_PLUGIN_IGNORE, classLoader, false, logger, loaderId);
 
         //遍历所有plugin-ignore.properties配置文件
         while (urls != null && urls.hasMoreElements()) {

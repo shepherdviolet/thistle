@@ -119,7 +119,7 @@ class ServiceFactory {
         //loading service.properties
 
         //加载所有service.properties配置文件
-        Enumeration<URL> urls = ParseUtils.loadAllUrls(configPath + CONFIG_FILE_SERVICE, classLoader, logger, loaderId);
+        Enumeration<URL> urls = ParseUtils.loadAllUrls(configPath + CONFIG_FILE_SERVICE, classLoader, true, logger, loaderId);
         if (urls == null) {
             return;
         }
@@ -132,13 +132,7 @@ class ServiceFactory {
         //loading service-apply.properties
 
         //加载所有service-apply.properties配置文件
-        String applyConfigFile = configPath + CONFIG_FILE_SERVICE_APPLY;
-        try {
-            urls = classLoader.getResources(applyConfigFile);
-        } catch (Exception e) {
-            logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading classpath " + applyConfigFile, e);
-            throw new RuntimeException("ThistleSpi: Error while loading classpath " + applyConfigFile, e);
-        }
+        urls = ParseUtils.loadAllUrls(configPath + CONFIG_FILE_SERVICE_APPLY, classLoader, false, logger, loaderId);
 
         //遍历所有service-apply.properties配置文件
         while (urls != null && urls.hasMoreElements()) {

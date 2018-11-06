@@ -39,10 +39,11 @@ class ParseUtils {
      * 返回空: 找不到配置文件
      * @param configPath 配置文件路径
      * @param classLoader 类加载器
+     * @param notFoundLog true: 找不到配置文件时打印日志
      * @param logger (日志相关)日志打印器
      * @param loaderId (日志相关)加载器ID
      */
-    static Enumeration<URL> loadAllUrls(String configPath, ClassLoader classLoader, SpiLogger logger, int loaderId) {
+    static Enumeration<URL> loadAllUrls(String configPath, ClassLoader classLoader, boolean notFoundLog, SpiLogger logger, int loaderId) {
         Enumeration<URL> urls;
         try {
             urls = classLoader.getResources(configPath);
@@ -52,7 +53,7 @@ class ParseUtils {
         }
 
         if (urls == null || !urls.hasMoreElements()) {
-            if (LOG_LV >= DEBUG) {
+            if (notFoundLog && LOG_LV >= DEBUG) {
                 logger.print(loaderId + LOG_PREFIX + "No config " + configPath + " found in classpath");
             }
             return null;
