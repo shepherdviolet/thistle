@@ -67,7 +67,7 @@ class ServiceFactory {
     /**
      * 加载服务
      */
-    <T> T loadService(Class<T> type) {
+    <T> T loadInstance(Class<T> type) {
         if (type == null) {
             return null;
         }

@@ -191,7 +191,7 @@ public class ThistleSpi {
          * @return 服务(若找不到定义会返回空)
          */
         public <T> T loadService(Class<T> type) {
-            return serviceFactory.loadService(type);
+            return serviceFactory.loadInstance(type);
         }
 
         /**
@@ -201,7 +201,7 @@ public class ThistleSpi {
          * @return 插件(若找不到定义会返回空)
          */
         public <T> List<T> loadPlugins(Class<T> type) {
-            return pluginFactory.loadPlugins(type);
+            return pluginFactory.loadInstance(type);
         }
 
         // ************************************************************************************************
@@ -229,7 +229,7 @@ public class ThistleSpi {
                 logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
             }
             //加载内置日志打印器
-            SpiLogger customLogger = serviceFactory.loadService(SpiLogger.class);
+            SpiLogger customLogger = serviceFactory.loadInstance(SpiLogger.class);
             if (customLogger != null) {
                 //替换为自定义的日志打印器
                 logger = customLogger;

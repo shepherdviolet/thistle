@@ -67,7 +67,7 @@ class PluginFactory {
     /**
      * 加载插件
      */
-    <T> List<T> loadPlugins(Class<T> type) {
+    <T> List<T> loadInstance(Class<T> type) {
         if (type == null) {
             return null;
         }
