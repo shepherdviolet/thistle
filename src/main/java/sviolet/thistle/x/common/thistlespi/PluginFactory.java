@@ -33,6 +33,7 @@ import static sviolet.thistle.x.common.thistlespi.Constants.*;
  */
 class PluginFactory {
 
+    //basic
     private ClassLoader classLoader;
     private SpiLogger logger;
     private int loaderId;
@@ -49,23 +50,17 @@ class PluginFactory {
         this.loaderId = loaderId;
     }
 
-    /**
-     * 设置日志打印器
-     */
     void setLogger(SpiLogger logger){
         this.logger = logger;
     }
 
-    /**
-     * 清空配置
-     */
     void invalidConfig(){
         pluginInfos.clear();
         ignoreInfos.clear();
     }
 
     /**
-     * 加载插件
+     * 加载实例
      */
     <T> List<T> loadInstance(Class<T> type) {
         if (type == null) {
@@ -130,6 +125,9 @@ class PluginFactory {
         return plugins;
     }
 
+    /**
+     * 加载配置文件
+     */
     void loadConfig(String configPath){
 
         if (LOG_LV >= INFO) {

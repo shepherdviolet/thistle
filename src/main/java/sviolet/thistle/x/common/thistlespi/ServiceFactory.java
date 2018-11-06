@@ -33,6 +33,7 @@ import static sviolet.thistle.x.common.thistlespi.Constants.*;
  */
 class ServiceFactory {
 
+    //basic
     private ClassLoader classLoader;
     private SpiLogger logger;
     private int loaderId;
@@ -49,23 +50,17 @@ class ServiceFactory {
         this.loaderId = loaderId;
     }
 
-    /**
-     * 设置日志打印器
-     */
     void setLogger(SpiLogger logger){
         this.logger = logger;
     }
 
-    /**
-     * 清空配置
-     */
     void invalidConfig(){
         serviceInfos.clear();
         applyInfos.clear();
     }
 
     /**
-     * 加载服务
+     * 加载实例
      */
     <T> T loadInstance(Class<T> type) {
         if (type == null) {
@@ -106,6 +101,9 @@ class ServiceFactory {
         return (T) service;
     }
 
+    /**
+     * 加载配置文件
+     */
     void loadConfig(String configPath, boolean loadingLogger){
 
         if ((loadingLogger && LOG_LV >= DEBUG) ||
