@@ -405,7 +405,7 @@ class PluginConfigLoader {
                 for (Plugin plugin : pluginInfo.orderedPlugins) {
                     if (LOG_LV < DEBUG && i++ >= MAX_INFO_LOG_LINES) {
                         logger.print(loaderId + LOG_PREFIX + "    ...... " + (pluginInfo.orderedPlugins.size() - MAX_INFO_LOG_LINES) +
-                                " more omitted ('-D" + PROPERTY_LOGLV + "=debug' to show more)");
+                                " more omitted ('-D" + STARTUP_PROP_LOG_LV + "=debug' to show more)");
                         break;
                     }
                     logger.print(loaderId + LOG_PREFIX + "  + " + plugin.toAbstractString());

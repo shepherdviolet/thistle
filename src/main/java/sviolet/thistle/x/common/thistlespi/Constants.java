@@ -27,19 +27,28 @@ import java.util.Set;
 
 class Constants {
 
+    // ************************************************************************************************
+    // 启动参数
+
     //日志打印级别(error/debug/verbose, 默认debug)
-    static final String PROPERTY_LOGLV = "thistle.spi.loglv";
+    static final String STARTUP_PROP_LOG_LV = "thistle.spi.loglv";
     //缓存开关(默认true)
-    static final String PROPERTY_CACHE = "thistle.spi.cache";
+    static final String STARTUP_PROP_CACHE_ENABLED = "thistle.spi.cache";
     //强制禁用配置文件(根据文件hash值)
-    static final String PROPERTY_FILE_EXCLUSION = "thistle.spi.file.exclusion";
+    static final String STARTUP_PROP_FILE_EXCLUSION = "thistle.spi.file.exclusion";
+
+    // ************************************************************************************************
+    // 路径
 
     //默认配置路径
-    static final String CONFIG_PATH = "META-INF/thistle-spi/";
+    static final String CONFIG_PATH_DEFAULT = "META-INF/thistle-spi/";
     //[固定]自定义日志打印器配置路径
     static final String CONFIG_PATH_LOGGER = "META-INF/thistle-spi-logger/";
     //[固定]构造参数引用配置文件路径(相对路径)
     static final String CONFIG_PATH_PARAMETER = "parameter/";
+
+    // ************************************************************************************************
+    // 日志
 
     //日志前缀
     static final String LOG_PREFIX = " ThistleSpi | ";
@@ -53,28 +62,34 @@ class Constants {
     //日志级别(error/info/debug), 默认info
     static final int LOG_LV;
 
+    // ************************************************************************************************
+    // 其他
+
     //是否启用缓存(默认true)
-    static final boolean CACHE;
+    static final boolean CACHE_ENABLED;
 
     //被强制禁用的配置文件的hash
-    static final Set<String> FILE_EXCLUSION;
+    static final Set<String> FILE_EXCLUSION_SET;
+
+    // ************************************************************************************************
+    // 初始化
 
     static {
         LOG_LV = initLogLevel();
-        CACHE = initCacheEnabled();
-        FILE_EXCLUSION = initFileExclusion();
+        CACHE_ENABLED = initCacheEnabled();
+        FILE_EXCLUSION_SET = initFileExclusion();
     }
 
     private static boolean initCacheEnabled() {
-        boolean enabled = "true".equals(System.getProperty(PROPERTY_CACHE, "true"));
+        boolean enabled = "true".equals(System.getProperty(STARTUP_PROP_CACHE_ENABLED, "true"));
         if (LOG_LV >= INFO && !enabled) {
-            System.out.println(DateTimeUtils.getDateTime() + " ?" + LOG_PREFIX + "Loader cache force disabled by -D" + PROPERTY_CACHE + "=false");
+            System.out.println(DateTimeUtils.getDateTime() + " ?" + LOG_PREFIX + "Loader cache force disabled by -D" + STARTUP_PROP_CACHE_ENABLED + "=false");
         }
         return enabled;
     }
 
     private static int initLogLevel() {
-        switch (System.getProperty(PROPERTY_LOGLV, "info").toLowerCase()) {
+        switch (System.getProperty(STARTUP_PROP_LOG_LV, "info").toLowerCase()) {
             case "error":
                 return ERROR;
             case "debug":
@@ -87,14 +102,14 @@ class Constants {
 
     private static Set<String> initFileExclusion() {
         Set<String> fileExclusionSet = new HashSet<>();
-        String fileExclusionStr = System.getProperty(PROPERTY_FILE_EXCLUSION, null);
+        String fileExclusionStr = System.getProperty(STARTUP_PROP_FILE_EXCLUSION, null);
         if (!CheckUtils.isEmptyOrBlank(fileExclusionStr)) {
             String[] array = fileExclusionStr.split(",");
             for (String item : array) {
                 if (!CheckUtils.isEmptyOrBlank(item)) {
                     fileExclusionSet.add(item.trim());
                     if (LOG_LV >= INFO) {
-                        System.out.println(DateTimeUtils.getDateTime() + " ?" + LOG_PREFIX + "Config file with hash '" + item + "' will be excluded, by -D" + PROPERTY_FILE_EXCLUSION + "=" + fileExclusionStr);
+                        System.out.println(DateTimeUtils.getDateTime() + " ?" + LOG_PREFIX + "Config file with hash '" + item + "' will be excluded, by -D" + STARTUP_PROP_FILE_EXCLUSION + "=" + fileExclusionStr);
                     }
                 }
             }

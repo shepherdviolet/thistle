@@ -60,7 +60,7 @@ public class ThistleSpi {
             classLoader = Thread.currentThread().getContextClassLoader();
         }
         if (CheckUtils.isEmptyOrBlank(configPath)) {
-            configPath = CONFIG_PATH;
+            configPath = CONFIG_PATH_DEFAULT;
         }
         if (!configPath.endsWith("/")) {
             configPath = configPath + "/";
@@ -118,14 +118,14 @@ public class ThistleSpi {
      */
     public static ServiceLoader getLoader(String configPath) {
         if (CheckUtils.isEmptyOrBlank(configPath)) {
-            configPath = CONFIG_PATH;
+            configPath = CONFIG_PATH_DEFAULT;
         }
         if (!configPath.endsWith("/")) {
             configPath = configPath + "/";
         }
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
-        if (!CACHE) {
+        if (!CACHE_ENABLED) {
             return newLoader(classLoader, configPath);
         }
 

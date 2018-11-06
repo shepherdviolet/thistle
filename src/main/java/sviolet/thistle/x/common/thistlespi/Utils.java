@@ -200,9 +200,9 @@ class Utils {
      * @param configUrl (日志相关)被排除的配置文件的URL
      */
     static boolean checkFileExclusion(String propHash, SpiLogger logger, int loaderId, URL configUrl) {
-        if (FILE_EXCLUSION.contains(propHash)) {
+        if (FILE_EXCLUSION_SET.contains(propHash)) {
             if (LOG_LV >= INFO) {
-                logger.print(loaderId + LOG_PREFIX + "!!! Exclude config " + configUrl + " by -D" + PROPERTY_FILE_EXCLUSION);
+                logger.print(loaderId + LOG_PREFIX + "!!! Exclude config " + configUrl + " by -D" + STARTUP_PROP_FILE_EXCLUSION);
             }
             return true;
         } else {
