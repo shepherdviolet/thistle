@@ -36,26 +36,26 @@ import static sviolet.thistle.x.common.thistlespi.Constants.LOG_PREFIX;
 class ExclusionUtils {
 
     /**
-     * 检查配置文件是否被强制排除
+     * 检查配置文件是否被强制排除, true: exclude false: pass
      * @param url 配置文件的URL
      * @param logger (日志相关)日志打印器
      * @param loaderId (日志相关)加载器ID
      */
     static boolean checkFileExclusion(URL url, SpiLogger logger, int loaderId) throws IOException {
-        //md5
-        String hash = ByteUtils.bytesToHex(DigestCipher.digestInputStream(url.openStream(), DigestCipher.TYPE_MD5));
-        //check
-        if (FILE_EXCLUSION_SET.contains(hash)) {
-            if (LOG_LV >= INFO) {
-                logger.print(loaderId + LOG_PREFIX + "!!! Exclude config " + url + " by -D" + STARTUP_PROP_FILE_EXCLUSION);
+        // check hash if log-lv is debug or any exclusion set
+        if (LOG_LV >= DEBUG || FILE_EXCLUSION_SET.size() > 0) {
+            //md5
+            String hash = ByteUtils.bytesToHex(DigestCipher.digestInputStream(url.openStream(), DigestCipher.TYPE_MD5));
+            //check
+            if (FILE_EXCLUSION_SET.contains(hash)) {
+                if (LOG_LV >= INFO) {
+                    logger.print(loaderId + LOG_PREFIX + "!!! Exclude config " + url + " by -D" + STARTUP_PROP_FILE_EXCLUSION);
+                }
+                return true;
             }
-            return true;
-        } else {
-            if (LOG_LV >= DEBUG) {
-                logger.print(loaderId + LOG_PREFIX + "Loading config " + url + " <hash> " + hash);
-            }
-            return false;
+            logger.print(loaderId + LOG_PREFIX + "Loading config " + url + " <hash> " + hash);
         }
+        return false;
     }
 
 }

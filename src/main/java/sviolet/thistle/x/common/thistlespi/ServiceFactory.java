@@ -145,17 +145,9 @@ class ServiceFactory {
             URL url = urls.nextElement();
 
             //装载配置文件
-            Properties properties;
-            try {
-                //检查文件是否被强制排除
-                if (ExclusionUtils.checkFileExclusion(url, logger, loaderId)) {
-                    continue;
-                }
-                properties = new Properties();
-                properties.load(url.openStream());
-            } catch (Exception e) {
-                logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading config " + url, e);
-                throw new RuntimeException("ThistleSpi: Error while loading config " + url, e);
+            Properties properties = ParseUtils.loadProperties(url, logger, loaderId);
+            if (properties == null) {
+                continue;
             }
 
             if (properties.size() <= 0) {
@@ -323,18 +315,10 @@ class ServiceFactory {
     }
 
     private void loadServiceProperties(URL url, String configPath) {
-        //装载配置
-        Properties properties;
-        try {
-            //检查文件是否被强制排除
-            if (ExclusionUtils.checkFileExclusion(url, logger, loaderId)) {
-                return;
-            }
-            properties = new Properties();
-            properties.load(url.openStream());
-        } catch (Exception e) {
-            logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading config " + url, e);
-            throw new RuntimeException("ThistleSpi: Error while loading config " + url, e);
+        //装载配置文件
+        Properties properties = ParseUtils.loadProperties(url, logger, loaderId);
+        if (properties == null) {
+            return;
         }
 
         if (properties.size() <= 0) {

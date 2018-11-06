@@ -21,6 +21,7 @@ package sviolet.thistle.x.common.thistlespi;
 
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.Properties;
 
 import static sviolet.thistle.x.common.thistlespi.Constants.DEBUG;
 import static sviolet.thistle.x.common.thistlespi.Constants.LOG_LV;
@@ -35,6 +36,7 @@ class ParseUtils {
 
     /**
      * 从Classpath中找到所有配置文件的URL
+     * 返回空: 找不到配置文件
      * @param configPath 配置文件路径
      * @param classLoader 类加载器
      * @param logger (日志相关)日志打印器
@@ -56,6 +58,28 @@ class ParseUtils {
             return null;
         }
         return urls;
+    }
+
+    /**
+     * 加载配置文件
+     * 返回空: 文件被强制排除
+     * @param url 配置文件url
+     * @param logger (日志相关)日志打印器
+     * @param loaderId (日志相关)加载器ID
+     */
+    static Properties loadProperties(URL url, SpiLogger logger, int loaderId){
+        try {
+            //检查文件是否被强制排除
+            if (ExclusionUtils.checkFileExclusion(url, logger, loaderId)) {
+                return null;
+            }
+            Properties properties = new Properties();
+            properties.load(url.openStream());
+            return properties;
+        } catch (Exception e) {
+            logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading config " + url, e);
+            throw new RuntimeException("ThistleSpi: Error while loading config " + url, e);
+        }
     }
 
     /**
