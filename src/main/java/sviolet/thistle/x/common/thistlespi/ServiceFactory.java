@@ -124,94 +124,9 @@ class ServiceFactory {
             return;
         }
 
-        //遍历所有service.properties配置文件
+        //处理所有service.properties配置文件
         while (urls.hasMoreElements()) {
-            URL url = urls.nextElement();
-
-            //装载配置
-            Properties properties;
-            try {
-                //检查文件是否被强制排除
-                if (ExclusionUtils.checkFileExclusion(url, logger, loaderId)) {
-                    continue;
-                }
-                properties = new Properties();
-                properties.load(url.openStream());
-            } catch (Exception e) {
-                logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading config " + url, e);
-                throw new RuntimeException("ThistleSpi: Error while loading config " + url, e);
-            }
-
-            if (properties.size() <= 0) {
-                if (LOG_LV >= INFO) {
-                    logger.print(loaderId + LOG_PREFIX + "Warning: No properties in config " + url);
-                }
-            }
-
-            //遍历所有key-value
-            Enumeration<?> names = properties.propertyNames();
-            while (names.hasMoreElements()) {
-                String key = String.valueOf(names.nextElement()).trim();
-
-                //拆解key
-                String[] keyItems = key.split(">");
-                if (keyItems.length != 3) {
-                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal key in config file, key:" + key + ", correct format:interface>id>level=impl, definitions:" + url);
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal key in config file, key:" + key + ", correct format:interface>id>level=impl, definitions:" + url, e);
-                    throw e;
-                }
-
-                String type = keyItems[0].trim();
-                String id = keyItems[1].trim();
-                Level level = Level.parse(keyItems[2].trim());
-
-                if (level == Level.UNDEFINED) {
-                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, undefined level " + level + ", should be library/platform/application, in key:" + key + ", definitions:" + url);
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, undefined level " + level + ", should be library/platform/application, in key:" + key + ", definitions:" + url, e);
-                    throw e;
-                }
-
-                //遇到新的服务接口, 则创建一个对象
-                ServiceInfo serviceInfo = serviceInfos.get(type);
-                if (serviceInfo == null) {
-                    serviceInfo = new ServiceInfo();
-                    serviceInfo.type = type;
-                    serviceInfos.put(type, serviceInfo);
-                }
-
-                //参数值
-                String propValue = properties.getProperty(key);
-                if (CheckUtils.isEmptyOrBlank(propValue)) {
-                    RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + key + " is empty, definitions:" + url);
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " is empty, definitions:" + url, e);
-                    throw e;
-                }
-                propValue = propValue.trim();
-
-                //实现类信息
-                ParseUtils.Implementation implementation = ParseUtils.parseImplementation(propValue, true, logger, loaderId, key, url);
-
-                //服务接口信息
-                Service service = new Service();
-                service.id = id;
-                service.level = level;
-                service.implement = implementation.implement;
-                service.arg = implementation.arg;
-                service.configPath = configPath;
-                service.resource = url;
-
-                Service previous = serviceInfo.definedServices.get(id);
-                //若有重复id, 则抛出异常
-                if (previous != null) {
-                    RuntimeException e = new RuntimeException("ThistleSpi: Duplicate service defined with same id, type:" + type + ", id:" + id + ", url1:" + url + ", url2:" + previous.resource);
-                    logger.print(loaderId + LOG_PREFIX + "ERROR: Duplicate service defined with same id, type:" + type + ", id:" + id + ", url1:" + url + ", url2:" + previous.resource, e);
-                    throw e;
-                }
-
-                serviceInfo.definedServices.put(id, service);
-
-            }
-
+            loadServiceProperties(urls.nextElement(), configPath);
         }
 
         //loading service-apply.properties
@@ -405,6 +320,92 @@ class ServiceFactory {
 
         }
 
+    }
+
+    private void loadServiceProperties(URL url, String configPath) {
+        //装载配置
+        Properties properties;
+        try {
+            //检查文件是否被强制排除
+            if (ExclusionUtils.checkFileExclusion(url, logger, loaderId)) {
+                return;
+            }
+            properties = new Properties();
+            properties.load(url.openStream());
+        } catch (Exception e) {
+            logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading config " + url, e);
+            throw new RuntimeException("ThistleSpi: Error while loading config " + url, e);
+        }
+
+        if (properties.size() <= 0) {
+            if (LOG_LV >= INFO) {
+                logger.print(loaderId + LOG_PREFIX + "Warning: No properties in config " + url);
+            }
+        }
+
+        //遍历所有key-value
+        Enumeration<?> names = properties.propertyNames();
+        while (names.hasMoreElements()) {
+            String key = String.valueOf(names.nextElement()).trim();
+
+            //拆解key
+            String[] keyItems = key.split(">");
+            if (keyItems.length != 3) {
+                RuntimeException e = new RuntimeException("ThistleSpi: Illegal key in config file, key:" + key + ", correct format:interface>id>level=impl, definitions:" + url);
+                logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal key in config file, key:" + key + ", correct format:interface>id>level=impl, definitions:" + url, e);
+                throw e;
+            }
+
+            String type = keyItems[0].trim();
+            String id = keyItems[1].trim();
+            Level level = Level.parse(keyItems[2].trim());
+
+            if (level == Level.UNDEFINED) {
+                RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, undefined level " + level + ", should be library/platform/application, in key:" + key + ", definitions:" + url);
+                logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, undefined level " + level + ", should be library/platform/application, in key:" + key + ", definitions:" + url, e);
+                throw e;
+            }
+
+            //遇到新的服务接口, 则创建一个对象
+            ServiceInfo serviceInfo = serviceInfos.get(type);
+            if (serviceInfo == null) {
+                serviceInfo = new ServiceInfo();
+                serviceInfo.type = type;
+                serviceInfos.put(type, serviceInfo);
+            }
+
+            //参数值
+            String propValue = properties.getProperty(key);
+            if (CheckUtils.isEmptyOrBlank(propValue)) {
+                RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + key + " is empty, definitions:" + url);
+                logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " is empty, definitions:" + url, e);
+                throw e;
+            }
+            propValue = propValue.trim();
+
+            //实现类信息
+            ParseUtils.Implementation implementation = ParseUtils.parseImplementation(propValue, true, logger, loaderId, key, url);
+
+            //服务接口信息
+            Service service = new Service();
+            service.id = id;
+            service.level = level;
+            service.implement = implementation.implement;
+            service.arg = implementation.arg;
+            service.configPath = configPath;
+            service.resource = url;
+
+            Service previous = serviceInfo.definedServices.get(id);
+            //若有重复id, 则抛出异常
+            if (previous != null) {
+                RuntimeException e = new RuntimeException("ThistleSpi: Duplicate service defined with same id, type:" + type + ", id:" + id + ", url1:" + url + ", url2:" + previous.resource);
+                logger.print(loaderId + LOG_PREFIX + "ERROR: Duplicate service defined with same id, type:" + type + ", id:" + id + ", url1:" + url + ", url2:" + previous.resource, e);
+                throw e;
+            }
+
+            serviceInfo.definedServices.put(id, service);
+
+        }
     }
 
     /* ***************************************************************************************************************** */
