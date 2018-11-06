@@ -42,19 +42,24 @@ class InstantiationUtils {
      * @param loaderId (日志相关)加载器ID
      */
     static Object newInstance(Class<?> clazz, String arg, ClassLoader classLoader, String configPath, URL configUrl, SpiLogger logger, int loaderId) throws Exception {
+        //constructors
         Constructor[] constructors = clazz.getConstructors();
         if (constructors.length != 1) {
             throw new RuntimeException("ThistleSpi: Illegal Service/Plugin implementation " + clazz.getName() +
                     ", the implementation must have one and only one public constructor, now it has " + constructors.length +
                     ", definitions:" + configUrl);
         }
+        //constructor
         Constructor constructor = constructors[0];
+        //constructor parameter types
         Class[] paramTypes = constructor.getParameterTypes();
         if (paramTypes.length > 1) {
+            //invalid
             throw new RuntimeException("ThistleSpi: Illegal Service/Plugin implementation " + clazz.getName() +
                     ", the constructor can only have 0 or 1 parameter, now it has " + paramTypes.length +
                     ", definitions:" + configUrl);
         } else if (paramTypes.length == 0) {
+            //no parameter
             return constructor.newInstance();
         } else if (String.class.isAssignableFrom(paramTypes[0])){
             //paramType length == 1 and is instance of String
@@ -71,6 +76,7 @@ class InstantiationUtils {
             }
             return newInstanceForPropConstructor(clazz, arg, classLoader, configPath, configUrl, logger, loaderId, constructor);
         } else {
+            //invalid
             throw new RuntimeException("ThistleSpi: Illegal Service/Plugin implementation " + clazz.getName() +
                     ", the parameter type of constructor must be java.lang.String or java.util.Properties, now it it " +
                     paramTypes[0].getName() + ", definitions:" + configUrl);
