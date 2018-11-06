@@ -142,39 +142,39 @@ class ServiceFactory {
         //apply service
 
         //遍历所有服务
-        for (ServiceInfo spi : serviceInfos.values()) {
+        for (ServiceInfo serviceInfo : serviceInfos.values()) {
 
             //优先用-Dthistle.spi.apply选择服务实现
-            String applyId = System.getProperty(STARTUP_PROP_SERVICE_APPLY_PREFIX + spi.type);
+            String applyId = System.getProperty(STARTUP_PROP_SERVICE_APPLY_PREFIX + serviceInfo.type);
             if (!CheckUtils.isEmptyOrBlank(applyId)) {
-                Service service = spi.definedServices.get(applyId);
+                Service service = serviceInfo.definedServices.get(applyId);
                 if (service != null) {
-                    spi.appliedService = service;
-                    spi.applyReason = "-D" + STARTUP_PROP_SERVICE_APPLY_PREFIX + spi.type + "=" + applyId;
+                    serviceInfo.appliedService = service;
+                    serviceInfo.applyReason = "-D" + STARTUP_PROP_SERVICE_APPLY_PREFIX + serviceInfo.type + "=" + applyId;
                     continue;
                 }
                 if (LOG_LV >= INFO) {
-                    logger.print(loaderId + LOG_PREFIX + "Warning: No service named " + applyId + ", failed to apply service '" + spi.type + "' to id '" + applyId + "' by -D" + STARTUP_PROP_SERVICE_APPLY_PREFIX + spi.type + "=" + applyId);
+                    logger.print(loaderId + LOG_PREFIX + "Warning: No service named " + applyId + ", failed to apply service '" + serviceInfo.type + "' to id '" + applyId + "' by -D" + STARTUP_PROP_SERVICE_APPLY_PREFIX + serviceInfo.type + "=" + applyId);
                 }
             }
 
             //然后用apply配置选择服务实现
-            if (applyInfos.containsKey(spi.type)){
-                ApplyInfo applyInfo = applyInfos.get(spi.type);
+            if (applyInfos.containsKey(serviceInfo.type)){
+                ApplyInfo applyInfo = applyInfos.get(serviceInfo.type);
                 if (applyInfo.duplicateError != null) {
                     RuntimeException e = new RuntimeException("ThistleSpi: " + applyInfo.duplicateError);
                     logger.print(loaderId + LOG_PREFIX + "ERROR: " + applyInfo.duplicateError, e);
                     throw e;
                 }
-                Service service = spi.definedServices.get(applyInfo.id);
+                Service service = serviceInfo.definedServices.get(applyInfo.id);
                 if (service != null) {
-                    spi.appliedService = service;
-                    spi.applyReason = String.valueOf(applyInfo.resource);
+                    serviceInfo.appliedService = service;
+                    serviceInfo.applyReason = String.valueOf(applyInfo.resource);
                     continue;
                 }
                 if (LOG_LV >= INFO) {
-                    logger.print(loaderId + LOG_PREFIX + "Warning: No service named " + applyInfo.id + ", failed to apply service '" + spi.type + "' to id '" + applyInfo.id + "' by " + applyInfo.resource);
-                    logger.print(loaderId + LOG_PREFIX + "Warning: We will apply '" + spi.type + "' service by level (application > platform > library > default)");
+                    logger.print(loaderId + LOG_PREFIX + "Warning: No service named " + applyInfo.id + ", failed to apply service '" + serviceInfo.type + "' to id '" + applyInfo.id + "' by " + applyInfo.resource);
+                    logger.print(loaderId + LOG_PREFIX + "Warning: We will apply '" + serviceInfo.type + "' service by level (application > platform > library > default)");
                 }
             }
 
@@ -182,7 +182,7 @@ class ServiceFactory {
 
             List<Service> appliedServices = new ArrayList<>(1);
             int highestPriority = -1;
-            for (Service service : spi.definedServices.values()) {
+            for (Service service : serviceInfo.definedServices.values()) {
                 if (service.level.getPriority() > highestPriority) {
                     appliedServices.clear();
                     appliedServices.add(service);
@@ -197,7 +197,7 @@ class ServiceFactory {
             }
 
             if (appliedServices.size() > 1) {
-                StringBuilder stringBuilder = new StringBuilder("Duplicate service defined with same level, type:" + spi.type + ", conflicts:");
+                StringBuilder stringBuilder = new StringBuilder("Duplicate service defined with same level, type:" + serviceInfo.type + ", conflicts:");
                 for (Service service : appliedServices) {
                     stringBuilder.append(service);
                     stringBuilder.append("|");
@@ -207,8 +207,8 @@ class ServiceFactory {
                 throw e;
             }
 
-            spi.appliedService = appliedServices.get(0);
-            spi.applyReason = "level (application > platform > library > default)";
+            serviceInfo.appliedService = appliedServices.get(0);
+            serviceInfo.applyReason = "level (application > platform > library > default)";
 
         }
 
