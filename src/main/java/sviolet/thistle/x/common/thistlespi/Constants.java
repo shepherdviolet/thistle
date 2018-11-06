@@ -37,6 +37,12 @@ class Constants {
     //强制禁用配置文件(根据文件hash值)
     static final String STARTUP_PROP_FILE_EXCLUSION = "thistle.spi.file.exclusion";
 
+    //启动参数指定服务
+    static final String STARTUP_PROP_SERVICE_APPLY_PREFIX = "thistle.spi.apply.";
+
+    //启动参数忽略插件
+    static final String STARTUP_PROP_PLUGIN_IGNORE_PREFIX = "thistle.spi.ignore.";
+
     // ************************************************************************************************
     // 路径
 
@@ -47,12 +53,25 @@ class Constants {
     //[固定]构造参数引用配置文件路径(相对路径)
     static final String CONFIG_PATH_PARAMETER = "parameter/";
 
+    //服务配置文件名
+    static final String CONFIG_FILE_SERVICE = "service.properties";
+    //服务指定文件名
+    static final String CONFIG_FILE_SERVICE_APPLY = "service-apply.properties";
+
+    //插件配置文件名
+    static final String CONFIG_FILE_PLUGIN = "plugin.properties";
+    //插件忽略文件名
+    static final String CONFIG_FILE_PLUGIN_IGNORE = "plugin-ignore.properties";
+
     // ************************************************************************************************
     // 日志
 
     //日志前缀
     static final String LOG_PREFIX = " ThistleSpi | ";
     static final String LOG_PREFIX_LOADER = " ThistleSpi Loader | ";
+
+    //INFO级别的日志最大输出行数
+    static final int MAX_INFO_LOG_LINES = 10;
 
     //日志级别
     static final int ERROR = 0;

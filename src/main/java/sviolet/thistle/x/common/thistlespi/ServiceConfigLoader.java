@@ -35,14 +35,6 @@ import static sviolet.thistle.x.common.thistlespi.Constants.*;
  */
 class ServiceConfigLoader {
 
-    //启动参数指定服务
-    private static final String PROPERTY_SERVICE_APPLY_PREFIX = "thistle.spi.apply.";
-
-    //服务配置文件名
-    private static final String CONFIG_FILE_SERVICE = "service.properties";
-    //服务指定文件名
-    private static final String CONFIG_FILE_SERVICE_APPLY = "service-apply.properties";
-
     private ClassLoader classLoader;
     private SpiLogger logger;
     private int loaderId;
@@ -296,7 +288,7 @@ class ServiceConfigLoader {
                         }
                     } else {
                         //若id不相同, 则需要抛出异常
-                        String idFromJvmArgs = System.getProperty(PROPERTY_SERVICE_APPLY_PREFIX + type);
+                        String idFromJvmArgs = System.getProperty(STARTUP_PROP_SERVICE_APPLY_PREFIX + type);
                         //允许使用-Dthistle.spi.apply解决apply冲突
                         //we can use -Dthistle.spi.apply to resolve duplicate error
                         String duplicateError = "Duplicate apply defined with different value, key:" + type + ", value1:" + id + ", value2:" + previous.id + ", url1:" + url + ", url2:" + previous.resource;
@@ -335,16 +327,16 @@ class ServiceConfigLoader {
         for (ServiceInfo spi : serviceInfos.values()) {
 
             //优先用-Dthistle.spi.apply选择服务实现
-            String applyId = System.getProperty(PROPERTY_SERVICE_APPLY_PREFIX + spi.type);
+            String applyId = System.getProperty(STARTUP_PROP_SERVICE_APPLY_PREFIX + spi.type);
             if (!CheckUtils.isEmptyOrBlank(applyId)) {
                 Service service = spi.definedServices.get(applyId);
                 if (service != null) {
                     spi.appliedService = service;
-                    spi.applyReason = "-D" + PROPERTY_SERVICE_APPLY_PREFIX + spi.type + "=" + applyId;
+                    spi.applyReason = "-D" + STARTUP_PROP_SERVICE_APPLY_PREFIX + spi.type + "=" + applyId;
                     continue;
                 }
                 if (LOG_LV >= INFO) {
-                    logger.print(loaderId + LOG_PREFIX + "Warning: No service named " + applyId + ", failed to apply service '" + spi.type + "' to id '" + applyId + "' by -D" + PROPERTY_SERVICE_APPLY_PREFIX + spi.type + "=" + applyId);
+                    logger.print(loaderId + LOG_PREFIX + "Warning: No service named " + applyId + ", failed to apply service '" + spi.type + "' to id '" + applyId + "' by -D" + STARTUP_PROP_SERVICE_APPLY_PREFIX + spi.type + "=" + applyId);
                 }
             }
 

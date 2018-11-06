@@ -35,16 +35,6 @@ import static sviolet.thistle.x.common.thistlespi.Constants.*;
  */
 class PluginConfigLoader {
 
-    //启动参数忽略插件
-    private static final String PROPERTY_PLUGIN_IGNORE_PREFIX = "thistle.spi.ignore.";
-
-    //插件配置文件名
-    private static final String CONFIG_FILE_PLUGIN = "plugin.properties";
-    //插件忽略文件名
-    private static final String CONFIG_FILE_PLUGIN_IGNORE = "plugin-ignore.properties";
-
-    private static final int MAX_INFO_LOG_LINES = 10;
-
     private ClassLoader classLoader;
     private SpiLogger logger;
     private int loaderId;
@@ -332,7 +322,7 @@ class PluginConfigLoader {
         for (PluginInfo pluginInfo : pluginInfos.values()) {
 
             //优先用-Dthistle.spi.ignore忽略插件实现
-            String ignoreStr = System.getProperty(PROPERTY_PLUGIN_IGNORE_PREFIX + pluginInfo.type);
+            String ignoreStr = System.getProperty(STARTUP_PROP_PLUGIN_IGNORE_PREFIX + pluginInfo.type);
             if (!CheckUtils.isEmptyOrBlank(ignoreStr)) {
                 String[] ignoreImpls = ignoreStr.split(",");
                 for (String ignoreImpl : ignoreImpls) {
@@ -348,11 +338,11 @@ class PluginConfigLoader {
                                 (implementation.arg == null || implementation.arg.equals(plugin.arg))) {
                             count++;
                             plugin.enabled = false;
-                            plugin.disableReason = "-D" + PROPERTY_PLUGIN_IGNORE_PREFIX + pluginInfo.type + "=" + ignoreStr;
+                            plugin.disableReason = "-D" + STARTUP_PROP_PLUGIN_IGNORE_PREFIX + pluginInfo.type + "=" + ignoreStr;
                         }
                     }
                     if (LOG_LV >= INFO && count <= 0) {
-                        logger.print(loaderId + LOG_PREFIX + "Warning: Plugin implement " + ignoreImpl + " undefined, failed to ignore implement '" + ignoreImpl + "' of '" + pluginInfo.type + "' by -D" + PROPERTY_PLUGIN_IGNORE_PREFIX + pluginInfo.type + "=" + ignoreStr);
+                        logger.print(loaderId + LOG_PREFIX + "Warning: Plugin implement " + ignoreImpl + " undefined, failed to ignore implement '" + ignoreImpl + "' of '" + pluginInfo.type + "' by -D" + STARTUP_PROP_PLUGIN_IGNORE_PREFIX + pluginInfo.type + "=" + ignoreStr);
                     }
                 }
             }
