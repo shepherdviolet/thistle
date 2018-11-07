@@ -19,6 +19,7 @@
 
 package sviolet.thistle.x.common.thistlespi;
 
+import sviolet.thistle.entity.set.KeyValue;
 import sviolet.thistle.util.judge.CheckUtils;
 
 import java.net.URL;
@@ -207,7 +208,7 @@ class PluginFactory {
      */
     private void loadPluginProperties(URL url, String configPath) {
         //装载配置文件
-        Properties properties = ParseUtils.loadProperties(url, logger, loaderId);
+        List<KeyValue<String, String>> properties = ParseUtils.loadProperties(url, logger, loaderId);
         if (properties == null) {
             return;
         }
@@ -219,9 +220,8 @@ class PluginFactory {
         }
 
         //遍历所有key-value
-        Enumeration<?> names = properties.propertyNames();
-        while (names.hasMoreElements()) {
-            String key = String.valueOf(names.nextElement()).trim();
+        for (KeyValue<String, String> keyValue : properties) {
+            String key = String.valueOf(keyValue.key()).trim();
 
             //拆解key
             String[] keyItems = key.split(">");
@@ -249,7 +249,7 @@ class PluginFactory {
             }
 
             //参数值
-            String propValue = properties.getProperty(key);
+            String propValue = keyValue.value();
             if (CheckUtils.isEmptyOrBlank(propValue)) {
                 RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + key + " is empty, definitions:" + url);
                 logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + key + " is empty, definitions:" + url, e);
@@ -277,7 +277,7 @@ class PluginFactory {
      */
     private void loadPluginIgnoreProperties(URL url) {
         //装载配置文件
-        Properties properties = ParseUtils.loadProperties(url, logger, loaderId);
+        List<KeyValue<String, String>> properties = ParseUtils.loadProperties(url, logger, loaderId);
         if (properties == null) {
             return;
         }
@@ -290,10 +290,9 @@ class PluginFactory {
         }
 
         //遍历所有key-value
-        Enumeration<?> names = properties.propertyNames();
-        while (names.hasMoreElements()) {
-            String type = String.valueOf(names.nextElement()).trim();
-            String ignoreStr = properties.getProperty(type);
+        for (KeyValue<String, String> keyValue : properties) {
+            String type = String.valueOf(keyValue.key()).trim();
+            String ignoreStr = keyValue.value();
             if (CheckUtils.isEmptyOrBlank(ignoreStr)) {
                 RuntimeException e = new RuntimeException("ThistleSpi: Illegal config, value of " + type + " is empty, definitions:" + url);
                 logger.print(loaderId + LOG_PREFIX + "ERROR: Illegal config, value of " + type + " is empty, definitions:" + url, e);

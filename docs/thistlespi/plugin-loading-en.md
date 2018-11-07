@@ -279,8 +279,9 @@ parameter2=value2
 
 * Note:
 
-> In the same `plugin.properties` file, definitions with the same `interface-class` and `priority` is not allowed (Because Properties does not allow duplicate keys). 
-> If you need to define multiple implementations with the same `interface-class` in the same file, use different priorities to avoid conflicts. 
+> ThistleSpi uses a special way to load the definition file, allowing to have the same key in the same definition file, 
+> (the definition with the same `interface-class` and `priority` is allowed). 
+> However, except for the properties file referenced by the `construct-param` (the property with the same key is not allowed). 
 
 <br>
 <br>

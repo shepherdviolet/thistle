@@ -19,9 +19,12 @@
 
 package sviolet.thistle.x.common.thistlespi;
 
+import sviolet.thistle.entity.set.KeyValue;
+import sviolet.thistle.util.conversion.PropertiesUtils;
+
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.Properties;
+import java.util.List;
 
 import static sviolet.thistle.x.common.thistlespi.Constants.DEBUG;
 import static sviolet.thistle.x.common.thistlespi.Constants.LOG_LV;
@@ -68,15 +71,13 @@ class ParseUtils {
      * @param logger (日志相关)日志打印器
      * @param loaderId (日志相关)加载器ID
      */
-    static Properties loadProperties(URL url, SpiLogger logger, int loaderId){
+    static List<KeyValue<String, String>> loadProperties(URL url, SpiLogger logger, int loaderId){
         try {
             //检查文件是否被强制排除
             if (ExclusionUtils.checkFileExclusion(url, logger, loaderId)) {
                 return null;
             }
-            Properties properties = new Properties();
-            properties.load(url.openStream());
-            return properties;
+            return PropertiesUtils.loadAsList(url.openStream());
         } catch (Exception e) {
             logger.print(loaderId + LOG_PREFIX + "ERROR: Error while loading config " + url, e);
             throw new RuntimeException("ThistleSpi: Error while loading config " + url, e);
