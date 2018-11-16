@@ -40,7 +40,6 @@ dependencies {
     }
     dependencies {
         compile ('com.github.shepherdviolet:thistle:version') {
-            exclude group:'com.google.code.gson'
             exclude group:'org.bouncycastle'
         }
     }
@@ -52,10 +51,6 @@ dependencies {
         <artifactId>thistle</artifactId>
         <version>version</version>
         <exclusions>
-             <exclusion>
-                 <groupId>com.google.code.gson</groupId>
-                 <artifactId>*</artifactId>
-             </exclusion>
              <exclusion>
                  <groupId>org.bouncycastle</groupId>
                  <artifactId>*</artifactId>

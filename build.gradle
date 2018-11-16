@@ -35,6 +35,63 @@ buildscript {
 
 }
 
-//工程配置
-apply from: 'build-project.gradle'
+//全部工程通用配置////////////////////////////////////////////////////////////////////////////////////
+
+allprojects {
+
+    apply plugin: 'java'
+    //apply plugin: 'kotlin'
+
+    group project_group_id
+    version project_version
+
+    //compat android
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
+
+    //encoding
+    [compileJava, compileTestJava, javadoc]*.options*.encoding = "UTF-8"
+
+    //kotlin compile
+    //compileKotlin {
+    //    kotlinOptions {
+    //        jvmTarget = "1.6"
+    //    }
+    //}
+
+    //kotlin test compile
+    //compileTestKotlin {
+    //    kotlinOptions {
+    //        jvmTarget = "1.6"
+    //    }
+    //}
+
+    //工程依赖仓库
+    repositories {
+        //local repo
+        maven {url repository_localRepositoryPath}
+        //jcenter http://jcenter.bintray.com/
+        jcenter()
+        //maven-central https://repo1.maven.org/maven2/
+        mavenCentral()
+        //jitpack-io
+        // maven { url 'https://jitpack.io' }
+    }
+    
+}
+
+//库工程通用配置////////////////////////////////////////////////////////////////////////////////////
+
+configure(subprojects.findAll { it.name.startsWith('thistle') }) {
+
+}
+
+//DEMO工程通用配置////////////////////////////////////////////////////////////////////////////////////
+
+configure(subprojects.findAll { it.name.startsWith('demo') }) {
+
+}
+
+//其他////////////////////////////////////////////////////////////////////////////////////
+
 apply from: 'build-upload.gradle'

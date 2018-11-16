@@ -19,7 +19,7 @@ import java.security.spec.InvalidKeySpecException;
 
 public class RSACipherTest {
 
-    private static final String TEST_FILE = "./LICENSE";
+    private static final String TEST_FILE = "../LICENSE";
 
     private static final String STRING = "English中文#$%@#$%@GSDFG654465rq43we5■☝▌▋卍¶¶¶☹ΥΥθΕサイけにケ◆♂‥√▒卍ЫПЬрпㅂㅝㅂ㉹㉯╠╕┚╜ㅛㅛ㉰㉯⑩⒅⑯413English中文#$%@#$%@GSDFG654465rq43we5■☝▌▋卍¶¶¶☹ΥΥθΕサイけにケ◆♂‥√▒卍ЫПЬрпㅂㅝㅂ㉹㉯╠╕┚╜ㅛㅛ㉰㉯⑩⒅⑯413English中文#$%@#$%@GSDFG654465rq43we5■☝▌▋卍¶¶¶☹ΥΥθΕサイけにケ◆♂‥√▒卍ЫПЬрпㅂㅝㅂ㉹㉯╠╕┚╜ㅛㅛ㉰㉯⑩⒅⑯413";
     private static final String PUBLIC = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhhTxwCe+Pamw1J5J5vvdw76Abt74hnqsvUPiz86iaq2XwmUUy0UV7Li+e+y1Qu60s8MSDAysMYdUfV2W0Y+/v0fs1mA57rjBq/T6dblZBxempToS0PnjZquiOo3J/laOWJ4QfHpGk0grOGET5ETeHNJMNURdsnCmFqbqXPypoq0zdD5gIbu7lC9bbhrPV+bQrKn2uf6eUzuSzjXkOgavTf5F6zdeTDk6xuRrxqQTGyjwqiLz5caM54eMSSoWdNGEfBj2yIvcMJ/jSJ3i9NxQIPEYy6/x39irx1DJo9/9vUfBW2PrpxdLCoFB7au4imKEZJBCnJlQ4gBwoAcyj4CiUwIDAQAB";

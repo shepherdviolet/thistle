@@ -1,2 +1,2 @@
-rootProject.name = project_name
-
+include ':thistle'
+include ':thistle-crypto'
