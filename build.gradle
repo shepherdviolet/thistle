@@ -82,13 +82,13 @@ allprojects {
 
 //库工程通用配置////////////////////////////////////////////////////////////////////////////////////
 
-configure(subprojects.findAll { it.name.startsWith('thistle') }) {
+configure(subprojects.findAll { it.name.startsWith('thistle-') }) {
 
 }
 
 //DEMO工程通用配置////////////////////////////////////////////////////////////////////////////////////
 
-configure(subprojects.findAll { it.name.startsWith('demo') }) {
+configure(subprojects.findAll { it.name.startsWith('demo-') }) {
 
 }
 

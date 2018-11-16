@@ -2,10 +2,9 @@
 dependencies {
     //required
     compile project(':thistle-core') { group project_group_id; version project_version }
+    compile project(':thistle-crypto') { group project_group_id; version project_version }
 
     //optional
-    implementation 'org.bouncycastle:bcpkix-jdk15on:1.59'
 
     //test
-    testImplementation group: 'junit', name: 'junit', version: '4.12'
 }

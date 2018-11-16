@@ -13,7 +13,7 @@
  */
 
 //给库模块加入上传任务
-configure(subprojects.findAll { it.name.startsWith('thistle') }) {
+configure(subprojects.findAll { it.name.startsWith('thistle-') }) {
 
     apply plugin: 'maven'
     apply plugin: 'signing'
