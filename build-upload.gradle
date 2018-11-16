@@ -12,106 +12,111 @@
  *
  */
 
-apply plugin: 'maven'
-apply plugin: 'signing'
+//给库模块加入上传任务
+configure(subprojects.findAll { it.name.startsWith('thistle') }) {
 
-//编译时产生源代码jar
-task generateSourcesJar(type: Jar) {
-    from sourceSets.main.java.srcDirs
-    classifier 'sources'
-}
+    apply plugin: 'maven'
+    apply plugin: 'signing'
 
-if (upload_target == 'maven') {
-
-    //编译时产生JAVADOC
-    task javadocJar(type: Jar, dependsOn: javadoc) {
-        from javadoc.destinationDir
-        classifier = 'javadoc'
+    //编译时产生源代码jar
+    task generateSourcesJar(type: Jar) {
+        from sourceSets.main.java.srcDirs
+        classifier 'sources'
     }
 
-    //禁用JAVA8的JAVADOC检查
-    if (JavaVersion.current().isJava8Compatible()) {
-        tasks.withType(Javadoc) {
-            options.addStringOption('Xdoclint:none', '-quiet')
-        }
-    }
-
-    //对jar包签名
-    signing {
-        sign configurations.archives
-    }
-
-}
-
-//将源码和JAVADOC加入artifacts
-artifacts {
-    archives generateSourcesJar
     if (upload_target == 'maven') {
-        archives javadocJar
+
+        //编译时产生JAVADOC
+        task javadocJar(type: Jar, dependsOn: javadoc) {
+            from javadoc.destinationDir
+            classifier = 'javadoc'
+        }
+
+        //禁用JAVA8的JAVADOC检查
+        if (JavaVersion.current().isJava8Compatible()) {
+            tasks.withType(Javadoc) {
+                options.addStringOption('Xdoclint:none', '-quiet')
+            }
+        }
+
+        //对jar包签名
+        signing {
+            sign configurations.archives
+        }
+
     }
-}
 
-//上传
-uploadArchives {
-    repositories.mavenDeployer {
-
+    //将源码和JAVADOC加入artifacts
+    artifacts {
+        archives generateSourcesJar
         if (upload_target == 'maven') {
-
-            //为Pom文件做数字签名
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-            //部署到中央库
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: sonatype_user, password: sonatype_password)
-            }
-            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: sonatype_user, password: sonatype_password)
-            }
-
-            //部署到Nexus私服(reponame修改为仓库名称)
-//            repository(url: "http://localhost:8081/nexus/content/repositories/reponame/") {
-//                authentication(userName: 'name', password: 'password')
-//            }
-
-        } else {
-
-            //部署到本地仓库
-            repository(url: uri(repository_localRepositoryPath))
-
+            archives javadocJar
         }
+    }
 
-        pom.groupId = project.group
-        pom.artifactId = project.name
-        pom.version = project.version
+    //上传
+    uploadArchives {
+        repositories.mavenDeployer {
 
-        //构造项目的Pom文件，参见Part 2中Pom文件的规范，不要遗漏必填项
-        pom.project {
-            name project.name
-            packaging 'jar'
-            description 'Java SE library for private use'
-            url 'https://github.com/shepherdviolet/thistle'
+            if (upload_target == 'maven') {
 
-            scm {
-                url 'scm:git@github.com:shepherdviolet/thistle.git'
-                connection 'scm:git@github.com:shepherdviolet/thistle.git'
-                developerConnection 'git@github.com:shepherdviolet/thistle.git'
-            }
+                //为Pom文件做数字签名
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-            licenses {
-                license {
-                    name 'The Apache Software License, Version 2.0'
-                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    distribution 'shepherdviolet'
+                //部署到中央库
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: sonatype_user, password: sonatype_password)
                 }
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: sonatype_user, password: sonatype_password)
+                }
+
+                //部署到Nexus私服(reponame修改为仓库名称)
+    //            repository(url: "http://localhost:8081/nexus/content/repositories/reponame/") {
+    //                authentication(userName: 'name', password: 'password')
+    //            }
+
+            } else {
+
+                //部署到本地仓库
+                repository(url: uri(repository_localRepositoryPath))
+
             }
 
-            developers {
-                developer {
-                    id 'shepherdviolet'
-                    name 'Shepherd Violet'
-                    email 'shepherdviolet@163.com'
+            pom.groupId = project.group
+            pom.artifactId = project.name
+            pom.version = project.version
+
+            //构造项目的Pom文件，参见Part 2中Pom文件的规范，不要遗漏必填项
+            pom.project {
+                name project.name
+                packaging 'jar'
+                description 'Comprehensive Java common library (Java7+)'
+                url 'https://github.com/shepherdviolet/thistle'
+
+                scm {
+                    url 'scm:git@github.com:shepherdviolet/thistle.git'
+                    connection 'scm:git@github.com:shepherdviolet/thistle.git'
+                    developerConnection 'git@github.com:shepherdviolet/thistle.git'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution 'shepherdviolet'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'shepherdviolet'
+                        name 'Shepherd Violet'
+                        email 'shepherdviolet@163.com'
+                    }
                 }
             }
         }
     }
+
 }
