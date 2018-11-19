@@ -35,11 +35,11 @@ import java.security.interfaces.RSAPublicKey;
 /**
  * <p>高级证书工具</p>
  *
- * <p>基本功能见slate-common的CertificateUtils</p>
+ * <p>基本功能见slate-common的{@link CertificateUtils}</p>
  *
  * @author S.Violet
  */
-public class AdvancedCertificateUtils {
+public class AdvancedCertificateUtils extends CertificateUtils {
 
     /**
      * 密钥类型:RSA
