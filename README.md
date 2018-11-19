@@ -2,7 +2,7 @@
 * Comprehensive Java common library (Java7+)
 * https://github.com/shepherdviolet/thistle
 
-## thistle
+## thistle-common
 
 * [ThistleSpi | Enhanced SPI (Service Provider Interfaces)](https://github.com/shepherdviolet/thistle/blob/master/docs/thistlespi/guide.md)
 * [SimpleKeyValueEncoder | Simple Key-Value to String Encoder](https://github.com/shepherdviolet/thistle/blob/master/docs/kvencoder/guide.md)
@@ -22,7 +22,7 @@ repositories {
 }
 dependencies {
     //thistle
-    compile 'com.github.shepherdviolet:thistle:version'
+    compile 'com.github.shepherdviolet:thistle-common:version'
     //thistle crypto
     compile 'com.github.shepherdviolet:thistle-crypto:version'
 }
@@ -33,7 +33,7 @@ dependencies {
     <!-- thistle -->
     <dependency>    
         <groupId>com.github.shepherdviolet</groupId>
-        <artifactId>thistle</artifactId>
+        <artifactId>thistle-common</artifactId>
         <version>version</version> 
     </dependency>
     <!-- thistle-crypto -->

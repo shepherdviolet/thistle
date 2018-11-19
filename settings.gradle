@@ -1,3 +1,2 @@
-include ':thistle-core'
+include ':thistle-common'
 include ':thistle-crypto'
-include ':thistle-all'
