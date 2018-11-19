@@ -114,7 +114,7 @@
 
 * X509格式证书解析
 
-### AdvancedCertificateUtils (in slate-crypto-plus)
+### AdvancedCertificateUtils (in thistle-crypto-plus)
 
 * 证书/根证书签发
 

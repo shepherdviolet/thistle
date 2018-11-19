@@ -8,7 +8,7 @@
 * `Service ... loaded` / `Plugin ... loaded`: 成功加载了那些服务和插件
 
 ```text
-... 0 ThistleSpi ServiceLoader | Service sviolet.thistle.x.common.thistlespi.SpiLogger (sviolet.slate.common.x.common.thistlespi.SlfSpiLogger) loaded successfully
+... 0 ThistleSpi ServiceLoader | Service sviolet.thistle.x.common.thistlespi.SpiLogger (sviolet.thistle.x.common.thistlespi.SlfSpiLogger) loaded successfully
 ...SlfSpiLogger : 0 ThistleSpi | beet.scrunchy.proxy.ServiceProxyInstantiator#<init> is trying to load services or plugins. With classloader jdk.internal.loader.ClassLoaders$AppClassLoader
 ...SlfSpiLogger : 0 ThistleSpi | -------------------------------------------------------------
 ...SlfSpiLogger : 0 ThistleSpi | Loading services from META-INF/thistle-spi/, DOC: github.com/shepherdviolet/thistle/blob/master/docs/thistlespi/guide.md
@@ -71,13 +71,13 @@
 ... 0 ThistleSpi | -------------------------------------------------------------
 ... 0 ThistleSpi | Service Applied:
 ... 0 ThistleSpi |   type: sviolet.thistle.x.common.thistlespi.SpiLogger
-... 0 ThistleSpi |   implement: sviolet.slate.common.x.common.thistlespi.SlfSpiLogger
+... 0 ThistleSpi |   implement: sviolet.thistle.x.common.thistlespi.SlfSpiLogger
 ... 0 ThistleSpi |   url: jar:file:/C:/m2repository/repository/com/github/shepherdviolet/slate-common/11.1-SNAPSHOT/slate-common-11.1-20181012.155613-8.jar!/META-INF/thistle-spi-logger/service.properties
 ... 0 ThistleSpi |   reason: Applied by level (application > platform > library > default)
 ... 0 ThistleSpi | All Configurations:
-... 0 ThistleSpi |   + Service{id=slate-common, level=DEFAULT, impl=sviolet.slate.common.x.common.thistlespi.SlfSpiLogger, arg=null, url=jar:file:/C:/m2repository/repository/com/github/shepherdviolet/slate-common/11.1-SNAPSHOT/slate-common-11.1-20181012.155613-8.jar!/META-INF/thistle-spi-logger/service.properties}
+... 0 ThistleSpi |   + Service{id=slate-common, level=DEFAULT, impl=sviolet.thistle.x.common.thistlespi.SlfSpiLogger, arg=null, url=jar:file:/C:/m2repository/repository/com/github/shepherdviolet/slate-common/11.1-SNAPSHOT/slate-common-11.1-20181012.155613-8.jar!/META-INF/thistle-spi-logger/service.properties}
 ... 0 ThistleSpi | -------------------------------------------------------------
-... 0 ThistleSpi ServiceLoader | Service sviolet.thistle.x.common.thistlespi.SpiLogger (sviolet.slate.common.x.common.thistlespi.SlfSpiLogger) loaded successfully
+... 0 ThistleSpi ServiceLoader | Service sviolet.thistle.x.common.thistlespi.SpiLogger (sviolet.thistle.x.common.thistlespi.SlfSpiLogger) loaded successfully
 ...SlfSpiLogger : 0 ThistleSpi | beet.scrunchy.proxy.ServiceProxyInstantiator#<init> is trying to load services or plugins. With classloader jdk.internal.loader.ClassLoaders$AppClassLoader
 ...SlfSpiLogger : 0 ThistleSpi | -------------------------------------------------------------
 ...SlfSpiLogger : 0 ThistleSpi | Loading services from META-INF/thistle-spi/, DOC: github.com/shepherdviolet/thistle/blob/master/docs/thistlespi/guide.md

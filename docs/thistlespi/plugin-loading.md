@@ -354,7 +354,7 @@ sample.spi.facade.APlugin=sample.spi.impl.APluginImpl1(true),sample.spi.impl.APl
 ## 如何查看哪些插件被应用, 哪些被排除? 
 
 * 开启debug级别日志: 添加启动参数`-Dthistle.spi.loglv=debug`
-* 如果使用SLF4J打印日志, 还需要确保包路径`sviolet.slate.common.x.common.thistlespi`日志级别在`INFO`级以上
+* 如果使用SLF4J打印日志, 还需要确保包路径`sviolet.thistle.x.common.thistlespi`日志级别在`INFO`级以上
 * 运行程序, 观察日志
 
 ```text

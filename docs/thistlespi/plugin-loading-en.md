@@ -357,7 +357,7 @@ sample.spi.facade.APlugin=sample.spi.impl.APluginImpl1(true),sample.spi.impl.APl
 ## How do I see which plugins are being applied and which ones are being excluded?
 
 * Adjust log-level to debug: Add a startup parameter `-Dthistle.spi.loglv=debug`
-* When printing log by `slate-common`, you should adjust SLF4J log-level `sviolet.slate.common.x.common.thistlespi` to `INFO`+
+* When printing log by `thistle-spi-logger`, you should adjust SLF4J log-level `sviolet.thistle.x.common.thistlespi` to `INFO`+
 * Run the program, observe the log
 
 ```text

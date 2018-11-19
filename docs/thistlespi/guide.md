@@ -49,23 +49,23 @@ ThistleSpi增加了过滤机制, 支持构造参数, 在使用上更为便捷.
 
 * 日志关键字: `ThistleSpi`
 * 默认使用`System.out`输出日志
-* 开源库`slate-common`提供了使用SLF4J输出日志的实现, 添加依赖即可:
+* `thistle-spi-logger`库提供了使用SLF4J输出日志的实现, 添加依赖即可:
 
 ```text
 dependencies {
-    compile 'com.github.shepherdviolet:slate-common:version'
+    compile 'com.github.shepherdviolet:thistle-spi-logger:version'
 }
 ```
 
 ```text
     <dependency>
         <groupId>com.github.shepherdviolet</groupId>
-        <artifactId>slate-common</artifactId>
+        <artifactId>thistle-spi-logger</artifactId>
         <version>version</version>
     </dependency>
 ```
 
-* 使用`slate-common`库输出日志时, SLF4J日志级别`INFO`和`ERROR`, 日志包路径`sviolet.slate.common.x.common.thistlespi`
+* 使用`thistle-spi-logger`库输出日志时, SLF4J日志级别`INFO`和`ERROR`, 日志包路径`sviolet.thistle.x.common.thistlespi`
 * ThistleSpi支持自定义自身日志打印器
 * [日志样例](https://github.com/shepherdviolet/thistle/blob/master/docs/thistlespi/log-sample.md)
 
@@ -160,7 +160,7 @@ sviolet.thistle.x.common.thistlespi.SpiLogger=sample-app
 ```
 
 * 开启debug级别日志: 添加启动参数`-Dthistle.spi.loglv=debug`
-* 如果使用SLF4J打印日志, 还需要确保包路径`sviolet.slate.common.x.common.thistlespi`日志级别在`INFO`级以上
+* 如果使用SLF4J打印日志, 还需要确保包路径`sviolet.thistle.x.common.thistlespi`日志级别在`INFO`级以上
 * 运行程序, 观察日志
 
 ```text

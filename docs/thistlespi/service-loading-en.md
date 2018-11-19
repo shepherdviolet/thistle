@@ -332,7 +332,7 @@ sample.spi.facade.AService=sample-lib-1
 ## How do I see why an implementation is being applied? And what alternative implementations?
 
 * Adjust log-level to debug: Add a startup parameter `-Dthistle.spi.loglv=debug`
-* When printing log by `slate-common`, you should adjust SLF4J log-level `sviolet.slate.common.x.common.thistlespi` to `INFO`+
+* When printing log by `thistle-spi-logger`, you should adjust SLF4J log-level `sviolet.thistle.x.common.thistlespi` to `INFO`+
 * Run the program, observe the log
 
 ```text
