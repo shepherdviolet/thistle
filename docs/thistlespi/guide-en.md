@@ -58,23 +58,23 @@ In the processor scenario, a method will be defined in the interface that return
 
 * Keyword: `ThistleSpi`
 * By Default the `System.out` prints the log
-* The library `thistle-spi-logger` provides an implementation for printing logs by SLF4J. Just add dependencies:
+* The library `thistle-with-slf4j` provides an implementation for printing logs by SLF4J. Just add dependencies:
 
 ```text
 dependencies {
-    compile 'com.github.shepherdviolet:thistle-spi-logger:version'
+    compile 'com.github.shepherdviolet:thistle-with-slf4j:version'
 }
 ```
 
 ```text
     <dependency>
         <groupId>com.github.shepherdviolet</groupId>
-        <artifactId>thistle-spi-logger</artifactId>
+        <artifactId>thistle-with-slf4j</artifactId>
         <version>version</version>
     </dependency>
 ```
 
-* When printing log by `thistle-spi-logger`, the SLF4J log level will be `INFO` and `ERROR`, package `sviolet.thistle.x.common.thistlespi`
+* When printing log by `thistle-with-slf4j`, the SLF4J log level will be `INFO` and `ERROR`, package `sviolet.thistle.x.common.thistlespi`
 * ThistleSpi supports customizing its own log printer
 * [Log sample](https://github.com/shepherdviolet/thistle/blob/master/docs/thistlespi/log-sample-en.md)
 
@@ -171,7 +171,7 @@ exclusion of invalidation. In the end, you still have to try to contact the depe
 ```
 
 * Adjust log-level to debug: Add a startup parameter `-Dthistle.spi.loglv=debug`
-* When printing log by `thistle-spi-logger`, you should adjust SLF4J log-level `sviolet.thistle.x.common.thistlespi` to `INFO`+
+* When printing log by `thistle-with-slf4j`, you should adjust SLF4J log-level `sviolet.thistle.x.common.thistlespi` to `INFO`+
 * Run the program, observe the log
 
 ```text

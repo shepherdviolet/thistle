@@ -49,23 +49,23 @@ ThistleSpi增加了过滤机制, 支持构造参数, 在使用上更为便捷.
 
 * 日志关键字: `ThistleSpi`
 * 默认使用`System.out`输出日志
-* `thistle-spi-logger`库提供了使用SLF4J输出日志的实现, 添加依赖即可:
+* `thistle-with-slf4j`库提供了使用SLF4J输出日志的实现, 添加依赖即可:
 
 ```text
 dependencies {
-    compile 'com.github.shepherdviolet:thistle-spi-logger:version'
+    compile 'com.github.shepherdviolet:thistle-with-slf4j:version'
 }
 ```
 
 ```text
     <dependency>
         <groupId>com.github.shepherdviolet</groupId>
-        <artifactId>thistle-spi-logger</artifactId>
+        <artifactId>thistle-with-slf4j</artifactId>
         <version>version</version>
     </dependency>
 ```
 
-* 使用`thistle-spi-logger`库输出日志时, SLF4J日志级别`INFO`和`ERROR`, 日志包路径`sviolet.thistle.x.common.thistlespi`
+* 使用`thistle-with-slf4j`库输出日志时, SLF4J日志级别`INFO`和`ERROR`, 日志包路径`sviolet.thistle.x.common.thistlespi`
 * ThistleSpi支持自定义自身日志打印器
 * [日志样例](https://github.com/shepherdviolet/thistle/blob/master/docs/thistlespi/log-sample.md)
 
