@@ -30,7 +30,7 @@ public class SlfSpiLogger implements SpiLogger {
         // 若org.slf4j.Logger类存在则使用slf4j输出日志
         try {
             Class.forName("org.slf4j.Logger");
-            provider = (SpiLogger) Class.forName("sviolet.slate.common.x.common.thistlespi.SlfSpiLoggerProvider").newInstance();
+            provider = (SpiLogger) Class.forName("sviolet.thistle.x.common.thistlespi.SlfSpiLoggerProvider").newInstance();
         } catch (Exception e) {
             // 否则使用默认方式输出日志
             provider = new DefaultSpiLogger();
