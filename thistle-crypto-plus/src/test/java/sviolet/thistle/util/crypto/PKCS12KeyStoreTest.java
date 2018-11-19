@@ -41,7 +41,7 @@ public class PKCS12KeyStoreTest {
                 rootKeyPair.getPublicKey(),
                 rootKeyPair.getPrivateKey(),
                 3650,
-                CertificateUtils.SIGN_ALGORITHM_RSA_SHA256
+                AdvancedCertificateUtils.SIGN_ALGORITHM_RSA_SHA256
         );
 
         PKCS12KeyStoreUtils.storeCertificateAndKey(
@@ -57,7 +57,7 @@ public class PKCS12KeyStoreTest {
                 "CN=Thistle test subject, OU=Thistle group, O=Violet Shell, L=Ningbo, ST=Zhejiang, C=CN",
                 subjectKeyPair.getPublicKey(),
                 3650,
-                CertificateUtils.SIGN_ALGORITHM_RSA_SHA256,
+                AdvancedCertificateUtils.SIGN_ALGORITHM_RSA_SHA256,
                 rootCertificate,
                 rootKeyPair.getPrivateKey());
 

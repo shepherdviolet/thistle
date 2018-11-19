@@ -42,6 +42,26 @@ import java.security.interfaces.RSAPublicKey;
 public class AdvancedCertificateUtils {
 
     /**
+     * 密钥类型:RSA
+     */
+    public static final String KEK_ALGORITHM_RSA = "RSA";
+
+    /**
+     * 签名算法:MD5withRSA
+     */
+    public static final String SIGN_ALGORITHM_RSA_MD5 = "MD5withRSA";
+
+    /**
+     * 签名算法:SHA1withRSA
+     */
+    public static final String SIGN_ALGORITHM_RSA_SHA1 = "SHA1withRSA";
+
+    /**
+     * 签名算法:SHA256withRSA
+     */
+    public static final String SIGN_ALGORITHM_RSA_SHA256 = "SHA256withRSA";
+
+    /**
      * 生成RSA根证书(自签名证书)
      *
      * <p>
