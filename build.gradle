@@ -30,6 +30,7 @@ buildscript {
 
     //构建脚本依赖
     dependencies {
+        classpath "com.netflix.nebula:gradle-extra-configurations-plugin:$version_nebula"
 //        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$version_kotlinVersion"
     }
 
@@ -40,6 +41,7 @@ buildscript {
 allprojects {
 
     apply plugin: 'java'
+    apply plugin: 'nebula.optional-base'
     //apply plugin: 'kotlin'
 
     group project_group_id

@@ -144,22 +144,7 @@
 ```gradle
 //version替换为具体版本
 dependencies {
-    compile 'com.github.shepherdviolet:thistle-crypto:version'
-}
-```
-
-* gradle(最少依赖)
-
-```gradle
-//version替换为具体版本
-dependencies {
-    compile ('com.github.shepherdviolet:thistle:version') {
-        transitive = false
-    }
-    compile ('com.github.shepherdviolet:thistle-crypto:version') {
-        transitive = false
-    }
-    compile 'org.bouncycastle:bcpkix-jdk15on:1.59'
+    compile 'com.github.shepherdviolet:thistle-crypto-plus:version'
 }
 ```
 
@@ -169,40 +154,7 @@ dependencies {
     <!--version替换为具体版本-->
     <dependency>
         <groupId>com.github.shepherdviolet</groupId>
-        <artifactId>thistle-crypto</artifactId>
+        <artifactId>thistle-crypto-plus</artifactId>
         <version>version</version>
-    </dependency>
-```
-
-* maven(最少依赖)
-
-```maven
-    <!--version替换为具体版本-->
-    <dependency>
-        <groupId>com.github.shepherdviolet</groupId>
-        <artifactId>thistle</artifactId>
-        <version>version</version>
-        <exclusions>
-             <exclusion>
-                 <groupId>*</groupId>
-                 <artifactId>*</artifactId>
-             </exclusion>
-        </exclusions>
-    </dependency>
-    <dependency>
-        <groupId>com.github.shepherdviolet</groupId>
-        <artifactId>thistle-crypto</artifactId>
-        <version>version</version>
-        <exclusions>
-             <exclusion>
-                 <groupId>*</groupId>
-                 <artifactId>*</artifactId>
-             </exclusion>
-        </exclusions>
-    </dependency>
-    <dependency>
-        <groupId>org.bouncycastle</groupId>
-        <artifactId>bcpkix-jdk15on</artifactId>
-        <version>1.59</version>
     </dependency>
 ```
