@@ -142,22 +142,32 @@
 
 # 依赖
 
-* gradle
-
 ```gradle
-//version替换为具体版本
+
+repositories {
+    //Thistle in mavenCentral
+    mavenCentral()
+}
 dependencies {
+    //Common crypto utils
+    compile 'com.github.shepherdviolet:thistle-common:version'
+    //Advanced crypto utils
     compile 'com.github.shepherdviolet:thistle-crypto-plus:version'
 }
+
 ```
 
-* maven
-
 ```maven
-    <!--version替换为具体版本-->
-    <dependency>
+    <!-- Common crypto utils -->
+    <dependency>    
+        <groupId>com.github.shepherdviolet</groupId>
+        <artifactId>thistle-common</artifactId>
+        <version>version</version> 
+    </dependency>
+    <!-- Advanced crypto utils -->
+    <dependency>    
         <groupId>com.github.shepherdviolet</groupId>
         <artifactId>thistle-crypto-plus</artifactId>
-        <version>version</version>
+        <version>version</version> 
     </dependency>
 ```
