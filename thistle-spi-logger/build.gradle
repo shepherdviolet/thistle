@@ -1,0 +1,11 @@
+
+dependencies {
+    //required
+    compile project(':thistle-common') { group project_group_id; version project_version }
+    compile "org.slf4j:slf4j-api:$version_slf4j"
+
+    //optional
+
+    //test
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}

@@ -220,25 +220,26 @@ public class ThistleSpi {
             loaderId = LOADER_ID_COUNTER.getAndIncrement();
             //类加载器
             this.classLoader = classLoader;
-            //创建服务加载工厂
-            serviceFactory = new ServiceFactory(classLoader, logger, loaderId);
+
+            //创建日志打印器的服务加载工厂
+            ServiceFactory loggerFactory = new ServiceFactory(classLoader, logger, loaderId);
             //加载日志打印器配置文件
-            serviceFactory.loadConfig(CONFIG_PATH_LOGGER, true);
+            loggerFactory.loadConfig(CONFIG_PATH_LOGGER, true);
             //log
             if (LOG_LV >= DEBUG) {
                 logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
             }
             //加载内置日志打印器
-            SpiLogger customLogger = serviceFactory.loadInstance(SpiLogger.class);
+            SpiLogger customLogger = loggerFactory.loadInstance(SpiLogger.class);
             if (customLogger != null) {
                 //替换为自定义的日志打印器
                 logger = customLogger;
-                serviceFactory.setLogger(logger);
             }
-            //清空服务配置加载器
-            serviceFactory.invalidConfig();
             //打印调用者和ClassLoader
             printCallerInfo();
+
+            //创建服务加载工厂
+            serviceFactory = new ServiceFactory(classLoader, logger, loaderId);
             //加载服务配置文件
             serviceFactory.loadConfig(configPath, false);
             //创建插件加载工厂
@@ -249,6 +250,10 @@ public class ThistleSpi {
             if (LOG_LV >= INFO) {
                 logger.print(loaderId + LOG_PREFIX + "-------------------------------------------------------------");
             }
+        }
+
+        SpiLogger getLogger() {
+            return logger;
         }
 
         /**

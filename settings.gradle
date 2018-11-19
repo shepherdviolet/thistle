@@ -1,2 +1,3 @@
 include ':thistle-common'
 include ':thistle-crypto-plus'
+include ':thistle-spi-logger'
