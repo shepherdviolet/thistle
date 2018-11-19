@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 S.Violet
+ * Copyright (C) 2015-2018 S.Violet
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,73 +23,23 @@ import org.bouncycastle.asn1.x509.X509CertificateStructure;
 import org.bouncycastle.operator.OperatorCreationException;
 import sviolet.thistle.util.conversion.Base64Utils;
 import sviolet.thistle.util.crypto.base.BaseBCCertificateUtils;
-import sviolet.thistle.util.crypto.base.BaseCertificateUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
 /**
- * <p>证书工具</p>
+ * <p>高级证书工具</p>
+ *
+ * <p>基本功能见slate-common的CertificateUtils</p>
  *
  * @author S.Violet
  */
-public class CertificateUtils {
-
-    /**
-     * 密钥类型:RSA
-     */
-    public static final String KEK_ALGORITHM_RSA = "RSA";
-
-    /**
-     * 签名算法:MD5withRSA
-     */
-    public static final String SIGN_ALGORITHM_RSA_MD5 = "MD5withRSA";
-
-    /**
-     * 签名算法:SHA1withRSA
-     */
-    public static final String SIGN_ALGORITHM_RSA_SHA1 = "SHA1withRSA";
-
-    /**
-     * 签名算法:SHA256withRSA
-     */
-    public static final String SIGN_ALGORITHM_RSA_SHA256 = "SHA256withRSA";
-
-    //Parse//////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * <p>解析X509格式的证书, 返回Certificate对象, 可用来获取证书公钥实例等</p>
-     * @param certData X509格式证书数据
-     */
-    public static Certificate parseX509ToCertificate(byte[] certData) throws CertificateException {
-        return BaseCertificateUtils.parseCertificate(certData, BaseCertificateUtils.TYPE_X509);
-    }
-
-    /**
-     * <p>解析X509格式的证书, 返回Certificate对象, 可用来获取证书公钥实例等</p>
-     * @param inputStream X509格式证书数据流, 会被close掉
-     */
-    public static Certificate parseX509ToCertificate(InputStream inputStream) throws CertificateException {
-        return BaseCertificateUtils.parseCertificate(inputStream, BaseCertificateUtils.TYPE_X509);
-    }
-
-    /**
-     * 将证书编码为二进制数据
-     * @param certificate 证书
-     * @return 二进制数据
-     */
-    public static byte[] parseCertificateToEncoded(Certificate certificate) throws CertificateEncodingException {
-        return BaseCertificateUtils.encodeCertificate(certificate);
-    }
-
-    //Bouncy Castle///////////////////////////////////////////////////////////////////////////////////
+public class AdvancedCertificateUtils {
 
     /**
      * 生成RSA根证书(自签名证书)

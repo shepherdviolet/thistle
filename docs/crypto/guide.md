@@ -113,6 +113,9 @@
 ### CertificateUtils
 
 * X509格式证书解析
+
+### AdvancedCertificateUtils (in slate-crypto-plus)
+
 * 证书/根证书签发
 
 ### PKCS12KeyStoreUtils

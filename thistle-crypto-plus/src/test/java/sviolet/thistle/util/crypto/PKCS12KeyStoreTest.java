@@ -36,7 +36,7 @@ public class PKCS12KeyStoreTest {
 
         RSAKeyGenerator.RSAKeyPair rootKeyPair = RSAKeyGenerator.generateKeyPair(2048);
 
-        X509Certificate rootCertificate = CertificateUtils.generateRSAX509RootCertificate(
+        X509Certificate rootCertificate = AdvancedCertificateUtils.generateRSAX509RootCertificate(
                 "CN=Thistle test ca, OU=Thistle group, O=Violet Shell, L=Ningbo, ST=Zhejiang, C=CN",
                 rootKeyPair.getPublicKey(),
                 rootKeyPair.getPrivateKey(),
@@ -53,7 +53,7 @@ public class PKCS12KeyStoreTest {
 
         RSAKeyGenerator.RSAKeyPair subjectKeyPair = RSAKeyGenerator.generateKeyPair(2048);
 
-        X509Certificate subjectCertificate = CertificateUtils.generateRSAX509Certificate(
+        X509Certificate subjectCertificate = AdvancedCertificateUtils.generateRSAX509Certificate(
                 "CN=Thistle test subject, OU=Thistle group, O=Violet Shell, L=Ningbo, ST=Zhejiang, C=CN",
                 subjectKeyPair.getPublicKey(),
                 3650,

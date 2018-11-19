@@ -25,8 +25,6 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.*;
 
-import static sviolet.thistle.util.crypto.RSAKeyGenerator.generatePublicKey;
-
 /**
  * 非对称密钥生成基本逻辑<p>
  *
@@ -138,8 +136,8 @@ public class BaseAsymKeyGenerator {
      * @param privateKey 私钥
      * @return 公钥(公钥指数65537)
      */
-    public static RSAPublicKey parseRsaPublicKeyFromPrivate(RSAPrivateKey privateKey) throws InvalidKeySpecException {
-        return generatePublicKey(privateKey.getModulus(), new BigInteger("65537"));
+    public static RSAPublicKey parseRsaPublicKeyFromPrivate(RSAPrivateKey privateKey, String keyAlgorithm) throws InvalidKeySpecException {
+        return parseRsaPublicKey(privateKey.getModulus(), new BigInteger("65537"), keyAlgorithm);
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 S.Violet
+ * Copyright (C) 2015-2018 S.Violet
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,7 +109,7 @@ public class RSAKeyGenerator {
      * @return 公钥(公钥指数65537)
      */
     public static RSAPublicKey parsePublicKeyFromPrivateKey(RSAPrivateKey privateKey) throws InvalidKeySpecException {
-        return BaseAsymKeyGenerator.parseRsaPublicKeyFromPrivate(privateKey);
+        return BaseAsymKeyGenerator.parseRsaPublicKeyFromPrivate(privateKey, RSA_KEY_ALGORITHM);
     }
 
     /**
