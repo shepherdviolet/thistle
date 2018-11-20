@@ -213,18 +213,7 @@ exclusion of invalidation. In the end, you still have to try to contact the depe
 ```gradle
 //Replace `version` with actual value
 dependencies {
-    compile 'com.github.shepherdviolet:thistle:version'
-}
-```
-
-* gradle(Least dependencies)
-
-```gradle
-//Replace `version` with actual value
-dependencies {
-    compile ('com.github.shepherdviolet:thistle:version') {
-        transitive = false
-    }
+    compile 'com.github.shepherdviolet:thistle-common:version'
 }
 ```
 
@@ -234,24 +223,7 @@ dependencies {
     <!--Replace `version` with actual value-->
     <dependency>
         <groupId>com.github.shepherdviolet</groupId>
-        <artifactId>thistle</artifactId>
+        <artifactId>thistle-common</artifactId>
         <version>version/version>
-    </dependency>
-```
-
-* maven(Least dependencies)
-
-```maven
-    <!--Replace `version` with actual value-->
-    <dependency>
-        <groupId>com.github.shepherdviolet</groupId>
-        <artifactId>thistle</artifactId>
-        <version>version</version>
-        <exclusions>
-             <exclusion>
-                 <groupId>*</groupId>
-                 <artifactId>*</artifactId>
-             </exclusion>
-        </exclusions>
     </dependency>
 ```

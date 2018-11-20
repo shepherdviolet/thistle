@@ -5,7 +5,7 @@
 
 # thistle-common
 
-> Core of thistle
+> Core content of thistle
 
 * [ThistleSpi | Enhanced SPI (Service Provider Interfaces)](https://github.com/shepherdviolet/thistle/blob/master/docs/thistlespi/guide.md)
 * [Crypto | Common crypto utils](https://github.com/shepherdviolet/thistle/blob/master/docs/crypto/guide.md)
@@ -14,7 +14,7 @@
 
 # thistle-with-slf4j
 
-> Make thistle prints logs by SLF4J
+> Let thistle prints logs by SLF4J
 
 * Printing `ThistleSpi` log by slf4j
 
