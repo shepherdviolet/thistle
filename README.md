@@ -5,7 +5,7 @@
 
 # thistle-common
 
-> Core content of thistle
+> Core module of thistle
 
 * [ThistleSpi | Enhanced SPI (Service Provider Interfaces)](https://github.com/shepherdviolet/thistle/blob/master/docs/thistlespi/guide.md)
 * [Crypto | Common crypto utils](https://github.com/shepherdviolet/thistle/blob/master/docs/crypto/guide.md)
@@ -14,13 +14,13 @@
 
 # thistle-with-slf4j
 
-> Let thistle prints logs by SLF4J
+> The module which printing logs by SLF4J
 
 * Printing `ThistleSpi` log by slf4j
 
 # thistle-crypto-plus
 
-> Add crypto features with bouncy-castle
+> The module has more crypto features (depends on bouncy-castle)
 
 * [Crypto | Advanced crypto utils with bouncy-castle](https://github.com/shepherdviolet/thistle/blob/master/docs/crypto/guide.md)
 
