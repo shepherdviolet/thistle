@@ -2,5 +2,5 @@
 /.idea
 build/
 .iml
-/out
+out/
 /gradle-local.properties
