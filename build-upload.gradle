@@ -71,10 +71,19 @@ configure(subprojects.findAll { it.name.startsWith('thistle-') }) {
                     authentication(userName: sonatype_user, password: sonatype_password)
                 }
 
-                //部署到Nexus私服(reponame修改为仓库名称)
-    //            repository(url: "http://localhost:8081/nexus/content/repositories/reponame/") {
-    //                authentication(userName: 'name', password: 'password')
-    //            }
+            } else if (upload_target == 'private') {
+
+                //部署到Nexus私服
+                repository(url: private_release_url) {
+                    authentication(userName: private_user, password: private_password)
+                }
+                snapshotRepository(url: private_snapshot_url) {
+                    authentication(userName: private_user, password: private_password)
+                }
+
+//				repository(url: "http://localhost:8081/nexus/content/repositories/reponame/") {
+//					authentication(userName: 'name', password: 'password')
+//				}
 
             } else {
 
