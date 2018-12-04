@@ -31,7 +31,7 @@ import java.io.OutputStream;
 import java.security.*;
 
 /**
- * 加解密基本逻辑<p>
+ * [Bouncy castle]加解密基本逻辑<p>
  *
  * Not recommended for direct use<p>
  *

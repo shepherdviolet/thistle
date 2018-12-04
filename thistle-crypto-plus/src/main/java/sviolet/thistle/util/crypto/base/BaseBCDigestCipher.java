@@ -27,6 +27,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.Security;
 
+/**
+ * [Bouncy castle]摘要基本逻辑<p>
+ *
+ * Not recommended for direct use<p>
+ *
+ * 不建议直接使用<p>
+ *
+ * Cipher/Signature/MessageDigest线程不安全!!!<p>
+ *
+ * @author S.Violet
+ */
 public class BaseBCDigestCipher {
 
     static {

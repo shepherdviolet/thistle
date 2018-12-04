@@ -28,7 +28,7 @@ import java.security.SecureRandom;
 import java.security.Security;
 
 /**
- * 密钥生成基本逻辑<p>
+ * [Bouncy castle]密钥生成基本逻辑<p>
  *
  * Not recommended for direct use<p>
  *

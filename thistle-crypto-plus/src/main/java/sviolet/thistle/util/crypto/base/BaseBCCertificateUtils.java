@@ -48,7 +48,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.util.Date;
 
 /**
- * 证书处理基本逻辑Bouncy Castle<p>
+ * [Bouncy castle]证书处理基本逻辑<p>
  *
  * Not recommended for direct use<p>
  *
