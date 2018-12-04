@@ -276,7 +276,7 @@ public class RSACipher {
      * @throws IllegalBlockSizeException 无效的块大小(密码错误?)
      * @throws IOException IO错误
      */
-    public static byte[] decrypt(byte[] data, RSAPrivateKey privateKey, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, IOException{
+    public static byte[] decrypt(byte[] data, RSAPrivateKey privateKey, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
         return BaseCipher.decryptByRSAPrivateKey(data, privateKey, cryptoAlgorithm);
     }
 
@@ -295,7 +295,7 @@ public class RSACipher {
      * @throws IllegalBlockSizeException 无效的块大小(密码错误?)
      * @throws IOException IO错误
      */
-	public static byte[] encrypt(byte[] data, RSAPublicKey publicKey, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, IOException{
+	public static byte[] encrypt(byte[] data, RSAPublicKey publicKey, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
         return BaseCipher.encryptByRSAPublicKey(data, publicKey, cryptoAlgorithm);
     }
 
@@ -314,7 +314,7 @@ public class RSACipher {
      * @throws IllegalBlockSizeException 无效的块大小(密码错误?)
      * @throws IOException IO错误
      */
-    public static byte[] decrypt(byte[] data, RSAPublicKey publicKey, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, IOException{
+    public static byte[] decrypt(byte[] data, RSAPublicKey publicKey, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
         return BaseCipher.decryptByRSAPublicKey(data, publicKey, cryptoAlgorithm);
     }
 
@@ -333,7 +333,7 @@ public class RSACipher {
      * @throws IllegalBlockSizeException 无效的块大小(密码错误?)
      * @throws IOException IO错误
      */
-    public static byte[] encrypt(byte[] data, RSAPrivateKey privateKey, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, IOException{
+    public static byte[] encrypt(byte[] data, RSAPrivateKey privateKey, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
         return BaseCipher.encryptByRSAPrivateKey(data, privateKey, cryptoAlgorithm);
     }
 }

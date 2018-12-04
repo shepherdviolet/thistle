@@ -81,7 +81,7 @@ public class DESEdeCipher {
      * @throws BadPaddingException 填充错误(密码错?)
      * @throws InvalidAlgorithmParameterException 算法参数无效
      */
-    public static byte[] encrypt(byte[] data, byte[] key, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException{
+    public static byte[] encrypt(byte[] data, byte[] key, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
         return BaseCipher.encrypt(data, key, KEY_ALGORITHM, cryptoAlgorithm);
     }
 
@@ -119,7 +119,7 @@ public class DESEdeCipher {
      * @throws BadPaddingException 填充错误(密码错?)
      * @throws InvalidAlgorithmParameterException 算法参数无效
      */
-    public static void encrypt(InputStream in, OutputStream out, byte[] key, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, IOException {
+    public static void encrypt(InputStream in, OutputStream out, byte[] key, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IOException {
         BaseCipher.encrypt(in, out, key, KEY_ALGORITHM, cryptoAlgorithm);
     }
 
@@ -139,7 +139,7 @@ public class DESEdeCipher {
      * @throws BadPaddingException 填充错误(密码错?)
      * @throws InvalidAlgorithmParameterException 算法参数无效
      */
-    public static void encryptCBC(InputStream in, OutputStream out, byte[] key, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, IOException {
+    public static void encryptCBC(InputStream in, OutputStream out, byte[] key, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException {
         BaseCipher.encryptCBC(in, out, key, KEY_ALGORITHM, ivSeed, cryptoAlgorithm);
     }
 
@@ -157,7 +157,7 @@ public class DESEdeCipher {
      * @throws BadPaddingException 填充错误(密码错?)
      * @throws InvalidAlgorithmParameterException 算法参数无效
      */
-    public static byte[] decrypt(byte[] data, byte[] key, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException{
+    public static byte[] decrypt(byte[] data, byte[] key, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
         return BaseCipher.decrypt(data, key, KEY_ALGORITHM, cryptoAlgorithm);
     }
 
@@ -195,7 +195,7 @@ public class DESEdeCipher {
      * @throws BadPaddingException 填充错误(密码错?)
      * @throws InvalidAlgorithmParameterException 算法参数无效
      */
-    public static void decrypt(InputStream in, OutputStream out, byte[] key, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, IOException {
+    public static void decrypt(InputStream in, OutputStream out, byte[] key, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IOException {
         BaseCipher.decrypt(in, out, key, KEY_ALGORITHM, cryptoAlgorithm);
     }
 
@@ -215,7 +215,7 @@ public class DESEdeCipher {
      * @throws BadPaddingException 填充错误(密码错?)
      * @throws InvalidAlgorithmParameterException 算法参数无效
      */
-    public static void decryptCBC(InputStream in, OutputStream out, byte[] key, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, IOException {
+    public static void decryptCBC(InputStream in, OutputStream out, byte[] key, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException {
         BaseCipher.decryptCBC(in, out, key, KEY_ALGORITHM, ivSeed, cryptoAlgorithm);
     }
 

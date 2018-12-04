@@ -61,7 +61,7 @@ public class BaseCipher {
      * @throws BadPaddingException 填充错误(密码错?)
      * @throws InvalidAlgorithmParameterException 算法参数无效
      */
-    public static byte[] encrypt(byte[] data, byte[] key, String keyAlgorithm, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException{
+    public static byte[] encrypt(byte[] data, byte[] key, String keyAlgorithm, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
         if (data == null){
             return null;
         }
@@ -87,7 +87,7 @@ public class BaseCipher {
      * @throws BadPaddingException 填充错误(密码错?)
      * @throws InvalidAlgorithmParameterException 算法参数无效
      */
-    public static byte[] encryptCBC(byte[] data, byte[] key, String keyAlgorithm, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException{
+    public static byte[] encryptCBC(byte[] data, byte[] key, String keyAlgorithm, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
         if (data == null){
             return null;
         }
@@ -114,7 +114,7 @@ public class BaseCipher {
      * @throws BadPaddingException 填充错误(密码错?)
      * @throws InvalidAlgorithmParameterException 算法参数无效
      */
-    public static void encrypt(InputStream in, OutputStream out, byte[] key, String keyAlgorithm, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, IOException {
+    public static void encrypt(InputStream in, OutputStream out, byte[] key, String keyAlgorithm, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IOException {
         if (in == null) {
             throw new NullPointerException("in is null");
         }
@@ -162,7 +162,7 @@ public class BaseCipher {
      * @throws BadPaddingException 填充错误(密码错?)
      * @throws InvalidAlgorithmParameterException 算法参数无效
      */
-    public static void encryptCBC(InputStream in, OutputStream out, byte[] key, String keyAlgorithm, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, IOException {
+    public static void encryptCBC(InputStream in, OutputStream out, byte[] key, String keyAlgorithm, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException {
         if (in == null) {
             throw new NullPointerException("in is null");
         }
@@ -209,7 +209,7 @@ public class BaseCipher {
      * @throws BadPaddingException 填充错误(密码错?)
      * @throws InvalidAlgorithmParameterException 算法参数无效
      */
-    public static byte[] decrypt(byte[] data, byte[] key, String keyAlgorithm, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException{
+    public static byte[] decrypt(byte[] data, byte[] key, String keyAlgorithm, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
         if (data == null){
             return null;
         }
@@ -262,7 +262,7 @@ public class BaseCipher {
      * @throws BadPaddingException 填充错误(密码错?)
      * @throws InvalidAlgorithmParameterException 算法参数无效
      */
-    public static void decrypt(InputStream in, OutputStream out, byte[] key, String keyAlgorithm, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, IOException {
+    public static void decrypt(InputStream in, OutputStream out, byte[] key, String keyAlgorithm, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IOException {
         if (in == null) {
             throw new NullPointerException("in is null");
         }
@@ -310,7 +310,7 @@ public class BaseCipher {
      * @throws BadPaddingException 填充错误(密码错?)
      * @throws InvalidAlgorithmParameterException 算法参数无效
      */
-    public static void decryptCBC(InputStream in, OutputStream out, byte[] key, String keyAlgorithm, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, IOException {
+    public static void decryptCBC(InputStream in, OutputStream out, byte[] key, String keyAlgorithm, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException {
         if (in == null) {
             throw new NullPointerException("in is null");
         }
@@ -677,7 +677,7 @@ public class BaseCipher {
      * @throws IllegalBlockSizeException 无效的块大小(密码错误?)
      * @throws IOException IO错误
      */
-    public static byte[] decryptByRSAPrivateKey(byte[] data, RSAPrivateKey privateKey, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, IOException{
+    public static byte[] decryptByRSAPrivateKey(byte[] data, RSAPrivateKey privateKey, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
 
         if (data == null){
             return null;
@@ -721,7 +721,7 @@ public class BaseCipher {
      * @throws IllegalBlockSizeException 无效的块大小(密码错误?)
      * @throws IOException IO错误
      */
-    public static byte[] encryptByRSAPublicKey(byte[] data, RSAPublicKey publicKey, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, IOException{
+    public static byte[] encryptByRSAPublicKey(byte[] data, RSAPublicKey publicKey, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
 
         if (data == null){
             return null;
@@ -765,7 +765,7 @@ public class BaseCipher {
      * @throws IllegalBlockSizeException 无效的块大小(密码错误?)
      * @throws IOException IO错误
      */
-    public static byte[] decryptByRSAPublicKey(byte[] data, RSAPublicKey publicKey, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, IOException{
+    public static byte[] decryptByRSAPublicKey(byte[] data, RSAPublicKey publicKey, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
 
         if (data == null){
             return null;
@@ -809,7 +809,7 @@ public class BaseCipher {
      * @throws IllegalBlockSizeException 无效的块大小(密码错误?)
      * @throws IOException IO错误
      */
-    public static byte[] encryptByRSAPrivateKey(byte[] data, RSAPrivateKey privateKey, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, IOException{
+    public static byte[] encryptByRSAPrivateKey(byte[] data, RSAPrivateKey privateKey, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
 
         if (data == null){
             return null;
