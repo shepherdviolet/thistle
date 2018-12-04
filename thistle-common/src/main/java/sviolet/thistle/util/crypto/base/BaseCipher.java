@@ -19,6 +19,7 @@
 
 package sviolet.thistle.util.crypto.base;
 
+import sviolet.thistle.util.common.CloseableUtils;
 import sviolet.thistle.util.common.PlatformUtils;
 import sviolet.thistle.util.file.FileUtils;
 
@@ -134,14 +135,8 @@ public class BaseCipher {
                 out.write(buff, 0, length);
             }
         } finally {
-            try {
-                in.close();
-            } catch (Throwable ignore){
-            }
-            try {
-                out.close();
-            } catch (Throwable ignore){
-            }
+            CloseableUtils.closeQuiet(in);
+            CloseableUtils.closeQuiet(out);
         }
     }
 
@@ -183,14 +178,8 @@ public class BaseCipher {
                 out.write(buff, 0, length);
             }
         } finally {
-            try {
-                in.close();
-            } catch (Throwable ignore){
-            }
-            try {
-                out.close();
-            } catch (Throwable ignore){
-            }
+            CloseableUtils.closeQuiet(in);
+            CloseableUtils.closeQuiet(out);
         }
     }
 
@@ -282,14 +271,8 @@ public class BaseCipher {
                 out.write(buff, 0, length);
             }
         } finally {
-            try {
-                in.close();
-            } catch (Throwable ignore){
-            }
-            try {
-                out.close();
-            } catch (Throwable ignore){
-            }
+            CloseableUtils.closeQuiet(in);
+            CloseableUtils.closeQuiet(out);
         }
     }
 
@@ -331,14 +314,8 @@ public class BaseCipher {
                 out.write(buff, 0, length);
             }
         } finally {
-            try {
-                in.close();
-            } catch (Throwable ignore){
-            }
-            try {
-                out.close();
-            } catch (Throwable ignore){
-            }
+            CloseableUtils.closeQuiet(in);
+            CloseableUtils.closeQuiet(out);
         }
     }
 
