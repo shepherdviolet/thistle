@@ -21,13 +21,9 @@ package sviolet.thistle.util.crypto.base;
 
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.generators.ECKeyPairGenerator;
-import org.bouncycastle.crypto.params.ECDomainParameters;
-import org.bouncycastle.crypto.params.ECKeyGenerationParameters;
-import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
-import org.bouncycastle.crypto.params.ECPublicKeyParameters;
+import org.bouncycastle.crypto.params.*;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.math.ec.ECCurve;
-import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
+import org.bouncycastle.math.ec.ECPoint;
 
 import java.math.BigInteger;
 import java.security.*;
@@ -90,7 +86,8 @@ public class BaseBCAsymKeyGenerator {
             throw new RuntimeException("pointASN1Encoding == null");
         }
         //将ASN.1编码的数据转为ECPoint实例
-        return new ECPublicKeyParameters(domainParameters.getCurve().decodePoint(pointASN1Encoding), domainParameters);
+        ECPoint point = domainParameters.getCurve().decodePoint(pointASN1Encoding);
+        return new ECPublicKeyParameters(point, domainParameters);
     }
 
     /**
@@ -124,6 +121,27 @@ public class BaseBCAsymKeyGenerator {
         System.arraycopy(xBytes, 0, asn1Encoding, 1, xBytes.length);
         System.arraycopy(yBytes, 0, asn1Encoding, 1 + xBytes.length, yBytes.length);
         return asn1Encoding;
+    }
+
+    /**
+     * 根据密钥实例(公钥或私钥)计算SM2用于加密时, 密文C1区域的长度, 密文为C1C3C2或C1C2C3, C1区域为随机公钥点数据(ASN.1格式)
+     *
+     * @param keyParams 密钥实例(公钥或私钥)
+     * @return 密文C1区域长度
+     */
+    public static int calculateSM2C1Length(ECKeyParameters keyParams) {
+        return calculateSM2C1Length(keyParams.getParameters());
+    }
+
+    /**
+     * 根据密钥实例(公钥或私钥)计算SM2用于加密时, 密文C1区域的长度, 密文为C1C3C2或C1C2C3, C1区域为随机公钥点数据(ASN.1格式).
+     * domainParameters是椭圆曲线参数, 需要:椭圆曲线/G点/N(order)/H(cofactor)
+     *
+     * @param domainParameters domainParameters = new ECDomainParameters(CURVE, G_POINT, N, H)
+     * @return 密文C1区域长度
+     */
+    public static int calculateSM2C1Length(ECDomainParameters domainParameters) {
+        return (domainParameters.getCurve().getFieldSize() + 7) / 8;
     }
 
 }

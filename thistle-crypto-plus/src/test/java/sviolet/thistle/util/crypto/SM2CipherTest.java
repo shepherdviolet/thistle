@@ -25,11 +25,14 @@ import sviolet.thistle.util.conversion.ByteUtils;
 public class SM2CipherTest {
 
     @Test
-    public void key(){
+    public void key() throws Exception {
         SM2KeyGenerator.SM2KeyParamsPair keyPair = SM2KeyGenerator.generateKeyParamsPair();
 
         System.out.println(keyPair.getPrivateD());
         System.out.println(ByteUtils.bytesToHex(keyPair.getPublicASN1Encoding()));
+
+        SM2KeyGenerator.generatePrivateKeyParams(keyPair.getPrivateD());
+        SM2KeyGenerator.generatePublicKeyParamsByASN1(keyPair.getPublicASN1Encoding());
 
     }
 
