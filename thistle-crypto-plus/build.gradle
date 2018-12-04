@@ -2,9 +2,9 @@
 dependencies {
     //required
     compile project(':thistle-common') { group project_group_id; version project_version }
+    compile "org.bouncycastle:bcpkix-jdk15on:$version_bouncycastle"
 
     //optional
-    compile 'org.bouncycastle:bcpkix-jdk15on:1.59'
 
     //test
     testCompile group: 'junit', name: 'junit', version: '4.12'

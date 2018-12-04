@@ -35,7 +35,7 @@ import java.security.interfaces.RSAPublicKey;
 /**
  * <p>高级证书工具</p>
  *
- * <p>基本功能见slate-common的{@link CertificateUtils}</p>
+ * <p>基本功能见thistle-common的{@link CertificateUtils}</p>
  *
  * @author S.Violet
  */

@@ -72,6 +72,9 @@ public class BaseDigestCipher {
      * @return 摘要bytes
      */
     public static byte[] digestInputStream(InputStream inputStream, String type) throws IOException {
+        if (inputStream == null){
+            throw new NullPointerException("[DigestCipher]digestInputStream: inputStream is null");
+        }
         try {
             MessageDigest cipher = MessageDigest.getInstance(type);
             byte[] buff = new byte[1024];
