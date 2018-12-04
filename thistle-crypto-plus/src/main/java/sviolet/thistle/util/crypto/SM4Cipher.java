@@ -43,7 +43,7 @@ import java.security.NoSuchProviderException;
 public class SM4Cipher {
 
 	/**
-	 * 密钥类型:AES
+	 * 密钥类型:SM4
 	 */
 	public static final String KEY_ALGORITHM = "SM4";
 
