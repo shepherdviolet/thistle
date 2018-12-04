@@ -25,7 +25,6 @@ import sviolet.thistle.util.conversion.ByteUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 public class SM3DigestCipherTest {
 

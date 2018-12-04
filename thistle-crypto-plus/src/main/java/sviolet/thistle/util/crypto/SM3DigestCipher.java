@@ -38,6 +38,11 @@ import java.io.UnsupportedEncodingException;
 public class SM3DigestCipher {
 
     /**
+     * SM3摘要长度32bytes
+     */
+    public static final int SM3_HASH_LENGTH = 32;
+
+    /**
      * 摘要类型:SM3
      */
     public static final String TYPE_SM3 = "SM3";

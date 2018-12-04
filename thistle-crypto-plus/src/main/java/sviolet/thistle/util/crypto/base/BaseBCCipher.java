@@ -43,6 +43,10 @@ import java.security.*;
  */
 public class BaseBCCipher {
 
+    static {
+        Security.addProvider(new BouncyCastleProvider());
+    }
+
     /**
      * 加密(byte[]数据)
      *
