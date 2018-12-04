@@ -31,6 +31,7 @@ import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
 import org.bouncycastle.crypto.util.PrivateKeyFactory;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.*;
 import org.bouncycastle.operator.bc.BcRSAContentSignerBuilder;
 
@@ -38,6 +39,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.security.Security;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -60,6 +62,10 @@ public class BaseBCCertificateUtils {
     private static final DigestAlgorithmIdentifierFinder DIGEST_ALGORITHM_IDENTIFIER_FINDER = new DefaultDigestAlgorithmIdentifierFinder();
 
     private static final ReversedBCStyle REVERSED_BC_STYLE = new ReversedBCStyle();
+
+    static {
+        Security.addProvider(new BouncyCastleProvider());
+    }
 
     /**
      * 倒序的BCStyle, 因为BouncyCastle生成证书后DN信息是颠倒的, 为了保持原顺序, 我们在这里做一下倒序
