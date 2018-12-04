@@ -28,6 +28,7 @@ public class SM2CipherTest {
     public void key() throws Exception {
         SM2KeyGenerator.SM2KeyParamsPair keyPair = SM2KeyGenerator.generateKeyParamsPair();
 
+        System.out.println(keyPair);
         System.out.println(keyPair.getPrivateD());
         System.out.println(ByteUtils.bytesToHex(keyPair.getPublicASN1Encoding()));
 

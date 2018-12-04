@@ -22,7 +22,10 @@ package sviolet.thistle.util.crypto.base;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.generators.ECKeyPairGenerator;
 import org.bouncycastle.crypto.params.*;
+import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
+import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.jce.spec.ECParameterSpec;
 import org.bouncycastle.math.ec.ECPoint;
 
 import java.math.BigInteger;
@@ -58,6 +61,51 @@ public class BaseBCAsymKeyGenerator {
         ECKeyPairGenerator keyPairGen = new ECKeyPairGenerator();
         keyPairGen.init(keyGenParams);
         return keyPairGen.generateKeyPair();
+    }
+
+    /**
+     * 将BouncyCastle的XXXKeyParameters私钥实例转换为JDK的XXXKey私钥实例, 用于与JDK加密工具适配, 或获取PKCS8编码的私钥数据
+     *
+     * @param privateKeyParams 私钥, BouncyCastle的XXXKeyParameters密钥实例
+     * @param publicKeyParams 公钥, 可为空(但送空会导致openssl无法读取PKCS8数据), BouncyCastle的XXXKeyParameters密钥实例
+     * @param keyAlgorithm 密钥算法(EC, SM2暂时也用EC)
+     * @return JDK的XXXKey密钥实例, 可以调用ECPrivateKey.getEncoded()方法获取PKCS8编码的私钥数据(甚至进一步转为PEM等格式)
+     */
+    public static BCECPrivateKey ecPrivateKeyParamsToEcPrivateKey(ECPrivateKeyParameters privateKeyParams, ECPublicKeyParameters publicKeyParams, String keyAlgorithm) throws Exception {
+        if (privateKeyParams == null) {
+            throw new RuntimeException("privateKeyParams == null");
+        }
+        ECDomainParameters domainParameters = privateKeyParams.getParameters();
+        ECParameterSpec parameterSpec = new ECParameterSpec(
+                domainParameters.getCurve(),
+                domainParameters.getG(),
+                domainParameters.getN(),
+                domainParameters.getH());
+        BCECPublicKey publicKey = null;
+        if (publicKeyParams != null) {
+            publicKey = new BCECPublicKey(keyAlgorithm, publicKeyParams, parameterSpec, BouncyCastleProvider.CONFIGURATION);
+        }
+        return new BCECPrivateKey(keyAlgorithm, privateKeyParams, publicKey, parameterSpec, BouncyCastleProvider.CONFIGURATION);
+    }
+
+    /**
+     * 将BouncyCastle的XXXKeyParameters公钥实例转换为JDK的XXXKey公钥实例, 用于与JDK加密工具适配, 或获取X509编码的公钥数据
+     *
+     * @param publicKeyParams 公钥, BouncyCastle的XXXKeyParameters密钥实例
+     * @param keyAlgorithm 密钥算法(EC, SM2暂时也用EC)
+     * @return JDK的XXXKey密钥实例, 可以调用ECPublicKey.getEncoded()方法获取X509编码的公钥数据(甚至进一步转为PEM等格式)
+     */
+    public static BCECPublicKey ecPublicKeyParamsToEcPublicKey(ECPublicKeyParameters publicKeyParams, String keyAlgorithm) throws Exception {
+        if (publicKeyParams == null) {
+            throw new RuntimeException("publicKeyParams == null");
+        }
+        ECDomainParameters domainParameters = publicKeyParams.getParameters();
+        ECParameterSpec parameterSpec = new ECParameterSpec(
+                domainParameters.getCurve(),
+                domainParameters.getG(),
+                domainParameters.getN(),
+                domainParameters.getH());
+        return new BCECPublicKey(keyAlgorithm, publicKeyParams, parameterSpec, BouncyCastleProvider.CONFIGURATION);
     }
 
     /**

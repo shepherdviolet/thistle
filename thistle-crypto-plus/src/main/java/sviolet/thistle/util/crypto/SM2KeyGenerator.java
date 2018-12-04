@@ -22,6 +22,7 @@ package sviolet.thistle.util.crypto;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
+import sviolet.thistle.util.conversion.Base64Utils;
 import sviolet.thistle.util.crypto.base.BaseBCAsymKeyGenerator;
 import sviolet.thistle.util.crypto.base.SM2DefaultCurve;
 
@@ -41,6 +42,7 @@ public class SM2KeyGenerator {
      * 密钥类型:SM2
      */
     public static final String SM2_KEY_ALGORITHM = "SM2";
+    public static final String EC_KEY_ALGORITHM = "EC";
 
     /**
      * 随机生成SM2密钥对(sm2p256v1)
@@ -97,6 +99,41 @@ public class SM2KeyGenerator {
         return BaseBCAsymKeyGenerator.parseEcPublicKeyParams(SM2DefaultCurve.DOMAIN_PARAMS, x.toByteArray(), y.toByteArray());
     }
 
+    /**
+     * 将私钥实例转换为PKCS8编码的数据
+     *
+     * @param privateKeyParams 私钥, BouncyCastle的XXXKeyParameters密钥实例
+     * @param publicKeyParams 公钥, 可为空(但送空会导致openssl无法读取PKCS8数据), BouncyCastle的XXXKeyParameters密钥实例
+     * @return 私钥的PKCS8编码数据
+     */
+    public static byte[] encodePrivateKeyParamsToPKCS8(ECPrivateKeyParameters privateKeyParams, ECPublicKeyParameters publicKeyParams) throws Exception{
+        //SM2的密钥标记为EC
+        return BaseBCAsymKeyGenerator.ecPrivateKeyParamsToEcPrivateKey(privateKeyParams, publicKeyParams, EC_KEY_ALGORITHM).getEncoded();
+    }
+
+    /**
+     * 将私钥实例转换为PKCS8编码的私钥数据, openssl无法读取这种方法生成的数据, 需要用openssl请用
+     * encodePrivateKeyParamsToPKCS8(ECPrivateKeyParameters, ECPublicKeyParameters)方法
+     *
+     * @param privateKeyParams 私钥, BouncyCastle的XXXKeyParameters密钥实例
+     * @return 私钥的PKCS8编码数据
+     */
+    public static byte[] encodePrivateKeyParamsToPKCS8(ECPrivateKeyParameters privateKeyParams) throws Exception{
+        //SM2的密钥标记为EC
+        return BaseBCAsymKeyGenerator.ecPrivateKeyParamsToEcPrivateKey(privateKeyParams, null, EC_KEY_ALGORITHM).getEncoded();
+    }
+
+    /**
+     * 将公钥实例转换为X509编码的公钥数据
+     *
+     * @param publicKeyParams 公钥, BouncyCastle的XXXKeyParameters密钥实例
+     * @return 公钥的X509编码数据
+     */
+    public static byte[] encodePublicKeyParamsToX509(ECPublicKeyParameters publicKeyParams) throws Exception{
+        //SM2的密钥标记为EC
+        return BaseBCAsymKeyGenerator.ecPublicKeyParamsToEcPublicKey(publicKeyParams, EC_KEY_ALGORITHM).getEncoded();
+    }
+
     public static class SM2KeyParamsPair {
 
         private ECPublicKeyParameters publicKeyParams;
@@ -135,22 +172,22 @@ public class SM2KeyGenerator {
             return privateKeyParams.getD();
         }
 
-//        public byte[] getX509EncodedPublicKey() throws InvalidKeySpecException {
-//            return encodePublicKeyToX509(publicKeyParams);
-//        }
-//
-//        public byte[] getPKCS8EncodedPrivateKey() throws InvalidKeySpecException {
-//            return encodePrivateKeyToPKCS8(privateKeyParams);
-//        }
-//
-//        @Override
-//        public String toString() {
-//            try {
-//                return "ECKeyPair\n<public>" + Base64Utils.encodeToString(getX509EncodedPublicKey()) + "\n<private>" + Base64Utils.encodeToString(getPKCS8EncodedPrivateKey());
-//            } catch (InvalidKeySpecException e) {
-//                return "ECKeyPair\n<exception>" + e.getMessage();
-//            }
-//        }
+        public byte[] getX509EncodedPublicKey() throws Exception {
+            return encodePublicKeyParamsToX509(publicKeyParams);
+        }
+
+        public byte[] getPKCS8EncodedPrivateKey() throws Exception {
+            return encodePrivateKeyParamsToPKCS8(privateKeyParams, publicKeyParams);
+        }
+
+        @Override
+        public String toString() {
+            try {
+                return "SM2KeyParamsPair\n<public>" + Base64Utils.encodeToString(getX509EncodedPublicKey()) + "\n<private>" + Base64Utils.encodeToString(getPKCS8EncodedPrivateKey());
+            } catch (Exception e) {
+                return "SM2KeyParamsPair\n<exception>" + e.getMessage();
+            }
+        }
 
     }
 }

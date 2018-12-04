@@ -168,6 +168,22 @@ public class PEMEncodeUtils {
         return toPEMEncoded(content, "CERTIFICATE");
     }
 
+    public static String sm2PrivateKeyToPEMEncoded(String content) {
+        return toPEMEncoded(content, "EC PRIVATE KEY");
+    }
+
+    public static String sm2PrivateKeyToPEMEncoded(byte[] content) {
+        return toPEMEncoded(content, "EC PRIVATE KEY");
+    }
+
+    public static String sm2PublicKeyToPEMEncoded(String content) {
+        return toPEMEncoded(content, "EC PUBLIC KEY");
+    }
+
+    public static String sm2PublicKeyToPEMEncoded(byte[] content) {
+        return toPEMEncoded(content, "EC PUBLIC KEY");
+    }
+
     /**
      * 将PEM格式的文本转换为X509 Base64 String, 即砍掉标题, 去除换行
      * <p>
