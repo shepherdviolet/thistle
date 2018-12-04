@@ -39,7 +39,7 @@ public class DESKeyGenerator {
 	 *
 	 * @return 秘钥
 	 */
-	public static byte[] generateDes64() throws NoSuchAlgorithmException {
+	public static byte[] generateDes64() {
 		//这里配置56但是出来的是64bits
 		return BaseKeyGenerator.generateKey((SecureRandom) null, 56, DES_KEY_ALGORITHM);
 	}
@@ -49,7 +49,7 @@ public class DESKeyGenerator {
 	 *
 	 * @return 秘钥
 	 */
-	public static byte[] generateDesEde128() throws NoSuchAlgorithmException {
+	public static byte[] generateDesEde128() {
 		//这里配置112但是出来的是128bits
 		return BaseKeyGenerator.generateKey((SecureRandom) null, 112, DES_EDE_KEY_ALGORITHM);
 	}
@@ -59,7 +59,7 @@ public class DESKeyGenerator {
 	 *
 	 * @return 秘钥
 	 */
-	public static byte[] generateDesEde192() throws NoSuchAlgorithmException {
+	public static byte[] generateDesEde192() {
 		//这里配置168但是出来的是192bits
 		return BaseKeyGenerator.generateKey((SecureRandom) null, 168, DES_EDE_KEY_ALGORITHM);
 	}
@@ -72,7 +72,7 @@ public class DESKeyGenerator {
 	 * @return 秘钥
 	 */
 	@Deprecated
-	public static byte[] generateDes64(SecureRandom secureRandom) throws NoSuchAlgorithmException {
+	public static byte[] generateDes64(SecureRandom secureRandom) {
 		//这里配置56但是出来的是64bits
 		return BaseKeyGenerator.generateKey(secureRandom, 56, DES_KEY_ALGORITHM);
 	}
@@ -85,7 +85,7 @@ public class DESKeyGenerator {
 	 * @return 秘钥
 	 */
 	@Deprecated
-	public static byte[] generateDesEde128(SecureRandom secureRandom) throws NoSuchAlgorithmException {
+	public static byte[] generateDesEde128(SecureRandom secureRandom) {
 		//这里配置112但是出来的是128bits
 		return BaseKeyGenerator.generateKey(secureRandom, 112, DES_EDE_KEY_ALGORITHM);
 	}
@@ -98,7 +98,7 @@ public class DESKeyGenerator {
 	 * @return 秘钥
 	 */
 	@Deprecated
-	public static byte[] generateDesEde192(SecureRandom secureRandom) throws NoSuchAlgorithmException {
+	public static byte[] generateDesEde192(SecureRandom secureRandom) {
 		//这里配置168但是出来的是192bits
 		return BaseKeyGenerator.generateKey(secureRandom, 168, DES_EDE_KEY_ALGORITHM);
 	}
@@ -111,7 +111,7 @@ public class DESKeyGenerator {
 	 * @return 秘钥
 	 */
 	@Deprecated
-	public static byte[] generateDes64(byte[] seed) throws NoSuchAlgorithmException {
+	public static byte[] generateDes64(byte[] seed) {
 		//这里配置56但是出来的是64bits
 		return BaseKeyGenerator.generateKey(seed, 56, DES_KEY_ALGORITHM);
 	}
@@ -124,7 +124,7 @@ public class DESKeyGenerator {
 	 * @return 秘钥
 	 */
 	@Deprecated
-	public static byte[] generateDesEde128(byte[] seed) throws NoSuchAlgorithmException {
+	public static byte[] generateDesEde128(byte[] seed) {
 		//这里配置112但是出来的是128bits
 		return BaseKeyGenerator.generateKey(seed, 112, DES_EDE_KEY_ALGORITHM);
 	}
@@ -137,7 +137,7 @@ public class DESKeyGenerator {
 	 * @return 秘钥
 	 */
 	@Deprecated
-	public static byte[] generateDesEde192(byte[] seed) throws NoSuchAlgorithmException {
+	public static byte[] generateDesEde192(byte[] seed) {
 		//这里配置168但是出来的是192bits
 		return BaseKeyGenerator.generateKey(seed, 168, DES_EDE_KEY_ALGORITHM);
 	}

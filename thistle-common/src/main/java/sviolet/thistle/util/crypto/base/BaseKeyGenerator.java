@@ -75,8 +75,13 @@ public class BaseKeyGenerator {
      * @param keyAlgorithm 密钥算法类型
      * @return 密钥
      */
-    public static byte[] generateKey(SecureRandom secureRandom, int bits, String keyAlgorithm) throws NoSuchAlgorithmException {
-        KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlgorithm);
+    public static byte[] generateKey(SecureRandom secureRandom, int bits, String keyAlgorithm) {
+        KeyGenerator keyGenerator;
+        try {
+            keyGenerator = KeyGenerator.getInstance(keyAlgorithm);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
         if (secureRandom != null) {
             keyGenerator.init(bits, secureRandom);
         } else {
@@ -95,8 +100,13 @@ public class BaseKeyGenerator {
      * @param keyAlgorithm 密钥算法类型
      * @return 密钥
      */
-    public static byte[] generateKey(byte[] seed, int bits, String keyAlgorithm) throws NoSuchAlgorithmException {
-        KeyGenerator keyGenerator = KeyGenerator.getInstance(keyAlgorithm);
+    public static byte[] generateKey(byte[] seed, int bits, String keyAlgorithm) {
+        KeyGenerator keyGenerator;
+        try {
+            keyGenerator = KeyGenerator.getInstance(keyAlgorithm);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
         SecureRandom secureRandom = new SecureRandom(seed);
         keyGenerator.init(bits, secureRandom);
         SecretKey secretKey = keyGenerator.generateKey();

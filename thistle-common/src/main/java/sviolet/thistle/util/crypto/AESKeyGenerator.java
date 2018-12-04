@@ -38,7 +38,7 @@ public class AESKeyGenerator {
      *
      * @return 秘钥
      */
-    public static byte[] generateAes128() throws NoSuchAlgorithmException {
+    public static byte[] generateAes128() {
         return BaseKeyGenerator.generateKey((SecureRandom) null, 128, KEY_ALGORITHM);
     }
 
@@ -50,7 +50,7 @@ public class AESKeyGenerator {
 	 * @return 秘钥
 	 */
 	@Deprecated
-	public static byte[] generateAes128(SecureRandom secureRandom) throws NoSuchAlgorithmException {
+	public static byte[] generateAes128(SecureRandom secureRandom) {
 		return BaseKeyGenerator.generateKey(secureRandom, 128, KEY_ALGORITHM);
 	}
 
@@ -62,7 +62,7 @@ public class AESKeyGenerator {
 	 * @return 秘钥
 	 */
 	@Deprecated
-	public static byte[] generateAes128(byte[] seed) throws NoSuchAlgorithmException {
+	public static byte[] generateAes128(byte[] seed) {
 		return BaseKeyGenerator.generateKey(seed, 128, KEY_ALGORITHM);
 	}
 
