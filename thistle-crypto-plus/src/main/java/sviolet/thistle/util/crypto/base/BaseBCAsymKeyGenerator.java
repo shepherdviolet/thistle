@@ -45,8 +45,6 @@ import java.security.spec.X509EncodedKeySpec;
  */
 public class BaseBCAsymKeyGenerator {
 
-    public static final byte PREFIX_UNCOMPRESSED = 0x04;
-
     static {
         Security.addProvider(new BouncyCastleProvider());
     }
@@ -233,51 +231,7 @@ public class BaseBCAsymKeyGenerator {
      */
     public static ECPublicKeyParameters parseEcPublicKeyParams(ECDomainParameters domainParameters, byte[] xBytes, byte[] yBytes) throws Exception {
         //将ASN.1编码的数据转为ECPoint实例
-        return parseEcPublicKeyParams(domainParameters, pointToASN1Encoding(xBytes, yBytes));
-    }
-
-    /**
-     * 将坐标(X/Y)转为ASN.1编码的坐标数据(非压缩)
-     * @param xBytes 坐标X, 字节形式(bigInteger.toByteArray()获得)
-     * @param yBytes 坐标Y, 字节形式(bigInteger.toByteArray()获得)
-     * @return ASN.1编码的坐标数据(非压缩)
-     */
-    public static byte[] pointToASN1Encoding(byte[] xBytes, byte[] yBytes) {
-        if (xBytes == null) {
-            throw new NullPointerException("xBytes == null");
-        }
-        if (yBytes == null) {
-            throw new NullPointerException("yBytes == null");
-        }
-        byte[] asn1Encoding = new byte[1 + xBytes.length + yBytes.length];
-        asn1Encoding[0] = PREFIX_UNCOMPRESSED;
-        System.arraycopy(xBytes, 0, asn1Encoding, 1, xBytes.length);
-        System.arraycopy(yBytes, 0, asn1Encoding, 1 + xBytes.length, yBytes.length);
-        return asn1Encoding;
-    }
-
-    /**
-     * 根据密钥实例(公钥或私钥)计算SM2用于加密时, 密文C1区域的长度, 密文为C1C3C2或C1C2C3, C1区域为随机公钥点数据(ASN.1格式),
-     * C2为密文数据, C3为摘要数据(SM3).
-     *
-     * @param keyParams 密钥实例(公钥或私钥)
-     * @return 密文C1区域长度
-     */
-    public static int calculateSM2C1Length(ECKeyParameters keyParams) {
-        return calculateSM2C1Length(keyParams.getParameters());
-    }
-
-    /**
-     * 根据密钥实例(公钥或私钥)计算SM2用于加密时, 密文C1区域的长度, 密文为C1C3C2或C1C2C3, C1区域为随机公钥点数据(ASN.1格式),
-     * C2为密文数据, C3为摘要数据(SM3).
-     * domainParameters是椭圆曲线参数, 需要:椭圆曲线/G点/N(order)/H(cofactor)
-     *
-     * @param domainParameters domainParameters = new ECDomainParameters(CURVE, G_POINT, N, H)
-     * @return 密文C1区域长度
-     */
-    public static int calculateSM2C1Length(ECDomainParameters domainParameters) {
-        int curveLength = (domainParameters.getCurve().getFieldSize() + 7) / 8;
-        return curveLength * 2 + 1;
+        return parseEcPublicKeyParams(domainParameters, BaseCryptoUtils.pointToASN1Encoding(xBytes, yBytes));
     }
 
 }
