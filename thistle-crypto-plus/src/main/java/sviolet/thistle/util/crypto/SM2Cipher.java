@@ -51,7 +51,7 @@ public class SM2Cipher {
      * @param cryptoAlgorithm 加密算法(SM2Cipher.CRYPTO_ALGORITHM_SM2)
      * @return 密文, 密文为C1C2C3格式, C1区域为随机公钥点数据(ASN.1格式), C2为密文数据, C3为摘要数据(SM3).
      */
-    public static byte[] encryptToC1C2C3(byte[] data, ECPublicKeyParameters publicKeyParams, String cryptoAlgorithm) throws InvalidCipherTextException {
+    public static byte[] encrypt(byte[] data, ECPublicKeyParameters publicKeyParams, String cryptoAlgorithm) throws InvalidCipherTextException {
         return BaseBCCipher.encryptBySM2PublicKeyParams(data, publicKeyParams);
     }
 
@@ -62,7 +62,7 @@ public class SM2Cipher {
      * @param cryptoAlgorithm 加密算法(SM2Cipher.CRYPTO_ALGORITHM_SM2)
      * @return 原文
      */
-    public static byte[] decryptFromC1C2C3(byte[] data, ECPrivateKeyParameters privateKeyParams, String cryptoAlgorithm) throws InvalidCipherTextException {
+    public static byte[] decrypt(byte[] data, ECPrivateKeyParameters privateKeyParams, String cryptoAlgorithm) throws InvalidCipherTextException {
         return BaseBCCipher.decryptBySM2PrivateKeyParams(data, privateKeyParams);
     }
 

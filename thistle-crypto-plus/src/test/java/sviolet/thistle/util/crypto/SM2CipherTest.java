@@ -22,8 +22,11 @@ package sviolet.thistle.util.crypto;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.junit.Test;
+import sviolet.thistle.util.conversion.ByteUtils;
 
 public class SM2CipherTest {
+
+    private static final String STRING = "English中文#$%@#$%@GSDFG654465rq43we5■☝▌▋卍¶¶¶☹ΥΥθΕサイけにケ◆♂‥√▒卍ЫПЬрпㅂㅝㅂ㉹㉯╠╕┚╜ㅛㅛ㉰㉯⑩⒅⑯413English中文#$%@#$%@GSDFG654465rq43we5■☝▌▋卍¶¶¶☹ΥΥθΕサイけにケ◆♂‥√▒卍ЫПЬрпㅂㅝㅂ㉹㉯╠╕┚╜ㅛㅛ㉰㉯⑩⒅⑯413English中文#$%@#$%@GSDFG654465rq43we5■☝▌▋卍¶¶¶☹ΥΥθΕサイけにケ◆♂‥√▒卍ЫПЬрпㅂㅝㅂ㉹㉯╠╕┚╜ㅛㅛ㉰㉯⑩⒅⑯413";
 
     @Test
     public void key() throws Exception {
@@ -52,6 +55,21 @@ public class SM2CipherTest {
         ECPrivateKeyParameters privateKeyParams = SM2KeyGenerator.generatePrivateKeyParamsByPKCS8(pkcs8);
         ECPublicKeyParameters publicKeyParams = SM2KeyGenerator.generatePublicKeyParamsByX509(x509);
 
+        byte[] encrypted = SM2Cipher.encrypt(STRING.getBytes(), publicKeyParams, SM2Cipher.CRYPTO_ALGORITHM_SM2);
+
+//        System.out.println(ByteUtils.bytesToHex(encrypted));
+
+        String decrypted = new String(SM2Cipher.decrypt(encrypted, privateKeyParams, SM2Cipher.CRYPTO_ALGORITHM_SM2));
+
+//        System.out.println(decrypted);
+
+        encrypted = SM2Cipher.encryptToC1C3C2(STRING.getBytes(), publicKeyParams, SM2Cipher.CRYPTO_ALGORITHM_SM2);
+
+//        System.out.println(ByteUtils.bytesToHex(encrypted));
+
+        decrypted = new String(SM2Cipher.decryptFromC1C3C2(encrypted, privateKeyParams, SM2Cipher.CRYPTO_ALGORITHM_SM2));
+
+//        System.out.println(decrypted);
 
     }
 
