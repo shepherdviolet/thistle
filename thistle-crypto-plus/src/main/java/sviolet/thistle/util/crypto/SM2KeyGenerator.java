@@ -27,12 +27,16 @@ import sviolet.thistle.util.crypto.base.BaseBCAsymKeyGenerator;
 import sviolet.thistle.util.crypto.base.SM2DefaultCurve;
 
 import java.math.BigInteger;
+import java.security.spec.InvalidKeySpecException;
 
 /**
  * <p>SM2秘钥生成工具</p>
  *
  * <p>BouncyCastle是使用XXXKeyParameters密钥实例的, 而JDK默认使用XXXKey密钥实例, 本工具类在加解密加解签时, 统一使用BouncyCastle
  * 的XXXKeyParameters密钥实例, 这与RSA/ECDSA工具类中使用XXXKey实例不同. 另外, 本工具类提供将密钥实例转换为JDK密钥实例的方法. </p>
+ *
+ * <p>SM2算法首先要选择一个合适的椭圆曲线, 椭圆曲线参数包含: Curve (P A B) / G-Point (X Y) / N / H , SM2算法的公钥是一个这个
+ * 椭圆曲线上的点Q(X Y), 私钥是次数D, PKCS8/X509编码的私钥公钥除了Q点和次数D以外, 也包含的椭圆曲线参数. </p>
  *
  * @author S.Violet
  */
@@ -55,7 +59,29 @@ public class SM2KeyGenerator {
     }
 
     /**
-     * 根据已知的D值生成ECC/SM2私钥实例(sm2p256v1)
+     * 将PKCS8私钥数据解析为私钥实例(与JDK的密钥实例不同)
+     * @param pkcs8 PKCS8私钥数据
+     */
+    public static ECPrivateKeyParameters generatePrivateKeyParamsByPKCS8(byte[] pkcs8) throws InvalidKeySpecException {
+        return BaseBCAsymKeyGenerator.ecPrivateKeyToEcPrivateKeyParams(
+                //SM2的密钥标记为EC
+                BaseBCAsymKeyGenerator.parseEcPrivateKeyByPkcs8(pkcs8, EC_KEY_ALGORITHM)
+        );
+    }
+
+    /**
+     * 将X509公钥数据解析为公钥实例(与JDK的密钥实例不同)
+     * @param x509 X509公钥数据
+     */
+    public static ECPublicKeyParameters generatePublicKeyParamsByX509(byte[] x509) throws InvalidKeySpecException {
+        return BaseBCAsymKeyGenerator.ecPublicKeyToEcPublicKeyParams(
+                //SM2的密钥标记为EC
+                BaseBCAsymKeyGenerator.parseEcPublicKeyByX509(x509, EC_KEY_ALGORITHM)
+        );
+    }
+
+    /**
+     * 根据已知的D值生成SM2私钥实例(sm2p256v1)
      *
      * @param d D值
      * @return 私钥实例(与JDK的密钥实例不同)
@@ -65,7 +91,7 @@ public class SM2KeyGenerator {
     }
 
     /**
-     * 根据已知的坐标(ASN.1编码数据)生成ECC/SM2公钥实例(sm2p256v1)
+     * 根据已知的坐标(ASN.1编码数据)生成SM2公钥实例(sm2p256v1)
      *
      * @param asn1Encoding 公钥坐标点(ASN.1编码数据)
      * @return 公钥实例(与JDK的密钥实例不同)
@@ -75,7 +101,7 @@ public class SM2KeyGenerator {
     }
 
     /**
-     * 根据已知的坐标(X/Y)生成ECC/SM2公钥实例(sm2p256v1)
+     * 根据已知的坐标(X/Y)生成SM2公钥实例(sm2p256v1)
      *
      * @param xBytes 坐标X, 字节形式(bigInteger.toByteArray()获得)
      * @param yBytes 坐标Y, 字节形式(bigInteger.toByteArray()获得)
@@ -86,7 +112,7 @@ public class SM2KeyGenerator {
     }
 
     /**
-     * 根据已知的坐标(X/Y)生成ECC/SM2公钥实例(sm2p256v1)
+     * 根据已知的坐标(X/Y)生成SM2公钥实例(sm2p256v1)
      *
      * @param x 坐标X
      * @param y 坐标Y
