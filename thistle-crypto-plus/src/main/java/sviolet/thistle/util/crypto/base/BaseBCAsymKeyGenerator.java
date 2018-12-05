@@ -257,7 +257,8 @@ public class BaseBCAsymKeyGenerator {
     }
 
     /**
-     * 根据密钥实例(公钥或私钥)计算SM2用于加密时, 密文C1区域的长度, 密文为C1C3C2或C1C2C3, C1区域为随机公钥点数据(ASN.1格式)
+     * 根据密钥实例(公钥或私钥)计算SM2用于加密时, 密文C1区域的长度, 密文为C1C3C2或C1C2C3, C1区域为随机公钥点数据(ASN.1格式),
+     * C2为密文数据, C3为摘要数据(SM3).
      *
      * @param keyParams 密钥实例(公钥或私钥)
      * @return 密文C1区域长度
@@ -267,14 +268,16 @@ public class BaseBCAsymKeyGenerator {
     }
 
     /**
-     * 根据密钥实例(公钥或私钥)计算SM2用于加密时, 密文C1区域的长度, 密文为C1C3C2或C1C2C3, C1区域为随机公钥点数据(ASN.1格式).
+     * 根据密钥实例(公钥或私钥)计算SM2用于加密时, 密文C1区域的长度, 密文为C1C3C2或C1C2C3, C1区域为随机公钥点数据(ASN.1格式),
+     * C2为密文数据, C3为摘要数据(SM3).
      * domainParameters是椭圆曲线参数, 需要:椭圆曲线/G点/N(order)/H(cofactor)
      *
      * @param domainParameters domainParameters = new ECDomainParameters(CURVE, G_POINT, N, H)
      * @return 密文C1区域长度
      */
     public static int calculateSM2C1Length(ECDomainParameters domainParameters) {
-        return (domainParameters.getCurve().getFieldSize() + 7) / 8;
+        int curveLength = (domainParameters.getCurve().getFieldSize() + 7) / 8;
+        return curveLength * 2 + 1;
     }
 
 }
