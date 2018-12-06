@@ -22,6 +22,8 @@ package sviolet.thistle.util.crypto;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
+import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
+import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
 import sviolet.thistle.util.conversion.Base64Utils;
 import sviolet.thistle.util.crypto.base.BaseBCAsymKeyGenerator;
 import sviolet.thistle.util.crypto.base.CommonCryptoException;
@@ -161,6 +163,51 @@ public class SM2KeyGenerator {
         return BaseBCAsymKeyGenerator.ecPublicKeyParamsToEcPublicKey(publicKeyParams, EC_KEY_ALGORITHM).getEncoded();
     }
 
+    /**
+     * 将BouncyCastle的XXXKeyParameters私钥实例转换为JDK的XXXKey私钥实例, 用于与JDK加密工具适配, 或获取PKCS8编码的私钥数据
+     *
+     * @param privateKeyParams 私钥, BouncyCastle的XXXKeyParameters密钥实例
+     * @param publicKeyParams 公钥, 可为空(但送空会导致openssl无法读取PKCS8数据), BouncyCastle的XXXKeyParameters密钥实例
+     * @return JDK的XXXKey密钥实例, 可以调用ECPrivateKey.getEncoded()方法获取PKCS8编码的私钥数据(甚至进一步转为PEM等格式)
+     */
+    public static BCECPrivateKey privateKeyParamsToPrivateKey(ECPrivateKeyParameters privateKeyParams, ECPublicKeyParameters publicKeyParams) {
+        //SM2的密钥标记为EC
+        return BaseBCAsymKeyGenerator.ecPrivateKeyParamsToEcPrivateKey(privateKeyParams, publicKeyParams, EC_KEY_ALGORITHM);
+    }
+
+    /**
+     * 将BouncyCastle的XXXKeyParameters公钥实例转换为JDK的XXXKey公钥实例, 用于与JDK加密工具适配, 或获取X509编码的公钥数据
+     *
+     * @param publicKeyParams 公钥, BouncyCastle的XXXKeyParameters密钥实例
+     * @return JDK的XXXKey密钥实例, 可以调用ECPublicKey.getEncoded()方法获取X509编码的公钥数据(甚至进一步转为PEM等格式)
+     */
+    public static BCECPublicKey publicKeyParamsToPublicKey(ECPublicKeyParameters publicKeyParams) {
+        //SM2的密钥标记为EC
+        return BaseBCAsymKeyGenerator.ecPublicKeyParamsToEcPublicKey(publicKeyParams, EC_KEY_ALGORITHM);
+    }
+
+    /**
+     * 将JDK的XXXKey私钥实例转换为BouncyCastle的XXXKeyParameters私钥实例
+     *
+     * @param privateKey JDK的XXXKey私钥实例
+     * @return BouncyCastle的XXXKeyParameters私钥实例
+     */
+    public static ECPrivateKeyParameters privateKeyToPrivateKeyParams(BCECPrivateKey privateKey) {
+        //SM2的密钥标记为EC
+        return BaseBCAsymKeyGenerator.ecPrivateKeyToEcPrivateKeyParams(privateKey);
+    }
+
+    /**
+     * 将JDK的XXXKey公钥实例转换为BouncyCastle的XXXKeyParameters公钥实例
+     *
+     * @param publicKey JDK的XXXKey公钥实例
+     * @return BouncyCastle的XXXKeyParameters公钥实例
+     */
+    public static ECPublicKeyParameters publicKeyToPublicKeyParams(BCECPublicKey publicKey) {
+        //SM2的密钥标记为EC
+        return BaseBCAsymKeyGenerator.ecPublicKeyToEcPublicKeyParams(publicKey);
+    }
+
     public static class SM2KeyParamsPair {
 
         private ECPublicKeyParameters publicKeyParams;
@@ -172,17 +219,31 @@ public class SM2KeyGenerator {
         }
 
         /**
-         * 获取公钥实例, 用于加解签操作(与JDK的密钥实例不同)
+         * [常用]获取公钥实例, 用于加解签操作(与JDK的密钥实例不同)
          */
         public ECPublicKeyParameters getPublicKeyParams() {
             return publicKeyParams;
         }
 
         /**
-         * 获取私钥实例, 用于加解签操作(与JDK的密钥实例不同)
+         * [常用]获取私钥实例, 用于加解签操作(与JDK的密钥实例不同)
          */
         public ECPrivateKeyParameters getPrivateKeyParams() {
             return privateKeyParams;
+        }
+
+        /**
+         * 获取JDK的XXXKey公钥实例, 用于适配
+         */
+        public BCECPublicKey getJdkPublicKey() {
+            return publicKeyParamsToPublicKey(publicKeyParams);
+        }
+
+        /**
+         * 获取JDK的XXXKey私钥实例, 用于适配
+         */
+        public BCECPrivateKey getJdkPrivateKey() {
+            return privateKeyParamsToPrivateKey(privateKeyParams, publicKeyParams);
         }
 
         /**
