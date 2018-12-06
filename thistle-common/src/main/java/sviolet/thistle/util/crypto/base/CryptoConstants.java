@@ -21,6 +21,15 @@ package sviolet.thistle.util.crypto.base;
 
 class CryptoConstants {
 
+    static final int BUFFER_SIZE;
     static final int ANDROID_API11 = 11;
+
+    static {
+        try {
+            BUFFER_SIZE = Integer.parseInt(System.getProperty("thistle.crypto.buffersize", "4096"));
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid vm arg -Dthistle.crypto.buffersize, not an integer", e);
+        }
+    }
 
 }

@@ -479,7 +479,7 @@ public class BaseCipher {
         try {
             inputStream = new FileInputStream(file);
             Signature signature = generateSignatureInstance(privateKey, signAlgorithm);
-            byte[] buff = new byte[1024];
+            byte[] buff = new byte[CryptoConstants.BUFFER_SIZE];
             int size;
             while((size = inputStream.read(buff)) != -1){
                 signature.update(buff, 0, size);
@@ -615,7 +615,7 @@ public class BaseCipher {
         try {
             inputStream = new FileInputStream(file);
             Signature signature = generateSignatureInstance(publicKey, signAlgorithm);
-            byte[] buff = new byte[1024];
+            byte[] buff = new byte[CryptoConstants.BUFFER_SIZE];
             int size;
             while((size = inputStream.read(buff)) != -1){
                 signature.update(buff, 0, size);

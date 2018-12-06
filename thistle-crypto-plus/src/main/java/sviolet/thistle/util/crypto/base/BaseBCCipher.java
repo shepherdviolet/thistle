@@ -19,11 +19,15 @@
 
 package sviolet.thistle.util.crypto.base;
 
+import org.bouncycastle.crypto.CipherParameters;
+import org.bouncycastle.crypto.CryptoException;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.engines.SM2Engine;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
+import org.bouncycastle.crypto.params.ParametersWithID;
 import org.bouncycastle.crypto.params.ParametersWithRandom;
+import org.bouncycastle.crypto.signers.SM2Signer;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import sviolet.thistle.util.common.CloseableUtils;
 import sviolet.thistle.util.conversion.ByteUtils;
@@ -31,9 +35,7 @@ import sviolet.thistle.util.conversion.ByteUtils;
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.security.*;
 
 /**
@@ -277,7 +279,70 @@ public class BaseBCCipher {
      * SM2 : Sign Verify
      ********************************************************************************************************************************/
 
+    /**
+     * 使用SM2私钥签名数据
+     * @param data 待签名数据
+     * @param id 签名ID, 可为空, 默认"1234567812345678".getBytes()
+     * @param privateKeyParams 私钥
+     * @return 签名数据(R+S)
+     */
+    public static byte[] signBySM2PrivateKeyParams(byte[] data, byte[] id, ECPrivateKeyParameters privateKeyParams) throws CryptoException {
+        if (data == null) {
+            return null;
+        }
+        if (privateKeyParams == null) {
+            throw new NullPointerException("privateKeyParams == null");
+        }
+        SM2Signer signer = new SM2Signer();
+        CipherParameters cipherParameters;
+        ParametersWithRandom parametersWithRandom = new ParametersWithRandom(privateKeyParams, BaseKeyGenerator.getSystemSecureRandom());
+        if (id != null) {
+            //set id
+            cipherParameters = new ParametersWithID(parametersWithRandom, id);
+        } else {
+            cipherParameters = parametersWithRandom;
+        }
+        signer.init(true, cipherParameters);
+        signer.update(data, 0, data.length);
+        return signer.generateSignature();
+    }
 
+    /**
+     * 使用SM2私钥签名输入流
+     * @param inputStream 待签名数据的输入流, 执行完毕后会被关闭
+     * @param id 签名ID, 可为空, 默认"1234567812345678".getBytes()
+     * @param privateKeyParams 私钥
+     * @return 签名数据(R+S)
+     */
+    public static byte[] signBySM2PrivateKeyParams(InputStream inputStream, byte[] id, ECPrivateKeyParameters privateKeyParams) throws CryptoException, IOException {
+        if (inputStream == null) {
+            return null;
+        }
+        if (privateKeyParams == null) {
+            throw new NullPointerException("privateKeyParams == null");
+        }
+        try {
+            SM2Signer signer = new SM2Signer();
+            CipherParameters cipherParameters;
+            ParametersWithRandom parametersWithRandom = new ParametersWithRandom(privateKeyParams, BaseKeyGenerator.getSystemSecureRandom());
+            if (id != null) {
+                //set id
+                cipherParameters = new ParametersWithID(parametersWithRandom, id);
+            } else {
+                cipherParameters = parametersWithRandom;
+            }
+            signer.init(true, cipherParameters);
+            //handle input stream
+            byte[] buff = new byte[CryptoConstants.BUFFER_SIZE];
+            int size;
+            while((size = inputStream.read(buff)) != -1){
+                signer.update(buff, 0, size);
+            }
+            return signer.generateSignature();
+        } finally {
+            CloseableUtils.closeQuiet(inputStream);
+        }
+    }
 
     /********************************************************************************************************************************
      * SM2 : Crypto

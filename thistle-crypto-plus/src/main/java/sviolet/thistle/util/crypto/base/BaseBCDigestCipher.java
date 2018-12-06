@@ -79,7 +79,7 @@ public class BaseBCDigestCipher {
             throw new NullPointerException("[DigestCipher]digestInputStream: digest instance is null");
         }
         try {
-            byte[] buff = new byte[1024];
+            byte[] buff = new byte[CryptoConstants.BUFFER_SIZE];
             int size;
             while((size = inputStream.read(buff)) != -1){
                 digest.update(buff, 0, size);

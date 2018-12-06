@@ -77,7 +77,7 @@ public class BaseDigestCipher {
         }
         try {
             MessageDigest cipher = MessageDigest.getInstance(type);
-            byte[] buff = new byte[1024];
+            byte[] buff = new byte[CryptoConstants.BUFFER_SIZE];
             int size;
             while((size = inputStream.read(buff)) != -1){
                 cipher.update(buff, 0, size);
@@ -162,7 +162,7 @@ public class BaseDigestCipher {
         try {
             inputStream = new FileInputStream(file);
             MessageDigest cipher = MessageDigest.getInstance(type);
-            byte[] buff = new byte[1024];
+            byte[] buff = new byte[CryptoConstants.BUFFER_SIZE];
             int size;
             while((size = inputStream.read(buff)) != -1){
                 cipher.update(buff, 0, size);
