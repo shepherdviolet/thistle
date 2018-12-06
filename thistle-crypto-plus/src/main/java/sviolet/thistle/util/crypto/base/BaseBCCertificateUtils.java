@@ -67,24 +67,9 @@ public class BaseBCCertificateUtils {
         Security.addProvider(new BouncyCastleProvider());
     }
 
-    /**
-     * 倒序的BCStyle, 因为BouncyCastle生成证书后DN信息是颠倒的, 为了保持原顺序, 我们在这里做一下倒序
-     */
-    private static class ReversedBCStyle extends BCStyle {
-        @Override
-        public RDN[] fromString(String dirName) {
-            RDN[] rdns = super.fromString(dirName);
-            if (rdns != null && rdns.length > 1){
-                RDN temp;
-                for (int i = 0 ; i < rdns.length / 2 ; i++){
-                    temp = rdns[i];
-                    rdns[i] = rdns[rdns.length - 1 - i];
-                    rdns[rdns.length - 1 - i] = temp;
-                }
-            }
-            return rdns;
-        }
-    }
+    /***********************************************************************************************
+     * RSA
+     ***********************************************************************************************/
 
     /**
      * 生成RSA根证书(自签名证书)
@@ -155,6 +140,10 @@ public class BaseBCCertificateUtils {
         return (X509Certificate) CertificateFactory.getInstance("X509").generateCertificate(new ByteArrayInputStream(holder.getEncoded()));
     }
 
+    /***********************************************************************************************
+     * Others
+     ***********************************************************************************************/
+
     /**
      * <p>解析ASN.1编码的X509证书数据</p>
      *
@@ -208,6 +197,29 @@ public class BaseBCCertificateUtils {
                 } catch (Throwable ignore){
                 }
             }
+        }
+    }
+
+    /***********************************************************************************************
+     * Private
+     ***********************************************************************************************/
+
+    /**
+     * 倒序的BCStyle, 因为BouncyCastle生成证书后DN信息是颠倒的, 为了保持原顺序, 我们在这里做一下倒序
+     */
+    private static class ReversedBCStyle extends BCStyle {
+        @Override
+        public RDN[] fromString(String dirName) {
+            RDN[] rdns = super.fromString(dirName);
+            if (rdns != null && rdns.length > 1){
+                RDN temp;
+                for (int i = 0 ; i < rdns.length / 2 ; i++){
+                    temp = rdns[i];
+                    rdns[i] = rdns[rdns.length - 1 - i];
+                    rdns[rdns.length - 1 - i] = temp;
+                }
+            }
+            return rdns;
         }
     }
 

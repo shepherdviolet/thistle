@@ -41,6 +41,10 @@ import java.security.interfaces.RSAPublicKey;
  */
 public class AdvancedCertificateUtils extends CertificateUtils {
 
+    /***********************************************************************************************
+     * RSA
+     ***********************************************************************************************/
+
     /**
      * 密钥类型:RSA
      */
@@ -106,6 +110,10 @@ public class AdvancedCertificateUtils extends CertificateUtils {
     public static X509Certificate generateRSAX509Certificate(String subjectDn, RSAPublicKey subjectPublicKey, int subjectValidity, String signAlgorithm, X509Certificate caCertificate, RSAPrivateKey caPrivateKey) throws IOException, CertificateException, OperatorCreationException {
         return BaseBCCertificateUtils.generateRSAX509Certificate(subjectDn, subjectPublicKey, subjectValidity, signAlgorithm, caCertificate, caPrivateKey);
     }
+
+    /***********************************************************************************************
+     * Others
+     ***********************************************************************************************/
 
     /**
      * <p>解析ASN.1编码的X509证书数据</p>
