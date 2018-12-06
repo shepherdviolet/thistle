@@ -70,6 +70,75 @@ public class ByteUtils {
 	}
 
 	/**
+	 * 二进制数据长度调整到固定长度, 多余部分舍弃(左边的舍弃), 少的补0(在左边补0)
+	 *
+	 * @param data 二进制数据
+	 * @param length 目标长度
+	 */
+	public static byte[] toLength(byte[] data, int length) {
+		if (data == null) {
+			return new byte[length];
+		}
+		if (data.length == length) {
+			return data;
+		}
+		byte[] result = new byte[length];
+		if (data.length > length) {
+			System.arraycopy(data, data.length - length, result, 0, length);
+		} else {
+			System.arraycopy(data, 0, result, length - data.length, data.length);
+		}
+		return result;
+	}
+
+	/**
+	 * 从二进制数据中截取一段
+	 * @param data 二进制数据
+	 * @param start 起始位置(到末尾)
+	 */
+	public static byte[] sub(byte[] data, int start){
+		if (data == null) {
+			throw new ArrayIndexOutOfBoundsException("byte[] is null");
+		}
+		if (start == data.length) {
+			return new byte[0];
+		}
+		if (start < 0) {
+			throw new ArrayIndexOutOfBoundsException("start < 0");
+		}
+		if (start > data.length) {
+			throw new ArrayIndexOutOfBoundsException("start > max-length " + data.length);
+		}
+		byte[] result = new byte[data.length - start];
+		System.arraycopy(data, start, result, 0, result.length);
+		return result;
+	}
+
+	/**
+	 * 从二进制数据中截取一段
+	 * @param data 二进制数据
+	 * @param start 起始位置(到末尾)
+	 * @param length 截取长度
+	 */
+	public static byte[] sub(byte[] data, int start, int length){
+		if (data == null) {
+			throw new ArrayIndexOutOfBoundsException("byte[] is null");
+		}
+		if (start < 0) {
+			throw new ArrayIndexOutOfBoundsException("start < 0");
+		}
+		if (length < 0) {
+			throw new ArrayIndexOutOfBoundsException("length < 0");
+		}
+		if (start + length > data.length) {
+			throw new ArrayIndexOutOfBoundsException("start + length > max-length " + data.length);
+		}
+		byte[] result = new byte[length];
+		System.arraycopy(data, start, result, 0, length);
+		return result;
+	}
+
+	/**
 	 * bytes转为hexString
 	 * @param bytes bytes
 	 * @return upper case hex string

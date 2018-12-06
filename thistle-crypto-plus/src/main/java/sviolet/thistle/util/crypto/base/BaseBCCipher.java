@@ -36,7 +36,10 @@ import sviolet.thistle.util.conversion.ByteUtils;
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.math.BigInteger;
 import java.security.*;
 
 /**
@@ -285,7 +288,7 @@ public class BaseBCCipher {
      * @param data 待签名数据
      * @param id 签名ID, 可为空, 默认"1234567812345678".getBytes()
      * @param privateKeyParams 私钥
-     * @return 签名数据(R+S)
+     * @return 签名数据(R+S 64bytes)
      */
     public static byte[] signBySM2PrivateKeyParams(byte[] data, byte[] id, ECPrivateKeyParameters privateKeyParams) throws CryptoException {
         if (data == null) {
@@ -313,7 +316,7 @@ public class BaseBCCipher {
      * @param inputStream 待签名数据的输入流, 执行完毕后会被关闭
      * @param id 签名ID, 可为空, 默认"1234567812345678".getBytes()
      * @param privateKeyParams 私钥
-     * @return 签名数据(R+S)
+     * @return 签名数据(R+S 64bytes)
      */
     public static byte[] signBySM2PrivateKeyParams(InputStream inputStream, byte[] id, ECPrivateKeyParameters privateKeyParams) throws CryptoException, IOException {
         if (inputStream == null) {
@@ -348,7 +351,7 @@ public class BaseBCCipher {
     /**
      * 使用SM2公钥验签
      * @param data 数据
-     * @param sign 签名
+     * @param sign 签名, R+S 64bytes
      * @param id 签名ID, 可为空, 默认"1234567812345678".getBytes()
      * @param publicKeyParams 公钥
      * @return true:验签通过
@@ -379,7 +382,7 @@ public class BaseBCCipher {
     /**
      * 使用SM2公钥验签
      * @param inputStream 待签名数据的输入流, 执行完毕后会被关闭
-     * @param sign 签名
+     * @param sign 签名, R+S 64bytes
      * @param id 签名ID, 可为空, 默认"1234567812345678".getBytes()
      * @param publicKeyParams 公钥
      * @return true:验签通过
@@ -456,6 +459,10 @@ public class BaseBCCipher {
         engine.init(false, privateKeyParams);
         return engine.processBlock(data, 0, data.length);
     }
+
+    /********************************************************************************************************************************
+     * Conversion
+     ********************************************************************************************************************************/
 
     /**
      * 将SM2算法用于加密的密文格式, 从C1C2C3改为C1C3C2 (默认为C1C2C3).
@@ -556,7 +563,7 @@ public class BaseBCCipher {
      * @param der DER格式的密文
      * @return C1C2C3格式密文
      */
-    public static byte[] derEncodedToSM2CipherTextC1C2C3(byte[] der) {
+    public static byte[] derEncodedToSM2CipherTextC1C2C3(byte[] der) throws Exception {
         if (der == null) {
             return null;
         }
@@ -583,6 +590,46 @@ public class BaseBCCipher {
         System.arraycopy(c3, 0, c1c2c3, pos, c3.length);
 
         return c1c2c3;
+    }
+
+    /**
+     * 将DER编码的SM2签名数据转为普通的R+S 64字节数据
+     * @param der DER编码的签名数据
+     * @return R+S 64bytes签名数据
+     */
+    public static byte[] derEncodedToSM2SignData(byte[] der) throws Exception {
+        if (der == null) {
+            return null;
+        }
+        ASN1Sequence asn1Sequence = DERSequence.getInstance(der);
+        byte[] r = ((ASN1Integer) asn1Sequence.getObjectAt(0)).getValue().toByteArray();
+        byte[] s = ((ASN1Integer) asn1Sequence.getObjectAt(1)).getValue().toByteArray();
+        r = ByteUtils.toLength(r, 32);
+        s = ByteUtils.toLength(s, 32);
+        byte[] result = new byte[64];
+        System.arraycopy(r, 0, result, 0, r.length);
+        System.arraycopy(s, 0, result, r.length, s.length);
+        return result;
+    }
+
+    /**
+     * 将普通的R+S 64字节数据转为DER编码的SM2签名数据
+     * @param signData R+S 64bytes签名数据
+     * @return DER编码的签名数据
+     */
+    public static byte[] sm2SignDataToDerEncoded(byte[] signData) throws IOException {
+        if (signData == null) {
+            return null;
+        }
+        if (signData.length != 64) {
+            throw new IllegalArgumentException("signData length != 64");
+        }
+        BigInteger r = new BigInteger(1, ByteUtils.sub(signData, 0, 32));
+        BigInteger s = new BigInteger(1, ByteUtils.sub(signData, 32, 32));
+        ASN1EncodableVector encodableVector = new ASN1EncodableVector();
+        encodableVector.add(new ASN1Integer(r));
+        encodableVector.add(new ASN1Integer(s));
+        return new DERSequence(encodableVector).getEncoded(ASN1Encoding.DER);
     }
 
 }
