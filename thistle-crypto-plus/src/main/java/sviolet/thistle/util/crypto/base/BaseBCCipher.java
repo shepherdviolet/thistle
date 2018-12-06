@@ -288,7 +288,7 @@ public class BaseBCCipher {
      * @param data 待签名数据
      * @param id 签名ID, 可为空, 默认"1234567812345678".getBytes()
      * @param privateKeyParams 私钥
-     * @return 签名数据(R+S 64bytes)
+     * @return 签名数据(DER编码格式)
      */
     public static byte[] signBySM2PrivateKeyParams(byte[] data, byte[] id, ECPrivateKeyParameters privateKeyParams) throws CryptoException {
         if (data == null) {
@@ -316,7 +316,7 @@ public class BaseBCCipher {
      * @param inputStream 待签名数据的输入流, 执行完毕后会被关闭
      * @param id 签名ID, 可为空, 默认"1234567812345678".getBytes()
      * @param privateKeyParams 私钥
-     * @return 签名数据(R+S 64bytes)
+     * @return 签名数据(DER编码格式)
      */
     public static byte[] signBySM2PrivateKeyParams(InputStream inputStream, byte[] id, ECPrivateKeyParameters privateKeyParams) throws CryptoException, IOException {
         if (inputStream == null) {
@@ -351,7 +351,7 @@ public class BaseBCCipher {
     /**
      * 使用SM2公钥验签
      * @param data 数据
-     * @param sign 签名, R+S 64bytes
+     * @param sign 签名, (DER编码格式)
      * @param id 签名ID, 可为空, 默认"1234567812345678".getBytes()
      * @param publicKeyParams 公钥
      * @return true:验签通过
@@ -382,7 +382,7 @@ public class BaseBCCipher {
     /**
      * 使用SM2公钥验签
      * @param inputStream 待签名数据的输入流, 执行完毕后会被关闭
-     * @param sign 签名, R+S 64bytes
+     * @param sign 签名, (DER编码格式)
      * @param id 签名ID, 可为空, 默认"1234567812345678".getBytes()
      * @param publicKeyParams 公钥
      * @return true:验签通过
@@ -593,11 +593,11 @@ public class BaseBCCipher {
     }
 
     /**
-     * 将DER编码的SM2签名数据转为普通的R+S 64字节数据
+     * 将DER编码的SM2签名数据转为R+S(64bytes)签名数据
      * @param der DER编码的签名数据
-     * @return R+S 64bytes签名数据
+     * @return R+S(64bytes)签名数据
      */
-    public static byte[] derEncodedToSM2SignData(byte[] der) throws Exception {
+    public static byte[] derEncodedToSM2RsSignData(byte[] der) throws Exception {
         if (der == null) {
             return null;
         }
@@ -613,11 +613,11 @@ public class BaseBCCipher {
     }
 
     /**
-     * 将普通的R+S 64字节数据转为DER编码的SM2签名数据
-     * @param signData R+S 64bytes签名数据
+     * 将R+S(64bytes)签名数据转为DER编码的SM2签名数据
+     * @param signData R+S(64bytes)签名数据
      * @return DER编码的签名数据
      */
-    public static byte[] sm2SignDataToDerEncoded(byte[] signData) throws IOException {
+    public static byte[] sm2RsSignDataToDerEncoded(byte[] signData) throws IOException {
         if (signData == null) {
             return null;
         }

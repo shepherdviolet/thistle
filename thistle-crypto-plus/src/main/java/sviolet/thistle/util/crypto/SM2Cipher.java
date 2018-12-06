@@ -54,7 +54,7 @@ public class SM2Cipher {
      * @param id 签名ID, 可为空, 默认"1234567812345678".getBytes()
      * @param privateKeyParams 私钥
      * @param signAlgorithm 签名算法(SM2Cipher.SIGN_ALGORITHM_SM2_SM3)
-     * @return 签名数据(R+S)
+     * @return DER编码签名数据
      */
     public static byte[] sign(byte[] data, byte[] id, ECPrivateKeyParameters privateKeyParams, String signAlgorithm) throws CryptoException {
         return BaseBCCipher.signBySM2PrivateKeyParams(data, id, privateKeyParams);
@@ -66,36 +66,36 @@ public class SM2Cipher {
      * @param id 签名ID, 可为空, 默认"1234567812345678".getBytes()
      * @param privateKeyParams 私钥
      * @param signAlgorithm 签名算法(SM2Cipher.SIGN_ALGORITHM_SM2_SM3)
-     * @return 签名数据(R+S)
+     * @return DER编码签名数据
      */
     public static byte[] sign(InputStream inputStream, byte[] id, ECPrivateKeyParameters privateKeyParams, String signAlgorithm) throws CryptoException, IOException {
         return BaseBCCipher.signBySM2PrivateKeyParams(inputStream, id, privateKeyParams);
     }
 
     /**
-     * 使用SM2私钥签名数据, 结果为DER编码
+     * 使用SM2私钥签名数据, 结果为R+S(64bytes)签名数据
      * @param data 待签名数据
      * @param id 签名ID, 可为空, 默认"1234567812345678".getBytes()
      * @param privateKeyParams 私钥
      * @param signAlgorithm 签名算法(SM2Cipher.SIGN_ALGORITHM_SM2_SM3)
-     * @return DER编码签名数据
+     * @return R+S(64bytes)签名数据
      */
-    public static byte[] signToDER(byte[] data, byte[] id, ECPrivateKeyParameters privateKeyParams, String signAlgorithm) throws CryptoException, IOException {
-        return BaseBCCipher.sm2SignDataToDerEncoded(
+    public static byte[] signToRS(byte[] data, byte[] id, ECPrivateKeyParameters privateKeyParams, String signAlgorithm) throws Exception {
+        return BaseBCCipher.derEncodedToSM2RsSignData(
                 BaseBCCipher.signBySM2PrivateKeyParams(data, id, privateKeyParams)
         );
     }
 
     /**
-     * 使用SM2私钥签名输入流, 结果为DER编码
+     * 使用SM2私钥签名输入流, 结果为R+S(64bytes)签名数据
      * @param inputStream 待签名数据的输入流, 执行完毕后会被关闭
      * @param id 签名ID, 可为空, 默认"1234567812345678".getBytes()
      * @param privateKeyParams 私钥
      * @param signAlgorithm 签名算法(SM2Cipher.SIGN_ALGORITHM_SM2_SM3)
-     * @return DER编码签名数据
+     * @return R+S(64bytes)签名数据
      */
-    public static byte[] signToDER(InputStream inputStream, byte[] id, ECPrivateKeyParameters privateKeyParams, String signAlgorithm) throws CryptoException, IOException {
-        return BaseBCCipher.sm2SignDataToDerEncoded(
+    public static byte[] signToRS(InputStream inputStream, byte[] id, ECPrivateKeyParameters privateKeyParams, String signAlgorithm) throws Exception {
+        return BaseBCCipher.derEncodedToSM2RsSignData(
                 BaseBCCipher.signBySM2PrivateKeyParams(inputStream, id, privateKeyParams)
         );
     }
@@ -103,7 +103,7 @@ public class SM2Cipher {
     /**
      * 使用SM2公钥验签
      * @param data 数据
-     * @param sign 签名, R+S 64bytes
+     * @param sign 签名, DER编码签名数据
      * @param id 签名ID, 可为空, 默认"1234567812345678".getBytes()
      * @param publicKeyParams 公钥
      * @param signAlgorithm 签名算法(SM2Cipher.SIGN_ALGORITHM_SM2_SM3)
@@ -116,7 +116,7 @@ public class SM2Cipher {
     /**
      * 使用SM2公钥验签
      * @param inputStream 待签名数据的输入流, 执行完毕后会被关闭
-     * @param sign 签名, R+S 64bytes
+     * @param sign 签名, DER编码签名数据
      * @param id 签名ID, 可为空, 默认"1234567812345678".getBytes()
      * @param publicKeyParams 公钥
      * @param signAlgorithm 签名算法(SM2Cipher.SIGN_ALGORITHM_SM2_SM3)
@@ -127,47 +127,47 @@ public class SM2Cipher {
     }
 
     /**
-     * 使用SM2公钥验签, 用于DER编码的签名数据
+     * 使用SM2公钥验签, 用于R+S(64bytes)签名数据
      * @param data 数据
-     * @param sign 签名, DER编码格式
+     * @param sign 签名, R+S(64bytes)签名数据
      * @param id 签名ID, 可为空, 默认"1234567812345678".getBytes()
      * @param publicKeyParams 公钥
      * @param signAlgorithm 签名算法(SM2Cipher.SIGN_ALGORITHM_SM2_SM3)
      * @return true:验签通过
      */
-    public static boolean verifyFromDER(byte[] data, byte[] sign, byte[] id, ECPublicKeyParameters publicKeyParams, String signAlgorithm) {
-        byte[] rsSign;
+    public static boolean verifyFromRS(byte[] data, byte[] sign, byte[] id, ECPublicKeyParameters publicKeyParams, String signAlgorithm) {
+        byte[] derSign;
         try {
-            rsSign = BaseBCCipher.derEncodedToSM2SignData(sign);
-        } catch (Exception e) {
+            derSign = BaseBCCipher.sm2RsSignDataToDerEncoded(sign);
+        } catch (IOException e) {
             return false;
         }
         return BaseBCCipher.verifyBySM2PublicKeyParams(
                 data,
-                rsSign,
+                derSign,
                 id,
                 publicKeyParams);
     }
 
     /**
-     * 使用SM2公钥验签, 用于DER编码的签名数据
+     * 使用SM2公钥验签, 用于R+S(64bytes)签名数据
      * @param inputStream 待签名数据的输入流, 执行完毕后会被关闭
-     * @param sign 签名, DER编码格式
+     * @param sign 签名, R+S(64bytes)签名数据
      * @param id 签名ID, 可为空, 默认"1234567812345678".getBytes()
      * @param publicKeyParams 公钥
      * @param signAlgorithm 签名算法(SM2Cipher.SIGN_ALGORITHM_SM2_SM3)
      * @return true:验签通过
      */
-    public static boolean verifyFromDER(InputStream inputStream, byte[] sign, byte[] id, ECPublicKeyParameters publicKeyParams, String signAlgorithm) throws IOException {
-        byte[] rsSign;
+    public static boolean verifyFromRS(InputStream inputStream, byte[] sign, byte[] id, ECPublicKeyParameters publicKeyParams, String signAlgorithm) throws IOException {
+        byte[] derSign;
         try {
-            rsSign = BaseBCCipher.derEncodedToSM2SignData(sign);
-        } catch (Exception e) {
+            derSign = BaseBCCipher.sm2RsSignDataToDerEncoded(sign);
+        } catch (IOException e) {
             return false;
         }
         return BaseBCCipher.verifyBySM2PublicKeyParams(
                 inputStream,
-                rsSign,
+                derSign,
                 id,
                 publicKeyParams);
     }
