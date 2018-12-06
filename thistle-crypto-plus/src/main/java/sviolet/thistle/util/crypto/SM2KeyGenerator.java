@@ -24,6 +24,7 @@ import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import sviolet.thistle.util.conversion.Base64Utils;
 import sviolet.thistle.util.crypto.base.BaseBCAsymKeyGenerator;
+import sviolet.thistle.util.crypto.base.CommonCryptoException;
 import sviolet.thistle.util.crypto.base.SM2DefaultCurve;
 
 import java.math.BigInteger;
@@ -86,7 +87,7 @@ public class SM2KeyGenerator {
      * @param d D值
      * @return 私钥实例(与JDK的密钥实例不同)
      */
-    public static ECPrivateKeyParameters generatePrivateKeyParams(BigInteger d) throws Exception {
+    public static ECPrivateKeyParameters generatePrivateKeyParams(BigInteger d) throws CommonCryptoException {
         return BaseBCAsymKeyGenerator.parseEcPrivateKeyParams(SM2DefaultCurve.DOMAIN_PARAMS, d);
     }
 
@@ -96,7 +97,7 @@ public class SM2KeyGenerator {
      * @param asn1Encoding 公钥坐标点(ASN.1编码数据)
      * @return 公钥实例(与JDK的密钥实例不同)
      */
-    public static ECPublicKeyParameters generatePublicKeyParamsByASN1(byte[] asn1Encoding) throws Exception {
+    public static ECPublicKeyParameters generatePublicKeyParamsByASN1(byte[] asn1Encoding) throws CommonCryptoException {
         return BaseBCAsymKeyGenerator.parseEcPublicKeyParams(SM2DefaultCurve.DOMAIN_PARAMS, asn1Encoding);
     }
 
@@ -107,7 +108,7 @@ public class SM2KeyGenerator {
      * @param yBytes 坐标Y, 字节形式(bigInteger.toByteArray()获得)
      * @return 公钥实例(与JDK的密钥实例不同)
      */
-    public static ECPublicKeyParameters generatePublicKeyParams(byte[] xBytes, byte[] yBytes) throws Exception {
+    public static ECPublicKeyParameters generatePublicKeyParams(byte[] xBytes, byte[] yBytes) throws CommonCryptoException {
         return BaseBCAsymKeyGenerator.parseEcPublicKeyParams(SM2DefaultCurve.DOMAIN_PARAMS, xBytes, yBytes);
     }
 
@@ -118,7 +119,7 @@ public class SM2KeyGenerator {
      * @param y 坐标Y
      * @return 公钥实例(与JDK的密钥实例不同)
      */
-    public static ECPublicKeyParameters generatePublicKeyParams(BigInteger x, BigInteger y) throws Exception {
+    public static ECPublicKeyParameters generatePublicKeyParams(BigInteger x, BigInteger y) throws CommonCryptoException {
         if (x == null || y == null) {
             throw new NullPointerException("x or y is null");
         }
@@ -132,7 +133,7 @@ public class SM2KeyGenerator {
      * @param publicKeyParams 公钥, 可为空(但送空会导致openssl无法读取PKCS8数据), BouncyCastle的XXXKeyParameters密钥实例
      * @return 私钥的PKCS8编码数据
      */
-    public static byte[] encodePrivateKeyParamsToPKCS8(ECPrivateKeyParameters privateKeyParams, ECPublicKeyParameters publicKeyParams) throws Exception{
+    public static byte[] encodePrivateKeyParamsToPKCS8(ECPrivateKeyParameters privateKeyParams, ECPublicKeyParameters publicKeyParams) {
         //SM2的密钥标记为EC
         return BaseBCAsymKeyGenerator.ecPrivateKeyParamsToEcPrivateKey(privateKeyParams, publicKeyParams, EC_KEY_ALGORITHM).getEncoded();
     }
@@ -144,7 +145,7 @@ public class SM2KeyGenerator {
      * @param privateKeyParams 私钥, BouncyCastle的XXXKeyParameters密钥实例
      * @return 私钥的PKCS8编码数据
      */
-    public static byte[] encodePrivateKeyParamsToPKCS8(ECPrivateKeyParameters privateKeyParams) throws Exception{
+    public static byte[] encodePrivateKeyParamsToPKCS8(ECPrivateKeyParameters privateKeyParams) {
         //SM2的密钥标记为EC
         return BaseBCAsymKeyGenerator.ecPrivateKeyParamsToEcPrivateKey(privateKeyParams, null, EC_KEY_ALGORITHM).getEncoded();
     }
@@ -155,7 +156,7 @@ public class SM2KeyGenerator {
      * @param publicKeyParams 公钥, BouncyCastle的XXXKeyParameters密钥实例
      * @return 公钥的X509编码数据
      */
-    public static byte[] encodePublicKeyParamsToX509(ECPublicKeyParameters publicKeyParams) throws Exception{
+    public static byte[] encodePublicKeyParamsToX509(ECPublicKeyParameters publicKeyParams) {
         //SM2的密钥标记为EC
         return BaseBCAsymKeyGenerator.ecPublicKeyParamsToEcPublicKey(publicKeyParams, EC_KEY_ALGORITHM).getEncoded();
     }
@@ -198,11 +199,11 @@ public class SM2KeyGenerator {
             return privateKeyParams.getD();
         }
 
-        public byte[] getX509EncodedPublicKey() throws Exception {
+        public byte[] getX509EncodedPublicKey() {
             return encodePublicKeyParamsToX509(publicKeyParams);
         }
 
-        public byte[] getPKCS8EncodedPrivateKey() throws Exception {
+        public byte[] getPKCS8EncodedPrivateKey() {
             return encodePrivateKeyParamsToPKCS8(privateKeyParams, publicKeyParams);
         }
 

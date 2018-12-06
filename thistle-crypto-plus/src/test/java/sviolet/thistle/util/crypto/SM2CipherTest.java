@@ -19,20 +19,23 @@
 
 package sviolet.thistle.util.crypto;
 
+import org.bouncycastle.crypto.CryptoException;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.junit.Assert;
 import org.junit.Test;
-import sviolet.thistle.util.conversion.ByteUtils;
+import sviolet.thistle.util.crypto.base.CommonCryptoException;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.security.spec.InvalidKeySpecException;
 
 public class SM2CipherTest {
 
     private static final String STRING = "English中文#$%@#$%@GSDFG654465rq43we5■☝▌▋卍¶¶¶☹ΥΥθΕサイけにケ◆♂‥√▒卍ЫПЬрпㅂㅝㅂ㉹㉯╠╕┚╜ㅛㅛ㉰㉯⑩⒅⑯413English中文#$%@#$%@GSDFG654465rq43we5■☝▌▋卍¶¶¶☹ΥΥθΕサイけにケ◆♂‥√▒卍ЫПЬрпㅂㅝㅂ㉹㉯╠╕┚╜ㅛㅛ㉰㉯⑩⒅⑯413English中文#$%@#$%@GSDFG654465rq43we5■☝▌▋卍¶¶¶☹ΥΥθΕサイけにケ◆♂‥√▒卍ЫПЬрпㅂㅝㅂ㉹㉯╠╕┚╜ㅛㅛ㉰㉯⑩⒅⑯413";
 
     @Test
-    public void common() throws Exception {
+    public void common() throws CommonCryptoException, InvalidKeySpecException, IOException, CryptoException {
         //生成随机密钥对
         SM2KeyGenerator.SM2KeyParamsPair keyPair = SM2KeyGenerator.generateKeyParamsPair();
 

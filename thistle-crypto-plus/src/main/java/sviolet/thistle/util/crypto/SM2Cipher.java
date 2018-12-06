@@ -24,6 +24,7 @@ import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import sviolet.thistle.util.crypto.base.BaseBCCipher;
+import sviolet.thistle.util.crypto.base.CommonCryptoException;
 import sviolet.thistle.util.crypto.base.SM2DefaultCurve;
 
 import java.io.IOException;
@@ -80,7 +81,7 @@ public class SM2Cipher {
      * @param signAlgorithm 签名算法(SM2Cipher.SIGN_ALGORITHM_SM2_SM3)
      * @return R+S(64bytes)签名数据
      */
-    public static byte[] signToRS(byte[] data, byte[] id, ECPrivateKeyParameters privateKeyParams, String signAlgorithm) throws Exception {
+    public static byte[] signToRS(byte[] data, byte[] id, ECPrivateKeyParameters privateKeyParams, String signAlgorithm) throws CryptoException, CommonCryptoException {
         return BaseBCCipher.derEncodedToSM2RsSignData(
                 BaseBCCipher.signBySM2PrivateKeyParams(data, id, privateKeyParams)
         );
@@ -94,7 +95,7 @@ public class SM2Cipher {
      * @param signAlgorithm 签名算法(SM2Cipher.SIGN_ALGORITHM_SM2_SM3)
      * @return R+S(64bytes)签名数据
      */
-    public static byte[] signToRS(InputStream inputStream, byte[] id, ECPrivateKeyParameters privateKeyParams, String signAlgorithm) throws Exception {
+    public static byte[] signToRS(InputStream inputStream, byte[] id, ECPrivateKeyParameters privateKeyParams, String signAlgorithm) throws CryptoException, IOException, CommonCryptoException {
         return BaseBCCipher.derEncodedToSM2RsSignData(
                 BaseBCCipher.signBySM2PrivateKeyParams(inputStream, id, privateKeyParams)
         );
@@ -248,7 +249,7 @@ public class SM2Cipher {
      * @param cryptoAlgorithm 加密算法(SM2Cipher.CRYPTO_ALGORITHM_SM2)
      * @return 原文
      */
-    public static byte[] decryptFromDER(byte[] data, ECPrivateKeyParameters privateKeyParams, String cryptoAlgorithm) throws Exception {
+    public static byte[] decryptFromDER(byte[] data, ECPrivateKeyParameters privateKeyParams, String cryptoAlgorithm) throws CommonCryptoException, InvalidCipherTextException {
         return BaseBCCipher.decryptBySM2PrivateKeyParams(
                 BaseBCCipher.derEncodedToSM2CipherTextC1C2C3(
                         data

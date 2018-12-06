@@ -563,33 +563,38 @@ public class BaseBCCipher {
      * @param der DER格式的密文
      * @return C1C2C3格式密文
      */
-    public static byte[] derEncodedToSM2CipherTextC1C2C3(byte[] der) throws Exception {
+    public static byte[] derEncodedToSM2CipherTextC1C2C3(byte[] der) throws CommonCryptoException {
         if (der == null) {
             return null;
         }
+        try {
 
-        ASN1Sequence asn1Sequence = DERSequence.getInstance(der);
-        byte[] c1X = ((ASN1Integer) asn1Sequence.getObjectAt(0)).getValue().toByteArray();
-        byte[] c1Y = ((ASN1Integer) asn1Sequence.getObjectAt(1)).getValue().toByteArray();
-        byte[] c3 = ((DEROctetString) asn1Sequence.getObjectAt(2)).getOctets();
-        byte[] c2 = ((DEROctetString) asn1Sequence.getObjectAt(3)).getOctets();
+            ASN1Sequence asn1Sequence = DERSequence.getInstance(der);
+            byte[] c1X = ((ASN1Integer) asn1Sequence.getObjectAt(0)).getValue().toByteArray();
+            byte[] c1Y = ((ASN1Integer) asn1Sequence.getObjectAt(1)).getValue().toByteArray();
+            byte[] c3 = ((DEROctetString) asn1Sequence.getObjectAt(2)).getOctets();
+            byte[] c2 = ((DEROctetString) asn1Sequence.getObjectAt(3)).getOctets();
 
-        byte[] c1c2c3 = new byte[1 + c1X.length + c1Y.length + c2.length + c3.length];
-        c1c2c3[0] = BaseCryptoUtils.SM2_CIPHER_TEXT_PREFIX_UNCOMPRESSED;
-        int pos = 1;
+            byte[] c1c2c3 = new byte[1 + c1X.length + c1Y.length + c2.length + c3.length];
+            c1c2c3[0] = BaseCryptoUtils.SM2_CIPHER_TEXT_PREFIX_UNCOMPRESSED;
+            int pos = 1;
 
-        System.arraycopy(c1X, 0, c1c2c3, pos, c1X.length);
-        pos += c1X.length;
+            System.arraycopy(c1X, 0, c1c2c3, pos, c1X.length);
+            pos += c1X.length;
 
-        System.arraycopy(c1Y, 0, c1c2c3, pos, c1Y.length);
-        pos += c1Y.length;
+            System.arraycopy(c1Y, 0, c1c2c3, pos, c1Y.length);
+            pos += c1Y.length;
 
-        System.arraycopy(c2, 0, c1c2c3, pos, c2.length);
-        pos += c2.length;
+            System.arraycopy(c2, 0, c1c2c3, pos, c2.length);
+            pos += c2.length;
 
-        System.arraycopy(c3, 0, c1c2c3, pos, c3.length);
+            System.arraycopy(c3, 0, c1c2c3, pos, c3.length);
 
-        return c1c2c3;
+            return c1c2c3;
+
+        } catch (Exception e) {
+            throw new CommonCryptoException("Error while parsing DER encoded data to SM2 cipher text C1C2C3", e);
+        }
     }
 
     /**
@@ -597,19 +602,23 @@ public class BaseBCCipher {
      * @param der DER编码的签名数据
      * @return R+S(64bytes)签名数据
      */
-    public static byte[] derEncodedToSM2RsSignData(byte[] der) throws Exception {
+    public static byte[] derEncodedToSM2RsSignData(byte[] der) throws CommonCryptoException {
         if (der == null) {
             return null;
         }
-        ASN1Sequence asn1Sequence = DERSequence.getInstance(der);
-        byte[] r = ((ASN1Integer) asn1Sequence.getObjectAt(0)).getValue().toByteArray();
-        byte[] s = ((ASN1Integer) asn1Sequence.getObjectAt(1)).getValue().toByteArray();
-        r = ByteUtils.toLength(r, 32);
-        s = ByteUtils.toLength(s, 32);
-        byte[] result = new byte[64];
-        System.arraycopy(r, 0, result, 0, r.length);
-        System.arraycopy(s, 0, result, r.length, s.length);
-        return result;
+        try {
+            ASN1Sequence asn1Sequence = DERSequence.getInstance(der);
+            byte[] r = ((ASN1Integer) asn1Sequence.getObjectAt(0)).getValue().toByteArray();
+            byte[] s = ((ASN1Integer) asn1Sequence.getObjectAt(1)).getValue().toByteArray();
+            r = ByteUtils.toLength(r, 32);
+            s = ByteUtils.toLength(s, 32);
+            byte[] result = new byte[64];
+            System.arraycopy(r, 0, result, 0, r.length);
+            System.arraycopy(s, 0, result, r.length, s.length);
+            return result;
+        } catch (Exception e) {
+            throw new CommonCryptoException("Error while parsing DER encoded data to SM2 RS sign data", e);
+        }
     }
 
     /**

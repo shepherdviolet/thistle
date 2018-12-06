@@ -72,7 +72,7 @@ public class BaseBCAsymKeyGenerator {
      * @param keyAlgorithm 密钥算法(EC, SM2暂时也用EC)
      * @return JDK的XXXKey密钥实例, 可以调用ECPrivateKey.getEncoded()方法获取PKCS8编码的私钥数据(甚至进一步转为PEM等格式)
      */
-    public static BCECPrivateKey ecPrivateKeyParamsToEcPrivateKey(ECPrivateKeyParameters privateKeyParams, ECPublicKeyParameters publicKeyParams, String keyAlgorithm) throws Exception {
+    public static BCECPrivateKey ecPrivateKeyParamsToEcPrivateKey(ECPrivateKeyParameters privateKeyParams, ECPublicKeyParameters publicKeyParams, String keyAlgorithm) {
         if (privateKeyParams == null) {
             throw new RuntimeException("privateKeyParams == null");
         }
@@ -96,7 +96,7 @@ public class BaseBCAsymKeyGenerator {
      * @param keyAlgorithm 密钥算法(EC, SM2暂时也用EC)
      * @return JDK的XXXKey密钥实例, 可以调用ECPublicKey.getEncoded()方法获取X509编码的公钥数据(甚至进一步转为PEM等格式)
      */
-    public static BCECPublicKey ecPublicKeyParamsToEcPublicKey(ECPublicKeyParameters publicKeyParams, String keyAlgorithm) throws Exception {
+    public static BCECPublicKey ecPublicKeyParamsToEcPublicKey(ECPublicKeyParameters publicKeyParams, String keyAlgorithm) {
         if (publicKeyParams == null) {
             throw new RuntimeException("publicKeyParams == null");
         }
@@ -198,11 +198,15 @@ public class BaseBCAsymKeyGenerator {
      * @param d D值
      * @return 私钥实例(与JDK的密钥实例不同)
      */
-    public static ECPrivateKeyParameters parseEcPrivateKeyParams(ECDomainParameters domainParameters, BigInteger d) throws Exception {
+    public static ECPrivateKeyParameters parseEcPrivateKeyParams(ECDomainParameters domainParameters, BigInteger d) throws CommonCryptoException {
         if (d == null) {
             throw new NullPointerException("d == null");
         }
-        return new ECPrivateKeyParameters(d, domainParameters);
+        try {
+            return new ECPrivateKeyParameters(d, domainParameters);
+        } catch (Exception e) {
+            throw new CommonCryptoException("Error while parsing D to privateKeyParameters", e);
+        }
     }
 
     /**
@@ -212,13 +216,17 @@ public class BaseBCAsymKeyGenerator {
      * @param pointASN1Encoding 公钥坐标点(ASN.1编码数据)
      * @return 公钥实例(与JDK的密钥实例不同)
      */
-    public static ECPublicKeyParameters parseEcPublicKeyParams(ECDomainParameters domainParameters, byte[] pointASN1Encoding) throws Exception {
+    public static ECPublicKeyParameters parseEcPublicKeyParams(ECDomainParameters domainParameters, byte[] pointASN1Encoding) throws CommonCryptoException {
         if (pointASN1Encoding == null) {
             throw new RuntimeException("pointASN1Encoding == null");
         }
-        //将ASN.1编码的数据转为ECPoint实例
-        ECPoint point = domainParameters.getCurve().decodePoint(pointASN1Encoding);
-        return new ECPublicKeyParameters(point, domainParameters);
+        try {
+            //将ASN.1编码的数据转为ECPoint实例
+            ECPoint point = domainParameters.getCurve().decodePoint(pointASN1Encoding);
+            return new ECPublicKeyParameters(point, domainParameters);
+        } catch (Exception e) {
+            throw new CommonCryptoException("Error while parsing ASN.1 point to publicKeyParameters", e);
+        }
     }
 
     /**
@@ -229,9 +237,13 @@ public class BaseBCAsymKeyGenerator {
      * @param yBytes 坐标Y, 字节形式(bigInteger.toByteArray()获得)
      * @return 公钥实例(与JDK的密钥实例不同)
      */
-    public static ECPublicKeyParameters parseEcPublicKeyParams(ECDomainParameters domainParameters, byte[] xBytes, byte[] yBytes) throws Exception {
-        //将ASN.1编码的数据转为ECPoint实例
-        return parseEcPublicKeyParams(domainParameters, BaseCryptoUtils.pointToASN1Encoding(xBytes, yBytes));
+    public static ECPublicKeyParameters parseEcPublicKeyParams(ECDomainParameters domainParameters, byte[] xBytes, byte[] yBytes) throws CommonCryptoException {
+        try {
+            //将ASN.1编码的数据转为ECPoint实例
+            return parseEcPublicKeyParams(domainParameters, BaseCryptoUtils.pointToASN1Encoding(xBytes, yBytes));
+        } catch (Exception e) {
+            throw new CommonCryptoException("Error while parsing point (X/Y) to publicKeyParameters", e);
+        }
     }
 
 }
