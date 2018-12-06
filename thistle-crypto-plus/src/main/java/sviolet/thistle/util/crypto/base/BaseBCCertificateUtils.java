@@ -49,12 +49,14 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
 import java.security.Security;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Date;
 
 /**
@@ -221,7 +223,7 @@ public class BaseBCCertificateUtils {
                                                       ECPublicKeyParameters issuerPublicKeyParams,
                                                       ECPrivateKeyParameters issuerPrivateKeyParams,
                                                       boolean generateCaCert,
-                                                      KeyUsage usage) throws Exception {
+                                                      KeyUsage usage) throws IOException, InvalidKeySpecException, NoSuchAlgorithmException, OperatorCreationException, CertificateException {
         //解析CSR
         PKCS10CertificationRequest request = new PKCS10CertificationRequest(csr);
         byte[] publicKeyEncoded = request.getSubjectPublicKeyInfo().toASN1Primitive().getEncoded(ASN1Encoding.DER);

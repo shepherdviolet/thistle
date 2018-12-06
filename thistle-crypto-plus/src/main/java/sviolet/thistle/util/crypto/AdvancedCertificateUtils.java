@@ -31,10 +31,12 @@ import sviolet.thistle.util.crypto.base.BaseBCCertificateUtils;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
 
 /**
  * <p>高级证书工具</p>
@@ -170,10 +172,10 @@ public class AdvancedCertificateUtils extends CertificateUtils {
      * @param issuerPublicKeyParams 证书颁发者(CA)的公钥
      * @param issuerPrivateKeyParams 证书颁发者(CA)的私钥
      */
-    public X509Certificate generateSm2X509RootCertificate(String caDn,
+    public static X509Certificate generateSm2X509RootCertificate(String caDn,
                                                       int validity,
                                                       ECPublicKeyParameters issuerPublicKeyParams,
-                                                      ECPrivateKeyParameters issuerPrivateKeyParams) throws Exception {
+                                                      ECPrivateKeyParameters issuerPrivateKeyParams) throws IOException, OperatorCreationException, CertificateException, InvalidKeySpecException, NoSuchAlgorithmException {
         byte[] csr = BaseBCCertificateUtils.generateSm2Csr(caDn, issuerPublicKeyParams, issuerPrivateKeyParams);
         return BaseBCCertificateUtils.generateSm2X509Certificate(
                 csr,
@@ -205,7 +207,7 @@ public class AdvancedCertificateUtils extends CertificateUtils {
     public static X509Certificate generateSm2X509CaCertificate(byte[] csr,
                                                              int validity,
                                                              X509Certificate issuerCertificate,
-                                                             ECPrivateKeyParameters issuerPrivateKeyParams) throws Exception {
+                                                             ECPrivateKeyParameters issuerPrivateKeyParams) throws InvalidKeySpecException, OperatorCreationException, CertificateException, NoSuchAlgorithmException, IOException {
         return BaseBCCertificateUtils.generateSm2X509Certificate(
                 csr,
                 validity,
@@ -238,7 +240,7 @@ public class AdvancedCertificateUtils extends CertificateUtils {
     public static X509Certificate generateSm2X509Certificate(byte[] csr,
                                                                int validity,
                                                                X509Certificate issuerCertificate,
-                                                               ECPrivateKeyParameters issuerPrivateKeyParams) throws Exception {
+                                                               ECPrivateKeyParameters issuerPrivateKeyParams) throws InvalidKeySpecException, OperatorCreationException, CertificateException, NoSuchAlgorithmException, IOException {
         return BaseBCCertificateUtils.generateSm2X509Certificate(
                 csr,
                 validity,
