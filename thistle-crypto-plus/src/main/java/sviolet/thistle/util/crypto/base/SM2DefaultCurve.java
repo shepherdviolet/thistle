@@ -51,6 +51,9 @@ public class SM2DefaultCurve {
     //SM2默认参数集合(含:椭圆曲线/G点/N(order)/H(cofactor))
     public static final ECDomainParameters DOMAIN_PARAMS = new ECDomainParameters(CURVE, G_POINT, N, H);
 
+    //SM2默认curveLength
+    public static int CURVE_LENGTH = BaseBCCryptoUtils.calculateSM2CurveLength(DOMAIN_PARAMS);
+
     //SM2默认C1区域长度(SM2用于加密时密文C1区长度)
     public static int C1_LENGTH = BaseBCCryptoUtils.calculateSM2C1Length(DOMAIN_PARAMS);
 

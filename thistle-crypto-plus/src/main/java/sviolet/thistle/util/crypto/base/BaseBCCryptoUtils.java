@@ -55,8 +55,18 @@ public class BaseBCCryptoUtils {
      * @return 密文C1区域长度
      */
     public static int calculateSM2C1Length(ECDomainParameters domainParameters) {
-        int curveLength = (domainParameters.getCurve().getFieldSize() + 7) / 8;
-        return curveLength * 2 + 1;
+        return calculateSM2CurveLength(domainParameters) * 2 + 1;
+    }
+
+    /**
+     * 根据椭圆曲线参数计算curveLength.
+     * domainParameters是椭圆曲线参数, 需要:椭圆曲线/G点/N(order)/H(cofactor)
+     *
+     * @param domainParameters domainParameters = new ECDomainParameters(CURVE, G_POINT, N, H) 或 ECKeyParameters.getParameters()
+     * @return curveLength
+     */
+    public static int calculateSM2CurveLength(ECDomainParameters domainParameters) {
+        return (domainParameters.getCurve().getFieldSize() + 7) / 8;
     }
 
 }

@@ -23,6 +23,7 @@ import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.junit.Assert;
 import org.junit.Test;
+import sviolet.thistle.util.conversion.ByteUtils;
 
 import java.io.ByteArrayInputStream;
 
@@ -59,34 +60,43 @@ public class SM2CipherTest {
         ECPublicKeyParameters publicKeyParams = SM2KeyGenerator.generatePublicKeyParamsByX509(x509);
 
         //加密
-        byte[] encrypted = SM2Cipher.encrypt(STRING.getBytes(), publicKeyParams, SM2Cipher.CRYPTO_ALGORITHM_SM2);
+        byte[] encrypted = SM2Cipher.encrypt(STRING.getBytes("UTF-8"), publicKeyParams, SM2Cipher.CRYPTO_ALGORITHM_SM2);
 
 //        System.out.println(ByteUtils.bytesToHex(encrypted));
 
         //解密
-        String decrypted = new String(SM2Cipher.decrypt(encrypted, privateKeyParams, SM2Cipher.CRYPTO_ALGORITHM_SM2));
+        String decrypted = new String(SM2Cipher.decrypt(encrypted, privateKeyParams, SM2Cipher.CRYPTO_ALGORITHM_SM2), "UTF-8");
         Assert.assertEquals(STRING, decrypted);
 
 //        System.out.println(decrypted);
 
         //加密
-        encrypted = SM2Cipher.encryptToC1C3C2(STRING.getBytes(), publicKeyParams, SM2Cipher.CRYPTO_ALGORITHM_SM2);
+        encrypted = SM2Cipher.encryptToC1C3C2(STRING.getBytes("UTF-8"), publicKeyParams, SM2Cipher.CRYPTO_ALGORITHM_SM2);
 
 //        System.out.println(ByteUtils.bytesToHex(encrypted));
 
         //解密
-        decrypted = new String(SM2Cipher.decryptFromC1C3C2(encrypted, privateKeyParams, SM2Cipher.CRYPTO_ALGORITHM_SM2));
+        decrypted = new String(SM2Cipher.decryptFromC1C3C2(encrypted, privateKeyParams, SM2Cipher.CRYPTO_ALGORITHM_SM2), "UTF-8");
+        Assert.assertEquals(STRING, decrypted);
+
+        //加密
+        encrypted = SM2Cipher.encryptToDER(STRING.getBytes("UTF-8"), publicKeyParams, SM2Cipher.CRYPTO_ALGORITHM_SM2);
+
+//        System.out.println(ByteUtils.bytesToHex(encrypted));
+
+        //解密
+        decrypted = new String(SM2Cipher.decryptFromDER(encrypted, privateKeyParams, SM2Cipher.CRYPTO_ALGORITHM_SM2), "UTF-8");
         Assert.assertEquals(STRING, decrypted);
 
 //        System.out.println(decrypted);
 
-        byte[] sign = SM2Cipher.sign(STRING.getBytes(), null, privateKeyParams, SM2Cipher.SIGN_ALGORITHM_SM2_SM3);
-        boolean result = SM2Cipher.verify(STRING.getBytes(), sign, null, publicKeyParams, SM2Cipher.SIGN_ALGORITHM_SM2_SM3);
+        byte[] sign = SM2Cipher.sign(STRING.getBytes("UTF-8"), null, privateKeyParams, SM2Cipher.SIGN_ALGORITHM_SM2_SM3);
+        boolean result = SM2Cipher.verify(STRING.getBytes("UTF-8"), sign, null, publicKeyParams, SM2Cipher.SIGN_ALGORITHM_SM2_SM3);
         Assert.assertTrue(result);
 
         //加签验签
-        sign = SM2Cipher.sign(new ByteArrayInputStream(STRING.getBytes()), null, privateKeyParams, SM2Cipher.SIGN_ALGORITHM_SM2_SM3);
-        result = SM2Cipher.verify(new ByteArrayInputStream(STRING.getBytes()), sign, null, publicKeyParams, SM2Cipher.SIGN_ALGORITHM_SM2_SM3);
+        sign = SM2Cipher.sign(new ByteArrayInputStream(STRING.getBytes("UTF-8")), null, privateKeyParams, SM2Cipher.SIGN_ALGORITHM_SM2_SM3);
+        result = SM2Cipher.verify(new ByteArrayInputStream(STRING.getBytes("UTF-8")), sign, null, publicKeyParams, SM2Cipher.SIGN_ALGORITHM_SM2_SM3);
         Assert.assertTrue(result);
 
     }

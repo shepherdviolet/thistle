@@ -32,7 +32,7 @@ package sviolet.thistle.util.crypto.base;
  */
 public class BaseCryptoUtils {
 
-    public static final byte PREFIX_UNCOMPRESSED = 0x04;
+    public static final byte SM2_CIPHER_TEXT_PREFIX_UNCOMPRESSED = 0x04;
 
     /**
      * 将坐标(X/Y)转为ASN.1编码的坐标数据(非压缩)
@@ -48,7 +48,7 @@ public class BaseCryptoUtils {
             throw new NullPointerException("yBytes == null");
         }
         byte[] asn1Encoding = new byte[1 + xBytes.length + yBytes.length];
-        asn1Encoding[0] = PREFIX_UNCOMPRESSED;
+        asn1Encoding[0] = SM2_CIPHER_TEXT_PREFIX_UNCOMPRESSED;
         System.arraycopy(xBytes, 0, asn1Encoding, 1, xBytes.length);
         System.arraycopy(yBytes, 0, asn1Encoding, 1 + xBytes.length, yBytes.length);
         return asn1Encoding;

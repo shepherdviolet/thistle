@@ -19,6 +19,7 @@
 
 package sviolet.thistle.util.crypto.base;
 
+import org.bouncycastle.asn1.*;
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.CryptoException;
 import org.bouncycastle.crypto.InvalidCipherTextException;
@@ -508,6 +509,80 @@ public class BaseBCCipher {
         byte[] c2 = new byte[cipherText.length - c1.length - c3.length];
         System.arraycopy(cipherText, c1.length + c3.length, c2, 0, c2.length);
         return ByteUtils.joint(c1, c2, c3);
+    }
+
+    /**
+     * 将SM2用于加密时的密文C1C2C3转为DER编码数据（SM2密码算法使用规范 GM/T 0009-2012）
+     *
+     * @param c1c2c3 C1C2C3格式的SM2加密密文calculateSM2CurveLength(ECDomainParameters domainParameters)
+     * @param curveLength 曲线数据长度, BaseBCCryptoUtils.calculateSM2CurveLength(SM2DefaultCurve.DOMAIN_PARAMS)
+     * @param digestLength SM3摘要结果长度, SM3DigestCipher.SM3_HASH_LENGTH
+     * @return DER格式的密文
+     */
+    public static byte[] sm2CipherTextC1C2C3ToDEREncoded(byte[] c1c2c3, int curveLength, int digestLength) throws IOException {
+        if (c1c2c3 == null) {
+            return null;
+        }
+
+        int pos = 1;
+
+        byte[] c1X = new byte[curveLength];
+        System.arraycopy(c1c2c3, pos, c1X, 0, c1X.length);
+        pos += c1X.length;
+
+        byte[] c1Y = new byte[curveLength];
+        System.arraycopy(c1c2c3, pos, c1Y, 0, c1Y.length);
+        pos += c1Y.length;
+
+        byte[] c2 = new byte[c1c2c3.length - c1X.length - c1Y.length - 1 - digestLength];
+        System.arraycopy(c1c2c3, pos, c2, 0, c2.length);
+        pos += c2.length;
+
+        byte[] c3 = new byte[digestLength];
+        System.arraycopy(c1c2c3, pos, c3, 0, c3.length);
+
+        ASN1Encodable[] encodable = new ASN1Encodable[4];
+        encodable[0] = new ASN1Integer(c1X);
+        encodable[1] = new ASN1Integer(c1Y);
+        encodable[2] = new DEROctetString(c3);
+        encodable[3] = new DEROctetString(c2);
+        DERSequence derSequence = new DERSequence(encodable);
+        return derSequence.getEncoded(ASN1Encoding.DER);
+    }
+
+    /**
+     * 将DER编码数据转为SM2用于加密时的密文C1C2C3（SM2密码算法使用规范 GM/T 0009-2012）
+     *
+     * @param der DER格式的密文
+     * @return C1C2C3格式密文
+     */
+    public static byte[] derEncodedToSM2CipherTextC1C2C3(byte[] der) {
+        if (der == null) {
+            return null;
+        }
+
+        ASN1Sequence asn1Sequence = DERSequence.getInstance(der);
+        byte[] c1X = ((ASN1Integer) asn1Sequence.getObjectAt(0)).getValue().toByteArray();
+        byte[] c1Y = ((ASN1Integer) asn1Sequence.getObjectAt(1)).getValue().toByteArray();
+        byte[] c3 = ((DEROctetString) asn1Sequence.getObjectAt(2)).getOctets();
+        byte[] c2 = ((DEROctetString) asn1Sequence.getObjectAt(3)).getOctets();
+
+        byte[] c1c2c3 = new byte[1 + c1X.length + c1Y.length + c2.length + c3.length];
+        c1c2c3[0] = BaseCryptoUtils.SM2_CIPHER_TEXT_PREFIX_UNCOMPRESSED;
+        int pos = 1;
+
+        System.arraycopy(c1X, 0, c1c2c3, pos, c1X.length);
+        pos += c1X.length;
+
+        System.arraycopy(c1Y, 0, c1c2c3, pos, c1Y.length);
+        pos += c1Y.length;
+
+        System.arraycopy(c2, 0, c1c2c3, pos, c2.length);
+        pos += c2.length;
+
+        System.arraycopy(c3, 0, c1c2c3, pos, c3.length);
+
+        return c1c2c3;
     }
 
 }

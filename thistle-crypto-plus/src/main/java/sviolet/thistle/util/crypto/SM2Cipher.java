@@ -110,7 +110,7 @@ public class SM2Cipher {
     }
 
     /**
-     * 使用SM2公钥加密(密文为C1C2C3格式)
+     * 使用SM2私钥解密(密文为C1C2C3格式)
      * @param privateKeyParams SM2私钥
      * @param data 密文数据, 密文为C1C2C3格式, C1区域为随机公钥点数据(ASN.1格式), C2为密文数据, C3为摘要数据(SM3).
      * @param cryptoAlgorithm 加密算法(SM2Cipher.CRYPTO_ALGORITHM_SM2)
@@ -136,7 +136,7 @@ public class SM2Cipher {
     }
 
     /**
-     * 使用SM2公钥加密(密文为C1C3C2格式)
+     * 使用SM2私钥解密(密文为C1C3C2格式)
      * @param privateKeyParams SM2私钥
      * @param data 密文数据, 密文为C1C3C2格式, C1区域为随机公钥点数据(ASN.1格式), C2为密文数据, C3为摘要数据(SM3).
      * @param cryptoAlgorithm 加密算法(SM2Cipher.CRYPTO_ALGORITHM_SM2)
@@ -148,6 +148,36 @@ public class SM2Cipher {
                         data,
                         SM2DefaultCurve.C1_LENGTH,
                         SM3DigestCipher.SM3_HASH_LENGTH
+                ),
+                privateKeyParams);
+    }
+
+    /**
+     * 使用SM2公钥加密(密文为C1C2C3 DER格式)
+     * @param publicKeyParams SM2公钥
+     * @param data 原文数据
+     * @param cryptoAlgorithm 加密算法(SM2Cipher.CRYPTO_ALGORITHM_SM2)
+     * @return 密文, 密文为C1C2C3 DER格式（SM2密码算法使用规范 GM/T 0009-2012）
+     */
+    public static byte[] encryptToDER(byte[] data, ECPublicKeyParameters publicKeyParams, String cryptoAlgorithm) throws InvalidCipherTextException, IOException {
+        return BaseBCCipher.sm2CipherTextC1C2C3ToDEREncoded(
+                BaseBCCipher.encryptBySM2PublicKeyParams(data, publicKeyParams),
+                SM2DefaultCurve.CURVE_LENGTH,
+                SM3DigestCipher.SM3_HASH_LENGTH
+        );
+    }
+
+    /**
+     * 使用SM2私钥解密(密文为C1C2C3DER格式)
+     * @param privateKeyParams SM2私钥
+     * @param data 密文数据, 密文为C1C2C3 DER格式（SM2密码算法使用规范 GM/T 0009-2012）
+     * @param cryptoAlgorithm 加密算法(SM2Cipher.CRYPTO_ALGORITHM_SM2)
+     * @return 原文
+     */
+    public static byte[] decryptFromDER(byte[] data, ECPrivateKeyParameters privateKeyParams, String cryptoAlgorithm) throws InvalidCipherTextException {
+        return BaseBCCipher.decryptBySM2PrivateKeyParams(
+                BaseBCCipher.derEncodedToSM2CipherTextC1C2C3(
+                        data
                 ),
                 privateKeyParams);
     }
