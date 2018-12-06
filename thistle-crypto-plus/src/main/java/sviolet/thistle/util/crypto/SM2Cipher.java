@@ -19,11 +19,15 @@
 
 package sviolet.thistle.util.crypto;
 
+import org.bouncycastle.crypto.CryptoException;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import sviolet.thistle.util.crypto.base.BaseBCCipher;
 import sviolet.thistle.util.crypto.base.SM2DefaultCurve;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * <p>SM2签名加密工具</p>
@@ -43,6 +47,56 @@ public class SM2Cipher {
      * 加密算法:SM2
      */
     public static final String CRYPTO_ALGORITHM_SM2 = "SM2";
+
+    /**
+     * 使用SM2私钥签名数据
+     * @param data 待签名数据
+     * @param id 签名ID, 可为空, 默认"1234567812345678".getBytes()
+     * @param privateKeyParams 私钥
+     * @param signAlgorithm 签名算法(SM2Cipher.SIGN_ALGORITHM_SM2_SM3)
+     * @return 签名数据(R+S)
+     */
+    public static byte[] sign(byte[] data, byte[] id, ECPrivateKeyParameters privateKeyParams, String signAlgorithm) throws CryptoException {
+        return BaseBCCipher.signBySM2PrivateKeyParams(data, id, privateKeyParams);
+    }
+
+    /**
+     * 使用SM2私钥签名输入流
+     * @param inputStream 待签名数据的输入流, 执行完毕后会被关闭
+     * @param id 签名ID, 可为空, 默认"1234567812345678".getBytes()
+     * @param privateKeyParams 私钥
+     * @param signAlgorithm 签名算法(SM2Cipher.SIGN_ALGORITHM_SM2_SM3)
+     * @return 签名数据(R+S)
+     */
+    public static byte[] sign(InputStream inputStream, byte[] id, ECPrivateKeyParameters privateKeyParams, String signAlgorithm) throws CryptoException, IOException {
+        return BaseBCCipher.signBySM2PrivateKeyParams(inputStream, id, privateKeyParams);
+    }
+
+    /**
+     * 使用SM2公钥验签
+     * @param data 数据
+     * @param sign 签名
+     * @param id 签名ID, 可为空, 默认"1234567812345678".getBytes()
+     * @param publicKeyParams 公钥
+     * @param signAlgorithm 签名算法(SM2Cipher.SIGN_ALGORITHM_SM2_SM3)
+     * @return true:验签通过
+     */
+    public static boolean verify(byte[] data, byte[] sign, byte[] id, ECPublicKeyParameters publicKeyParams, String signAlgorithm) {
+        return BaseBCCipher.verifyBySM2PublicKeyParams(data, sign, id, publicKeyParams);
+    }
+
+    /**
+     * 使用SM2公钥验签
+     * @param inputStream 待签名数据的输入流, 执行完毕后会被关闭
+     * @param sign 签名
+     * @param id 签名ID, 可为空, 默认"1234567812345678".getBytes()
+     * @param publicKeyParams 公钥
+     * @param signAlgorithm 签名算法(SM2Cipher.SIGN_ALGORITHM_SM2_SM3)
+     * @return true:验签通过
+     */
+    public static boolean verify(InputStream inputStream, byte[] sign, byte[] id, ECPublicKeyParameters publicKeyParams, String signAlgorithm) throws IOException {
+        return BaseBCCipher.verifyBySM2PublicKeyParams(inputStream, sign, id, publicKeyParams);
+    }
 
     /**
      * 使用SM2公钥加密(密文为C1C2C3格式)

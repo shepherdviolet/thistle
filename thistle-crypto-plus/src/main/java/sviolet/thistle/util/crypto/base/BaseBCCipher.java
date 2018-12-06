@@ -344,6 +344,77 @@ public class BaseBCCipher {
         }
     }
 
+    /**
+     * 使用SM2公钥验签
+     * @param data 数据
+     * @param sign 签名
+     * @param id 签名ID, 可为空, 默认"1234567812345678".getBytes()
+     * @param publicKeyParams 公钥
+     * @return true:验签通过
+     */
+    public static boolean verifyBySM2PublicKeyParams(byte[] data, byte[] sign, byte[] id, ECPublicKeyParameters publicKeyParams) {
+        if (data == null) {
+            return false;
+        }
+        if (sign == null) {
+            return false;
+        }
+        if (publicKeyParams == null) {
+            throw new NullPointerException("publicKeyParams == null");
+        }
+        SM2Signer signer = new SM2Signer();
+        CipherParameters cipherParameters;
+        if (id != null) {
+            //set id
+            cipherParameters = new ParametersWithID(publicKeyParams, id);
+        } else {
+            cipherParameters = publicKeyParams;
+        }
+        signer.init(false, cipherParameters);
+        signer.update(data, 0, data.length);
+        return signer.verifySignature(sign);
+    }
+
+    /**
+     * 使用SM2公钥验签
+     * @param inputStream 待签名数据的输入流, 执行完毕后会被关闭
+     * @param sign 签名
+     * @param id 签名ID, 可为空, 默认"1234567812345678".getBytes()
+     * @param publicKeyParams 公钥
+     * @return true:验签通过
+     */
+    public static boolean verifyBySM2PublicKeyParams(InputStream inputStream, byte[] sign, byte[] id, ECPublicKeyParameters publicKeyParams) throws IOException {
+        if (inputStream == null) {
+            return false;
+        }
+        if (sign == null) {
+            return false;
+        }
+        if (publicKeyParams == null) {
+            throw new NullPointerException("publicKeyParams == null");
+        }
+        try {
+            SM2Signer signer = new SM2Signer();
+            CipherParameters cipherParameters;
+            if (id != null) {
+                //set id
+                cipherParameters = new ParametersWithID(publicKeyParams, id);
+            } else {
+                cipherParameters = publicKeyParams;
+            }
+            signer.init(false, cipherParameters);
+            //handle input stream
+            byte[] buff = new byte[CryptoConstants.BUFFER_SIZE];
+            int size;
+            while((size = inputStream.read(buff)) != -1){
+                signer.update(buff, 0, size);
+            }
+            return signer.verifySignature(sign);
+        } finally {
+            CloseableUtils.closeQuiet(inputStream);
+        }
+    }
+
     /********************************************************************************************************************************
      * SM2 : Crypto
      ********************************************************************************************************************************/
