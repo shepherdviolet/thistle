@@ -19,9 +19,13 @@
 
 package sviolet.thistle.util.crypto;
 
+import org.bouncycastle.asn1.x509.KeyUsage;
 import org.bouncycastle.asn1.x509.X509CertificateStructure;
+import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
+import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.bouncycastle.operator.OperatorCreationException;
 import sviolet.thistle.util.conversion.Base64Utils;
+import sviolet.thistle.util.crypto.base.BaseBCAsymKeyGenerator;
 import sviolet.thistle.util.crypto.base.BaseBCCertificateUtils;
 
 import java.io.ByteArrayInputStream;
@@ -109,6 +113,142 @@ public class AdvancedCertificateUtils extends CertificateUtils {
      */
     public static X509Certificate generateRSAX509Certificate(String subjectDn, RSAPublicKey subjectPublicKey, int subjectValidity, String signAlgorithm, X509Certificate caCertificate, RSAPrivateKey caPrivateKey) throws IOException, CertificateException, OperatorCreationException {
         return BaseBCCertificateUtils.generateRSAX509Certificate(subjectDn, subjectPublicKey, subjectValidity, signAlgorithm, caCertificate, caPrivateKey);
+    }
+
+    /***********************************************************************************************
+     * SM2
+     ***********************************************************************************************/
+
+    /**
+     * 密钥类型:SM2
+     */
+    public static final String KEK_ALGORITHM_SM2 = "SM2";
+    public static final String EC_KEY_ALGORITHM = "EC";
+
+    /**
+     * 签名算法:SM3withSM2
+     */
+    public static final String SIGN_ALGORITHM_SM2_SM3 = "SM3withSM2";
+
+    /**
+     * 生成SM2证书的申请数据CSR (CSR包含申请者信息, CA收到CSR后签名并返回证书)
+     *
+     * <p>
+     * CN=(名称或域名),
+     * OU=(部门名称),
+     * O=(组织名称),
+     * L=(城市或区域名称),
+     * ST=(州或省份名称),
+     * C=(国家代码)
+     * </p>
+     *
+     * @param subjectDn 申请人DN信息, 例:CN=Test CA, OU=IT Dept, O=My Company, L=Ningbo, ST=Zhejiang, C=CN
+     * @param publicKeyParams 申请人公钥
+     * @param privateKeyParams 申请人私钥
+     * @return 证书申请数据, CSR
+     */
+    public static byte[] generateSm2Csr(String subjectDn,
+                                        ECPublicKeyParameters publicKeyParams,
+                                        ECPrivateKeyParameters privateKeyParams) throws OperatorCreationException, IOException {
+        return BaseBCCertificateUtils.generateSm2Csr(subjectDn, publicKeyParams, privateKeyParams);
+    }
+
+    /**
+     * 生成SM2根证书(顶级CA)
+     *
+     * <p>
+     * CN=(名称或域名),
+     * OU=(部门名称),
+     * O=(组织名称),
+     * L=(城市或区域名称),
+     * ST=(州或省份名称),
+     * C=(国家代码)
+     * </p>
+     *
+     * @param caDn CA的DN信息, 例:CN=Test CA, OU=IT Dept, O=My Company, L=Ningbo, ST=Zhejiang, C=CN
+     * @param validity 申请证书的有效期(天), 例:3650
+     * @param issuerPublicKeyParams 证书颁发者(CA)的公钥
+     * @param issuerPrivateKeyParams 证书颁发者(CA)的私钥
+     */
+    public X509Certificate generateSm2X509RootCertificate(String caDn,
+                                                      int validity,
+                                                      ECPublicKeyParameters issuerPublicKeyParams,
+                                                      ECPrivateKeyParameters issuerPrivateKeyParams) throws Exception {
+        byte[] csr = BaseBCCertificateUtils.generateSm2Csr(caDn, issuerPublicKeyParams, issuerPrivateKeyParams);
+        return BaseBCCertificateUtils.generateSm2X509Certificate(
+                csr,
+                validity,
+                caDn,
+                issuerPublicKeyParams,
+                issuerPrivateKeyParams,
+                true,
+                new KeyUsage(KeyUsage.digitalSignature | KeyUsage.dataEncipherment | KeyUsage.keyCertSign | KeyUsage.cRLSign));
+    }
+
+    /**
+     * 生成SM2二级CA证书
+     *
+     * <p>
+     * CN=(名称或域名),
+     * OU=(部门名称),
+     * O=(组织名称),
+     * L=(城市或区域名称),
+     * ST=(州或省份名称),
+     * C=(国家代码)
+     * </p>
+     *
+     * @param csr 证书申请数据, BaseBCCertificateUtils.generateSm2Csr(...)
+     * @param validity 申请证书的有效期(天), 例:3650
+     * @param issuerCertificate 证书颁发者(CA)的证书
+     * @param issuerPrivateKeyParams 证书颁发者(CA)的私钥
+     */
+    public static X509Certificate generateSm2X509CaCertificate(byte[] csr,
+                                                             int validity,
+                                                             X509Certificate issuerCertificate,
+                                                             ECPrivateKeyParameters issuerPrivateKeyParams) throws Exception {
+        return BaseBCCertificateUtils.generateSm2X509Certificate(
+                csr,
+                validity,
+                issuerCertificate.getSubjectX500Principal().toString(),
+                //这里性能不是太好, 重新解析数据获取公钥, 要追求性能可以直接用CA的DN+公私钥生成
+                BaseBCAsymKeyGenerator.ecPublicKeyToEcPublicKeyParams(
+                        BaseBCAsymKeyGenerator.parseEcPublicKeyByX509(issuerCertificate.getPublicKey().getEncoded(), EC_KEY_ALGORITHM)),
+                issuerPrivateKeyParams,
+                true,
+                new KeyUsage(KeyUsage.digitalSignature | KeyUsage.dataEncipherment | KeyUsage.keyCertSign | KeyUsage.cRLSign));
+    }
+
+    /**
+     * 生成SM2用户证书
+     *
+     * <p>
+     * CN=(名称或域名),
+     * OU=(部门名称),
+     * O=(组织名称),
+     * L=(城市或区域名称),
+     * ST=(州或省份名称),
+     * C=(国家代码)
+     * </p>
+     *
+     * @param csr 证书申请数据, BaseBCCertificateUtils.generateSm2Csr(...)
+     * @param validity 申请证书的有效期(天), 例:3650
+     * @param issuerCertificate 证书颁发者(CA)的证书
+     * @param issuerPrivateKeyParams 证书颁发者(CA)的私钥
+     */
+    public static X509Certificate generateSm2X509Certificate(byte[] csr,
+                                                               int validity,
+                                                               X509Certificate issuerCertificate,
+                                                               ECPrivateKeyParameters issuerPrivateKeyParams) throws Exception {
+        return BaseBCCertificateUtils.generateSm2X509Certificate(
+                csr,
+                validity,
+                issuerCertificate.getSubjectX500Principal().toString(),
+                //这里性能不是太好, 重新解析数据获取公钥, 要追求性能可以直接用CA的DN+公私钥生成
+                BaseBCAsymKeyGenerator.ecPublicKeyToEcPublicKeyParams(
+                        BaseBCAsymKeyGenerator.parseEcPublicKeyByX509(issuerCertificate.getPublicKey().getEncoded(), EC_KEY_ALGORITHM)),
+                issuerPrivateKeyParams,
+                false,
+                new KeyUsage(KeyUsage.digitalSignature | KeyUsage.dataEncipherment));
     }
 
     /***********************************************************************************************
