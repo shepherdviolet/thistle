@@ -25,21 +25,20 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.SignatureException;
+import java.security.*;
+import java.security.cert.Certificate;
 import java.security.cert.CertPath;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 public class SM2CertTest {
 
     @Test
-    public void common() throws OperatorCreationException, CertificateException, InvalidKeySpecException, NoSuchAlgorithmException, IOException, InvalidKeyException, NoSuchProviderException, SignatureException, PKCSException {
+    public void common() throws OperatorCreationException, CertificateException, InvalidKeySpecException, NoSuchAlgorithmException, IOException, PKCSException, NoSuchProviderException, UnrecoverableKeyException, KeyStoreException {
         //生成随机密钥对
         SM2KeyGenerator.SM2KeyParamsPair rootKeyPair = SM2KeyGenerator.generateKeyParamsPair();
 
@@ -53,7 +52,7 @@ public class SM2CertTest {
         //简单验证证书
         Assert.assertTrue(AdvancedCertificateUtils.verifyCertificate(rootCert, rootKeyPair.getPublicKeyParams()));
 
-        System.out.println(PEMEncodeUtils.certificateToPEMEncoded(AdvancedCertificateUtils.parseCertificateToEncoded(rootCert)));
+//        System.out.println(PEMEncodeUtils.certificateToPEMEncoded(AdvancedCertificateUtils.parseCertificateToEncoded(rootCert)));
 
         //生成随机密钥对
         SM2KeyGenerator.SM2KeyParamsPair userKeyPair = SM2KeyGenerator.generateKeyParamsPair();
@@ -74,7 +73,7 @@ public class SM2CertTest {
         //简单验证证书
         Assert.assertTrue(AdvancedCertificateUtils.verifyCertificate(userCert, rootKeyPair.getPublicKeyParams()));
 
-        System.out.println(PEMEncodeUtils.certificateToPEMEncoded(AdvancedCertificateUtils.parseCertificateToEncoded(userCert)));
+//        System.out.println(PEMEncodeUtils.certificateToPEMEncoded(AdvancedCertificateUtils.parseCertificateToEncoded(userCert)));
 
         //从X509编码的证书数据中解析证书实例
         byte[] x509 = AdvancedCertificateUtils.parseCertificateToEncoded(userCert);
@@ -104,15 +103,25 @@ public class SM2CertTest {
                 userCert,
                 rootCert);
 
-        //将证书转为pkcs12数据
-        byte[] pkcs12 = AdvancedPKCS12KeyStoreUtils.parseCertificateAndKeyToPkcs12Advanced(
+        //获取pfx/p12中的别名列表
+        Enumeration<String> aliases = AdvancedPKCS12KeyStoreUtils.loadAliasesAdvanced(
+                "./out/test-case/sm2-test-all.p12",
+                "123456"
+        );
+
+//        if (aliases.hasMoreElements()) {
+//            System.out.println(aliases.nextElement());
+//        }
+
+        //从pfx/p12中读取证书和私钥
+        PKCS12KeyStoreUtils.CertificateChainAndKey certificateChainAndKey = AdvancedPKCS12KeyStoreUtils.loadCertificateAndKeyAdvanced(
+                "./out/test-case/sm2-test-all.p12",
                 "123456",
-                "test",
-                userKeyPair.getJdkPrivateKey(),
-                userCert,
-                rootCert);
+                "test"
+        );
 
-
+        Assert.assertArrayEquals(new Certificate[]{userCert, rootCert}, certificateChainAndKey.getCertificateChain());
+        Assert.assertEquals(userKeyPair.getJdkPrivateKey(), certificateChainAndKey.getPrivateKey());
 
     }
 
