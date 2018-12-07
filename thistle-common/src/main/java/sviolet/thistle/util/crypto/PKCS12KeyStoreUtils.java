@@ -19,6 +19,8 @@
 
 package sviolet.thistle.util.crypto;
 
+import sviolet.thistle.util.common.CloseableUtils;
+
 import java.io.*;
 import java.security.*;
 import java.security.cert.Certificate;
@@ -106,7 +108,7 @@ public class PKCS12KeyStoreUtils {
      *          caCertificate);
      * }</p>
      *
-     * @param keyStoreOutputStream keyStore的输出流
+     * @param keyStoreOutputStream keyStore的输出流, 完成后会关闭
      * @param keyStorePassword keyStore的密码
      * @param alias 证书和私钥的别名
      * @param privateKey 证书对应的私钥(如果为空, 则仅保存证书)
@@ -114,10 +116,10 @@ public class PKCS12KeyStoreUtils {
      *                         证书链到一个文件, 也可以传入多个证书, 顺序是个人证书->二级CA证书->根证书, {userCertificate, subCaCertificate, rootCertificate}
      */
     public static void storeCertificateAndKey(OutputStream keyStoreOutputStream, String keyStorePassword, String alias, PrivateKey privateKey, Certificate... certificateChain) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {
-        if (certificateChain == null || certificateChain.length <= 0){
-            throw new IllegalAccessError("Null or empty certificateChain");
-        }
         try {
+            if (certificateChain == null || certificateChain.length <= 0){
+                throw new IllegalAccessError("Null or empty certificateChain");
+            }
             KeyStore keyStore = KeyStore.getInstance(ALGORITHM);
             keyStore.load(null, null);
             if (privateKey != null) {
@@ -129,12 +131,7 @@ public class PKCS12KeyStoreUtils {
             }
             keyStore.store(keyStoreOutputStream, keyStorePassword != null ? keyStorePassword.toCharArray() : null);
         } finally {
-            if (keyStoreOutputStream != null){
-                try {
-                    keyStoreOutputStream.close();
-                } catch (Throwable ignore){
-                }
-            }
+            CloseableUtils.closeQuiet(keyStoreOutputStream);
         }
     }
 
@@ -169,7 +166,7 @@ public class PKCS12KeyStoreUtils {
      *          );
      * }</pre>
      *
-     * @param inputStream keyStore输入流
+     * @param inputStream keyStore输入流, 完成后会关闭
      * @param keystorePassword keyStore密码
      */
     public static Enumeration<String> loadAliases(InputStream inputStream, String keystorePassword) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, UnrecoverableKeyException {
@@ -178,12 +175,7 @@ public class PKCS12KeyStoreUtils {
             keyStore.load(inputStream, keystorePassword != null ? keystorePassword.toCharArray() : null);
             return keyStore.aliases();
         } finally {
-            if (inputStream != null){
-                try {
-                    inputStream.close();
-                } catch (IOException ignored) {
-                }
-            }
+            CloseableUtils.closeQuiet(inputStream);
         }
     }
 
@@ -221,7 +213,7 @@ public class PKCS12KeyStoreUtils {
      *          );
      * }</pre>
      *
-     * @param inputStream keyStore输入流
+     * @param inputStream keyStore输入流, 完成后会关闭
      * @param keystorePassword keyStore密码
      * @param alias 证书和私钥的别名
      */
@@ -238,12 +230,7 @@ public class PKCS12KeyStoreUtils {
             }
             return new CertificateChainAndKey(alias, certificateChain, (PrivateKey) keyStore.getKey(alias, keystorePassword != null ? keystorePassword.toCharArray() : null));
         } finally {
-            if (inputStream != null){
-                try {
-                    inputStream.close();
-                } catch (IOException ignored) {
-                }
-            }
+            CloseableUtils.closeQuiet(inputStream);
         }
     }
 
@@ -278,7 +265,7 @@ public class PKCS12KeyStoreUtils {
      *          );
      * }</pre>
      *
-     * @param inputStream keyStore输入流
+     * @param inputStream keyStore输入流, 完成后会关闭
      * @param keystorePassword keyStore密码
      */
     public static List<CertificateChainAndKey> loadAllCertificateAndKey(InputStream inputStream, String keystorePassword) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, UnrecoverableKeyException {
@@ -300,12 +287,7 @@ public class PKCS12KeyStoreUtils {
             }
             return list;
         } finally {
-            if (inputStream != null){
-                try {
-                    inputStream.close();
-                } catch (IOException ignored) {
-                }
-            }
+            CloseableUtils.closeQuiet(inputStream);
         }
     }
 

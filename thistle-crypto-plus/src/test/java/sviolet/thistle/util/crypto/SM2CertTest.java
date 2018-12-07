@@ -20,6 +20,7 @@
 package sviolet.thistle.util.crypto;
 
 import org.bouncycastle.operator.OperatorCreationException;
+import org.bouncycastle.pkcs.PKCSException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -38,7 +39,7 @@ import java.util.List;
 public class SM2CertTest {
 
     @Test
-    public void common() throws OperatorCreationException, CertificateException, InvalidKeySpecException, NoSuchAlgorithmException, IOException, InvalidKeyException, NoSuchProviderException, SignatureException {
+    public void common() throws OperatorCreationException, CertificateException, InvalidKeySpecException, NoSuchAlgorithmException, IOException, InvalidKeyException, NoSuchProviderException, SignatureException, PKCSException {
         //生成随机密钥对
         SM2KeyGenerator.SM2KeyParamsPair rootKeyPair = SM2KeyGenerator.generateKeyParamsPair();
 
@@ -93,6 +94,16 @@ public class SM2CertTest {
 
         //解析PKCS7的数据到证书链
         certPath = AdvancedCertificateUtils.parseX509PKCS7CertPath(certPKCS7);
+
+        //将证书链写入pfx/p12文件
+        AdvancedPKCS12KeyStoreUtils.storeCertificateAndKeyAdvanced(
+                "./out/test-case/sm2-test-all.p12",
+                "123456",
+                "test",
+                userKeyPair.getJdkPrivateKey(),
+                userCert,
+                rootCert);
+
 
     }
 
