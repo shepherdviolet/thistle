@@ -23,6 +23,7 @@ import org.bouncycastle.asn1.x509.KeyUsage;
 import org.bouncycastle.asn1.x509.X509CertificateStructure;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
+import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
 import org.bouncycastle.operator.OperatorCreationException;
 import sviolet.thistle.util.conversion.Base64Utils;
 import sviolet.thistle.util.crypto.base.BaseBCAsymKeyGenerator;
@@ -47,6 +48,30 @@ import java.security.spec.InvalidKeySpecException;
  * @author S.Violet
  */
 public class AdvancedCertificateUtils extends CertificateUtils {
+
+    /***********************************************************************************************
+     * Common
+     ***********************************************************************************************/
+
+    /**
+     * 使用颁发者公钥验证证书有效性
+     * @param certificate 证书
+     * @param issuerPublicKey 颁发者公钥
+     * @return true:有效
+     */
+    public static boolean verifyCertificate(X509Certificate certificate, BCECPublicKey issuerPublicKey) {
+        return BaseBCCertificateUtils.verifyCertificate(certificate, issuerPublicKey);
+    }
+
+    /**
+     * 使用颁发者公钥验证证书有效性
+     * @param certificate 证书
+     * @param issuerPublicKeyParams 颁发者公钥
+     * @return true:有效
+     */
+    public static boolean verifyCertificate(X509Certificate certificate, ECPublicKeyParameters issuerPublicKeyParams) {
+        return BaseBCCertificateUtils.verifyCertificate(certificate, issuerPublicKeyParams);
+    }
 
     /***********************************************************************************************
      * RSA

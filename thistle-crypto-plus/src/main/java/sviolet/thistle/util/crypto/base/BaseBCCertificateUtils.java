@@ -80,6 +80,41 @@ public class BaseBCCertificateUtils {
     }
 
     /***********************************************************************************************
+     * Common
+     ***********************************************************************************************/
+
+    /**
+     * 使用颁发者公钥验证证书有效性
+     * @param certificate 证书
+     * @param issuerPublicKey 颁发者公钥
+     * @return true:有效
+     */
+    public static boolean verifyCertificate(X509Certificate certificate, BCECPublicKey issuerPublicKey) {
+        try {
+            certificate.verify(issuerPublicKey, BouncyCastleProvider.PROVIDER_NAME);
+        } catch (Exception ex) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 使用颁发者公钥验证证书有效性
+     * @param certificate 证书
+     * @param issuerPublicKeyParams 颁发者公钥
+     * @return true:有效
+     */
+    public static boolean verifyCertificate(X509Certificate certificate, ECPublicKeyParameters issuerPublicKeyParams) {
+        try {
+            certificate.verify(BaseBCAsymKeyGenerator.ecPublicKeyParamsToEcPublicKey(issuerPublicKeyParams, "EC"),
+                    BouncyCastleProvider.PROVIDER_NAME);
+        } catch (Exception ex) {
+            return false;
+        }
+        return true;
+    }
+
+    /***********************************************************************************************
      * RSA
      ***********************************************************************************************/
 

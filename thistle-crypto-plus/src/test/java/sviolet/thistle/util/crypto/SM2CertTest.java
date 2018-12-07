@@ -20,8 +20,8 @@
 package sviolet.thistle.util.crypto;
 
 import org.bouncycastle.operator.OperatorCreationException;
+import org.junit.Assert;
 import org.junit.Test;
-import sviolet.thistle.util.conversion.Base64Utils;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;
@@ -31,7 +31,6 @@ import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
-import java.util.Date;
 
 public class SM2CertTest {
 
@@ -48,8 +47,7 @@ public class SM2CertTest {
                 rootKeyPair.getPrivateKeyParams());
 
         //简单验证证书
-        rootCert.checkValidity(new Date());
-        rootCert.verify(rootKeyPair.getJdkPublicKey());
+        Assert.assertTrue(AdvancedCertificateUtils.verifyCertificate(rootCert, rootKeyPair.getPublicKeyParams()));
 
         System.out.println(PEMEncodeUtils.certificateToPEMEncoded(AdvancedCertificateUtils.parseCertificateToEncoded(rootCert)));
 
@@ -70,8 +68,7 @@ public class SM2CertTest {
                 rootKeyPair.getPrivateKeyParams());
 
         //简单验证证书
-        userCert.checkValidity(new Date());
-        userCert.verify(rootKeyPair.getJdkPublicKey());
+        Assert.assertTrue(AdvancedCertificateUtils.verifyCertificate(userCert, rootKeyPair.getPublicKeyParams()));
 
         System.out.println(PEMEncodeUtils.certificateToPEMEncoded(AdvancedCertificateUtils.parseCertificateToEncoded(userCert)));
 
