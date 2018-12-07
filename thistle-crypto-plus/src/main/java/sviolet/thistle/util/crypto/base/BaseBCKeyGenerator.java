@@ -25,7 +25,6 @@ import javax.crypto.KeyGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
-import java.security.Security;
 
 /**
  * [Bouncy castle]密钥生成基本逻辑<p>
@@ -41,7 +40,7 @@ import java.security.Security;
 public class BaseBCKeyGenerator {
 
     static {
-        Security.addProvider(new BouncyCastleProvider());
+        BouncyCastleProviderUtils.installProvider();
     }
 
     /**

@@ -53,7 +53,6 @@ import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.security.Security;
 import java.security.cert.*;
 import java.security.cert.Certificate;
 import java.security.interfaces.RSAPrivateKey;
@@ -79,7 +78,7 @@ public class BaseBCCertificateUtils {
     private static final ReversedBCStyle REVERSED_BC_STYLE = new ReversedBCStyle();
 
     static {
-        Security.addProvider(new BouncyCastleProvider());
+        BouncyCastleProviderUtils.installProvider();
     }
 
     /***********************************************************************************************

@@ -49,7 +49,7 @@ import java.security.spec.X509EncodedKeySpec;
 public class BaseBCAsymKeyGenerator {
 
     static {
-        Security.addProvider(new BouncyCastleProvider());
+        BouncyCastleProviderUtils.installProvider();
     }
 
     /**

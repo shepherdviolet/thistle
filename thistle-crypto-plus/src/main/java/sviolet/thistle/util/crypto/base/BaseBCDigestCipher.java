@@ -20,12 +20,10 @@
 package sviolet.thistle.util.crypto.base;
 
 import org.bouncycastle.crypto.Digest;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import sviolet.thistle.util.common.CloseableUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.Security;
 
 /**
  * [Bouncy castle]摘要基本逻辑<p>
@@ -41,7 +39,7 @@ import java.security.Security;
 public class BaseBCDigestCipher {
 
     static {
-        Security.addProvider(new BouncyCastleProvider());
+        BouncyCastleProviderUtils.installProvider();
     }
 
     /**

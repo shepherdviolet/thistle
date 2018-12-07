@@ -56,7 +56,7 @@ import java.security.*;
 public class BaseBCCipher {
 
     static {
-        Security.addProvider(new BouncyCastleProvider());
+        BouncyCastleProviderUtils.installProvider();
     }
 
     /********************************************************************************************************************************

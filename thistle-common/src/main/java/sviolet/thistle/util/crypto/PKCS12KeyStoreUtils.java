@@ -297,7 +297,7 @@ public class PKCS12KeyStoreUtils {
         private Certificate[] certificateChain;
         private PrivateKey privateKey;
 
-        private CertificateChainAndKey(String alias, Certificate[] certificateChain, PrivateKey privateKey) {
+        protected CertificateChainAndKey(String alias, Certificate[] certificateChain, PrivateKey privateKey) {
             this.alias = alias;
             this.certificateChain = certificateChain;
             this.privateKey = privateKey;
