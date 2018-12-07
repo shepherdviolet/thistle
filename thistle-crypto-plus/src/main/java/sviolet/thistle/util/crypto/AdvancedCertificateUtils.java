@@ -59,7 +59,7 @@ public class AdvancedCertificateUtils extends CertificateUtils {
      * 使用BouncyCastle从输入流中解析证书, 适用于SM2等更多算法的证书
      * @param certData X509格式证书数据
      */
-    public static X509Certificate parseX509ToCertificateByBouncyCastle(byte[] certData) throws CertificateException, NoSuchProviderException {
+    public static X509Certificate parseX509ToCertificateAdvanced(byte[] certData) throws CertificateException, NoSuchProviderException {
         return (X509Certificate) BaseBCCertificateUtils.parseCertificateByBouncyCastle(certData, BaseCertificateUtils.TYPE_X509);
     }
 
@@ -67,7 +67,7 @@ public class AdvancedCertificateUtils extends CertificateUtils {
      * 使用BouncyCastle从输入流中解析证书, 适用于SM2等更多算法的证书
      * @param inputStream X509格式证书数据流, 会被close掉
      */
-    public static X509Certificate parseX509ToCertificateByBouncyCastle(InputStream inputStream) throws CertificateException, NoSuchProviderException {
+    public static X509Certificate parseX509ToCertificateAdvanced(InputStream inputStream) throws CertificateException, NoSuchProviderException {
         return (X509Certificate) BaseBCCertificateUtils.parseCertificateByBouncyCastle(inputStream, BaseCertificateUtils.TYPE_X509);
     }
 

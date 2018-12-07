@@ -28,6 +28,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SignatureException;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
@@ -71,6 +72,12 @@ public class SM2CertTest {
         Assert.assertTrue(AdvancedCertificateUtils.verifyCertificate(userCert, rootKeyPair.getPublicKeyParams()));
 
         System.out.println(PEMEncodeUtils.certificateToPEMEncoded(AdvancedCertificateUtils.parseCertificateToEncoded(userCert)));
+
+        //从X509编码的证书数据中解析证书实例
+        byte[] x509 = AdvancedCertificateUtils.parseCertificateToEncoded(userCert);
+        X509Certificate userCert2 = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(x509);
+        Assert.assertTrue(AdvancedCertificateUtils.verifyCertificate(userCert2, rootKeyPair.getPublicKeyParams()));
+
 
     }
 
