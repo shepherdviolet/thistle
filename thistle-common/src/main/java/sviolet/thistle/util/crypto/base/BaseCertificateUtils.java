@@ -44,18 +44,21 @@ public class BaseCertificateUtils {
      ***********************************************************************************************/
 
     /**
-     * <p>解析证书, 返回Certificate对象, 可用来获取证书公钥实例等</p>
+     * <p>解析证书, 返回Certificate对象, 可用来获取证书公钥实例等, JDK版本较弱. 解析SM2等证书请使用BaseBCCertificateUtils. </p>
+     *
      * @param certData 证书数据
      * @param type 证书数据格式, 例如X.509
+     * @return 如果type是X.509, 可以强制类型转换为X509Certificate
      */
     public static Certificate parseCertificate(byte[] certData, String type) throws CertificateException {
         return parseCertificate(new ByteArrayInputStream(certData), type);
     }
 
     /**
-     * <p>解析证书, 返回Certificate对象, 可用来获取证书公钥实例等</p>
+     * <p>解析证书, 返回Certificate对象, 可用来获取证书公钥实例等, JDK版本较弱. 解析SM2等证书请使用BaseBCCertificateUtils. </p>
      * @param inputStream 证书数据流, 会被close掉
      * @param type 证书数据格式, 例如X.509
+     * @return 如果type是X.509, 可以强制类型转换为X509Certificate
      */
     public static Certificate parseCertificate(InputStream inputStream, String type) throws CertificateException {
         try {
@@ -70,7 +73,7 @@ public class BaseCertificateUtils {
     }
 
     /**
-     * 将证书编码为二进制数据
+     * 将证书编码为二进制数据, 适用于目前所有证书类型
      * @param certificate 证书
      * @return 二进制数据
      */

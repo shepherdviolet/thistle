@@ -44,13 +44,16 @@ import org.bouncycastle.operator.bc.BcRSAContentSignerBuilder;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.bouncycastle.pkcs.PKCS10CertificationRequestBuilder;
+import sviolet.thistle.util.common.CloseableUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.Security;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -82,6 +85,32 @@ public class BaseBCCertificateUtils {
     /***********************************************************************************************
      * Common
      ***********************************************************************************************/
+
+    /**
+     * 使用BouncyCastle从输入流中解析证书, 适用于SM2等更多算法的证书
+     *
+     * @param data 证书数据(X509格式)
+     * @param type 证书数据格式, 例如X.509
+     * @return 如果type是X.509, 可以强制类型转换为X509Certificate
+     */
+    public static Certificate parseCertificateByBouncyCastle(byte[] data, String type) throws CertificateException, NoSuchProviderException {
+        return parseCertificateByBouncyCastle(new ByteArrayInputStream(data), type);
+    }
+
+    /**
+     * 使用BouncyCastle从输入流中解析证书, 适用于SM2等更多算法的证书
+     *
+     * @param inputStream 证书数据流(X509格式), 会被close掉
+     * @param type 证书数据格式, 例如X.509
+     * @return 如果type是X.509, 可以强制类型转换为X509Certificate
+     */
+    public static Certificate parseCertificateByBouncyCastle(InputStream inputStream, String type) throws CertificateException, NoSuchProviderException {
+        try {
+            return CertificateFactory.getInstance(type, BouncyCastleProvider.PROVIDER_NAME).generateCertificate(inputStream);
+        } finally {
+            CloseableUtils.closeQuiet(inputStream);
+        }
+    }
 
     /**
      * 使用颁发者公钥验证证书有效性

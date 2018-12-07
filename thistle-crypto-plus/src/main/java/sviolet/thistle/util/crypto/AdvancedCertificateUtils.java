@@ -28,12 +28,14 @@ import org.bouncycastle.operator.OperatorCreationException;
 import sviolet.thistle.util.conversion.Base64Utils;
 import sviolet.thistle.util.crypto.base.BaseBCAsymKeyGenerator;
 import sviolet.thistle.util.crypto.base.BaseBCCertificateUtils;
+import sviolet.thistle.util.crypto.base.BaseCertificateUtils;
 import sviolet.thistle.util.crypto.base.SM2DefaultCurve;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
@@ -52,6 +54,22 @@ public class AdvancedCertificateUtils extends CertificateUtils {
     /***********************************************************************************************
      * Common
      ***********************************************************************************************/
+
+    /**
+     * 使用BouncyCastle从输入流中解析证书, 适用于SM2等更多算法的证书
+     * @param certData X509格式证书数据
+     */
+    public static X509Certificate parseX509ToCertificateByBouncyCastle(byte[] certData) throws CertificateException, NoSuchProviderException {
+        return (X509Certificate) BaseBCCertificateUtils.parseCertificateByBouncyCastle(certData, BaseCertificateUtils.TYPE_X509);
+    }
+
+    /**
+     * 使用BouncyCastle从输入流中解析证书, 适用于SM2等更多算法的证书
+     * @param inputStream X509格式证书数据流, 会被close掉
+     */
+    public static X509Certificate parseX509ToCertificateByBouncyCastle(InputStream inputStream) throws CertificateException, NoSuchProviderException {
+        return (X509Certificate) BaseBCCertificateUtils.parseCertificateByBouncyCastle(inputStream, BaseCertificateUtils.TYPE_X509);
+    }
 
     /**
      * 使用颁发者公钥验证证书有效性

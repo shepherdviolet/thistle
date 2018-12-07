@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 /**
  * <p>证书工具</p>
@@ -40,23 +41,25 @@ public class CertificateUtils {
      ***********************************************************************************************/
 
     /**
-     * <p>解析X509格式的证书, 返回Certificate对象, 可用来获取证书公钥实例等</p>
+     * <p>解析X509格式的证书, 返回Certificate对象, 可用来获取证书公钥实例等, JDK版本较弱.
+     * 解析SM2等证书请使用thistle-crypto-plus的AdvancedCertificateUtils. </p>
      * @param certData X509格式证书数据
      */
-    public static Certificate parseX509ToCertificate(byte[] certData) throws CertificateException {
-        return BaseCertificateUtils.parseCertificate(certData, BaseCertificateUtils.TYPE_X509);
+    public static X509Certificate parseX509ToCertificate(byte[] certData) throws CertificateException {
+        return (X509Certificate) BaseCertificateUtils.parseCertificate(certData, BaseCertificateUtils.TYPE_X509);
     }
 
     /**
-     * <p>解析X509格式的证书, 返回Certificate对象, 可用来获取证书公钥实例等</p>
+     * <p>解析X509格式的证书, 返回Certificate对象, 可用来获取证书公钥实例等, JDK版本较弱.
+     * 解析SM2等证书请使用thistle-crypto-plus的AdvancedCertificateUtils. </p>
      * @param inputStream X509格式证书数据流, 会被close掉
      */
-    public static Certificate parseX509ToCertificate(InputStream inputStream) throws CertificateException {
-        return BaseCertificateUtils.parseCertificate(inputStream, BaseCertificateUtils.TYPE_X509);
+    public static X509Certificate parseX509ToCertificate(InputStream inputStream) throws CertificateException {
+        return (X509Certificate) BaseCertificateUtils.parseCertificate(inputStream, BaseCertificateUtils.TYPE_X509);
     }
 
     /**
-     * 将证书编码为二进制数据
+     * 将证书编码为二进制数据, 适用于目前所有证书类型
      * @param certificate 证书
      * @return 二进制数据
      */
