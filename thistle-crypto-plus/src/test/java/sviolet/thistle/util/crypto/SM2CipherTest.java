@@ -24,7 +24,10 @@ import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.junit.Assert;
 import org.junit.Test;
+import sviolet.thistle.util.conversion.ByteUtils;
+import sviolet.thistle.util.crypto.base.BaseBCAsymKeyGenerator;
 import sviolet.thistle.util.crypto.base.CommonCryptoException;
+import sviolet.thistle.util.crypto.base.SM2DefaultCurve;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -50,6 +53,9 @@ public class SM2CipherTest {
         //公私钥转为标准编码
         byte[] pkcs8 = keyPair.getPKCS8EncodedPrivateKey();
         byte[] x509 = keyPair.getX509EncodedPublicKey();
+
+//        System.out.println(ByteUtils.bytesToHex(pkcs8));
+//        System.out.println(ByteUtils.bytesToHex(x509));
 
         //转为PEM格式
         String privatePem = PEMEncodeUtils.sm2PrivateKeyToPEMEncoded(pkcs8);
@@ -101,6 +107,15 @@ public class SM2CipherTest {
         sign = SM2Cipher.signToRS(new ByteArrayInputStream(STRING.getBytes("UTF-8")), null, privateKeyParams, SM2Cipher.SIGN_ALGORITHM_SM2_SM3);
         result = SM2Cipher.verifyFromRS(new ByteArrayInputStream(STRING.getBytes("UTF-8")), sign, null, publicKeyParams, SM2Cipher.SIGN_ALGORITHM_SM2_SM3);
         Assert.assertTrue(result);
+
+        //特殊:openssl可识别的SEC1标准的私钥数据
+        byte[] sec1 = BaseBCAsymKeyGenerator.encodePkcs8ToSec1(pkcs8);
+        byte[] pkcs8New = BaseBCAsymKeyGenerator.encodeSec1ToPkcs8(SM2DefaultCurve.EC_PARAM_SPEC_FOR_SEC1, sec1);
+
+//        System.out.println(ByteUtils.bytesToHex(sec1));
+//        System.out.println(ByteUtils.bytesToHex(pkcs8New));
+
+        Assert.assertArrayEquals(pkcs8, pkcs8New);
 
     }
 
