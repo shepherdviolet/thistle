@@ -19,12 +19,8 @@
 
 package sviolet.thistle.util.crypto.base;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
+import java.security.cert.*;
 
 /**
  * 证书处理基本逻辑<p>
@@ -42,17 +38,6 @@ public class BaseCertificateUtils {
     /***********************************************************************************************
      * Common
      ***********************************************************************************************/
-
-    /**
-     * <p>解析证书, 返回Certificate对象, 可用来获取证书公钥实例等, JDK版本较弱. 解析SM2等证书请使用BaseBCCertificateUtils. </p>
-     *
-     * @param certData 证书数据
-     * @param type 证书数据格式, 例如X.509
-     * @return 如果type是X.509, 可以强制类型转换为X509Certificate
-     */
-    public static Certificate parseCertificate(byte[] certData, String type) throws CertificateException {
-        return parseCertificate(new ByteArrayInputStream(certData), type);
-    }
 
     /**
      * <p>解析证书, 返回Certificate对象, 可用来获取证书公钥实例等, JDK版本较弱. 解析SM2等证书请使用BaseBCCertificateUtils. </p>
@@ -82,6 +67,19 @@ public class BaseCertificateUtils {
             return null;
         }
         return certificate.getEncoded();
+    }
+
+    /**
+     * 将证书链编码为二进制数据
+     * @param certPath 证书链
+     * @param encoding 编码, PKCS7
+     * @return 证书链的数据
+     */
+    public static byte[] encodeCertPath(CertPath certPath, String encoding) throws CertificateEncodingException {
+        if (certPath == null) {
+            return null;
+        }
+        return certPath.getEncoded(encoding);
     }
 
 }

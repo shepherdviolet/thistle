@@ -36,11 +36,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.cert.CertPath;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
+import java.util.List;
 
 /**
  * <p>高级证书工具</p>
@@ -60,7 +62,10 @@ public class AdvancedCertificateUtils extends CertificateUtils {
      * @param certData X509格式证书数据
      */
     public static X509Certificate parseX509ToCertificateAdvanced(byte[] certData) throws CertificateException, NoSuchProviderException {
-        return (X509Certificate) BaseBCCertificateUtils.parseCertificateByBouncyCastle(certData, BaseCertificateUtils.TYPE_X509);
+        if (certData == null) {
+            throw new NullPointerException("certData == null");
+        }
+        return (X509Certificate) BaseBCCertificateUtils.parseCertificateByBouncyCastle(new ByteArrayInputStream(certData), BaseCertificateUtils.TYPE_X509);
     }
 
     /**
@@ -69,6 +74,14 @@ public class AdvancedCertificateUtils extends CertificateUtils {
      */
     public static X509Certificate parseX509ToCertificateAdvanced(InputStream inputStream) throws CertificateException, NoSuchProviderException {
         return (X509Certificate) BaseBCCertificateUtils.parseCertificateByBouncyCastle(inputStream, BaseCertificateUtils.TYPE_X509);
+    }
+
+    /**
+     * 将用户证书/CA证书/根证书组装成证书链
+     * @param certificateList 用户证书/CA证书/根证书, 顺序为用户证书->CA证书->根证书
+     */
+    public static CertPath generateX509CertPath(List<X509Certificate> certificateList) throws CertificateException, NoSuchProviderException {
+        return BaseBCCertificateUtils.generateCertPath(certificateList, BaseCertificateUtils.TYPE_X509);
     }
 
     /**

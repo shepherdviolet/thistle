@@ -21,11 +21,9 @@ package sviolet.thistle.util.crypto;
 
 import sviolet.thistle.util.crypto.base.BaseCertificateUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
+import java.security.cert.*;
 
 /**
  * <p>证书工具</p>
@@ -46,7 +44,10 @@ public class CertificateUtils {
      * @param certData X509格式证书数据
      */
     public static X509Certificate parseX509ToCertificate(byte[] certData) throws CertificateException {
-        return (X509Certificate) BaseCertificateUtils.parseCertificate(certData, BaseCertificateUtils.TYPE_X509);
+        if (certData == null) {
+            throw new NullPointerException("certData == null");
+        }
+        return (X509Certificate) BaseCertificateUtils.parseCertificate(new ByteArrayInputStream(certData), BaseCertificateUtils.TYPE_X509);
     }
 
     /**
@@ -65,6 +66,15 @@ public class CertificateUtils {
      */
     public static byte[] parseCertificateToEncoded(Certificate certificate) throws CertificateEncodingException {
         return BaseCertificateUtils.encodeCertificate(certificate);
+    }
+
+    /**
+     * 将证书链编码为PKCS7数据
+     * @param certPath 证书链
+     * @return 证书链的PKCS7数据
+     */
+    public static byte[] parseCertPathToPKCS7Encoded(CertPath certPath) throws CertificateEncodingException {
+        return BaseCertificateUtils.encodeCertPath(certPath, "PKCS7");
     }
 
 }

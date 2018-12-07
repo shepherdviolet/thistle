@@ -28,10 +28,12 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SignatureException;
-import java.security.cert.Certificate;
+import java.security.cert.CertPath;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SM2CertTest {
 
@@ -78,6 +80,16 @@ public class SM2CertTest {
         X509Certificate userCert2 = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(x509);
         Assert.assertTrue(AdvancedCertificateUtils.verifyCertificate(userCert2, rootKeyPair.getPublicKeyParams()));
 
+        //组装证书链对象
+        List<X509Certificate> certificateList = new ArrayList<>(2);
+        certificateList.add(userCert);
+        certificateList.add(rootCert);
+        CertPath certPath = AdvancedCertificateUtils.generateX509CertPath(certificateList);
+
+        //证书链PKCS7格式
+        byte[] certPKCS7 = AdvancedCertificateUtils.parseCertPathToPKCS7Encoded(certPath);
+
+//        System.out.println(Base64Utils.encodeToString(certPKCS7));
 
     }
 

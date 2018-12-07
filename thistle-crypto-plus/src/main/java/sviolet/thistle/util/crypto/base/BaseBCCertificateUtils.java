@@ -24,6 +24,7 @@ import org.bouncycastle.asn1.x500.RDN;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.asn1.x509.*;
+import org.bouncycastle.asn1.x509.Extension;
 import org.bouncycastle.asn1.x9.X9ECPoint;
 import org.bouncycastle.asn1.x9.X9ObjectIdentifiers;
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -53,14 +54,13 @@ import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.Security;
+import java.security.cert.*;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Date;
+import java.util.List;
 
 /**
  * [Bouncy castle]证书处理基本逻辑<p>
@@ -89,17 +89,6 @@ public class BaseBCCertificateUtils {
     /**
      * 使用BouncyCastle从输入流中解析证书, 适用于SM2等更多算法的证书
      *
-     * @param data 证书数据(X509格式)
-     * @param type 证书数据格式, 例如X.509
-     * @return 如果type是X.509, 可以强制类型转换为X509Certificate
-     */
-    public static Certificate parseCertificateByBouncyCastle(byte[] data, String type) throws CertificateException, NoSuchProviderException {
-        return parseCertificateByBouncyCastle(new ByteArrayInputStream(data), type);
-    }
-
-    /**
-     * 使用BouncyCastle从输入流中解析证书, 适用于SM2等更多算法的证书
-     *
      * @param inputStream 证书数据流(X509格式), 会被close掉
      * @param type 证书数据格式, 例如X.509
      * @return 如果type是X.509, 可以强制类型转换为X509Certificate
@@ -110,6 +99,16 @@ public class BaseBCCertificateUtils {
         } finally {
             CloseableUtils.closeQuiet(inputStream);
         }
+    }
+
+    /**
+     * 将用户证书/CA证书/根证书组装成证书链
+     * @param certificateList 用户证书/CA证书/根证书, 顺序为用户证书->CA证书->根证书
+     * @param type 证书数据格式, 例如X.509
+     */
+    public static CertPath generateCertPath(List<? extends Certificate> certificateList, String type) throws CertificateException, NoSuchProviderException {
+        CertificateFactory factory = CertificateFactory.getInstance(type, BouncyCastleProvider.PROVIDER_NAME);
+        return factory.generateCertPath(certificateList);
     }
 
     /**
