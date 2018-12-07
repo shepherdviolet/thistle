@@ -85,6 +85,25 @@ public class AdvancedCertificateUtils extends CertificateUtils {
     }
 
     /**
+     * 使用BouncyCastle从输入流中解析证书链, 适用于SM2等更多算法的证书
+     * @param data 证书链数据, X509 PKCS7
+     */
+    public static CertPath parseX509PKCS7CertPath(byte[] data) throws CertificateException, NoSuchProviderException {
+        if (data == null) {
+            throw new NullPointerException("data == null");
+        }
+        return BaseBCCertificateUtils.parseCertPathByBouncyCastle(new ByteArrayInputStream(data), BaseCertificateUtils.TYPE_X509, "PKCS7");
+    }
+
+    /**
+     * 使用BouncyCastle从输入流中解析证书链, 适用于SM2等更多算法的证书
+     * @param inputStream 证书链数据流, 会被close掉
+     */
+    public static CertPath parseX509PKCS7CertPath(InputStream inputStream) throws CertificateException, NoSuchProviderException {
+        return BaseBCCertificateUtils.parseCertPathByBouncyCastle(inputStream, BaseCertificateUtils.TYPE_X509, "PKCS7");
+    }
+
+    /**
      * 使用颁发者公钥验证证书有效性
      * @param certificate 证书
      * @param issuerPublicKey 颁发者公钥

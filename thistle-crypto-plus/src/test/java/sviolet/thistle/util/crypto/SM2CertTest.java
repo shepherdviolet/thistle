@@ -91,6 +91,9 @@ public class SM2CertTest {
 
 //        System.out.println(Base64Utils.encodeToString(certPKCS7));
 
+        //解析PKCS7的数据到证书链
+        certPath = AdvancedCertificateUtils.parseX509PKCS7CertPath(certPKCS7);
+
     }
 
 }

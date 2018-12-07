@@ -89,7 +89,7 @@ public class BaseBCCertificateUtils {
     /**
      * 使用BouncyCastle从输入流中解析证书, 适用于SM2等更多算法的证书
      *
-     * @param inputStream 证书数据流(X509格式), 会被close掉
+     * @param inputStream 证书数据流, 会被close掉
      * @param type 证书数据格式, 例如X.509
      * @return 如果type是X.509, 可以强制类型转换为X509Certificate
      */
@@ -109,6 +109,20 @@ public class BaseBCCertificateUtils {
     public static CertPath generateCertPath(List<? extends Certificate> certificateList, String type) throws CertificateException, NoSuchProviderException {
         CertificateFactory factory = CertificateFactory.getInstance(type, BouncyCastleProvider.PROVIDER_NAME);
         return factory.generateCertPath(certificateList);
+    }
+
+    /**
+     * 使用BouncyCastle从输入流中解析证书链, 适用于SM2等更多算法的证书
+     * @param inputStream 证书链数据流, 会被close掉
+     * @param type 证书数据格式, 例如X.509
+     * @param encoding 证书编码. 例如PKCS7
+     */
+    public static CertPath parseCertPathByBouncyCastle(InputStream inputStream, String type, String encoding) throws CertificateException, NoSuchProviderException {
+        try {
+            return CertificateFactory.getInstance(type, BouncyCastleProvider.PROVIDER_NAME).generateCertPath(inputStream, encoding);
+        } finally {
+            CloseableUtils.closeQuiet(inputStream);
+        }
     }
 
     /**
