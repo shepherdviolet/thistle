@@ -30,6 +30,7 @@ import sviolet.thistle.util.crypto.base.CommonCryptoException;
 import sviolet.thistle.util.crypto.base.SM2DefaultCurve;
 
 import java.math.BigInteger;
+import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
 
 /**
@@ -206,6 +207,15 @@ public class SM2KeyGenerator {
     public static ECPublicKeyParameters publicKeyToPublicKeyParams(BCECPublicKey publicKey) {
         //SM2的密钥标记为EC
         return BaseBCAsymKeyGenerator.ecPublicKeyToEcPublicKeyParams(publicKey);
+    }
+
+    /**
+     * 从证书中提取SM2公钥
+     * @param certificate 证书
+     * @return 公钥
+     */
+    public static ECPublicKeyParameters parsePublicKeyParamsFromCertificate(X509Certificate certificate) {
+        return BaseBCAsymKeyGenerator.parseEcPublicKeyParamsFromCertificate(SM2DefaultCurve.DOMAIN_PARAMS, certificate);
     }
 
     public static class SM2KeyParamsPair {

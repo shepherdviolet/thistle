@@ -27,6 +27,7 @@ import org.bouncycastle.operator.OperatorCreationException;
 import sviolet.thistle.util.conversion.Base64Utils;
 import sviolet.thistle.util.crypto.base.BaseBCAsymKeyGenerator;
 import sviolet.thistle.util.crypto.base.BaseBCCertificateUtils;
+import sviolet.thistle.util.crypto.base.SM2DefaultCurve;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -212,9 +213,7 @@ public class AdvancedCertificateUtils extends CertificateUtils {
                 csr,
                 validity,
                 issuerCertificate.getSubjectX500Principal().toString(),
-                //这里性能不是太好, 重新解析数据获取公钥, 要追求性能可以直接用CA的DN+公私钥生成
-                BaseBCAsymKeyGenerator.ecPublicKeyToEcPublicKeyParams(
-                        BaseBCAsymKeyGenerator.parseEcPublicKeyByX509(issuerCertificate.getPublicKey().getEncoded(), EC_KEY_ALGORITHM)),
+                BaseBCAsymKeyGenerator.parseEcPublicKeyParamsFromCertificate(SM2DefaultCurve.DOMAIN_PARAMS, issuerCertificate),
                 issuerPrivateKeyParams,
                 true,
                 new KeyUsage(KeyUsage.digitalSignature | KeyUsage.dataEncipherment | KeyUsage.keyCertSign | KeyUsage.cRLSign));
@@ -245,9 +244,7 @@ public class AdvancedCertificateUtils extends CertificateUtils {
                 csr,
                 validity,
                 issuerCertificate.getSubjectX500Principal().toString(),
-                //这里性能不是太好, 重新解析数据获取公钥, 要追求性能可以直接用CA的DN+公私钥生成
-                BaseBCAsymKeyGenerator.ecPublicKeyToEcPublicKeyParams(
-                        BaseBCAsymKeyGenerator.parseEcPublicKeyByX509(issuerCertificate.getPublicKey().getEncoded(), EC_KEY_ALGORITHM)),
+                BaseBCAsymKeyGenerator.parseEcPublicKeyParamsFromCertificate(SM2DefaultCurve.DOMAIN_PARAMS, issuerCertificate),
                 issuerPrivateKeyParams,
                 false,
                 new KeyUsage(KeyUsage.digitalSignature | KeyUsage.dataEncipherment));

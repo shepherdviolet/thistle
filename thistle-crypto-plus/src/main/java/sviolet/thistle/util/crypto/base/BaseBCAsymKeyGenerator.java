@@ -24,12 +24,15 @@ import org.bouncycastle.crypto.generators.ECKeyPairGenerator;
 import org.bouncycastle.crypto.params.*;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
+import org.bouncycastle.jce.interfaces.ECPublicKey;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jce.spec.ECParameterSpec;
+import org.bouncycastle.jce.spec.ECPublicKeySpec;
 import org.bouncycastle.math.ec.ECPoint;
 
 import java.math.BigInteger;
 import java.security.*;
+import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -244,6 +247,48 @@ public class BaseBCAsymKeyGenerator {
         } catch (Exception e) {
             throw new CommonCryptoException("Error while parsing point (X/Y) to publicKeyParameters", e);
         }
+    }
+
+    /**
+     * 从X509Certificate证书实例中提取JDK的XXXKey公钥实例
+     * @param domainParameters domainParameters = new ECDomainParameters(CURVE, G_POINT, N, H)
+     * @param certificate 证书
+     * @return JDK的XXXKey公钥实例
+     */
+    public static BCECPublicKey parseEcPublicKeyFromCertificate(ECDomainParameters domainParameters, X509Certificate certificate){
+        if (certificate == null) {
+            throw new NullPointerException("certificate == null");
+        }
+        PublicKey publicKey = certificate.getPublicKey();
+        if (!(publicKey instanceof ECPublicKey)) {
+            throw new NullPointerException("certificate is not an certificate of EC algorithm, the public key is not a ECPublicKey instance");
+        }
+        ECPublicKey ecPublicKey = (ECPublicKey) publicKey;
+        ECParameterSpec parameterSpec = new ECParameterSpec(
+                domainParameters.getCurve(),
+                domainParameters.getG(),
+                domainParameters.getN(),
+                domainParameters.getH());
+        ECPublicKeySpec pubKeySpec = new ECPublicKeySpec(ecPublicKey.getQ(), parameterSpec);
+        return new BCECPublicKey(ecPublicKey.getAlgorithm(), pubKeySpec, BouncyCastleProvider.CONFIGURATION);
+    }
+
+    /**
+     * 从X509Certificate证书实例中提取BouncyCastle的XXXKeyParameters公钥实例
+     * @param domainParameters domainParameters = new ECDomainParameters(CURVE, G_POINT, N, H)
+     * @param certificate 证书
+     * @return BouncyCastle的XXXKeyParameters公钥实例
+     */
+    public static ECPublicKeyParameters parseEcPublicKeyParamsFromCertificate(ECDomainParameters domainParameters, X509Certificate certificate){
+        if (certificate == null) {
+            throw new NullPointerException("certificate == null");
+        }
+        PublicKey publicKey = certificate.getPublicKey();
+        if (!(publicKey instanceof ECPublicKey)) {
+            throw new NullPointerException("certificate is not an certificate of EC algorithm, the public key is not a ECPublicKey instance");
+        }
+        ECPublicKey ecPublicKey = (ECPublicKey) publicKey;
+        return new ECPublicKeyParameters(ecPublicKey.getQ(), domainParameters);
     }
 
 }
