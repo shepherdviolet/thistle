@@ -47,7 +47,7 @@ public class PKCS12KeyStoreUtils {
     private static final String ALGORITHM = "PKCS12";
 
     /**
-     * 将证书和私钥保存到p12/pfx文件中, 本JDK版本较弱, 国密等算法请用AdvancedPKCS12KeyStoreUtils
+     * 将证书和私钥保存到p12/pfx文件中, 本JDK版本较弱, 国密等算法请用thistle-crypto-plus的AdvancedPKCS12KeyStoreUtils
      *
      * <p>{@code
      *      //output user p12
@@ -86,7 +86,7 @@ public class PKCS12KeyStoreUtils {
     }
 
     /**
-     * 将证书和私钥保存到p12/pfx文件中, 本JDK版本较弱, 国密等算法请用AdvancedPKCS12KeyStoreUtils
+     * 将证书和私钥保存到p12/pfx文件中, 本JDK版本较弱, 国密等算法请用thistle-crypto-plus的AdvancedPKCS12KeyStoreUtils
      *
      * <p>{@code
      *      //output user p12
@@ -139,7 +139,7 @@ public class PKCS12KeyStoreUtils {
     }
 
     /**
-     * 从p12/pfx文件中遍历alias, 本JDK版本较弱, 国密等算法请用AdvancedPKCS12KeyStoreUtils
+     * 从p12/pfx文件中遍历alias, 本JDK版本较弱, 国密等算法请用thistle-crypto-plus的AdvancedPKCS12KeyStoreUtils
      *
      * <pre>{@code
      *      Enumeration<String> aliases = PKCS12KeyStoreUtils.loadAliases(
@@ -160,7 +160,7 @@ public class PKCS12KeyStoreUtils {
     }
 
     /**
-     * 从p12/pfx文件中遍历alias, 本JDK版本较弱, 国密等算法请用AdvancedPKCS12KeyStoreUtils
+     * 从p12/pfx文件中遍历alias, 本JDK版本较弱, 国密等算法请用thistle-crypto-plus的AdvancedPKCS12KeyStoreUtils
      *
      * <pre>{@code
      *      Enumeration<String> aliases = PKCS12KeyStoreUtils.loadAliases(
@@ -188,7 +188,7 @@ public class PKCS12KeyStoreUtils {
     }
 
     /**
-     * 从p12/pfx文件中读取证书和私钥, 本JDK版本较弱, 国密等算法请用AdvancedPKCS12KeyStoreUtils
+     * 从p12/pfx文件中读取证书和私钥, 本JDK版本较弱, 国密等算法请用thistle-crypto-plus的AdvancedPKCS12KeyStoreUtils
      *
      * <pre>{@code
      *      PKCS12KeyStoreUtils.CertificateChainAndKey certificateChainAndKey = PKCS12KeyStoreUtils.loadCertificateAndKey(
@@ -211,7 +211,7 @@ public class PKCS12KeyStoreUtils {
     }
 
     /**
-     * 从p12/pfx文件中读取证书和私钥, 本JDK版本较弱, 国密等算法请用AdvancedPKCS12KeyStoreUtils
+     * 从p12/pfx文件中读取证书和私钥, 本JDK版本较弱, 国密等算法请用thistle-crypto-plus的AdvancedPKCS12KeyStoreUtils
      *
      * <pre>{@code
      *      PKCS12KeyStoreUtils.CertificateChainAndKey certificateChainAndKey = PKCS12KeyStoreUtils.loadCertificateAndKey(
@@ -248,7 +248,7 @@ public class PKCS12KeyStoreUtils {
     }
 
     /**
-     * 从p12/pfx文件中读取证书和私钥, 本JDK版本较弱, 国密等算法请用AdvancedPKCS12KeyStoreUtils
+     * 从p12/pfx文件中读取证书和私钥, 本JDK版本较弱, 国密等算法请用thistle-crypto-plus的AdvancedPKCS12KeyStoreUtils
      *
      * <pre>{@code
      *      List<PKCS12KeyStoreUtils.CertificateChainAndKey> certificateChainAndKeyList = PKCS12KeyStoreUtils.loadAllCertificateAndKey(
@@ -269,7 +269,7 @@ public class PKCS12KeyStoreUtils {
     }
 
     /**
-     * 从p12/pfx文件中读取证书和私钥, 本JDK版本较弱, 国密等算法请用AdvancedPKCS12KeyStoreUtils
+     * 从p12/pfx文件中读取证书和私钥, 本JDK版本较弱, 国密等算法请用thistle-crypto-plus的AdvancedPKCS12KeyStoreUtils
      *
      * <pre>{@code
      *      List<PKCS12KeyStoreUtils.CertificateChainAndKey> certificateChainAndKeyList = PKCS12KeyStoreUtils.loadAllCertificateAndKey(
