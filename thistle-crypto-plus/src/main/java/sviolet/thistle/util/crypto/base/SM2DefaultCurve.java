@@ -57,8 +57,8 @@ public class SM2DefaultCurve {
     //SM2默认C1区域长度(SM2用于加密时密文C1区长度)
     public static int C1_LENGTH = BaseBCCryptoUtils.calculateSM2C1Length(DOMAIN_PARAMS);
 
-    //SM2默认参数: 使用JDK实例表示
-    public static final java.security.spec.ECParameterSpec PARAM_SPEC_FOR_PKCS8 = new java.security.spec.ECParameterSpec(
+    //SM2默认参数集合: 使用JDK实例表示椭圆参数, 用于将SEC1标准的私钥数据转为PKCS8标准的私钥数据
+    public static final java.security.spec.ECParameterSpec EC_PARAM_SPEC_FOR_SEC1 = new java.security.spec.ECParameterSpec(
             new java.security.spec.EllipticCurve(new ECFieldFp(P), A, B),
             new java.security.spec.ECPoint(G_POINT.getAffineXCoord().toBigInteger(), G_POINT.getAffineYCoord().toBigInteger()),
             N,
