@@ -91,57 +91,69 @@ public class AdvancedPKCS12KeyStoreUtils extends PKCS12KeyStoreUtils {
      */
     public static void storeCertificateAndKeyAdvanced(OutputStream outputStream, String keystorePassword, String alias, PrivateKey privateKey, X509Certificate... certificateChain) throws NoSuchAlgorithmException, IOException, PKCSException {
         try {
-            if (certificateChain == null || certificateChain.length == 0) {
-                throw new NullPointerException("certificateChain is null or empty");
-            }
-            PublicKey publicKey = certificateChain[0].getPublicKey();
-            char[] passwordChars = keystorePassword.toCharArray();
-            JcaX509ExtensionUtils extensionUtils = new JcaX509ExtensionUtils();
-
-            //certificate chain
-            PKCS12SafeBag[] bags = new PKCS12SafeBag[certificateChain.length];
-            for (int i = 0; i < certificateChain.length; i++) {
-                PKCS12SafeBagBuilder bagBuilder = new JcaPKCS12SafeBagBuilder(certificateChain[i]);
-                bagBuilder.addBagAttribute(
-                        PKCSObjectIdentifiers.pkcs_9_at_friendlyName,
-                        new DERBMPString(alias));
-                if (i == 0) {
-                    bagBuilder.addBagAttribute(
-                            PKCSObjectIdentifiers.pkcs_9_at_localKeyId,
-                            extensionUtils.createSubjectKeyIdentifier(publicKey));
-                }
-                bags[i] = bagBuilder.build();
-            }
-            //key
-            PKCS12SafeBagBuilder keyBagBuilder = new JcaPKCS12SafeBagBuilder(
-                    privateKey,
-                    new BcPKCS12PBEOutputEncryptorBuilder(
-                            PKCSObjectIdentifiers.pbeWithSHAAnd3_KeyTripleDES_CBC,
-                            new CBCBlockCipher(new DESedeEngine())).build(passwordChars));
-            keyBagBuilder.addBagAttribute(
-                    PKCSObjectIdentifiers.pkcs_9_at_friendlyName,
-                    new DERBMPString(alias));
-            keyBagBuilder.addBagAttribute(
-                    PKCSObjectIdentifiers.pkcs_9_at_localKeyId,
-                    extensionUtils.createSubjectKeyIdentifier(publicKey));
-            //pfx builder
-            PKCS12PfxPduBuilder pfxPduBuilder = new PKCS12PfxPduBuilder();
-            //add certificates
-            pfxPduBuilder.addEncryptedData(
-                    new BcPKCS12PBEOutputEncryptorBuilder(
-                            PKCSObjectIdentifiers.pbeWithSHAAnd40BitRC2_CBC,
-                            new CBCBlockCipher(new RC2Engine())).build(passwordChars),
-                    bags);
-            //add key
-            pfxPduBuilder.addData(keyBagBuilder.build());
-            //build pfx
-            byte[] pfxData = pfxPduBuilder.build(new BcPKCS12MacCalculatorBuilder(), passwordChars)
-                    .getEncoded(ASN1Encoding.DER);
-            //write to stream
+            byte[] pfxData = parseCertificateAndKeyToPkcs12Advanced(keystorePassword, alias, privateKey, certificateChain);
             outputStream.write(pfxData);
         } finally {
             CloseableUtils.closeQuiet(outputStream);
         }
+    }
+
+    /**
+     * 将证书和私钥转换为PKCS12格式的数据(p12/pfx的数据), 支持国密
+     *
+     * @param keystorePassword keyStore的密码
+     * @param alias 证书和私钥的别名
+     * @param privateKey 证书对应的私钥(如果为空, 则仅保存证书)
+     * @param certificateChain 证书链, 通常传入一个证书即可, 用户证书/CA证书/根证书一般会分别导出独立的文件. 如果需要一次性导出整个
+     *                         证书链到一个文件, 也可以传入多个证书, 顺序是个人证书->二级CA证书->根证书, {userCertificate, subCaCertificate, rootCertificate}
+     */
+    public static byte[] parseCertificateAndKeyToPkcs12Advanced(String keystorePassword, String alias, PrivateKey privateKey, X509Certificate... certificateChain) throws NoSuchAlgorithmException, IOException, PKCSException {
+        if (certificateChain == null || certificateChain.length == 0) {
+            throw new NullPointerException("certificateChain is null or empty");
+        }
+        PublicKey publicKey = certificateChain[0].getPublicKey();
+        char[] passwordChars = keystorePassword.toCharArray();
+        JcaX509ExtensionUtils extensionUtils = new JcaX509ExtensionUtils();
+
+        //certificate chain
+        PKCS12SafeBag[] bags = new PKCS12SafeBag[certificateChain.length];
+        for (int i = 0; i < certificateChain.length; i++) {
+            PKCS12SafeBagBuilder bagBuilder = new JcaPKCS12SafeBagBuilder(certificateChain[i]);
+            bagBuilder.addBagAttribute(
+                    PKCSObjectIdentifiers.pkcs_9_at_friendlyName,
+                    new DERBMPString(alias));
+            if (i == 0) {
+                bagBuilder.addBagAttribute(
+                        PKCSObjectIdentifiers.pkcs_9_at_localKeyId,
+                        extensionUtils.createSubjectKeyIdentifier(publicKey));
+            }
+            bags[i] = bagBuilder.build();
+        }
+        //key
+        PKCS12SafeBagBuilder keyBagBuilder = new JcaPKCS12SafeBagBuilder(
+                privateKey,
+                new BcPKCS12PBEOutputEncryptorBuilder(
+                        PKCSObjectIdentifiers.pbeWithSHAAnd3_KeyTripleDES_CBC,
+                        new CBCBlockCipher(new DESedeEngine())).build(passwordChars));
+        keyBagBuilder.addBagAttribute(
+                PKCSObjectIdentifiers.pkcs_9_at_friendlyName,
+                new DERBMPString(alias));
+        keyBagBuilder.addBagAttribute(
+                PKCSObjectIdentifiers.pkcs_9_at_localKeyId,
+                extensionUtils.createSubjectKeyIdentifier(publicKey));
+        //pfx builder
+        PKCS12PfxPduBuilder pfxPduBuilder = new PKCS12PfxPduBuilder();
+        //add certificates
+        pfxPduBuilder.addEncryptedData(
+                new BcPKCS12PBEOutputEncryptorBuilder(
+                        PKCSObjectIdentifiers.pbeWithSHAAnd40BitRC2_CBC,
+                        new CBCBlockCipher(new RC2Engine())).build(passwordChars),
+                bags);
+        //add key
+        pfxPduBuilder.addData(keyBagBuilder.build());
+        //build pfx
+        return pfxPduBuilder.build(new BcPKCS12MacCalculatorBuilder(), passwordChars)
+                .getEncoded(ASN1Encoding.DER);
     }
 
 }

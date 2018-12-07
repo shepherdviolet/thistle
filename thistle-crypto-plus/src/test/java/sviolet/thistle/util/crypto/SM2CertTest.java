@@ -104,6 +104,15 @@ public class SM2CertTest {
                 userCert,
                 rootCert);
 
+        //将证书转为pkcs12数据
+        byte[] pkcs12 = AdvancedPKCS12KeyStoreUtils.parseCertificateAndKeyToPkcs12Advanced(
+                "123456",
+                "test",
+                userKeyPair.getJdkPrivateKey(),
+                userCert,
+                rootCert);
+
+
 
     }
 
