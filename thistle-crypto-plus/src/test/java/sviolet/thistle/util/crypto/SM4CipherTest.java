@@ -69,15 +69,18 @@ public class SM4CipherTest {
     public void bytesCryptoCBC() throws UnsupportedEncodingException, NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchProviderException {
 
         byte[] dataBytes = STRING.getBytes("UTF-8");
+        //生成密钥
         byte[] key = SM4KeyGenerator.generate128();
 
 //        System.out.println(ByteUtils.bytesToHex(dataBytes));
 //        System.out.println(ByteUtils.bytesToHex(key));
 
+        //加密
         byte[] encrypted = SM4Cipher.encryptCBC(dataBytes, key, "1234567890123456".getBytes(), SM4Cipher.CRYPTO_ALGORITHM_SM4_CBC_PKCS5PADDING);
 
 //        System.out.println(ByteUtils.bytesToHex(encrypted));
 
+        //解密
         byte[] decrypted = SM4Cipher.decryptCBC(encrypted, key, "1234567890123456".getBytes(), SM4Cipher.CRYPTO_ALGORITHM_SM4_CBC_PKCS5PADDING);
 
 //        System.out.println(ByteUtils.bytesToHex(decrypted));
@@ -93,11 +96,13 @@ public class SM4CipherTest {
     public void streamCrypto() throws IOException, NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchProviderException {
 
         byte[] dataBytes = STRING.getBytes("UTF-8");
+        //生成密钥
         byte[] key = SM4KeyGenerator.generate128();
 
 //        System.out.println(ByteUtils.bytesToHex(dataBytes));
 //        System.out.println(ByteUtils.bytesToHex(key));
 
+        //加密(支持大文件)
         ByteArrayInputStream in = new ByteArrayInputStream(dataBytes);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         SM4Cipher.encrypt(in, out, key, SM4Cipher.CRYPTO_ALGORITHM_SM4_ECB_PKCS5PADDING);
@@ -105,6 +110,7 @@ public class SM4CipherTest {
 
 //        System.out.println(ByteUtils.bytesToHex(encrypted));
 
+        //解密(支持大文件)
         in = new ByteArrayInputStream(encrypted);
         out = new ByteArrayOutputStream();
         SM4Cipher.decrypt(in, out, key, SM4Cipher.CRYPTO_ALGORITHM_SM4_ECB_PKCS5PADDING);
@@ -123,11 +129,13 @@ public class SM4CipherTest {
     public void streamCryptoCBC() throws IOException, NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchProviderException {
 
         byte[] dataBytes = STRING.getBytes("UTF-8");
+        //生成密钥
         byte[] key = SM4KeyGenerator.generate128();
 
 //        System.out.println(ByteUtils.bytesToHex(dataBytes));
 //        System.out.println(ByteUtils.bytesToHex(key));
 
+        //加密CBC填充(支持大文件)
         ByteArrayInputStream in = new ByteArrayInputStream(dataBytes);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         SM4Cipher.encryptCBC(in, out, key, "1234567890123456".getBytes(), SM4Cipher.CRYPTO_ALGORITHM_SM4_CBC_PKCS5PADDING);
@@ -135,6 +143,7 @@ public class SM4CipherTest {
 
 //        System.out.println(ByteUtils.bytesToHex(encrypted));
 
+        //解密CBC填充(支持大文件)
         in = new ByteArrayInputStream(encrypted);
         out = new ByteArrayOutputStream();
         SM4Cipher.decryptCBC(in, out, key, "1234567890123456".getBytes(), SM4Cipher.CRYPTO_ALGORITHM_SM4_CBC_PKCS5PADDING);

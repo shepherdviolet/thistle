@@ -39,7 +39,7 @@ public class SM2CertTest {
 
     @Test
     public void common() throws OperatorCreationException, CertificateException, InvalidKeySpecException, NoSuchAlgorithmException, IOException, PKCSException, NoSuchProviderException, UnrecoverableKeyException, KeyStoreException {
-        //生成随机密钥对
+        //生成根证书的随机密钥对
         SM2KeyGenerator.SM2KeyParamsPair rootKeyPair = SM2KeyGenerator.generateKeyParamsPair();
 
         //生成根证书
@@ -54,10 +54,10 @@ public class SM2CertTest {
 
 //        System.out.println(PEMEncodeUtils.certificateToPEMEncoded(AdvancedCertificateUtils.parseCertificateToEncoded(rootCert)));
 
-        //生成随机密钥对
+        //生成用户证书的随机密钥对
         SM2KeyGenerator.SM2KeyParamsPair userKeyPair = SM2KeyGenerator.generateKeyParamsPair();
 
-        //产生CSR
+        //产生用户证书申请文件CSR
         byte[] csr = AdvancedCertificateUtils.generateSm2Csr(
                 "CN=Test User, OU=IT Dept, O=My Company, L=Ningbo, ST=Zhejiang, C=CN",
                 userKeyPair.getPublicKeyParams(),
@@ -73,28 +73,33 @@ public class SM2CertTest {
         //简单验证证书
         Assert.assertTrue(AdvancedCertificateUtils.verifyCertificate(userCert, rootKeyPair.getPublicKeyParams()));
 
-//        System.out.println(PEMEncodeUtils.certificateToPEMEncoded(AdvancedCertificateUtils.parseCertificateToEncoded(userCert)));
+        //证书转为X509标准格式数据
+        byte[] certX509 = AdvancedCertificateUtils.parseCertificateToEncoded(userCert);
+
+        //证书转为PEM格式的文本(cer/crt)
+        String certPEM = PEMEncodeUtils.certificateToPEMEncoded(certX509);
+
+//        System.out.println(certPEM);
 
         //从X509编码的证书数据中解析证书实例
-        byte[] x509 = AdvancedCertificateUtils.parseCertificateToEncoded(userCert);
-        X509Certificate userCert2 = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(x509);
+        X509Certificate userCert2 = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(certX509);
         Assert.assertTrue(AdvancedCertificateUtils.verifyCertificate(userCert2, rootKeyPair.getPublicKeyParams()));
 
-        //组装证书链对象
+        //不常用:组装证书链对象
         List<X509Certificate> certificateList = new ArrayList<>(2);
         certificateList.add(userCert);
         certificateList.add(rootCert);
         CertPath certPath = AdvancedCertificateUtils.generateX509CertPath(certificateList);
 
-        //证书链PKCS7格式
+        //不常用:证书链PKCS7格式
         byte[] certPKCS7 = AdvancedCertificateUtils.parseCertPathToPKCS7Encoded(certPath);
 
 //        System.out.println(Base64Utils.encodeToString(certPKCS7));
 
-        //解析PKCS7的数据到证书链
+        //不常用:解析PKCS7的数据到证书链
         certPath = AdvancedCertificateUtils.parseX509PKCS7CertPath(certPKCS7);
 
-        //将证书链写入pfx/p12文件
+        //将证书/证书链写入pfx/p12文件
         AdvancedPKCS12KeyStoreUtils.storeCertificateAndKeyAdvanced(
                 "./out/test-case/sm2-test-all.p12",
                 "123456",

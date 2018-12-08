@@ -32,21 +32,26 @@ public class SM3DigestCipherTest {
 
     @Test
     public void common() throws IOException {
-        Assert.assertEquals(HELLO_RESULT,
-                ByteUtils.bytesToHex(SM3DigestCipher.digest("hello".getBytes("utf-8"), SM3DigestCipher.TYPE_SM3))
-        );
 
-        Assert.assertEquals(HELLO_RESULT,
-                ByteUtils.bytesToHex(SM3DigestCipher.digestStr("hello", SM3DigestCipher.TYPE_SM3, "utf-8"))
-        );
+        //摘要字节
+        byte[] hash = SM3DigestCipher.digest("hello".getBytes("utf-8"), SM3DigestCipher.TYPE_SM3);
 
-        Assert.assertEquals(HELLO_RESULT,
-                ByteUtils.bytesToHex(SM3DigestCipher.digestHexStr(ByteUtils.bytesToHex("hello".getBytes("utf-8")), SM3DigestCipher.TYPE_SM3))
-        );
+        Assert.assertEquals(HELLO_RESULT, ByteUtils.bytesToHex(hash));
 
-        Assert.assertEquals(HELLO_RESULT,
-                ByteUtils.bytesToHex(SM3DigestCipher.digestInputStream(new ByteArrayInputStream("hello".getBytes("utf-8")), SM3DigestCipher.TYPE_SM3))
-        );
+        //摘要字符串
+        hash = SM3DigestCipher.digestStr("hello", SM3DigestCipher.TYPE_SM3, "utf-8");
+
+        Assert.assertEquals(HELLO_RESULT, ByteUtils.bytesToHex(hash));
+
+        //摘要十六进制字符串
+        hash = SM3DigestCipher.digestHexStr(ByteUtils.bytesToHex("hello".getBytes("utf-8")), SM3DigestCipher.TYPE_SM3);
+
+        Assert.assertEquals(HELLO_RESULT, ByteUtils.bytesToHex(hash));
+
+        //摘要输入流
+        hash = SM3DigestCipher.digestInputStream(new ByteArrayInputStream("hello".getBytes("utf-8")), SM3DigestCipher.TYPE_SM3);
+
+        Assert.assertEquals(HELLO_RESULT, ByteUtils.bytesToHex(hash));
     }
 
 }
