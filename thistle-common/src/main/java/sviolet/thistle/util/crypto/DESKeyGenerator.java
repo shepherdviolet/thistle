@@ -160,4 +160,17 @@ public class DESKeyGenerator {
 		return BaseKeyGenerator.generateShaKey192(seed);
 	}
 
+	/**
+	 * 将两倍长(16bytes)DesEde密钥转为三倍长(192bytes), 即在后面补上前8bytes(AAAAAAAABBBBBBBB -> AAAAAAAABBBBBBBBAAAAAAAA)
+	 */
+	public static byte[] doubleDesEdeKeyToTriple(byte[] key){
+		if (key == null || key.length != 16) {
+			return key;
+		}
+		byte[] result = new byte[24];
+		System.arraycopy(key, 0, result, 0, 16);
+		System.arraycopy(key, 0, result, 16, 8);
+		return result;
+	}
+
 }
