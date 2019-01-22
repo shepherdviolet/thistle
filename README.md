@@ -1,4 +1,4 @@
-# Thistle 12.3
+# Thistle 14.0
 
 * Comprehensive Java common library (Java7+)
 * https://github.com/shepherdviolet/thistle
