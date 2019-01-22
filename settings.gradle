@@ -1,3 +1,2 @@
 include ':thistle-common'
-include ':thistle-with-slf4j'
 include ':thistle-crypto-plus'

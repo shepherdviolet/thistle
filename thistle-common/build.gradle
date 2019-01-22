@@ -3,7 +3,8 @@ dependencies {
     //required
 
     //optional
-//    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$version_kotlinVersion"
+    compile "com.github.shepherdviolet:glaciion-core:$version_glaciion", optional
+//    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$version_kotlinVersion", optional
 
     //test
     testImplementation 'junit:junit:4.12'

@@ -20,6 +20,8 @@ buildscript {
 
     //构建脚本依赖仓库
     repositories {
+        //local repo
+        maven {url repository_localRepositoryPath}
         //jcenter http://jcenter.bintray.com/
         jcenter()
         //maven-central https://repo1.maven.org/maven2/
