@@ -23,6 +23,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -156,6 +158,39 @@ public class StringUtils {
             return string;
         }
         return new BigDecimal(string).setScale(2, BigDecimal.ROUND_HALF_UP).toString();
+    }
+
+    /**
+     * <p>使用指定字符分割字符串, 忽略空白项, 去除头尾空白, 返回List</p>
+     *
+     * <p>
+     * 例如:<br>
+     * splitAndTrim(" abc, def, ,ghj,,klm ", ",")<br>
+     * 结果为:<br>
+     * 'abc' 'def' 'ghj', 'klm'<br>
+     * </p>
+     *
+     * @param string 被切割的字符串
+     * @param splitRegex 切割的字符
+     * @return Not Null
+     */
+    public static List<String> splitAndTrim(String string, String splitRegex) {
+        if (string == null) {
+            return new ArrayList<>(0);
+        }
+        String[] array = string.split(splitRegex);
+        List<String> result = new ArrayList<>(array.length);
+        for (String item : array) {
+            if (item == null || item.length() <= 0) {
+                continue;
+            }
+            String trimmed = item.trim();
+            if (trimmed.length() <= 0) {
+                continue;
+            }
+            result.add(trimmed);
+        }
+        return result;
     }
 
 }
