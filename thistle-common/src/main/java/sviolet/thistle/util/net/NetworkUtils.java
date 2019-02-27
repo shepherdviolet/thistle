@@ -20,8 +20,10 @@
 package sviolet.thistle.util.net;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
+import java.net.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 
 /**
  * 网络工具
@@ -54,6 +56,97 @@ public class NetworkUtils {
                 }
             }
         }
+    }
+
+    /**
+     * 获取第一个本地IP
+     *
+     * @return 第一个本地IP
+     * @throws SocketException 异常
+     */
+    public static InetAddress getFirstLocalIp() throws SocketException {
+        return getFirstLocalIp(null);
+    }
+
+    /**
+     * 获取第一个本地IP
+     *
+     * @param localIpFilter IP过滤规则
+     * @return 第一个本地IP
+     * @throws SocketException 异常
+     */
+    public static InetAddress getFirstLocalIp(LocalIpFilter localIpFilter) throws SocketException {
+        if (localIpFilter == null) {
+            localIpFilter = DEFAULT_LOCAL_IP_FILTER;
+        }
+        Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+        if (networkInterfaces == null) {
+            return null;
+        }
+        while (networkInterfaces.hasMoreElements()) {
+            NetworkInterface networkInterface = networkInterfaces.nextElement();
+            Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+            while (addresses.hasMoreElements()) {
+                InetAddress address = addresses.nextElement();
+                if (localIpFilter.filter(networkInterface, address)) {
+                    return address;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 获取本地设备IP
+     *
+     * @return 本地IP清单
+     * @throws SocketException 异常
+     */
+    public static List<InetAddress> getLocalIps() throws SocketException {
+        return getLocalIps(null);
+    }
+
+    /**
+     * 获取本地设备IP
+     *
+     * @param localIpFilter IP过滤规则
+     * @return 本地IP清单
+     * @throws SocketException 异常
+     */
+    public static List<InetAddress> getLocalIps(LocalIpFilter localIpFilter) throws SocketException {
+        if (localIpFilter == null) {
+            localIpFilter = DEFAULT_LOCAL_IP_FILTER;
+        }
+        List<InetAddress> list = new ArrayList<>();
+        Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+        if (networkInterfaces == null) {
+            return list;
+        }
+        while (networkInterfaces.hasMoreElements()) {
+            NetworkInterface networkInterface = networkInterfaces.nextElement();
+            Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+            while (addresses.hasMoreElements()) {
+                InetAddress address = addresses.nextElement();
+                if (localIpFilter.filter(networkInterface, address)) {
+                    list.add(address);
+                }
+            }
+        }
+        return list;
+    }
+
+    private static final LocalIpFilter DEFAULT_LOCAL_IP_FILTER = new LocalIpFilter() {
+        @Override
+        public boolean filter(NetworkInterface networkInterface, InetAddress inetAddress) throws SocketException {
+            return inetAddress != null && !inetAddress.isLoopbackAddress() && (networkInterface.isPointToPoint() || !inetAddress.isLinkLocalAddress());
+        }
+    };
+
+    /**
+     * 本地IP过滤规则
+     */
+    public interface LocalIpFilter {
+        boolean filter(NetworkInterface networkInterface, InetAddress inetAddress) throws SocketException;
     }
 
 }
