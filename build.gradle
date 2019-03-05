@@ -22,10 +22,10 @@ buildscript {
     repositories {
         //local repo
         maven {url repository_localRepositoryPath}
-        //jcenter http://jcenter.bintray.com/
-        jcenter()
         //maven-central https://repo1.maven.org/maven2/
         mavenCentral()
+        //jcenter http://jcenter.bintray.com/
+        jcenter()
         //jitpack-io
         // maven { url 'https://jitpack.io' }
     }
@@ -74,10 +74,10 @@ allprojects {
     repositories {
         //local repo
         maven {url repository_localRepositoryPath}
-        //jcenter http://jcenter.bintray.com/
-        jcenter()
         //maven-central https://repo1.maven.org/maven2/
         mavenCentral()
+        //jcenter http://jcenter.bintray.com/
+        jcenter()
         //jitpack-io
         // maven { url 'https://jitpack.io' }
     }
