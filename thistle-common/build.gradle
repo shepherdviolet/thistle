@@ -1,9 +1,11 @@
 
 dependencies {
     //required
+    compile "com.github.shepherdviolet:glaciion-core:$version_glaciion"
 
     //optional
-    compile "com.github.shepherdviolet:glaciion-core:$version_glaciion", optional
+    compile "org.slf4j:slf4j-api:$version_slf4j", optional
+    compile "org.javassist:javassist:$version_javassist", optional
 //    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$version_kotlinVersion", optional
 
     //test
