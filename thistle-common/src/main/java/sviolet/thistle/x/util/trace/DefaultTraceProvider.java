@@ -29,9 +29,8 @@ import java.util.UUID;
  * <p>全局追踪默认实现</p>
  *
  * <p>
- *     1.全局跟踪号保存在SLF4J的MDC中, KEY={@value sviolet.thistle.x.util.trace.Trace#TRACE_ID_KEY}, 可以打印在日志中 <br>
- *     2.如果应用未依赖SLF4J, 跟踪号会存在ThreadLocal中. <br>
- *     3.其他追踪信息保存在ThreadLocal中. <br>
+ *     1.追踪号和其他追踪信息保存在ThreadLocal中. <br>
+ *     2.如果应用依赖SLF4J, 追踪号还会存入MDC, KEY为{@value Trace#TRACE_ID_KEY}, 可以打印在日志中. <br>
  * </p>
  *
  * @author zhuqinchao

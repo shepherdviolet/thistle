@@ -9,7 +9,8 @@
 
 * [Crypto | Common crypto utils](https://github.com/shepherdviolet/thistle/blob/master/docs/crypto/guide.md)
 * [SimpleKeyValueEncoder | Simple Key-Value to String Encoder](https://github.com/shepherdviolet/thistle/blob/master/docs/kvencoder/guide.md)
-* [Various utils | Various utils are here](https://github.com/shepherdviolet/thistle/tree/master/src/main/java/sviolet/thistle/util)
+* [Trace Utils | Help to trace transactions](https://github.com/shepherdviolet/thistle/blob/master/docs/trace/guide.md)
+* [Various Utils | Various utils are here](https://github.com/shepherdviolet/thistle/tree/master/src/main/java/sviolet/thistle/util)
 
 # thistle-crypto-plus
 

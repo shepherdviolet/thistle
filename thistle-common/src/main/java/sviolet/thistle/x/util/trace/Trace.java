@@ -21,6 +21,8 @@ package sviolet.thistle.x.util.trace;
 
 import com.github.shepherdviolet.glaciion.Glaciion;
 
+import java.util.concurrent.Callable;
+
 /**
  * 全局追踪API, Glaciion扩展点: sviolet.thistle.x.util.trace.TraceProvider.
  * 默认实现: DefaultTraceProvider.
@@ -53,6 +55,24 @@ public class Trace {
     }
 
     /**
+     * 创建一个可追踪的Runnable(自动完成接力), 用于异步追踪
+     * @param runnable Runnable
+     * @return 可追踪的Runnable(自动完成接力), 用于异步追踪
+     */
+    public static Runnable traceable(Runnable runnable){
+        return new TraceableRunnable(runnable);
+    }
+
+    /**
+     * 创建一个可追踪的Callable(自动完成接力), 用于异步追踪
+     * @param callable Callable
+     * @return 可追踪的Callable(自动完成接力), 用于异步追踪
+     */
+    public static <T> Callable<T> traceable(Callable<T> callable){
+        return new TraceableCallable<>(callable);
+    }
+
+    /**
      * 获取追踪接力信息
      */
     public static TraceBaton getBaton(){
@@ -78,6 +98,50 @@ public class Trace {
      */
     public static String setData(String key, String value) {
         return provider.getTraceData().put(key, value);
+    }
+
+
+    /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
+
+
+    private static class TraceableCallable<T> implements Callable<T> {
+
+        private Callable<T> callable;
+        private TraceBaton traceBaton;
+
+        private TraceableCallable(Callable<T> callable) {
+            this.callable = callable;
+            //获取接力信息
+            traceBaton = Trace.getBaton();
+        }
+
+        @Override
+        public T call() throws Exception {
+            //接力
+            Trace.handoff(traceBaton);
+            return callable.call();
+        }
+
+    }
+
+    private static class TraceableRunnable implements Runnable {
+
+        private Runnable runnable;
+        private TraceBaton traceBaton;
+
+        private TraceableRunnable(Runnable runnable) {
+            this.runnable = runnable;
+            //获取接力信息
+            traceBaton = Trace.getBaton();
+        }
+
+        @Override
+        public final void run() {
+            //接力
+            Trace.handoff(traceBaton);
+            runnable.run();
+        }
+
     }
 
 }

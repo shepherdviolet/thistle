@@ -19,19 +19,28 @@
 
 package sviolet.thistle.x.util.trace;
 
-import org.slf4j.MDC;
-
 /**
- * MDC追踪号提供器
+ * <p>[异步追踪]Runnable</p>
+ *
+ * <p>1.在实例化时记录追踪信息</p>
+ * <p>2.在被调用时使用记录的信息继续追踪</p>
  *
  * @author S.Violet
  */
-class Slf4jTraceIdProvider extends LocalTraceIdProvider {
+public abstract class TraceableRunnable implements Runnable {
+
+    private TraceBaton traceBaton;
+
+    public TraceableRunnable() {
+        traceBaton = Trace.getBaton();
+    }
 
     @Override
-    void set(String traceId) {
-        super.set(traceId);
-        MDC.put(Trace.TRACE_ID_KEY, traceId);
+    public final void run() {
+        Trace.handoff(traceBaton);
+        onRun();
     }
+    
+    public abstract void onRun();
 
 }
