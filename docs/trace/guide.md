@@ -80,4 +80,4 @@ threadPool.execute(Trace.traceable(()-> {
 # Glaciion SPI扩展点
 
 * 扩展点: sviolet.thistle.x.util.trace.TraceProvider
-* 详见文档: https://github.com/shepherdviolet/glaciion/blob/master/docs/guide.md
+* 详见文档: https://github.com/shepherdviolet/glaciion/blob/master/docs/index.md
