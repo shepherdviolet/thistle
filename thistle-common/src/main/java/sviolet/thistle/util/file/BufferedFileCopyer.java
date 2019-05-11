@@ -19,6 +19,8 @@
 
 package sviolet.thistle.util.file;
 
+import sviolet.thistle.util.common.CloseableUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -83,11 +85,11 @@ public class BufferedFileCopyer {
                 buffer.clear();
             }
         } finally {
-            try{in.close();}catch (Exception ignored){}
-            try{inStream.close();}catch (Exception ignored){}
+            CloseableUtils.closeQuiet(in);
+            CloseableUtils.closeQuiet(inStream);
             try{outStream.flush();}catch (Exception ignored){}
-            try{out.close();}catch (Exception ignored){}
-            try{outStream.close();}catch (Exception ignored){}
+            CloseableUtils.closeQuiet(out);
+            CloseableUtils.closeQuiet(outStream);
         }
         //使目标文件修改时间与源文件保持一致
         long lastModified = source.lastModified();

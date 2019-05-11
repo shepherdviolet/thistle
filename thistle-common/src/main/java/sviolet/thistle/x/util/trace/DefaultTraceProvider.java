@@ -59,6 +59,11 @@ public class DefaultTraceProvider implements TraceProvider {
     }
 
     @Override
+    public void start(String customTraceId) {
+        handoff(customTraceId, null);
+    }
+
+    @Override
     public void handoff(String traceId, Map<String, String> data) {
         //generate id if not exists
         if (CheckUtils.isEmpty(traceId)) {

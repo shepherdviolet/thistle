@@ -19,8 +19,11 @@
 
 package sviolet.thistle.x.util.trace;
 
+import com.github.shepherdviolet.glaciion.api.annotation.NewMethod;
 import com.github.shepherdviolet.glaciion.api.annotation.SingleServiceInterface;
+import com.github.shepherdviolet.glaciion.api.interfaces.CompatibleApproach;
 
+import java.lang.reflect.Method;
 import java.util.Map;
 
 /**
@@ -33,9 +36,16 @@ import java.util.Map;
 public interface TraceProvider {
 
     /**
-     * 从新开始追踪
+     * 重新开始追踪
      */
     void start();
+
+    /**
+     * 重新开始追踪
+     * @param customTraceId 指定新的追踪号
+     */
+    @NewMethod(compatibleApproach = StartMethodCompat.class)
+    void start(String customTraceId);
 
     /**
      * 继续追踪
@@ -51,5 +61,17 @@ public interface TraceProvider {
      * 获取所有追踪数据, 这个方法禁止返回null
      */
     Map<String, String> getTraceData();
+
+    /**
+     * 兼容新增的start(String)方法
+     */
+    class StartMethodCompat implements CompatibleApproach {
+        @Override
+        public Object onInvoke(Class<?> serviceInterface, Object serviceInstance, Method method, Object[] params) throws Throwable {
+            //当调用start(String)时, 实际上会调用start()
+            ((TraceProvider)serviceInstance).start();
+            return null;
+        }
+    }
 
 }

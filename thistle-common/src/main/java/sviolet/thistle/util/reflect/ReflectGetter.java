@@ -192,7 +192,7 @@ public class ReflectGetter {
                             } catch (NoSuchMethodException ignore) {
                                 //find field
                             } catch (Throwable t) {
-                                throw new ReflectException("Error while getting field by method, method:" + method.getName() + ", type:" + currentObj.getClass().getName() + ". objType:" + obj.getClass().getName() + ", index:" + index + ", keyPath:" + keyPath, t);
+                                throw new ReflectException("Error while getting field by method, method:" + (method != null ? method.getName() : "unknown") + ", type:" + currentObj.getClass().getName() + ". objType:" + obj.getClass().getName() + ", index:" + index + ", keyPath:" + keyPath, t);
                             }
                         }
                         try {
@@ -466,14 +466,14 @@ public class ReflectGetter {
                             case ']':
                                 if (step == 1) {
                                     try {
-                                        currentElement.index1 = Integer.valueOf(element.substring(start, i));
+                                        currentElement.index1 = Integer.parseInt(element.substring(start, i));
                                     } catch (Throwable t) {
                                         throw new ReflectGetter.IllegalKeyPathException("Illegal keyPath, \"" + current + "\" can't cast to integer, element:" + elementOrigin + ", keyPath:" + keyPath, t);
                                     }
                                     step = 2;
                                 } else if (step == 3) {
                                     try {
-                                        currentElement.index2 = Integer.valueOf(element.substring(start, i));
+                                        currentElement.index2 = Integer.parseInt(element.substring(start, i));
                                     } catch (Throwable t) {
                                         throw new ReflectGetter.IllegalKeyPathException("Illegal keyPath, \"" + current + "\" can't cast to integer, element:" + elementOrigin + ", keyPath:" + keyPath, t);
                                     }

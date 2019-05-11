@@ -110,14 +110,8 @@ public class BeanMethodNameUtils {
         boolean isSecondCharLowerCase = true;
         if (fieldNameChars.length > 1){
             secondChar = fieldNameChars[1];
-            if (secondChar > 64 && secondChar < 91) {
-                isSecondCharLowerCase = false;
-            } else if (secondChar > 96 && secondChar < 123){
-                isSecondCharLowerCase = true;
-            } else {
-                //第二个字符异常的话, 视为小写(试图把首字母变大写)
-                isSecondCharLowerCase = true;
-            }
+            //第二个字符异常的话, 视为小写(试图把首字母变大写)
+            isSecondCharLowerCase = secondChar <= 64 || secondChar >= 91;
         }
 
         //当前两位都是小写字母, 首字母变为大写

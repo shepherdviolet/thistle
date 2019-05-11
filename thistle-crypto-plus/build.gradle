@@ -7,6 +7,6 @@ dependencies {
     //optional
 
     //test
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'org.mockito:mockito-core:2.23.4'
+    testImplementation "junit:junit:$version_junit"
+    testImplementation "org.mockito:mockito-core:$version_mockito"
 }

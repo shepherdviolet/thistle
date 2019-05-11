@@ -343,7 +343,7 @@ public class Base64Utils {
         int cacheSize = 1024;
         Inflater decompresser = new Inflater();
 
-        byte[] output = new byte[0];
+        byte[] output;
         decompresser.reset();
         decompresser.setInput(input);
         ByteArrayOutputStream o = new ByteArrayOutputStream(input.length);

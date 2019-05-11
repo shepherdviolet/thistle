@@ -21,6 +21,7 @@ package sviolet.thistle.x.util.trace;
 
 import com.github.shepherdviolet.glaciion.Glaciion;
 
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 /**
@@ -33,13 +34,21 @@ public class Trace {
 
     public static final String TRACE_ID_KEY = "_trace_id_";
 
-    private static final TraceProvider provider = Glaciion.loadSingleService(TraceProvider.class).get();
+    private static final TraceProvider PROVIDER = Glaciion.loadSingleService(TraceProvider.class).get();
 
     /**
-     * 从头开始追踪
+     * 重头开始追踪
      */
     public static void start(){
-        provider.start();
+        PROVIDER.start();
+    }
+
+    /**
+     * 重新开始追踪
+     * @param customTraceId 指定新的追踪号
+     */
+    public static void start(String customTraceId){
+        PROVIDER.start(customTraceId);
     }
 
     /**
@@ -48,9 +57,9 @@ public class Trace {
      */
     public static void handoff(TraceBaton traceBaton){
         if (traceBaton == null) {
-            provider.start();
+            PROVIDER.start();
         } else {
-            provider.handoff(traceBaton.getTraceId(), traceBaton.getTraceData());
+            PROVIDER.handoff(traceBaton.getTraceId(), traceBaton.getTraceData());
         }
     }
 
@@ -76,30 +85,51 @@ public class Trace {
      * 获取追踪接力信息
      */
     public static TraceBaton getBaton(){
-        return new TraceBaton(provider.getTraceId(), provider.getTraceData());
+        return new TraceBaton(getTraceId(), getDataMap());
     }
 
     /**
      * 获取追踪号
      */
     public static String getTraceId(){
-        return provider.getTraceId();
+        String traceId = PROVIDER.getTraceId();
+        if (traceId == null) {
+            PROVIDER.start();
+            traceId = PROVIDER.getTraceId();
+        }
+        return traceId;
     }
 
     /**
      * 获取其他追踪信息
      */
     public static String getData(String key){
-        return provider.getTraceData().get(key);
+        return PROVIDER.getTraceData().get(key);
+    }
+
+    /**
+     * 获取其他追踪信息
+     *
+     * @param fallback 如果取不到则返回该值
+     */
+    public static String getData(String key, String fallback) {
+        String result = PROVIDER.getTraceData().get(key);
+        return result != null ? result : fallback;
     }
 
     /**
      * 设置其他追踪信息
      */
     public static String setData(String key, String value) {
-        return provider.getTraceData().put(key, value);
+        return PROVIDER.getTraceData().put(key, value);
     }
 
+    /**
+     * 获取所有其他追踪信息
+     */
+    public static Map<String, String> getDataMap(){
+        return PROVIDER.getTraceData();
+    }
 
     /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 

@@ -26,10 +26,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BouncyCastleProviderUtils {
 
-    private static final AtomicBoolean installed = new AtomicBoolean(false);
+    private static final AtomicBoolean INSTALLED = new AtomicBoolean(false);
 
     public static void installProvider(){
-        if (installed.compareAndSet(false, true)) {
+        if (INSTALLED.compareAndSet(false, true)) {
             Security.addProvider(new BouncyCastleProvider());
         }
     }
