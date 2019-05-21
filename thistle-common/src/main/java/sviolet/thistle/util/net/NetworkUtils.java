@@ -149,4 +149,23 @@ public class NetworkUtils {
         boolean filter(NetworkInterface networkInterface, InetAddress inetAddress) throws SocketException;
     }
 
+    //获取本机IP精简版
+//    private String getFirstLocalIp() throws SocketException {
+//        Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+//        if (networkInterfaces == null) {
+//            return null;
+//        }
+//        while (networkInterfaces.hasMoreElements()) {
+//            NetworkInterface networkInterface = networkInterfaces.nextElement();
+//            Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+//            while (addresses.hasMoreElements()) {
+//                InetAddress address = addresses.nextElement();
+//                if (address != null && !address.isLoopbackAddress() && (networkInterface.isPointToPoint() || !address.isLinkLocalAddress())) {
+//                    return address.getHostAddress();
+//                }
+//            }
+//        }
+//        return null;
+//    }
+
 }

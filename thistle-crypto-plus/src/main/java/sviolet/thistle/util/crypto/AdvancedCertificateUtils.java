@@ -163,7 +163,7 @@ public class AdvancedCertificateUtils extends CertificateUtils {
      * @param publicKey 证书的RSA公钥
      * @param privateKey 证书的RSA私钥(自签名)
      * @param validity 证书的有效期(天), 例:3650
-     * @param signAlgorithm 签名算法, CertificateUtils.SIGN_ALGORITHM_RSA_SHA256
+     * @param signAlgorithm 签名算法, AdvancedCertificateUtils.SIGN_ALGORITHM_RSA_SHA256
      *
      */
     public static X509Certificate generateRSAX509RootCertificate(String dn, RSAPublicKey publicKey, RSAPrivateKey privateKey, int validity, String signAlgorithm) throws IOException, CertificateException, OperatorCreationException {
@@ -185,7 +185,7 @@ public class AdvancedCertificateUtils extends CertificateUtils {
      * @param subjectDn 申请证书的DN信息, 例:CN=Test CA, OU=IT Dept, O=My Company, L=Ningbo, ST=Zhejiang, C=CN
      * @param subjectPublicKey 申请证书的RSA公钥
      * @param subjectValidity 申请证书的有效期(天), 例:3650
-     * @param signAlgorithm 签名算法, CertificateUtils.SIGN_ALGORITHM_RSA_SHA256
+     * @param signAlgorithm 签名算法, AdvancedCertificateUtils.SIGN_ALGORITHM_RSA_SHA256
      * @param caCertificate CA的证书
      * @param caPrivateKey CA的RSA私钥
      */

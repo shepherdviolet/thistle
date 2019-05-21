@@ -12,10 +12,14 @@
  *
  */
 
+//都加上这个插件, 避免在根节点执行uploadArchives时出错
+subprojects {
+    apply plugin: 'maven'
+}
+
 //给库模块加入上传任务
 configure(subprojects.findAll { it.name.startsWith('thistle-') }) {
 
-    apply plugin: 'maven'
     apply plugin: 'signing'
 
     //编译时产生源代码jar

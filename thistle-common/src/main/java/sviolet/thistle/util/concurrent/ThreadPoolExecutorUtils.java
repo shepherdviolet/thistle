@@ -50,7 +50,7 @@ import java.util.concurrent.*;
  */
 public class ThreadPoolExecutorUtils {
 
-    private static final Set<EnhancedThreadPoolExecutor> POOL = Collections.newSetFromMap(new WeakHashMap<EnhancedThreadPoolExecutor, Boolean>());
+    private static final Set<EnhancedExecutor> POOL = Collections.newSetFromMap(new WeakHashMap<EnhancedExecutor, Boolean>());
 
     /**
      * <p>会超时的单线程池, 核心线程数0, 最大线程数1, 队列长度Integer.MAX_VALUE</p>
@@ -166,7 +166,6 @@ public class ThreadPoolExecutorUtils {
                 null);
     }
 
-
     /**
      * <p>创建线程池</p>
      *
@@ -214,6 +213,51 @@ public class ThreadPoolExecutorUtils {
     }
 
     /**
+     * <p>创建定时线程池</p>
+     *
+     * <p>
+     * 1.定时线程池能够延迟/循环执行任务
+     * </p>
+     *
+     * @param corePoolSize 核心线程数
+     * @param threadNameFormat 线程名称格式(rpc-pool-%d)
+     */
+    public static ScheduledExecutorService createScheduled(int corePoolSize, String threadNameFormat){
+        return createScheduled(corePoolSize, threadNameFormat, null, null);
+    }
+
+    /**
+     * <p>创建定时线程池</p>
+     *
+     * <p>
+     * 1.定时线程池能够延迟/循环执行任务
+     * </p>
+     *
+     * @param corePoolSize 核心线程数
+     * @param threadNameFormat 线程名称格式(rpc-pool-%d)
+     * @param rejectHandler nullable, 拒绝处理器, 默认: new ThreadPoolExecutor.AbortPolicy()
+     * @param executeListener nullable, 监听执行前执行后的事件
+     */
+    public static ScheduledExecutorService createScheduled(int corePoolSize,
+                                         String threadNameFormat,
+                                         RejectedExecutionHandler rejectHandler,
+                                         final ExecuteListener executeListener){
+
+        EnhancedScheduledThreadPoolExecutor executorService = new EnhancedScheduledThreadPoolExecutor(
+                corePoolSize,
+                new CompatThreadFactoryBuilder().setNameFormat(threadNameFormat).build(),
+                new RejectedExecutionHandlerWrapper(rejectHandler != null ? rejectHandler : new ThreadPoolExecutor.AbortPolicy()),
+                executeListener);
+
+        synchronized (POOL) {
+            POOL.add(executorService);
+        }
+
+        return executorService;
+
+    }
+
+    /**
      * 将所有通过此工具创建的ExecutorService停止(shutdownNow, 实际上是向线程发送interrupt信号,
      * 并不是直接杀死线程).
      * 谨慎使用此方法, 调用后之前所有创建的ExecutorService都将无法使用, 通常在停止服务时调用.
@@ -221,7 +265,7 @@ public class ThreadPoolExecutorUtils {
      */
     public static void shutdownNowAll(){
         synchronized (POOL) {
-            for (EnhancedThreadPoolExecutor executorService : POOL) {
+            for (EnhancedExecutor executorService : POOL) {
                 if (executorService != null) {
                     try {
                         executorService.enhancedShutdownNow();
@@ -232,13 +276,17 @@ public class ThreadPoolExecutorUtils {
         }
     }
 
+    private interface EnhancedExecutor {
+        void enhancedShutdownNow();
+    }
+
     /**
      * ThreadPoolExecutor加强
      */
-    private static class EnhancedThreadPoolExecutor extends ThreadPoolExecutor {
+    private static class EnhancedThreadPoolExecutor extends ThreadPoolExecutor implements EnhancedExecutor {
 
-        private ExecuteListener executeListener;
-        private RejectedExecutionHandlerWrapper rejectedExecutionHandlerWrapper;
+        private final ExecuteListener executeListener;
+        private final RejectedExecutionHandlerWrapper rejectedExecutionHandlerWrapper;
 
         private EnhancedThreadPoolExecutor(int corePoolSize,
                                   int maximumPoolSize,
@@ -272,7 +320,64 @@ public class ThreadPoolExecutorUtils {
         /**
          * shutdownNow的同时, 屏蔽RejectedExecutionHandler的异常, 忽略异常
          */
-        private void enhancedShutdownNow() {
+        @Override
+        public void enhancedShutdownNow() {
+            try {
+                rejectedExecutionHandlerWrapper.shutdown();
+                super.shutdownNow();
+            } catch (Throwable ignore){
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            return super.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return super.equals(obj);
+        }
+    }
+
+    /**
+     * ScheduledThreadPoolExecutor加强
+     */
+    private static class EnhancedScheduledThreadPoolExecutor extends ScheduledThreadPoolExecutor implements EnhancedExecutor {
+
+        private final ExecuteListener executeListener;
+        private final RejectedExecutionHandlerWrapper rejectedExecutionHandlerWrapper;
+
+        private EnhancedScheduledThreadPoolExecutor(int corePoolSize,
+                                           ThreadFactory threadFactory,
+                                           RejectedExecutionHandlerWrapper handler,
+                                           ExecuteListener executeListener) {
+            super(corePoolSize, threadFactory, handler);
+            this.executeListener = executeListener;
+            this.rejectedExecutionHandlerWrapper = handler;
+        }
+
+        @Override
+        protected void beforeExecute(Thread t, Runnable r) {
+            super.beforeExecute(t, r);
+            if (executeListener != null) {
+                executeListener.beforeExecute(t, r);
+            }
+        }
+
+        @Override
+        protected void afterExecute(Runnable r, Throwable t) {
+            super.afterExecute(r, t);
+            if (executeListener != null) {
+                executeListener.afterExecute(r, t);
+            }
+        }
+
+        /**
+         * shutdownNow的同时, 屏蔽RejectedExecutionHandler的异常, 忽略异常
+         */
+        @Override
+        public void enhancedShutdownNow() {
             try {
                 rejectedExecutionHandlerWrapper.shutdown();
                 super.shutdownNow();
