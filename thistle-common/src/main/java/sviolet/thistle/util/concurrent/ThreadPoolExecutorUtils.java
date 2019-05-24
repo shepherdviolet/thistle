@@ -243,6 +243,10 @@ public class ThreadPoolExecutorUtils {
                                          RejectedExecutionHandler rejectHandler,
                                          final ExecuteListener executeListener){
 
+        if (corePoolSize < 1) {
+            throw new IllegalArgumentException("corePoolSize must >= 1 for ScheduledExecutorService, otherwise it will result in high CPU usage.");
+        }
+
         EnhancedScheduledThreadPoolExecutor executorService = new EnhancedScheduledThreadPoolExecutor(
                 corePoolSize,
                 new CompatThreadFactoryBuilder().setNameFormat(threadNameFormat).build(),
