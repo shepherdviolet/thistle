@@ -243,6 +243,8 @@ public class ThreadPoolExecutorUtils {
                                          RejectedExecutionHandler rejectHandler,
                                          final ExecuteListener executeListener){
 
+        //JDK8的BUG, corePoolSize=0时会吃CPU(无限循环)
+        //https://bugs.openjdk.java.net/browse/JDK-8129861
         if (corePoolSize < 1) {
             throw new IllegalArgumentException("corePoolSize must >= 1 for ScheduledExecutorService, otherwise it will result in high CPU usage.");
         }
