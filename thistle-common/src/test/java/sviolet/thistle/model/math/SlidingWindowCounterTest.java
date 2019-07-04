@@ -52,40 +52,40 @@ public class SlidingWindowCounterTest {
         counter.addAndGet(1, 5000);//大抖动
         counter.addAndGet(1, 22000);
 
-        Assert.assertEquals(3, counter.get(1, 29000));
-        Assert.assertEquals(7, counter.get(2, 29000));
-        Assert.assertEquals(12, counter.get(30, 29000));
+        Assert.assertEquals(3, counter.getRecently(1, 29000));
+        Assert.assertEquals(7, counter.getRecently(2, 29000));
+        Assert.assertEquals(12, counter.getRecently(30, 29000));
 
         //2 * 2
         counter.addAndGet(2, 41000);
         counter.addAndGet(2, 31000);//大抖动
 
-        Assert.assertEquals(4, counter.get(1, 49000));
-        Assert.assertEquals(4, counter.get(2, 49000));
-        Assert.assertEquals(7, counter.get(3, 49000));
-        Assert.assertEquals(16, counter.get(30, 49000));
+        Assert.assertEquals(4, counter.getRecently(1, 49000));
+        Assert.assertEquals(4, counter.getRecently(2, 49000));
+        Assert.assertEquals(7, counter.getRecently(3, 49000));
+        Assert.assertEquals(16, counter.getRecently(30, 49000));
 
         //2
         counter.addAndGet(1, 301000);
         counter.addAndGet(1, 291000);//大抖动
 
-        Assert.assertEquals(2, counter.get(1, 309000));
-        Assert.assertEquals(2, counter.get(2, 309000));
-        Assert.assertEquals(13, counter.get(30, 309000));
+        Assert.assertEquals(2, counter.getRecently(1, 309000));
+        Assert.assertEquals(2, counter.getRecently(2, 309000));
+        Assert.assertEquals(13, counter.getRecently(30, 309000));
 
         //1
         counter.addAndGet(1, 311000);
 
-        Assert.assertEquals(1, counter.get(1, 319000));
-        Assert.assertEquals(3, counter.get(2, 319000));
-        Assert.assertEquals(10, counter.get(30, 319000));
+        Assert.assertEquals(1, counter.getRecently(1, 319000));
+        Assert.assertEquals(3, counter.getRecently(2, 319000));
+        Assert.assertEquals(10, counter.getRecently(30, 319000));
 
         //1
         counter.addAndGet(1, 0);//cause reset! Illegal operation!
 
-        Assert.assertEquals(1, counter.get(1, 9000));
-        Assert.assertEquals(1, counter.get(2, 9000));
-        Assert.assertEquals(1, counter.get(30, 9000));
+        Assert.assertEquals(1, counter.getRecently(1, 9000));
+        Assert.assertEquals(1, counter.getRecently(2, 9000));
+        Assert.assertEquals(1, counter.getRecently(30, 9000));
 
         //2
         counter.addAndGet(1, 5000);
@@ -94,9 +94,9 @@ public class SlidingWindowCounterTest {
         //1
         counter.addAndGet(-100, 600000);//long interval, clean all
 
-        Assert.assertEquals(-100, counter.get(1, 609000));
-        Assert.assertEquals(-100, counter.get(2, 609000));
-        Assert.assertEquals(-100, counter.get(30, 609000));
+        Assert.assertEquals(-100, counter.getRecently(1, 609000));
+        Assert.assertEquals(-100, counter.getRecently(2, 609000));
+        Assert.assertEquals(-100, counter.getRecently(30, 609000));
 
     }
 
@@ -152,11 +152,11 @@ public class SlidingWindowCounterTest {
         //调用次数
         System.out.println("Invoke Total: " + times.get());
         //计数器里采集到的次数
-        System.out.println("Count Total: " + counter.getTotal());
+        System.out.println("Count Total: " + counter.getTotally());
 
         for (int i = 1 ; i <= 60 ; i++) {
             //最近i秒内的计数值, 刚开始会有一两秒为0(因为FINISH_DURATION比RUN_DURATION大)
-            System.out.println(i + ": " + counter.get(i));
+            System.out.println(i + ": " + counter.getRecently(i));
         }
 
     }

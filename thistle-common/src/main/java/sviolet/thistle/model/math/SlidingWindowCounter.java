@@ -30,13 +30,13 @@ import java.util.concurrent.locks.ReentrantLock;
  * <p>例如, 我们要统计最近5分钟内的交易量, 统计精度为10秒, 即samplingDuration=10000, statisticalPeriod=30,
  * (5分钟 = 10秒 * 30, 实际上程序生成了30个计数器, 每个计数器用来累加10秒钟的计数, 这样就能统计最近十分钟的计数值了).
  * 在交易发生时, 调用getAndAdd(1)/addAndGet(1)方法计数. 在需要获取计数值时, 调用get(?)获取最近N个采样周期内的计数值,
- * get(1)获取最近10秒钟内的计数值, get(6)获取最近一分钟内的计数值, getTotal()获取最近五分钟内的计数值. </p>
+ * getRecently(1)获取最近10秒钟内的计数值, getRecently(6)获取最近一分钟内的计数值, getTotally()获取最近五分钟内的计数值. </p>
  *
  * <p>
  *     建议: <br>
  *     1.statisticalPeriod不要设置的太大, 这个值有多少, 内部就有多少个计数器 <br>
- *     2.如果只需要统计一种时间尺度, 比如最近10秒, 建议: new SlidingWindowCounter(10000, 4), get(1) <br>
- *     3.如果需要统计多种时间尺度, 比如最近10秒和最近5分钟, 建议: new SlidingWindowCounter(10000, 30), get(1), getTotal() <br>
+ *     2.如果只需要统计一种时间尺度, 比如最近10秒, 建议: new SlidingWindowCounter(10000, 4), getRecently(1) <br>
+ *     3.如果需要统计多种时间尺度, 比如最近10秒和最近5分钟, 建议: new SlidingWindowCounter(10000, 30), getRecently(1), getTotally() <br>
  * </p>
  *
  * @author S.Violet
@@ -118,16 +118,16 @@ public class SlidingWindowCounter {
      * @param period 采样周期
      * @return 最近N个采样周期内的计数值
      */
-    public int get(int period) {
-        return get(period, System.currentTimeMillis());
+    public int getRecently(int period) {
+        return getRecently(period, System.currentTimeMillis());
     }
 
     /**
      * 获取整个统计周期内的计数值
      * @return 整个统计周期内的计数值
      */
-    public int getTotal(){
-        return get(statisticalPeriod);
+    public int getTotally(){
+        return getRecently(statisticalPeriod);
     }
 
     /**
@@ -136,7 +136,7 @@ public class SlidingWindowCounter {
      * @param currentTimeMillis 当前时间(毫秒数), 注意, 这个时间不可以回拨, 回拨超过2个单位时间时会触发所有计数清零
      * @return 最近N个采样周期内的计数值
      */
-    protected int get(int period, long currentTimeMillis) {
+    protected int getRecently(int period, long currentTimeMillis) {
         if (period <= 0) {
             return 0;
         } else if (period > statisticalPeriod) {
