@@ -22,9 +22,11 @@ package sviolet.thistle.model.bitmap;
 import org.junit.Assert;
 import org.junit.Test;
 import sviolet.thistle.util.conversion.ByteUtils;
+import sviolet.thistle.util.crypto.DigestCipher;
 
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class DirectBitmapTest {
 
@@ -95,7 +97,8 @@ public class DirectBitmapTest {
 
     public static void main(String[] args) {
 //        baseline1();//性能
-        baseline2();//误判率
+//        baseline2();//误判率
+        consistency();//一致性
     }
 
     private static final int BITMAP_SIZE = 1000000000;
@@ -149,6 +152,7 @@ public class DirectBitmapTest {
         BloomBitmap bitmap = new HeapBitmap(BITMAP_SIZE_2);
 //        BloomBitmap bitmap = new DirectBitmap(BITMAP_SIZE_2);
 //        BloomBitmap bitmap = new ConcurrentHeapBitmap(BITMAP_SIZE_2);
+//        BloomBitmap bitmap = new SyncHeapBitmap(BITMAP_SIZE_2);
         int collisions = 0;
 
         for (int i = 0 ; i < TIMES_2 ; i++) {
@@ -160,6 +164,69 @@ public class DirectBitmapTest {
         }
 
         System.out.println(collisions);
+    }
+
+    private static final long THREADS = 16;
+
+    /**
+     * 一致性测试
+     */
+    private static void consistency(){
+        byte[] correct = consistencySync(new HeapBitmap(1000000));
+        String correctData = ByteUtils.bytesToHex(correct);
+        String correctHash = ByteUtils.bytesToHex(DigestCipher.digest(correct, DigestCipher.TYPE_SHA1));
+        System.out.println(correctData);
+        System.out.println("标准值:" + correctHash);
+
+        byte[] data1 = consistencyAsync(new HeapBitmap(1000000));//这个肯定测试不通过
+        String hash1 = ByteUtils.bytesToHex(DigestCipher.digest(data1, DigestCipher.TYPE_SHA1));
+        System.out.println("肯定不同" + hash1);
+
+        byte[] data2 = consistencyAsync(new ConcurrentHeapBitmap(1000000));
+        String hash2 = ByteUtils.bytesToHex(DigestCipher.digest(data2, DigestCipher.TYPE_SHA1));
+        System.out.println("必须相同" + hash2);
+
+        byte[] data3 = consistencyAsync(new SyncHeapBitmap(1000000));
+        String hash3 = ByteUtils.bytesToHex(DigestCipher.digest(data3, DigestCipher.TYPE_SHA1));
+        System.out.println("必须相同" + hash3);
+    }
+
+    private static byte[] consistencySync(final BloomBitmap bitmap){
+        for (int i = 0 ; i < THREADS ; i++) {
+            consistencyTask(bitmap, i);
+        }
+        return bitmap.extractAll();
+    }
+
+    private static byte[] consistencyAsync(final BloomBitmap bitmap){
+        final AtomicInteger counter = new AtomicInteger(0);
+        for (int i = 0 ; i < THREADS ; i++) {
+            final int finalI = i;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(100L);
+                    } catch (InterruptedException ignored) {
+                    }
+                    consistencyTask(bitmap, finalI);
+                    counter.incrementAndGet();
+                }
+            }).start();
+        }
+        while (counter.get() < THREADS) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ignore) {
+            }
+        }
+        return bitmap.extractAll();
+    }
+
+    private static void consistencyTask(BloomBitmap bitmap, int offset) {
+        for (int i = 0 ; i < 10000 ; i++) {
+            bitmap.bloomAdd(String.valueOf(i * THREADS + offset).getBytes());
+        }
     }
 
 }
