@@ -22,7 +22,9 @@ package sviolet.thistle.util.reflect;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 反射工具
@@ -33,18 +35,167 @@ public class ReflectUtils {
 
     /**
      * 获得一个类的泛型类型
+     *
      * @param clazz 类
      * @return 泛型类型
      */
-    public static List<Class> getActualTypes(Class clazz){
+    public static List<Class> getActualTypes(Class clazz) {
         List<Class> result = new ArrayList<>();
         Type type = clazz.getGenericSuperclass();
         if (ParameterizedType.class.isAssignableFrom(type.getClass())) {
             for (Type actualType : ((ParameterizedType) type).getActualTypeArguments()) {
-                result.add((Class)actualType);
+                result.add((Class) actualType);
             }
         }
         return result;
+    }
+
+    /**
+     * <p>获取方法调用者信息(类名/方法名)</p>
+     *
+     * <p>在A方法内调用ReflectUtils.getMethodCaller(null, null)方法时, 可以得到A方法的调用者(是谁调用了A方法). </p>
+     *
+     * <p>使用equalSkips参数跳过一些类: 假如A方法还会被B/C两个方法调用(封装), 我们想要知道是谁调用了A/B/C方法, 可以在A方法中
+     * 调用ReflectUtils.getMethodCaller(equalSkips, null)获取调用者, equalSkips配置B/C方法所在类的类名. 示例:</p>
+     *
+     * <pre>
+     * //推荐用HashSet, 性能较好
+     * private final Set<String> equalSkips = new HashSet<>(Arrays.asList(
+     *         AClass.class.getName(),
+     *         BClass.class.getName()
+     * ));
+     *
+     * public void method(){
+     *     String callerClassName = Utils.getMethodCaller(equalSkips, null).getClassName();
+     * }
+     * </pre>
+     *
+     * <p>使用startsWithSkips参数跳过一些类: 假如A方法还会被B/C两个方法调用(封装), 我们想要知道是谁调用了A/B/C方法, 可以在A方法中
+     * 调用ReflectUtils.getMethodCaller(null, startsWithSkips)获取调用者, startsWithSkips配置B/C方法所在类的类名的前缀. 示例:</p>
+     *
+     * <pre>
+     * //推荐用ArrayList, 性能较好
+     * private final Collection<String> startsWithSkips = Arrays.asList(
+     *         "org.springframework.cglib.proxy.Proxy$ProxyImpl$$",
+     *         "com.company.packagename."
+     * );
+     *
+     * public void method(){
+     *     String callerClassName = Utils.getMethodCaller(null, startsWithSkips).getClassName();
+     * }
+     * </pre>
+     *
+     * <p>另外, equalSkips和startsWithSkips参数可以同时使用. </p>
+     *
+     * <p>关于性能, new Throwable().getStackTrace()性能较差(和抛出一个异常的开销差不多),
+     * 但微微比Thread.currentThread().getStackTrace()好一点点, 实测性能如下: <br>
+     * 3.31GHz CPU 单线程 <br>
+     * 线程堆栈15层时 10000次 耗时112.33ms <br>
+     * 线程堆栈13层时 10000次 耗时93.37ms <br>
+     * 线程堆栈 7层时 10000次 耗时62.29ms <br>
+     * 线程堆栈 3层时 10000次 耗时37.60ms <br>
+     * </p>
+     *
+     * @param equalSkips      要跳过的类(equals方式匹配), 可为空, 推荐HashSet
+     * @param startsWithSkips 要跳过的类(startsWith方式匹配), 可为空, 推荐ArrayList
+     * @return 调用者信息, Nullable, 若返回空则表示找不到调用者
+     */
+    public static MethodCaller getMethodCaller(Set<String> equalSkips, Collection<String> startsWithSkips) {
+        //获取当前堆栈
+        StackTraceElement[] elements = new Throwable().getStackTrace();
+        //跳过头两个元素(getCaller方法和调用getCaller的方法)
+        if (elements != null && elements.length > 2) {
+            //遍历堆栈
+            int i = 2;
+            for (; i < elements.length; i++) {
+                //当前元素
+                StackTraceElement element = elements[i];
+                //如果类名与skipEquals中的一个相同, 则跳过该元素查找下一个
+                if (equalSkips != null && equalSkips.contains(element.getClassName())) {
+                    continue;
+                }
+                //如果类名是skipStarts中的任意一个作为开头的, 则跳过该元素查找下一个
+                if (startsWithSkips != null && isStartsWithSkips(startsWithSkips, element)) {
+                    continue;
+                }
+                //如果未跳过则当前元素就是调用者
+                return new MethodCaller(element, i, elements);
+            }
+        }
+        //找不到调用者
+        return null;
+    }
+
+    private static boolean isStartsWithSkips(Collection<String> startsWithSkips, StackTraceElement element) {
+        String className = element.getClassName();
+        for (String skipStart : startsWithSkips) {
+            if (skipStart != null && className.startsWith(skipStart)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static class MethodCaller {
+
+        private String callerClass;
+        private String callerMethodName;
+        private String callerFileName;
+        private int callerLineNumber;
+        private int callerIndex;
+        private StackTraceElement[] stackTraces;
+
+        private MethodCaller(StackTraceElement caller, int callerIndex, StackTraceElement[] stackTraces){
+            this.callerClass = caller.getClassName();
+            this.callerMethodName = caller.getMethodName();
+            this.callerFileName = caller.getFileName();
+            this.callerLineNumber = caller.getLineNumber();
+            this.callerIndex = callerIndex;
+            this.stackTraces = stackTraces;
+        }
+
+        /**
+         * 调用点所在的类, 不为空
+         */
+        public String getCallerClass() {
+            return callerClass;
+        }
+
+        /**
+         * 调用点的方法名, 不为空
+         */
+        public String getCallerMethodName() {
+            return callerMethodName;
+        }
+
+        /**
+         * 调用点所在类对应的文件, 可为空
+         */
+        public String getCallerFileName() {
+            return callerFileName;
+        }
+
+        /**
+         * 调用点所在行数
+         */
+        public int getCallerLineNumber() {
+            return callerLineNumber;
+        }
+
+        /**
+         * 调用点在线程堆栈中的位置
+         */
+        public int getCallerIndex() {
+            return callerIndex;
+        }
+
+        /**
+         * 调用线程堆栈
+         */
+        public StackTraceElement[] getStackTraces() {
+            return stackTraces;
+        }
+
     }
 
 }
