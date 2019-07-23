@@ -50,18 +50,16 @@ public interface Bitmap {
     /**
      * 抽取(复制)部分数据
      * @param dst 抽取的数据存放到这里
-     * @param offset 起始位置(注意, 这个不是比特位置, 是字节位置; 不是dst的位置)
-     * @param length 抽取长度(注意, 这个不是比特长度, 是字节长度)
+     * @param offset 起始位置(注意, 这个不是比特位置, 是字节位置; 这是内部Bitmap的位置, 不是入参dst的位置, dst始终会从0位开始填充直至结束)
      */
-    void extract(byte[] dst, int offset, int length);
+    void extract(byte[] dst, int offset);
 
     /**
      * 导入数据
      * @param src 需要被导入的数据
-     * @param offset 起始位置(注意, 这个不是比特位置, 是字节位置; 不是src的位置)
-     * @param length 导入长度(注意, 这个不是比特长度, 是字节长度)
+     * @param offset 起始位置(注意, 这个不是比特位置, 是字节位置; 这是内部Bitmap的位置, 不是入参src的位置, src始终会从0位开始读取直至结束)
      */
-    void inject(byte[] src, int offset, int length);
+    void inject(byte[] src, int offset);
 
     /**
      * Bitmap的总比特长度

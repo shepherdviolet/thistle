@@ -26,6 +26,8 @@ import java.nio.ByteBuffer;
 /**
  * [非线程安全]使用堆内存(HEAP)的Bitmap, 占用内存 = size / 8.
  *
+ * 一致性: extract/inject操作有同步锁, put/get/bloomAdd/bloomContains无同步锁, 且不保证内存可见性(非CAS操作).
+ *
  * @see Bitmap
  * @see BloomBitmap
  * @author S.Violet
@@ -43,7 +45,7 @@ public class HeapBitmap implements BloomBitmap {
         }
     }
 
-    protected final ByteBuffer buffer;
+    protected final BitmapOperator operator;
     protected final int size;
 
     public HeapBitmap(int size) {
@@ -54,58 +56,103 @@ public class HeapBitmap implements BloomBitmap {
             throw new IllegalArgumentException("The size must be a multiple of 8, but it's " + size);
         }
         this.size = size;
-        this.buffer = buildBuffer(toSlotIndex(size));
+        this.operator = buildBuffer(toSlotIndex(size));
     }
 
     public HeapBitmap(byte[] data) {
-        this(data != null ? data.length : 0);
+        this(data != null ? data.length << 3 : 0);
         if (data == null || data.length <= 0) {
             return;
         }
         //导入数据
-        this.buffer.put(data, 0, data.length);
+        this.operator.inject(data, 0);
     }
 
     /**
-     * 创建ByteBuffer
+     * 创建BitmapOperator
      */
-    protected ByteBuffer buildBuffer(int bufferSize){
-        return ByteBuffer.allocate(bufferSize);
+    protected BitmapOperator buildBuffer(final int bufferSize){
+        return new BitmapOperator() {
+
+            //Heap buffer
+            private final ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
+
+            @Override
+            public byte get(int index) {
+                return buffer.get(index);
+            }
+
+            @Override
+            public synchronized void extract(byte[] dst, int offset) {
+                buffer.position(offset);
+                buffer.get(dst, 0, dst.length);
+            }
+
+            @Override
+            public boolean put(int index, byte newValue, byte oldValue) {
+                buffer.put(index, newValue);
+                return true;
+            }
+
+            @Override
+            public synchronized void inject(byte[] src, int offset) {
+                buffer.position(offset);
+                buffer.put(src, 0, src.length);
+            }
+
+            @Override
+            public Object getProvider() {
+                return buffer;
+            }
+        };
     }
 
     public boolean get(int bitIndex) {
         if (bitIndex < 0 || bitIndex >= size) {
             throw new IllegalArgumentException("Out of bound, The bitIndex must >= 0 and < " + size + ", but it's " + bitIndex);
         }
-        byte slot = buffer.get(toSlotIndex(bitIndex));
+        byte slot = getSlot(toSlotIndex(bitIndex));
         return (slot & F[toSlotOffset(bitIndex)]) != 0;
+    }
+
+    protected byte getSlot(int slotIndex) {
+        return operator.get(slotIndex);
     }
 
     public void put(int bitIndex, boolean value) {
         if (bitIndex < 0 || bitIndex >= size) {
             throw new IllegalArgumentException("Out of bound, The bitIndex must >= 0 and < " + size + ", but it's " + bitIndex);
         }
-        int slotIndex = toSlotIndex(bitIndex);
-        byte slot = buffer.get(slotIndex);
-        buffer.put(slotIndex, value ? (byte) (slot | F[toSlotOffset(bitIndex)]) :
-                (byte) (slot & R[toSlotOffset(bitIndex)]));
+        putValue(toSlotIndex(bitIndex), toSlotOffset(bitIndex), value);
+    }
+
+    /**
+     * 将比特值放入比特位置
+     */
+    protected boolean putValue(int slotIndex, int slotOffset, boolean value) {
+        //get old value
+        byte oldValue = operator.get(slotIndex);
+        //calculate new value
+        byte newValue = value ? (byte) (oldValue | F[slotOffset]) : (byte) (oldValue & R[slotOffset]);
+        //try to put
+        return operator.put(slotIndex, newValue, oldValue);
     }
 
     @Override
     public byte[] extractAll(){
         byte[] result = new byte[toSlotIndex(size)];
-        this.buffer.get(result, 0, result.length);
+        this.operator.extract(result, 0);
         return result;
     }
 
     @Override
-    public void extract(byte[] dst, int offset, int length) {
-        this.buffer.get(dst, offset, length);
+    public void extract(byte[] dst, int offset) {
+        this.operator.extract(dst, offset);
     }
 
     @Override
-    public void inject(byte[] src, int offset, int length) {
-        this.buffer.put(src, offset, length);
+    public void inject(byte[] src, int offset) {
+        this.operator.inject(src, offset);
     }
 
     @Override

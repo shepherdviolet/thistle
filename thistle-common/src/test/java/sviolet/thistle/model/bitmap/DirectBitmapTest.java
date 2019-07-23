@@ -30,20 +30,68 @@ public class DirectBitmapTest {
 
     @Test
     public void test(){
-        DirectBitmap directBitmap = new DirectBitmap(1024);
-        directBitmap.put(999, true);
-        Assert.assertTrue(directBitmap.get(999));
-        directBitmap.put(998, true);
-        directBitmap.put(999, false);
-        directBitmap.put(1000, true);
-        Assert.assertFalse(directBitmap.get(999));
-        directBitmap.put(0, true);
-        Assert.assertTrue(directBitmap.get(0));
-        directBitmap.put(1023, true);
-        Assert.assertTrue(directBitmap.get(1023));
-        System.out.println(directBitmap.destroy());
-        System.out.println(ByteUtils.bytesToHex(directBitmap.extractAll()));
+        test0(new HeapBitmap(1024));
+        test0(new DirectBitmap(1024));
+        test0(new ConcurrentHeapBitmap(1024));
+        test0(new SyncHeapBitmap(1024));
     }
+
+    private void test0(Bitmap bitmap) {
+        bitmap.put(999, true);
+        bitmap.put(1000, true);
+        bitmap.put(1001, true);
+        bitmap.put(1002, true);
+        bitmap.put(1003, true);
+        bitmap.put(1004, true);
+        bitmap.put(1005, true);
+        bitmap.put(1006, true);
+        bitmap.put(1007, true);
+        bitmap.put(1008, true);
+        Assert.assertTrue(bitmap.get(999));
+        Assert.assertTrue(bitmap.get(1000));
+        Assert.assertTrue(bitmap.get(1001));
+        Assert.assertTrue(bitmap.get(1002));
+        Assert.assertTrue(bitmap.get(1003));
+        Assert.assertTrue(bitmap.get(1004));
+        Assert.assertTrue(bitmap.get(1005));
+        Assert.assertTrue(bitmap.get(1006));
+        Assert.assertTrue(bitmap.get(1007));
+        Assert.assertTrue(bitmap.get(1008));
+
+        bitmap.put(998, true);
+        bitmap.put(999, false);
+        bitmap.put(1000, true);
+        Assert.assertFalse(bitmap.get(999));
+
+        bitmap.put(0, true);
+        Assert.assertTrue(bitmap.get(0));
+        bitmap.put(1023, true);
+        Assert.assertTrue(bitmap.get(1023));
+
+        byte[] data = bitmap.extractAll();
+        String dataString = ByteUtils.bytesToHex(data);
+
+        bitmap = new HeapBitmap(data);
+        Assert.assertFalse(bitmap.get(999));
+        Assert.assertTrue(bitmap.get(0));
+        Assert.assertTrue(bitmap.get(1023));
+        Assert.assertTrue(bitmap.get(1001));
+        Assert.assertTrue(bitmap.get(1002));
+        Assert.assertTrue(bitmap.get(1003));
+        Assert.assertTrue(bitmap.get(1004));
+        Assert.assertTrue(bitmap.get(1005));
+        Assert.assertTrue(bitmap.get(1006));
+        Assert.assertTrue(bitmap.get(1007));
+        Assert.assertTrue(bitmap.get(1008));
+
+        String dataString2 = ByteUtils.bytesToHex(bitmap.extractAll());
+        Assert.assertEquals(dataString, dataString2);
+        System.out.println(dataString2);
+    }
+
+
+    /* *********************************************************************************************************** */
+
 
     public static void main(String[] args) {
 //        baseline1();//性能
@@ -56,10 +104,16 @@ public class DirectBitmapTest {
 
     /**
      * 性能
+     * HeapBitmap 2989
+     * DirectBitmap 2913
+     * ConcurrentHeapBitmap 3719
+     * SyncHeapBitmap 7642
      */
     private static void baseline1() {
         Bitmap bitmap = new HeapBitmap(BITMAP_SIZE);
 //        Bitmap bitmap = new DirectBitmap(BITMAP_SIZE);
+//        Bitmap bitmap = new ConcurrentHeapBitmap(BITMAP_SIZE);
+//        Bitmap bitmap = new SyncHeapBitmap(BITMAP_SIZE);
 
         long time = System.currentTimeMillis();
 
@@ -93,6 +147,8 @@ public class DirectBitmapTest {
      */
     private static void baseline2(){
         BloomBitmap bitmap = new HeapBitmap(BITMAP_SIZE_2);
+//        BloomBitmap bitmap = new DirectBitmap(BITMAP_SIZE_2);
+//        BloomBitmap bitmap = new ConcurrentHeapBitmap(BITMAP_SIZE_2);
         int collisions = 0;
 
         for (int i = 0 ; i < TIMES_2 ; i++) {
