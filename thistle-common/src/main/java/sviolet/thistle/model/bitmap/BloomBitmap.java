@@ -24,6 +24,8 @@ package sviolet.thistle.model.bitmap;
  *
  * <p>注意, 如果作为布隆过滤器使用, 建议不要使用Bitmap#put方法直接对数据进行操作!</p>
  *
+ * <p>另外, Redis4.0+ 和 lettuce 支持布隆过滤器. </p>
+ *
  * <p>
  *     要点:<br>
  *     1.元素只增不减(很难实现删除元素)<br>

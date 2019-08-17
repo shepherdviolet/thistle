@@ -39,83 +39,115 @@ public class ClassPrinter {
 
     /**
      * 打印class
-     * @param clazz class
+     *
+     * @param clazz      class
      * @param traversals true:遍历父类
      */
     public static String print(Class<?> clazz, boolean traversals) throws IllegalAccessException {
-        return print(clazz, traversals, true, true, true);
+        return print(clazz, traversals, true, true, true, false);
     }
 
     /**
      * 打印class
-     * @param clazz class
-     * @param traversals true:遍历父类
-     * @param printFields 输出fields
+     *
+     * @param clazz             class
+     * @param traversals        true:遍历父类
+     * @param printFields       输出fields
      * @param printConstructors 输出构造器
-     * @param printMethods 输出方法
+     * @param printMethods      输出方法
      */
     public static String print(Class<?> clazz, boolean traversals, boolean printFields, boolean printConstructors, boolean printMethods) throws IllegalAccessException {
-        if (clazz == null){
+        return print(clazz, traversals, printFields, printConstructors, printMethods, false);
+    }
+
+    /**
+     * 打印class
+     *
+     * @param clazz             class
+     * @param traversals        true:遍历父类
+     * @param printFields       输出fields
+     * @param printConstructors 输出构造器
+     * @param printMethods      输出方法
+     * @param includeSpecial    包含特殊的Method和Field
+     */
+    public static String print(Class<?> clazz, boolean traversals, boolean printFields, boolean printConstructors, boolean printMethods, boolean includeSpecial) throws IllegalAccessException {
+        if (clazz == null) {
             return NULL_CLASS;
         }
         Class<?> current = clazz;
         StringBuilder stringBuilder = new StringBuilder(PRINTER_TITLE);
-        print(current, null, stringBuilder, printFields, printConstructors, printMethods);
-        while(traversals && (current = current.getSuperclass()) != null){
-            print(current, null, stringBuilder, printFields, printConstructors, printMethods);
+        print(current, null, stringBuilder, printFields, printConstructors, printMethods, includeSpecial);
+        while (traversals && (current = current.getSuperclass()) != null) {
+            print(current, null, stringBuilder, printFields, printConstructors, printMethods, includeSpecial);
         }
         return stringBuilder.toString();
     }
 
     /**
      * 打印对象
-     * @param obj 对象
+     *
+     * @param obj        对象
      * @param traversals true:遍历父类
      */
     public static String print(Object obj, boolean traversals) throws IllegalAccessException {
-        return print(obj, traversals, true, true, true);
+        return print(obj, traversals, true, true, true, false);
     }
 
     /**
      * 打印对象
-     * @param obj 对象
-     * @param traversals true:遍历父类
-     * @param printFields 输出fields
+     *
+     * @param obj               对象
+     * @param traversals        true:遍历父类
+     * @param printFields       输出fields
      * @param printConstructors 输出构造器
-     * @param printMethods 输出方法
+     * @param printMethods      输出方法
      */
     public static String print(Object obj, boolean traversals, boolean printFields, boolean printConstructors, boolean printMethods) throws IllegalAccessException {
-        if (obj == null){
+        return print(obj, traversals, printFields, printConstructors, printMethods, false);
+    }
+
+    /**
+     * 打印对象
+     *
+     * @param obj               对象
+     * @param traversals        true:遍历父类
+     * @param printFields       输出fields
+     * @param printConstructors 输出构造器
+     * @param printMethods      输出方法
+     * @param includeSpecial    包含特殊的Method和Field
+     */
+    public static String print(Object obj, boolean traversals, boolean printFields, boolean printConstructors, boolean printMethods, boolean includeSpecial) throws IllegalAccessException {
+        if (obj == null) {
             return NULL_OBJECT;
         }
         Class<?> current = obj.getClass();
         StringBuilder stringBuilder = new StringBuilder(PRINTER_TITLE);
-        print(current, obj, stringBuilder, printFields, printConstructors, printMethods);
-        while(traversals && (current = current.getSuperclass()) != null){
-            print(current, obj, stringBuilder, printFields, printConstructors, printMethods);
+        print(current, obj, stringBuilder, printFields, printConstructors, printMethods, includeSpecial);
+        while (traversals && (current = current.getSuperclass()) != null) {
+            print(current, obj, stringBuilder, printFields, printConstructors, printMethods, includeSpecial);
         }
         return stringBuilder.toString();
     }
 
-    private static void print(Class<?> clazz, Object obj, StringBuilder stringBuilder, boolean printFields, boolean printConstructors, boolean printMethods) throws IllegalAccessException {
+    private static void print(Class<?> clazz, Object obj, StringBuilder stringBuilder, boolean printFields, boolean printConstructors, boolean printMethods, boolean includeSpecial) throws IllegalAccessException {
         printClassInfo(clazz, stringBuilder);
         if (printFields) {
-            printClassFields(clazz, obj, stringBuilder);
+            printClassFields(clazz, obj, stringBuilder, includeSpecial);
         }
         if (printConstructors) {
             printClassConstructors(clazz, stringBuilder);
         }
         if (printMethods) {
-            printClassMethods(clazz, stringBuilder);
+            printClassMethods(clazz, stringBuilder, includeSpecial);
         }
     }
 
-    private static void printClassMethods(Class<?> clazz, StringBuilder stringBuilder) {
+    private static void printClassMethods(Class<?> clazz, StringBuilder stringBuilder, boolean includeSpecial) {
         stringBuilder.append("\n--------------Methods--------------");
         Method[] methods = ReflectCache.getDeclaredMethods(clazz);
         for (Method method : methods) {
             String name = method.getName();
-            if (name.contains("$")){
+            if (!includeSpecial && name.contains("$")) {
                 continue;
             }
             stringBuilder.append("\n");
@@ -126,8 +158,8 @@ public class ClassPrinter {
             stringBuilder.append("(");
             Class<?>[] paramTypes = method.getParameterTypes();
             if (paramTypes != null) {
-                for (int i = 0 ; i < paramTypes.length ; i++){
-                    if (i != 0){
+                for (int i = 0; i < paramTypes.length; i++) {
+                    if (i != 0) {
                         stringBuilder.append(", ");
                     }
                     stringBuilder.append(paramTypes[i].getName());
@@ -147,8 +179,8 @@ public class ClassPrinter {
             stringBuilder.append("(");
             Class<?>[] paramTypes = constructor.getParameterTypes();
             if (paramTypes != null) {
-                for (int j = 0 ; j < paramTypes.length ; j++){
-                    if (j != 0){
+                for (int j = 0; j < paramTypes.length; j++) {
+                    if (j != 0) {
                         stringBuilder.append(", ");
                     }
                     stringBuilder.append(paramTypes[j].getName());
@@ -158,13 +190,13 @@ public class ClassPrinter {
         }
     }
 
-    private static void printClassFields(Class<?> clazz, Object obj, StringBuilder stringBuilder) throws IllegalAccessException {
+    private static void printClassFields(Class<?> clazz, Object obj, StringBuilder stringBuilder, boolean includeSpecial) throws IllegalAccessException {
         stringBuilder.append("\n--------------Fields--------------");
         Field[] fields = ReflectCache.getDeclaredFields(clazz);
         for (Field field : fields) {
             int modifiers = field.getModifiers();
             String name = field.getName();
-            if (name.contains("$")){
+            if (!includeSpecial && name.contains("$")) {
                 continue;
             }
             field.setAccessible(true);
@@ -186,38 +218,38 @@ public class ClassPrinter {
         stringBuilder.append(clazz.getName());
     }
 
-    private static void printModifiers(int modifiers, StringBuilder stringBuilder){
-        if (CheckUtils.isFlagMatch(modifiers, Modifier.PUBLIC)){
+    private static void printModifiers(int modifiers, StringBuilder stringBuilder) {
+        if (CheckUtils.isFlagMatch(modifiers, Modifier.PUBLIC)) {
             stringBuilder.append("public ");
         }
-        if (CheckUtils.isFlagMatch(modifiers, Modifier.PRIVATE)){
+        if (CheckUtils.isFlagMatch(modifiers, Modifier.PRIVATE)) {
             stringBuilder.append("private ");
         }
-        if (CheckUtils.isFlagMatch(modifiers, Modifier.PROTECTED)){
+        if (CheckUtils.isFlagMatch(modifiers, Modifier.PROTECTED)) {
             stringBuilder.append("protected ");
         }
-        if (CheckUtils.isFlagMatch(modifiers, Modifier.STATIC)){
+        if (CheckUtils.isFlagMatch(modifiers, Modifier.STATIC)) {
             stringBuilder.append("static ");
         }
-        if (CheckUtils.isFlagMatch(modifiers, Modifier.FINAL)){
+        if (CheckUtils.isFlagMatch(modifiers, Modifier.FINAL)) {
             stringBuilder.append("final ");
         }
-        if (CheckUtils.isFlagMatch(modifiers, Modifier.SYNCHRONIZED)){
+        if (CheckUtils.isFlagMatch(modifiers, Modifier.SYNCHRONIZED)) {
             stringBuilder.append("synchronized ");
         }
-        if (CheckUtils.isFlagMatch(modifiers, Modifier.VOLATILE)){
+        if (CheckUtils.isFlagMatch(modifiers, Modifier.VOLATILE)) {
             stringBuilder.append("volatile ");
         }
-        if (CheckUtils.isFlagMatch(modifiers, Modifier.NATIVE)){
+        if (CheckUtils.isFlagMatch(modifiers, Modifier.NATIVE)) {
             stringBuilder.append("native ");
         }
-        if (CheckUtils.isFlagMatch(modifiers, Modifier.INTERFACE)){
+        if (CheckUtils.isFlagMatch(modifiers, Modifier.INTERFACE)) {
             stringBuilder.append("interface ");
         }
-        if (CheckUtils.isFlagMatch(modifiers, Modifier.ABSTRACT)){
+        if (CheckUtils.isFlagMatch(modifiers, Modifier.ABSTRACT)) {
             stringBuilder.append("abstract ");
         }
-        if (CheckUtils.isFlagMatch(modifiers, Modifier.STRICT)){
+        if (CheckUtils.isFlagMatch(modifiers, Modifier.STRICT)) {
             stringBuilder.append("strict ");
         }
     }
