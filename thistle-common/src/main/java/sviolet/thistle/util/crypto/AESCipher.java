@@ -62,18 +62,16 @@ public class AESCipher{
     public static final String CRYPTO_ALGORITHM_AES_CBC_NOPADDING = "AES/CBC/NoPadding";
 
 	/**
+	 * 加密算法:AES + GCM无填充, 需要Security.addProvider(new BouncyCastleProvider());
+	 */
+	public static final String CRYPTO_ALGORITHM_AES_GCM_NOPADDING = "AES/GCM/NoPadding";
+
+	/**
 	 * 加密(byte[]数据)
 	 *
 	 * @param data 数据
 	 * @param key 秘钥(AES:128bit, DES:64/192bit)
 	 * @param cryptoAlgorithm 加密算法/填充算法
-	 *
-	 * @throws NoSuchAlgorithmException 加密算法无效
-	 * @throws NoSuchPaddingException 填充算法无效
-	 * @throws InvalidKeyException 秘钥无效
-	 * @throws IllegalBlockSizeException 块大小无效
-	 * @throws BadPaddingException 填充错误(密码错?)
-	 * @throws InvalidAlgorithmParameterException 算法参数无效
 	 */
 	public static byte[] encrypt(byte[] data, byte[] key, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
 		return BaseCipher.encrypt(data, key, KEY_ALGORITHM, cryptoAlgorithm);
@@ -86,16 +84,23 @@ public class AESCipher{
 	 * @param key 秘钥(AES:128bit, DES:64/192bit)
 	 * @param ivSeed iv初始化向量, 16 bytes, 例如:"1234567812345678".getBytes("UTF-8")
 	 * @param cryptoAlgorithm 加密算法/填充算法
-	 *
-	 * @throws NoSuchAlgorithmException 加密算法无效
-	 * @throws NoSuchPaddingException 填充算法无效
-	 * @throws InvalidKeyException 秘钥无效
-	 * @throws IllegalBlockSizeException 块大小无效
-	 * @throws BadPaddingException 填充错误(密码错?)
-	 * @throws InvalidAlgorithmParameterException 算法参数无效
 	 */
 	public static byte[] encryptCBC(byte[] data, byte[] key, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException{
 		return BaseCipher.encryptCBC(data, key, KEY_ALGORITHM, ivSeed, cryptoAlgorithm);
+	}
+
+	/**
+	 * 加密(byte[]数据, 使用GCM模式), 需要Security.addProvider(new BouncyCastleProvider());
+	 *
+	 * @param data 数据
+	 * @param aad 附加验证数据(Additional Authenticated Data)
+	 * @param iv 初始化向量, AES 16 bytes, DES 8bytes
+	 * @param tagLength 附加验证数据标签长度(bit), 32, 64, 96, 104, 112, 120, 128
+	 * @param key 秘钥(AES:128/256bit, DES:64/192bit)
+	 * @param cryptoAlgorithm 加密算法/填充算法, AES/GCM/NoPadding
+	 */
+	public static byte[] encryptGCM(byte[] data, byte[] aad, byte[] iv, int tagLength, byte[] key, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
+		return BaseCipher.encryptGCM(data, aad, iv, tagLength, key, KEY_ALGORITHM, cryptoAlgorithm);
 	}
 
 	/**
@@ -105,13 +110,6 @@ public class AESCipher{
 	 * @param out 加密后数据流
 	 * @param key 秘钥(AES:128bit, DES:64/192bit)
 	 * @param cryptoAlgorithm 加密算法/填充算法
-	 *
-	 * @throws NoSuchAlgorithmException 加密算法无效
-	 * @throws NoSuchPaddingException 填充算法无效
-	 * @throws InvalidKeyException 秘钥无效
-	 * @throws IllegalBlockSizeException 块大小无效
-	 * @throws BadPaddingException 填充错误(密码错?)
-	 * @throws InvalidAlgorithmParameterException 算法参数无效
 	 */
 	public static void encrypt(InputStream in, OutputStream out, byte[] key, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IOException {
 		BaseCipher.encrypt(in, out, key, KEY_ALGORITHM, cryptoAlgorithm);
@@ -125,16 +123,24 @@ public class AESCipher{
 	 * @param key 秘钥(AES:128bit, DES:64/192bit)
 	 * @param ivSeed iv初始化向量, 16 bytes, 例如:"1234567812345678".getBytes("UTF-8")
 	 * @param cryptoAlgorithm 加密算法/填充算法
-	 *
-	 * @throws NoSuchAlgorithmException 加密算法无效
-	 * @throws NoSuchPaddingException 填充算法无效
-	 * @throws InvalidKeyException 秘钥无效
-	 * @throws IllegalBlockSizeException 块大小无效
-	 * @throws BadPaddingException 填充错误(密码错?)
-	 * @throws InvalidAlgorithmParameterException 算法参数无效
 	 */
 	public static void encryptCBC(InputStream in, OutputStream out, byte[] key, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException {
 		BaseCipher.encryptCBC(in, out, key, KEY_ALGORITHM, ivSeed, cryptoAlgorithm);
+	}
+
+	/**
+	 * 加密(大文件, 注意, 输入输出流会被关闭, 使用GCM模式), 需要Security.addProvider(new BouncyCastleProvider());
+	 *
+	 * @param in 待加密数据流
+	 * @param out 加密后数据流
+	 * @param aad 附加验证数据(Additional Authenticated Data)
+	 * @param iv 初始化向量, AES 16 bytes, DES 8bytes
+	 * @param tagLength 附加验证数据标签长度(bit), 32, 64, 96, 104, 112, 120, 128
+	 * @param key 秘钥(AES:128/256bit, DES:64/192bit)
+	 * @param cryptoAlgorithm 加密算法/填充算法, AES/GCM/NoPadding
+	 */
+	public static void encryptGCM(InputStream in, OutputStream out, byte[] aad, byte[] iv, int tagLength, byte[] key, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException {
+		BaseCipher.encryptGCM(in, out, aad, iv, tagLength, key, KEY_ALGORITHM, cryptoAlgorithm);
 	}
 
 	/**
@@ -143,13 +149,6 @@ public class AESCipher{
 	 * @param data 数据
 	 * @param key 秘钥(AES:128bit, DES:64/192bit)
 	 * @param cryptoAlgorithm 加密算法/填充算法
-	 *
-	 * @throws NoSuchAlgorithmException 加密算法无效
-	 * @throws NoSuchPaddingException 填充算法无效
-	 * @throws InvalidKeyException 秘钥无效
-	 * @throws IllegalBlockSizeException 块大小无效
-	 * @throws BadPaddingException 填充错误(密码错?)
-	 * @throws InvalidAlgorithmParameterException 算法参数无效
 	 */
 	public static byte[] decrypt(byte[] data, byte[] key, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
 		return BaseCipher.decrypt(data, key, KEY_ALGORITHM, cryptoAlgorithm);
@@ -162,16 +161,23 @@ public class AESCipher{
 	 * @param key 秘钥(AES:128bit, DES:64/192bit)
 	 * @param ivSeed iv初始化向量, 16 bytes, "1234567812345678".getBytes("UTF-8")
 	 * @param cryptoAlgorithm 加密算法/填充算法
-	 *
-	 * @throws NoSuchAlgorithmException 加密算法无效
-	 * @throws NoSuchPaddingException 填充算法无效
-	 * @throws InvalidKeyException 秘钥无效
-	 * @throws IllegalBlockSizeException 块大小无效
-	 * @throws BadPaddingException 填充错误(密码错?)
-	 * @throws InvalidAlgorithmParameterException 算法参数无效
 	 */
 	public static byte[] decryptCBC(byte[] data, byte[] key, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException{
 		return BaseCipher.decryptCBC(data, key, KEY_ALGORITHM, ivSeed, cryptoAlgorithm);
+	}
+
+	/**
+	 * 解密(byte[]数据, 使用GCM模式), 需要Security.addProvider(new BouncyCastleProvider());
+	 *
+	 * @param data 数据
+	 * @param aad 附加验证数据(Additional Authenticated Data)
+	 * @param iv 初始化向量, AES 16 bytes, DES 8bytes
+	 * @param tagLength 附加验证数据标签长度(bit), 32, 64, 96, 104, 112, 120, 128
+	 * @param key 秘钥(AES:128/256bit, DES:64/192bit)
+	 * @param cryptoAlgorithm 加密算法/填充算法, AES/GCM/NoPadding
+	 */
+	public static byte[] decryptGCM(byte[] data, byte[] aad, byte[] iv, int tagLength, byte[] key, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
+		return BaseCipher.decryptGCM(data, aad, iv, tagLength, key, KEY_ALGORITHM, cryptoAlgorithm);
 	}
 
 	/**
@@ -181,13 +187,6 @@ public class AESCipher{
 	 * @param out 解密后数据流
 	 * @param key 秘钥(AES:128bit, DES:64/192bit)
 	 * @param cryptoAlgorithm 加密算法/填充算法
-	 *
-	 * @throws NoSuchAlgorithmException 加密算法无效
-	 * @throws NoSuchPaddingException 填充算法无效
-	 * @throws InvalidKeyException 秘钥无效
-	 * @throws IllegalBlockSizeException 块大小无效
-	 * @throws BadPaddingException 填充错误(密码错?)
-	 * @throws InvalidAlgorithmParameterException 算法参数无效
 	 */
 	public static void decrypt(InputStream in, OutputStream out, byte[] key, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IOException {
 		BaseCipher.decrypt(in, out, key, KEY_ALGORITHM, cryptoAlgorithm);
@@ -201,16 +200,24 @@ public class AESCipher{
 	 * @param key 秘钥(AES:128bit, DES:64/192bit)
 	 * @param ivSeed iv初始化向量, 16 bytes, "1234567812345678".getBytes("UTF-8")
 	 * @param cryptoAlgorithm 加密算法/填充算法
-	 *
-	 * @throws NoSuchAlgorithmException 加密算法无效
-	 * @throws NoSuchPaddingException 填充算法无效
-	 * @throws InvalidKeyException 秘钥无效
-	 * @throws IllegalBlockSizeException 块大小无效
-	 * @throws BadPaddingException 填充错误(密码错?)
-	 * @throws InvalidAlgorithmParameterException 算法参数无效
 	 */
 	public static void decryptCBC(InputStream in, OutputStream out, byte[] key, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException {
 		BaseCipher.decryptCBC(in, out, key, KEY_ALGORITHM, ivSeed, cryptoAlgorithm);
+	}
+
+	/**
+	 * 解密(大文件, 注意, 输入输出流会被关闭, 使用GCM模式), 需要Security.addProvider(new BouncyCastleProvider());
+	 *
+	 * @param in 待解密数据流
+	 * @param out 解密后数据流
+	 * @param aad 附加验证数据(Additional Authenticated Data)
+	 * @param iv 初始化向量, AES 16 bytes, DES 8bytes
+	 * @param tagLength 附加验证数据标签长度(bit), 32, 64, 96, 104, 112, 120, 128
+	 * @param key 秘钥(AES:128/256bit, DES:64/192bit)
+	 * @param cryptoAlgorithm 加密算法/填充算法, AES/GCM/NoPadding
+	 */
+	public static void decryptGCM(InputStream in, OutputStream out, byte[] aad, byte[] iv, int tagLength, byte[] key, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException {
+		BaseCipher.decryptGCM(in, out, aad, iv, tagLength, key, KEY_ALGORITHM, cryptoAlgorithm);
 	}
 
 }

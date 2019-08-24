@@ -24,6 +24,7 @@ import sviolet.thistle.util.common.PlatformUtils;
 import sviolet.thistle.util.file.FileUtils;
 
 import javax.crypto.*;
+import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
@@ -54,13 +55,6 @@ public class BaseCipher {
      * @param key 秘钥(AES:128/256bit, DES:64/192bit)
      * @param keyAlgorithm 秘钥算法
      * @param cryptoAlgorithm 加密算法/填充算法
-     *
-     * @throws NoSuchAlgorithmException 加密算法无效
-     * @throws NoSuchPaddingException 填充算法无效
-     * @throws InvalidKeyException 秘钥无效
-     * @throws IllegalBlockSizeException 块大小无效
-     * @throws BadPaddingException 填充错误(密码错?)
-     * @throws InvalidAlgorithmParameterException 算法参数无效
      */
     public static byte[] encrypt(byte[] data, byte[] key, String keyAlgorithm, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
         if (data == null){
@@ -73,20 +67,13 @@ public class BaseCipher {
     }
 
     /**
-     * 加密(byte[]数据, 使用CBC填充算法时需要用该方法并指定iv初始化向量)
+     * 加密(byte[]数据, 使用CBC模式时需要用该方法并指定iv初始化向量)
      *
      * @param data 数据
      * @param key 秘钥(AES:128/256bit, DES:64/192bit)
      * @param keyAlgorithm 秘钥算法
      * @param ivSeed iv初始化向量, AES 16 bytes, DES 8bytes
      * @param cryptoAlgorithm 加密算法/填充算法
-     *
-     * @throws NoSuchAlgorithmException 加密算法无效
-     * @throws NoSuchPaddingException 填充算法无效
-     * @throws InvalidKeyException 秘钥无效
-     * @throws IllegalBlockSizeException 块大小无效
-     * @throws BadPaddingException 填充错误(密码错?)
-     * @throws InvalidAlgorithmParameterException 算法参数无效
      */
     public static byte[] encryptCBC(byte[] data, byte[] key, String keyAlgorithm, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
         if (data == null){
@@ -100,6 +87,29 @@ public class BaseCipher {
     }
 
     /**
+     * 加密(byte[]数据, 使用GCM模式)
+     *
+     * @param data 数据
+     * @param aad 附加验证数据(Additional Authenticated Data)
+     * @param iv 初始化向量, AES 16 bytes, DES 8bytes
+     * @param tagLength 附加验证数据标签长度(bit), 32, 64, 96, 104, 112, 120, 128
+     * @param key 秘钥(AES:128/256bit, DES:64/192bit)
+     * @param keyAlgorithm 秘钥算法, AES
+     * @param cryptoAlgorithm 加密算法/填充算法, AES/GCM/NoPadding
+     */
+    public static byte[] encryptGCM(byte[] data, byte[] aad, byte[] iv, int tagLength, byte[] key, String keyAlgorithm, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
+        if (data == null){
+            return null;
+        }
+        SecretKeySpec keySpec = new SecretKeySpec(key, keyAlgorithm);
+        Cipher cipher = Cipher.getInstance(cryptoAlgorithm);
+        GCMParameterSpec gcmSpec = new GCMParameterSpec(tagLength, iv);
+        cipher.init(Cipher.ENCRYPT_MODE, keySpec, gcmSpec);
+        cipher.updateAAD(aad);
+        return cipher.doFinal(data);
+    }
+
+    /**
      * 加密(大文件, 注意, 输入输出流会被关闭)
      *
      * @param in 待加密数据流
@@ -107,13 +117,6 @@ public class BaseCipher {
      * @param key 秘钥(AES:128/256bit, DES:64/192bit)
      * @param keyAlgorithm 秘钥算法
      * @param cryptoAlgorithm 加密算法/填充算法
-     *
-     * @throws NoSuchAlgorithmException 加密算法无效
-     * @throws NoSuchPaddingException 填充算法无效
-     * @throws InvalidKeyException 秘钥无效
-     * @throws IllegalBlockSizeException 块大小无效
-     * @throws BadPaddingException 填充错误(密码错?)
-     * @throws InvalidAlgorithmParameterException 算法参数无效
      */
     public static void encrypt(InputStream in, OutputStream out, byte[] key, String keyAlgorithm, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IOException {
         if (in == null) {
@@ -141,7 +144,7 @@ public class BaseCipher {
     }
 
     /**
-     * 加密(大文件, 注意, 输入输出流会被关闭, 使用CBC填充算法时需要用该方法并指定iv初始化向量)
+     * 加密(大文件, 注意, 输入输出流会被关闭, 使用CBC模式时需要用该方法并指定iv初始化向量)
      *
      * @param in 待加密数据流
      * @param out 加密后数据流
@@ -149,13 +152,6 @@ public class BaseCipher {
      * @param keyAlgorithm 秘钥算法
      * @param ivSeed iv初始化向量, AES 16 bytes, DES 8bytes
      * @param cryptoAlgorithm 加密算法/填充算法
-     *
-     * @throws NoSuchAlgorithmException 加密算法无效
-     * @throws NoSuchPaddingException 填充算法无效
-     * @throws InvalidKeyException 秘钥无效
-     * @throws IllegalBlockSizeException 块大小无效
-     * @throws BadPaddingException 填充错误(密码错?)
-     * @throws InvalidAlgorithmParameterException 算法参数无效
      */
     public static void encryptCBC(InputStream in, OutputStream out, byte[] key, String keyAlgorithm, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException {
         if (in == null) {
@@ -184,19 +180,51 @@ public class BaseCipher {
     }
 
     /**
+     * 加密(大文件, 注意, 输入输出流会被关闭, 使用GCM模式)
+     *
+     * @param in 待加密数据流
+     * @param out 加密后数据流
+     * @param aad 附加验证数据(Additional Authenticated Data)
+     * @param iv 初始化向量, AES 16 bytes, DES 8bytes
+     * @param tagLength 附加验证数据标签长度(bit), 32, 64, 96, 104, 112, 120, 128
+     * @param key 秘钥(AES:128/256bit, DES:64/192bit)
+     * @param keyAlgorithm 秘钥算法, AES
+     * @param cryptoAlgorithm 加密算法/填充算法, AES/GCM/NoPadding
+     */
+    public static void encryptGCM(InputStream in, OutputStream out, byte[] aad, byte[] iv, int tagLength, byte[] key, String keyAlgorithm, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException {
+        if (in == null) {
+            throw new NullPointerException("in is null");
+        }
+        if (out == null) {
+            throw new NullPointerException("out is null");
+        }
+
+        try {
+            SecretKeySpec keySpec = new SecretKeySpec(key, keyAlgorithm);
+            Cipher cipher = Cipher.getInstance(cryptoAlgorithm);
+            GCMParameterSpec gcmSpec = new GCMParameterSpec(tagLength, iv);
+            cipher.init(Cipher.ENCRYPT_MODE, keySpec, gcmSpec);
+            cipher.updateAAD(aad);
+
+            in = new CipherInputStream(in, cipher);
+            byte[] buff = new byte[1024 * 32];
+            int length;
+            while ((length = in.read(buff)) >= 0) {
+                out.write(buff, 0, length);
+            }
+        } finally {
+            CloseableUtils.closeQuiet(in);
+            CloseableUtils.closeQuiet(out);
+        }
+    }
+
+    /**
      * 解密(byte[]数据)
      *
      * @param data 数据
      * @param key 秘钥(AES:128/256bit, DES:64/192bit)
      * @param keyAlgorithm 秘钥算法
      * @param cryptoAlgorithm 加密算法/填充算法
-     *
-     * @throws NoSuchAlgorithmException 加密算法无效
-     * @throws NoSuchPaddingException 填充算法无效
-     * @throws InvalidKeyException 秘钥无效
-     * @throws IllegalBlockSizeException 块大小无效
-     * @throws BadPaddingException 填充错误(密码错?)
-     * @throws InvalidAlgorithmParameterException 算法参数无效
      */
     public static byte[] decrypt(byte[] data, byte[] key, String keyAlgorithm, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
         if (data == null){
@@ -209,20 +237,13 @@ public class BaseCipher {
     }
 
     /**
-     * 解密(byte[]数据, CBC填充需要用该方法并指定iv初始化向量)
+     * 解密(byte[]数据, CBC模式需要用该方法并指定iv初始化向量)
      *
      * @param data 数据
      * @param key 秘钥(AES:128/256bit, DES:64/192bit)
      * @param keyAlgorithm 秘钥算法
      * @param ivSeed iv初始化向量, AES 16 bytes, DES 8bytes
      * @param cryptoAlgorithm 加密算法/填充算法
-     *
-     * @throws NoSuchAlgorithmException 加密算法无效
-     * @throws NoSuchPaddingException 填充算法无效
-     * @throws InvalidKeyException 秘钥无效
-     * @throws IllegalBlockSizeException 块大小无效
-     * @throws BadPaddingException 填充错误(密码错?)
-     * @throws InvalidAlgorithmParameterException 算法参数无效
      */
     public static byte[] decryptCBC(byte[] data, byte[] key, String keyAlgorithm, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException{
         if (data == null){
@@ -236,6 +257,29 @@ public class BaseCipher {
     }
 
     /**
+     * 解密(byte[]数据, 使用GCM模式)
+     *
+     * @param data 数据
+     * @param aad 附加验证数据(Additional Authenticated Data)
+     * @param iv 初始化向量, AES 16 bytes, DES 8bytes
+     * @param tagLength 附加验证数据标签长度(bit), 32, 64, 96, 104, 112, 120, 128
+     * @param key 秘钥(AES:128/256bit, DES:64/192bit)
+     * @param keyAlgorithm 秘钥算法, AES
+     * @param cryptoAlgorithm 加密算法/填充算法, AES/GCM/NoPadding
+     */
+    public static byte[] decryptGCM(byte[] data, byte[] aad, byte[] iv, int tagLength, byte[] key, String keyAlgorithm, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
+        if (data == null){
+            return null;
+        }
+        SecretKeySpec keySpec = new SecretKeySpec(key, keyAlgorithm);
+        Cipher cipher = Cipher.getInstance(cryptoAlgorithm);
+        GCMParameterSpec gcmSpec = new GCMParameterSpec(tagLength, iv);
+        cipher.init(Cipher.DECRYPT_MODE, keySpec, gcmSpec);
+        cipher.updateAAD(aad);
+        return cipher.doFinal(data);
+    }
+
+    /**
      * 解密(大文件, 注意, 输入输出流会被关闭)
      *
      * @param in 待解密数据流
@@ -243,13 +287,6 @@ public class BaseCipher {
      * @param key 秘钥(AES:128/256bit, DES:64/192bit)
      * @param keyAlgorithm 秘钥算法
      * @param cryptoAlgorithm 加密算法/填充算法
-     *
-     * @throws NoSuchAlgorithmException 加密算法无效
-     * @throws NoSuchPaddingException 填充算法无效
-     * @throws InvalidKeyException 秘钥无效
-     * @throws IllegalBlockSizeException 块大小无效
-     * @throws BadPaddingException 填充错误(密码错?)
-     * @throws InvalidAlgorithmParameterException 算法参数无效
      */
     public static void decrypt(InputStream in, OutputStream out, byte[] key, String keyAlgorithm, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IOException {
         if (in == null) {
@@ -277,7 +314,7 @@ public class BaseCipher {
     }
 
     /**
-     * 解密(大文件, 注意, 输入输出流会被关闭, CBC填充需要用该方法并指定iv初始化向量)
+     * 解密(大文件, 注意, 输入输出流会被关闭, CBC模式需要用该方法并指定iv初始化向量)
      *
      * @param in 待解密数据流
      * @param out 解密后数据流
@@ -285,13 +322,6 @@ public class BaseCipher {
      * @param keyAlgorithm 秘钥算法
      * @param ivSeed iv初始化向量, AES 16 bytes, DES 8bytes
      * @param cryptoAlgorithm 加密算法/填充算法
-     *
-     * @throws NoSuchAlgorithmException 加密算法无效
-     * @throws NoSuchPaddingException 填充算法无效
-     * @throws InvalidKeyException 秘钥无效
-     * @throws IllegalBlockSizeException 块大小无效
-     * @throws BadPaddingException 填充错误(密码错?)
-     * @throws InvalidAlgorithmParameterException 算法参数无效
      */
     public static void decryptCBC(InputStream in, OutputStream out, byte[] key, String keyAlgorithm, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException {
         if (in == null) {
@@ -319,6 +349,45 @@ public class BaseCipher {
         }
     }
 
+    /**
+     * 解密(大文件, 注意, 输入输出流会被关闭, 使用GCM模式)
+     *
+     * @param in 待解密数据流
+     * @param out 解密后数据流
+     * @param aad 附加验证数据(Additional Authenticated Data)
+     * @param iv 初始化向量, AES 16 bytes, DES 8bytes
+     * @param tagLength 附加验证数据标签长度(bit), 32, 64, 96, 104, 112, 120, 128
+     * @param key 秘钥(AES:128/256bit, DES:64/192bit)
+     * @param keyAlgorithm 秘钥算法, AES
+     * @param cryptoAlgorithm 加密算法/填充算法, AES/GCM/NoPadding
+     */
+    public static void decryptGCM(InputStream in, OutputStream out, byte[] aad, byte[] iv, int tagLength, byte[] key, String keyAlgorithm, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException {
+        if (in == null) {
+            throw new NullPointerException("in is null");
+        }
+        if (out == null) {
+            throw new NullPointerException("out is null");
+        }
+
+        try {
+            SecretKeySpec keySpec = new SecretKeySpec(key, keyAlgorithm);
+            Cipher cipher = Cipher.getInstance(cryptoAlgorithm);
+            GCMParameterSpec gcmSpec = new GCMParameterSpec(tagLength, iv);
+            cipher.init(Cipher.DECRYPT_MODE, keySpec, gcmSpec);
+            cipher.updateAAD(aad);
+
+            in = new CipherInputStream(in, cipher);
+            byte[] buff = new byte[1024 * 32];
+            int length;
+            while ((length = in.read(buff)) >= 0) {
+                out.write(buff, 0, length);
+            }
+        } finally {
+            CloseableUtils.closeQuiet(in);
+            CloseableUtils.closeQuiet(out);
+        }
+    }
+
     /********************************************************************************************************************************
      ********************************************************************************************************************************
      *
@@ -331,8 +400,6 @@ public class BaseCipher {
      * 创建签名的实例
      * @param privateKey 私钥
      * @param signAlgorithm 签名逻辑
-     * @throws NoSuchAlgorithmException 无效的signAlgorithm
-     * @throws InvalidKeyException 无效的私钥
      */
     public static Signature generateSignatureInstance(PrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException {
         Signature signature = Signature.getInstance(signAlgorithm);
@@ -344,8 +411,6 @@ public class BaseCipher {
      * 创建验签的实例
      * @param publicKey 公钥
      * @param signAlgorithm 签名逻辑
-     * @throws NoSuchAlgorithmException 无效的signAlgorithm
-     * @throws InvalidKeyException 无效的私钥
      */
     public static Signature generateSignatureInstance(PublicKey publicKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException {
         Signature signature = Signature.getInstance(signAlgorithm);
@@ -357,8 +422,6 @@ public class BaseCipher {
      * 创建验签的实例
      * @param certificate 证书
      * @param signAlgorithm 签名逻辑
-     * @throws NoSuchAlgorithmException 无效的signAlgorithm
-     * @throws InvalidKeyException 无效的私钥
      */
     public static Signature generateSignatureInstance(Certificate certificate, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException {
         Signature signature = Signature.getInstance(signAlgorithm);
@@ -374,9 +437,6 @@ public class BaseCipher {
      * @param signAlgorithm 签名逻辑
      *
      * @return 数字签名
-     * @throws NoSuchAlgorithmException 无效的signAlgorithm
-     * @throws InvalidKeyException 无效的私钥
-     * @throws SignatureException 签名异常
      */
     public static byte[] sign(byte[] data, PrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException{
         if (data == null){
@@ -395,9 +455,6 @@ public class BaseCipher {
      * @param signAlgorithm 签名逻辑
      *
      * @return 数字签名
-     * @throws NoSuchAlgorithmException 无效的signAlgorithm
-     * @throws InvalidKeyException 无效的私钥
-     * @throws SignatureException 签名异常
      */
     public static byte[] sign(File file, PrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
         if (PlatformUtils.PLATFORM == PlatformUtils.Platform.DALVIK){
@@ -429,9 +486,6 @@ public class BaseCipher {
      * @param signAlgorithm 签名逻辑
      *
      * @return 数字签名
-     * @throws NoSuchAlgorithmException 无效的signAlgorithm
-     * @throws InvalidKeyException 无效的私钥
-     * @throws SignatureException 签名异常
      */
     public static byte[] signNio(File file, PrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
         FileInputStream inputStream = null;
@@ -470,9 +524,6 @@ public class BaseCipher {
      * @param signAlgorithm 签名逻辑
      *
      * @return 数字签名
-     * @throws NoSuchAlgorithmException 无效的signAlgorithm
-     * @throws InvalidKeyException 无效的私钥
-     * @throws SignatureException 签名异常
      */
     public static byte[] signIo(File file, PrivateKey privateKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
         FileInputStream inputStream = null;
@@ -504,9 +555,6 @@ public class BaseCipher {
      * @param signAlgorithm 签名逻辑
      *
      * @return true:数字签名有效
-     * @throws NoSuchAlgorithmException 无效的signAlgorithm
-     * @throws InvalidKeyException 无效的私钥
-     * @throws SignatureException 签名异常
      *
      */
     public static boolean verify(byte[] data, byte[] sign, PublicKey publicKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException{
@@ -527,9 +575,6 @@ public class BaseCipher {
      * @param signAlgorithm 签名逻辑
      *
      * @return true:数字签名有效
-     * @throws NoSuchAlgorithmException 无效的signAlgorithm
-     * @throws InvalidKeyException 无效的私钥
-     * @throws SignatureException 签名异常
      */
     public static boolean verify(File file, byte[] sign, PublicKey publicKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
         if (PlatformUtils.PLATFORM == PlatformUtils.Platform.DALVIK){
@@ -562,10 +607,6 @@ public class BaseCipher {
      * @param signAlgorithm 签名逻辑
      *
      * @return true:数字签名有效
-     * @throws NoSuchAlgorithmException 无效的signAlgorithm
-     * @throws InvalidKeyException 无效的私钥
-     * @throws SignatureException 签名异常
-     *
      */
     public static boolean verifyNio(File file, byte[] sign, PublicKey publicKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
         FileInputStream inputStream = null;
@@ -605,10 +646,6 @@ public class BaseCipher {
      * @param signAlgorithm 签名逻辑: RSACipher.SIGN_ALGORITHM_RSA_MD5 / RSACipher.SIGN_ALGORITHM_RSA_SHA1
      *
      * @return true:数字签名有效
-     * @throws NoSuchAlgorithmException 无效的signAlgorithm
-     * @throws InvalidKeyException 无效的私钥
-     * @throws SignatureException 签名异常
-     *
      */
     public static boolean verifyIo(File file, byte[] sign, PublicKey publicKey, String signAlgorithm) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
         FileInputStream inputStream = null;
@@ -647,12 +684,6 @@ public class BaseCipher {
      * @param cryptoAlgorithm 加密算法/填充方式
      *
      * @return 解密的数据
-     * @throws NoSuchPaddingException 填充方式无效(cryptoAlgorithm)
-     * @throws NoSuchAlgorithmException 加密算法无效(cryptoAlgorithm)
-     * @throws InvalidKeyException 无效的私钥
-     * @throws BadPaddingException 填充错误(密码错误)
-     * @throws IllegalBlockSizeException 无效的块大小(密码错误?)
-     * @throws IOException IO错误
      */
     public static byte[] decryptByRSAPrivateKey(byte[] data, RSAPrivateKey privateKey, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
 
@@ -691,12 +722,6 @@ public class BaseCipher {
      * @param cryptoAlgorithm 加密算法/填充方式
      *
      * @return 加密后的数据
-     * @throws NoSuchPaddingException 填充方式无效(cryptoAlgorithm)
-     * @throws NoSuchAlgorithmException 加密算法无效(cryptoAlgorithm)
-     * @throws InvalidKeyException 无效的私钥
-     * @throws BadPaddingException 填充错误(密码错误?)
-     * @throws IllegalBlockSizeException 无效的块大小(密码错误?)
-     * @throws IOException IO错误
      */
     public static byte[] encryptByRSAPublicKey(byte[] data, RSAPublicKey publicKey, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
 
@@ -735,12 +760,6 @@ public class BaseCipher {
      * @param cryptoAlgorithm 加密算法/填充方式
      *
      * @return 解密的数据
-     * @throws NoSuchPaddingException 填充方式无效(cryptoAlgorithm)
-     * @throws NoSuchAlgorithmException 加密算法无效(cryptoAlgorithm)
-     * @throws InvalidKeyException 无效的私钥
-     * @throws BadPaddingException 填充错误(密码错误)
-     * @throws IllegalBlockSizeException 无效的块大小(密码错误?)
-     * @throws IOException IO错误
      */
     public static byte[] decryptByRSAPublicKey(byte[] data, RSAPublicKey publicKey, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
 
@@ -779,12 +798,6 @@ public class BaseCipher {
      * @param cryptoAlgorithm 加密算法/填充方式
      *
      * @return 加密后的数据
-     * @throws NoSuchPaddingException 填充方式无效(cryptoAlgorithm)
-     * @throws NoSuchAlgorithmException 加密算法无效(cryptoAlgorithm)
-     * @throws InvalidKeyException 无效的私钥
-     * @throws BadPaddingException 填充错误(密码错误)
-     * @throws IllegalBlockSizeException 无效的块大小(密码错误?)
-     * @throws IOException IO错误
      */
     public static byte[] encryptByRSAPrivateKey(byte[] data, RSAPrivateKey privateKey, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
 

@@ -128,4 +128,41 @@ public class AESCipherTest {
 
     }
 
+    /**
+     * byte[]加解密, GCM模式 + 256位, 256位要求JDK8_162以上!!!
+     */
+    @Test
+    public void bytesCryptoGcm() throws UnsupportedEncodingException, NoSuchPaddingException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException, NoSuchProviderException {
+
+        byte[] dataBytes = STRING.getBytes("UTF-8");
+        byte[] key = AESKeyGenerator.generateAes256();
+
+//        System.out.println(ByteUtils.bytesToHex(dataBytes));
+//        System.out.println(ByteUtils.bytesToHex(key));
+
+        byte[] encrypted = AESCipher.encryptGCM(
+                dataBytes,
+                "timestamp or others".getBytes(),
+                "1234567890123456".getBytes(),
+                128,
+                key,
+                AESCipher.CRYPTO_ALGORITHM_AES_GCM_NOPADDING);
+
+//        System.out.println(ByteUtils.bytesToHex(encrypted));
+
+        byte[] decrypted = AESCipher.decryptGCM(
+                encrypted,
+                "timestamp or others".getBytes(),
+                "1234567890123456".getBytes(),
+                128,
+                key,
+                AESCipher.CRYPTO_ALGORITHM_AES_GCM_NOPADDING);
+
+//        System.out.println(ByteUtils.bytesToHex(decrypted));
+//        System.out.println(new String(decrypted, "UTF-8"));
+
+        Assert.assertEquals(STRING, new String(decrypted, "UTF-8"));
+
+    }
+
 }
