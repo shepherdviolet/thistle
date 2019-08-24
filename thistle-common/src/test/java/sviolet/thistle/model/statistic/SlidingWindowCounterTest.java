@@ -17,7 +17,7 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.model.math;
+package sviolet.thistle.model.statistic;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -32,71 +32,79 @@ public class SlidingWindowCounterTest {
     @Test
     public void test(){
 
-        SlidingWindowCounter counter = new SlidingWindowCounter(10000, 30);
+        //每个样本10s
+        final int SAMPLING_DURATION = 10000;
+        //窗口总共30个样本
+        final int STATISTICAL_PERIOD = 30;
 
-        //5
+        SlidingWindowCounter counter = new SlidingWindowCounter(SAMPLING_DURATION, STATISTICAL_PERIOD, 10) {
+//            @Override
+//            protected void printDebugLog(int duration, long currentTimeMillis, List<SlidingWindowArray.Element<AtomicInteger>> elements) {
+//                System.out.println("SlidingWindowCounter#getRecently(" + duration + ", " + currentTimeMillis + ")");
+//                for (SlidingWindowArray.Element<AtomicInteger> element : elements) {
+//                    System.out.println(element);
+//                }
+//            }
+        };
+
+        //5 + 1 + 1
         counter.addAndGet(1, 0);
         counter.addAndGet(1, 2000);
         counter.addAndGet(1, 3000);
         counter.addAndGet(1, 1000);//小抖动
         counter.addAndGet(1, 5000);
 
-        //4
+        //3
         counter.addAndGet(1, 11000);
         counter.addAndGet(1, 12000);
         counter.addAndGet(1, 8000);//大抖动
         counter.addAndGet(1, 15000);
 
-        //3
+        //2
         counter.addAndGet(1, 21000);
         counter.addAndGet(1, 5000);//大抖动
         counter.addAndGet(1, 22000);
 
-        Assert.assertEquals(3, counter.getRecently(1, 29000));
-        Assert.assertEquals(7, counter.getRecently(2, 29000));
-        Assert.assertEquals(12, counter.getRecently(30, 29000));
+        Assert.assertEquals(2, counter.getRecently(1 * SAMPLING_DURATION, 30000));
+        Assert.assertEquals(5, counter.getRecently(2 * SAMPLING_DURATION, 30000));
+        Assert.assertEquals(12, counter.getRecently(Integer.MAX_VALUE, 30000));
 
         //2 * 2
         counter.addAndGet(2, 41000);
         counter.addAndGet(2, 31000);//大抖动
 
-        Assert.assertEquals(4, counter.getRecently(1, 49000));
-        Assert.assertEquals(4, counter.getRecently(2, 49000));
-        Assert.assertEquals(7, counter.getRecently(3, 49000));
-        Assert.assertEquals(16, counter.getRecently(30, 49000));
+        Assert.assertEquals(2, counter.getRecently(1 * SAMPLING_DURATION, 50000));
+        Assert.assertEquals(4, counter.getRecently(2 * SAMPLING_DURATION, 50000));
+        Assert.assertEquals(6, counter.getRecently(3 * SAMPLING_DURATION, 50000));
+        Assert.assertEquals(16, counter.getRecently(Integer.MAX_VALUE, 50000));
 
         //2
         counter.addAndGet(1, 301000);
         counter.addAndGet(1, 291000);//大抖动
 
-        Assert.assertEquals(2, counter.getRecently(1, 309000));
-        Assert.assertEquals(2, counter.getRecently(2, 309000));
-        Assert.assertEquals(13, counter.getRecently(30, 309000));
+        Assert.assertEquals(1, counter.getRecently(1 * SAMPLING_DURATION, 310000));
+        Assert.assertEquals(2, counter.getRecently(2 * SAMPLING_DURATION, 310000));
+        Assert.assertEquals(8, counter.getRecently(Integer.MAX_VALUE, 310000));
 
         //1
         counter.addAndGet(1, 311000);
 
-        Assert.assertEquals(1, counter.getRecently(1, 319000));
-        Assert.assertEquals(3, counter.getRecently(2, 319000));
-        Assert.assertEquals(10, counter.getRecently(30, 319000));
+        Assert.assertEquals(1, counter.getRecently(1 * SAMPLING_DURATION, 320000));
+        Assert.assertEquals(2, counter.getRecently(2 * SAMPLING_DURATION, 320000));
+        Assert.assertEquals(7, counter.getRecently(Integer.MAX_VALUE, 320000));
 
         //1
-        counter.addAndGet(1, 0);//cause reset! Illegal operation!
+        counter.addAndGet(1, 0);//时间倒流的话, 计数无效
 
-        Assert.assertEquals(1, counter.getRecently(1, 9000));
-        Assert.assertEquals(1, counter.getRecently(2, 9000));
-        Assert.assertEquals(1, counter.getRecently(30, 9000));
+        Assert.assertEquals(0, counter.getRecently(1 * SAMPLING_DURATION, 10000));//时间回退的话, 取值也无效
+        Assert.assertEquals(0, counter.getRecently(2 * SAMPLING_DURATION, 10000));//时间回退的话, 取值也无效
+        Assert.assertEquals(7, counter.getRecently(Integer.MAX_VALUE, 320000));
 
-        //2
-        counter.addAndGet(1, 5000);
-        counter.addAndGet(1, 6000);
+        for (int i = 0 ; i < 10 ; i++) {
+            counter.addAndGet(1, 0);//大量的时间倒流可以导致整个重置(默认64次)
+        }
 
-        //1
-        counter.addAndGet(-100, 600000);//long interval, clean all
-
-        Assert.assertEquals(-100, counter.getRecently(1, 609000));
-        Assert.assertEquals(-100, counter.getRecently(2, 609000));
-        Assert.assertEquals(-100, counter.getRecently(30, 609000));
+        Assert.assertEquals(1, counter.getRecently(Integer.MAX_VALUE, 10000));
 
     }
 
@@ -117,7 +125,15 @@ public class SlidingWindowCounterTest {
     private static void stressTest() {
 
         //采样时长1s, 统计时长60s
-        final SlidingWindowCounter counter = new SlidingWindowCounter(1000, 60);
+        final SlidingWindowCounter counter = new SlidingWindowCounter(1000, 60) {
+//            @Override
+//            protected void printDebugLog(int duration, long currentTimeMillis, List<SlidingWindowArray.Element<AtomicInteger>> elements) {
+//                System.out.println("SlidingWindowCounter#getRecently(" + duration + ", " + currentTimeMillis + ")");
+//                for (SlidingWindowArray.Element<AtomicInteger> element : elements) {
+//                    System.out.println(element);
+//                }
+//            }
+        };
 
         //总计数
         final AtomicInteger times = new AtomicInteger(0);
@@ -156,7 +172,7 @@ public class SlidingWindowCounterTest {
 
         for (int i = 1 ; i <= 60 ; i++) {
             //最近i秒内的计数值, 刚开始会有一两秒为0(因为FINISH_DURATION比RUN_DURATION大)
-            System.out.println(i + ": " + counter.getRecently(i));
+            System.out.println(i + ": " + counter.getRecently(i * 1000));
         }
 
     }

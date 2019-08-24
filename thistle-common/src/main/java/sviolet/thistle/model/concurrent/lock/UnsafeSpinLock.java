@@ -19,7 +19,10 @@
 
 package sviolet.thistle.model.concurrent.lock;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
 
 /**
  * 慎用!!! 不规范的使用会导致严重的问题!!!<br>
@@ -42,12 +45,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @author S.Violet
  */
-public class UnsafeSpinLock {
+public class UnsafeSpinLock implements Lock {
 
     private AtomicBoolean lock = new AtomicBoolean(false);
+    private Thread acquiredThread;
 
     /**
-     * 上锁 IT'S UNSAFE !!! Irregular use can cause serious problems !!!<br>
+     * Lock, the thread will be blocked. <br>
+     * IT'S UNSAFE !!! Irregular use can cause serious problems !!!<br>
      *
      * <code>
      *     private UnsafeSpinLock spinLock = new UnsafeSpinLock();
@@ -63,9 +68,10 @@ public class UnsafeSpinLock {
      * </code>
      *
      */
+    @Override
     public void lock(){
         while (true) {
-            if (!lock.get() && lock.compareAndSet(false, true)) {
+            if (tryLock()) {
                 break;
             } else {
                 Thread.yield();
@@ -74,7 +80,8 @@ public class UnsafeSpinLock {
     }
 
     /**
-     * 解锁 IT'S UNSAFE !!! Irregular use can cause serious problems !!!<br>
+     * Unlock <br>
+     * IT'S UNSAFE !!! Irregular use can cause serious problems !!!<br>
      *
      * <code>
      *     private UnsafeSpinLock spinLock = new UnsafeSpinLock();
@@ -90,8 +97,97 @@ public class UnsafeSpinLock {
      * </code>
      *
      */
+    @Override
     public void unlock(){
+        if (Thread.currentThread() != this.acquiredThread) {
+            throw new IllegalStateException("The lock is not acquired by this thread");
+        }
+        this.acquiredThread = null;
         lock.set(false);
+    }
+
+    /**
+     * Try to lock, return true if acquired successfully, return false if failed immediately, no blocking <br>
+     *
+     * <code>
+     *      private UnsafeSpinLock spinLock = new UnsafeSpinLock();
+     *
+     *      public void setXXX(int xxx) {
+     *          if (spinLock.lock()) {
+     *              try {
+     *                  //do something ...
+     *              } finally {
+     *                  spinLock.unlock();
+     *              }
+     *          }
+     *      }
+     * </code>
+     *
+     * @return true: Acquired the lock successfully
+     */
+    @Override
+    public boolean tryLock() {
+        if (lock.compareAndSet(false, true)) {
+            acquiredThread = Thread.currentThread();
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Deprecated!!
+     * Lock, the thread will be blocked until acquired or interrupted <br>
+     * IT'S UNSAFE !!! Irregular use can cause serious problems !!!<br>
+     *
+     * <code>
+     *     private UnsafeSpinLock spinLock = new UnsafeSpinLock();
+     *
+     *      public void setXXX(int xxx) {
+     *          try {
+     *              spinLock.lockInterruptibly();
+     *          } catch (InterruptedException e) {
+     *              //interrupted
+     *              return;
+     *          }
+     *          try {
+     *              //do something ...
+     *          } finally {
+     *              spinLock.unlock();
+     *          }
+     *      }
+     * </code>
+     *
+     * @throws InterruptedException Thread interrupted
+     * @deprecated Although it is implemented, but it is not recommended to use
+     */
+    @Override
+    @Deprecated
+    public void lockInterruptibly() throws InterruptedException {
+        while (!Thread.currentThread().isInterrupted()) {
+            if (tryLock()) {
+                break;
+            } else {
+                Thread.yield();
+            }
+        }
+    }
+
+    /**
+     * @deprecated Unsupported Operation
+     */
+    @Override
+    @Deprecated
+    public boolean tryLock(long time, TimeUnit unit) throws InterruptedException {
+        throw new UnsupportedOperationException("tryLock method is unsupported in UnsafeSpinLock");
+    }
+
+    /**
+     * @deprecated Unsupported Operation
+     */
+    @Override
+    @Deprecated
+    public Condition newCondition() {
+        throw new UnsupportedOperationException("newCondition method is unsupported in UnsafeSpinLock");
     }
 
 }
