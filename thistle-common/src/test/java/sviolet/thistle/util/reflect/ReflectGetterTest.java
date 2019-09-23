@@ -17,11 +17,10 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.reflect;
+package sviolet.thistle.util.reflect;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-import sviolet.thistle.util.reflect.ReflectGetter;
 
 import java.util.ArrayList;
 import java.util.HashMap;

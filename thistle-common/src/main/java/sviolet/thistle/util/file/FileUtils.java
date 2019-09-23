@@ -92,9 +92,7 @@ public class FileUtils {
             throw new LengthOutOfLimitException("File length out of limit, file:" + file.getAbsolutePath() + ", length:" + file.length());
         }
 
-        BufferedReader bufferedReader = null;
-        try {
-            bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(file), charset));
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(file), charset))) {
             StringBuilder stringBuilder = new StringBuilder();
             char[] buff = new char[1024];
             int length;
@@ -102,13 +100,6 @@ public class FileUtils {
                 stringBuilder.append(buff, 0, length);
             }
             return stringBuilder.toString();
-        } finally {
-            if (bufferedReader != null) {
-                try {
-                    bufferedReader.close();
-                } catch (Exception ignore){
-                }
-            }
         }
     }
 
@@ -123,19 +114,104 @@ public class FileUtils {
         if (file == null || !file.exists()){
             return 0;
         }
-        RandomAccessFile randomAccessFile = null;
-        try{
-            randomAccessFile = new RandomAccessFile(file, "r");
+        try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r")) {
             randomAccessFile.seek(start);
             return randomAccessFile.read(buffer);
-        } finally {
-            if (randomAccessFile != null){
-                try {
-                    randomAccessFile.close();
-                } catch (IOException ignored) {
+        }
+    }
+
+
+    /**
+     * NIO方式遍历文件的每一行数据, 内容不含换行符, 而且会忽略空行
+     *
+     * @param file 文件, 不存在会抛出异常
+     * @param limitPerLine 一行的长度限制(字节), 超出时这行只有前半部分数据(不完整), 设置0不限长度(小心OOM), 建议设置较大值, 例如: 1024 * 1024
+     * @param expectedLineLength 预计每行的长度(字节), 例如: 1024
+     * @param bufferSize 读取数据用的缓存大小(字节), 例如: 4096
+     * @param consumer 行处理器, 如果有一行数据长度超过限制, 数据截取前半部分, 不完整
+     */
+    public static void readLines(File file, int limitPerLine, int expectedLineLength, int bufferSize, LineConsumer consumer) throws IOException {
+        if (!file.exists() || !file.isFile()) {
+            throw new FileNotFoundException("File not found, path:" + file.getAbsolutePath());
+        }
+
+        byte[] buff = new byte[bufferSize];
+        int buffLength;
+        int buffStartIndex;
+        boolean outOfLengthFlag = false;
+
+        ByteArrayOutputStream lineData = new ByteArrayOutputStream(expectedLineLength);
+
+        try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r")) {
+            while ((buffLength = randomAccessFile.read(buff)) > -1) {
+                buffStartIndex = 0;
+
+                //handle every byte in the buff
+                for (int buffCurrentIndex = 0 ; buffCurrentIndex < buffLength ; buffCurrentIndex++) {
+                    byte b = buff[buffCurrentIndex];
+
+                    //handle the end of the line
+                    if (b == '\n' || b == '\r') {
+
+                        //reset outOfLengthFlag flag if reach the end of the line
+                        if (outOfLengthFlag) {
+                            //skip bytes which has out of limit
+                            buffStartIndex = buffCurrentIndex + 1;
+                            //mark outOfLengthFlag to false
+                            outOfLengthFlag = false;
+                            //skip write & consume
+                            continue;
+                        }
+
+                        //write to line data
+                        boolean outOfLimit = readLines_writeLine(buff, lineData, buffStartIndex, buffCurrentIndex, limitPerLine);
+                        //consume
+                        if (!readLines_consume(consumer, lineData, outOfLimit)) return;
+                        //set start index to next byte
+                        buffStartIndex = buffCurrentIndex + 1;
+
+                    }
+                }
+
+                //reach the end of the buff
+                //write to line data
+                boolean outOfLimit = readLines_writeLine(buff, lineData, buffStartIndex, buffLength, limitPerLine);
+                //out of limit
+                if (outOfLimit) {
+                    //consume
+                    if (!readLines_consume(consumer, lineData, true)) return;
+                    //mark outOfLengthFlag to true
+                    outOfLengthFlag = true;
                 }
             }
+
+            //handle last line
+            readLines_consume(consumer, lineData, false);
         }
+    }
+
+    private static boolean readLines_writeLine(byte[] buff, ByteArrayOutputStream lineData, int buffStartIndex, int buffCurrentIndex, int limitPerLine) {
+        //buff -> lineData
+        int writeLength = buffCurrentIndex - buffStartIndex;
+        boolean outOfLimit = false;
+        if (limitPerLine > 0 && writeLength > 0 &&
+                writeLength + lineData.size() > limitPerLine) {
+            writeLength = limitPerLine - lineData.size();
+            outOfLimit = true;
+        }
+        if (writeLength > 0) {
+            lineData.write(buff, buffStartIndex, writeLength);
+        }
+        return outOfLimit;
+    }
+
+    private static boolean readLines_consume(LineConsumer consumer, ByteArrayOutputStream lineData, boolean outOfLimit) {
+        if (lineData.size() <= 0) {
+            return true;
+        }
+        boolean isContinue = consumer.consume(lineData.toByteArray(), outOfLimit);
+        lineData.reset();
+        return isContinue;
     }
 
     /**
@@ -155,13 +231,29 @@ public class FileUtils {
     }
 
     /****************************************************************************************************
-     * Exceptions
+     * classes
      */
 
+    /**
+     * 文件长度超过限制
+     */
     public static class LengthOutOfLimitException extends Exception {
         public LengthOutOfLimitException(String message) {
             super(message);
         }
+    }
+
+    /**
+     * 行处理器
+     */
+    public interface LineConsumer {
+        /**
+         * 处理每一行数据, 例如: 转成String
+         * @param line 一行数据, 不含换行符
+         * @param outOfLimit false: 正常 true: 当前行长度超过限制, 数据截取前半部分, 不完整
+         * @return true: 继续处理 false: 终止处理
+         */
+        boolean consume(byte[] line, boolean outOfLimit);
     }
 
 }

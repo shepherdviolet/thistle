@@ -21,10 +21,7 @@ package sviolet.thistle.util.reflect;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 反射工具
@@ -34,20 +31,132 @@ import java.util.Set;
 public class ReflectUtils {
 
     /**
-     * 获得一个类的泛型类型
+     * <p>获取一个类的父类/接口类的泛型实际类型, 返回值可能为空.</p>
+     *
+     * <p>例如, 有个类A, 继承了类B(可以是多层), 类B定义了一个泛型, 而类A继承类B时指定了泛型, 获取这个泛型类型的代码如下:</p>
+     *
+     * <pre>
+     *     ReflectUtils.getGenericClass(A.class, B.class);
+     * </pre>
+     *
+     * <p>例如, 有个类A, 实现了接口C(可以是多层), 类C定义了一个泛型, 而类A实现接口C时指定了泛型, 获取这个泛型类型的代码如下:</p>
+     *
+     * <pre>
+     *     ReflectUtils.getGenericClass(A.class, C.class);
+     * </pre>
+     *
+     * <p>例如, 有个父类P, 会被其他类继承, 父类P定义了一个泛型, P想要获得自己的泛型最终被指定成了什么, 代码如下:</p>
+     *
+     * <pre>
+     *     ReflectUtils.getGenericClass(this.getClass(), P.class);
+     * </pre>
+     *
+     * <p>在Spring中使用时, 对象有可能是个代理类, 在获取泛型前先获取代理类持有的实际类:</p>
+     *
+     * <pre>
+     *     Class<?> rawClass = AopProxyUtils.ultimateTargetClass(bean);
+     * </pre>
      *
      * @param clazz 类
-     * @return 泛型类型
+     * @param targetGenericClass 指定要获取的泛型声明在哪个类/接口
+     * @return Nullable, 类型:Class, 返回null表示未找到指定的声明泛型的类
      */
-    public static List<Class> getActualTypes(Class clazz) {
-        List<Class> result = new ArrayList<>();
-        Type type = clazz.getGenericSuperclass();
-        if (ParameterizedType.class.isAssignableFrom(type.getClass())) {
-            for (Type actualType : ((ParameterizedType) type).getActualTypeArguments()) {
-                result.add((Class) actualType);
+    public static Class[] getGenericClasses(Class clazz, Class targetGenericClass) {
+        Type[] genericTypes = getGenericTypes(clazz, targetGenericClass);
+        if (genericTypes == null) {
+            return null;
+        }
+        Class[] genericClasses = new Class[genericTypes.length];
+        for (int i = 0 ; i < genericTypes.length ; i++) {
+            Type type = genericTypes[i];
+            if (type instanceof ParameterizedType) {
+                genericClasses[i] = (Class) ((ParameterizedType) type).getRawType();
+            } else {
+                genericClasses[i] = (Class) type;
             }
         }
-        return result;
+        return genericClasses;
+    }
+
+    /**
+     * <p>获取一个类的父类/接口类的泛型实际类型, 返回值可能为空.</p>
+     *
+     * <p>例如, 有个类A, 继承了类B(可以是多层), 类B定义了一个泛型, 而类A继承类B时指定了泛型, 获取这个泛型类型的代码如下:</p>
+     *
+     * <pre>
+     *     ReflectUtils.getGenericType(A.class, B.class);
+     * </pre>
+     *
+     * <p>例如, 有个类A, 实现了接口C(可以是多层), 类C定义了一个泛型, 而类A实现接口C时指定了泛型, 获取这个泛型类型的代码如下:</p>
+     *
+     * <pre>
+     *     ReflectUtils.getGenericType(A.class, C.class);
+     * </pre>
+     *
+     * <p>例如, 有个父类P, 会被其他类继承, 父类P定义了一个泛型, P想要获得自己的泛型最终被指定成了什么, 代码如下:</p>
+     *
+     * <pre>
+     *     ReflectUtils.getGenericType(this.getClass(), P.class);
+     * </pre>
+     *
+     * <p>在Spring中使用时, 对象有可能是个代理类, 在获取泛型前先获取代理类持有的实际类:</p>
+     *
+     * <pre>
+     *     Class<?> rawClass = AopProxyUtils.ultimateTargetClass(bean);
+     * </pre>
+     *
+     * @param clazz 类
+     * @param targetGenericClass 指定要获取的泛型声明在哪个类/接口
+     * @return Nullable, 类型:Class/ParameterizedType, 返回null表示未找到指定的声明泛型的类
+     */
+    public static Type[] getGenericTypes(Class clazz, Class targetGenericClass) {
+        if (clazz == null) {
+            throw new NullPointerException("clazz is null");
+        }
+        if (targetGenericClass == null) {
+            throw new NullPointerException("targetGenericClass is null");
+        }
+        if (targetGenericClass.isInterface()) {
+            return getGenericTypesOfInterface(clazz, targetGenericClass);
+        } else {
+            return getGenericTypesOfClass(clazz, targetGenericClass);
+        }
+    }
+
+    private static Type[] getGenericTypesOfClass(Class clazz, Class targetGenericClass) {
+        Type matchedGenericSuperClass = null;
+        while (clazz != null) {
+            Type genericSuperClass = clazz.getGenericSuperclass();
+            if (genericSuperClass instanceof ParameterizedType && targetGenericClass.equals(((ParameterizedType) genericSuperClass).getRawType())) {
+                matchedGenericSuperClass = genericSuperClass;
+                break;
+            }
+            clazz = clazz.getSuperclass();
+        }
+        if (matchedGenericSuperClass == null) {
+            return null;
+        }
+        return ((ParameterizedType) matchedGenericSuperClass).getActualTypeArguments();
+    }
+
+    private static Type[] getGenericTypesOfInterface(Class clazz, Class targetGenericInterface) {
+        Type matchedGenericInterface = null;
+        while (clazz != null) {
+            Type[] genericInterfaces = clazz.getGenericInterfaces();
+            if (genericInterfaces != null) {
+                for (Type genericInterface : genericInterfaces) {
+                    if (genericInterface instanceof ParameterizedType && targetGenericInterface.equals(((ParameterizedType) genericInterface).getRawType())) {
+                        matchedGenericInterface = genericInterface;
+                        break;
+                    }
+                }
+            }
+            clazz = clazz.getSuperclass();
+        }
+        if (matchedGenericInterface == null) {
+            return null;
+        }
+        return ((ParameterizedType) matchedGenericInterface).getActualTypeArguments();
     }
 
     /**
