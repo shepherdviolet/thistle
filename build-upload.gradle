@@ -36,14 +36,6 @@ configure(subprojects.findAll { it.PROJECT_GROUP in ['library', 'bom'] }) {
                 // 构建名默认是子工程名, 也可以在子工程的gradle.properties中配置upload_artifact_id来指定构建名
                 artifactId = project.hasProperty('upload_artifact_id') ? project.upload_artifact_id : project.name
                 version = project.version
-                versionMapping {
-                    usage('java-api') {
-                        fromResolutionOf('runtimeClasspath')
-                    }
-                    usage('java-runtime') {
-                        fromResolutionResult()
-                    }
-                }
                 // 配置: 此处可以配置POM信息
                 pom {
                     name = project.name
@@ -151,6 +143,15 @@ configure(subprojects.findAll { it.PROJECT_GROUP == 'library' }) {
                 if (upload_target != 'local') {
                     artifact sourcesJar
                     artifact javadocJar
+                }
+                // 自动处理依赖版本
+                versionMapping {
+                    usage('java-api') {
+                        fromResolutionOf('runtimeClasspath')
+                    }
+                    usage('java-runtime') {
+                        fromResolutionResult()
+                    }
                 }
             }
         }

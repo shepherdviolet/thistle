@@ -23,7 +23,6 @@ subprojects {
 configure(subprojects.findAll { it.PROJECT_GROUP == 'library' }) {
 
     apply plugin: 'java-library'
-    apply plugin: 'nebula.optional-base'
 //    apply plugin: 'java'
 
     // compat android
@@ -76,20 +75,11 @@ configure(subprojects.findAll { it.PROJECT_GROUP == 'bom' }) {
 // 部分工程通用配置: 名称筛选
 //configure(subprojects.findAll { it.name.startsWith('prefix-') }) {
 //
-//    apply plugin: 'kotlin'
-//
-//    // kotlin compile
-//    compileKotlin {
-//        kotlinOptions {
-//            jvmTarget = "1.6"
-//        }
+//}
+
+// 示例: Gradle6.0开始默认生成module文件(类似于Maven的POM), 关闭方法如下
+//allprojects {
+//    tasks.withType(GenerateModuleMetadata) {
+//        enabled = false
 //    }
-//
-//    // kotlin test compile
-//    compileTestKotlin {
-//        kotlinOptions {
-//            jvmTarget = "1.6"
-//        }
-//    }
-//
 //}

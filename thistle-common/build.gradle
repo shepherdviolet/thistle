@@ -1,19 +1,28 @@
 
 dependencies {
     //import bom
-//    compile platform(project(':thistle-bom'))//只对未指定版本的依赖生效
-//    compile platform("org.springframework.boot:spring-boot-dependencies:$version_springboot")//只对未指定版本的依赖生效
-//    compile enforcedPlatform("org.springframework.boot:spring-boot-dependencies:$version_springboot")//强制覆盖依赖版本
+//    api platform(project(':thistle-bom'))//只对未指定版本的依赖生效
+//    api platform("com.github.shepherdviolet:thistle-bom:$version_thistle")//只对未指定版本的依赖生效
+//    api enforcedPlatform("com.github.shepherdviolet:thistle-bom:$version_thistle")//强制覆盖依赖版本
 
     //required
-    compile "com.github.shepherdviolet:glaciion-core:$version_glaciion"
+    [
+            "com.github.shepherdviolet:glaciion-core:$version_glaciion",
 
-    //optional
-    compile "org.slf4j:slf4j-api:$version_slf4j", optional
-    compile "org.javassist:javassist:$version_javassist", optional
-//    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$version_kotlinVersion", optional
+    ].forEach{ api it }
+
+    //compile only
+    [
+            "org.slf4j:slf4j-api:$version_slf4j",
+            "org.javassist:javassist:$version_javassist",
+
+    ].forEach{ compileOnly it; testImplementation it }
 
     //test
-    testImplementation "junit:junit:$version_junit"
-    testImplementation "org.mockito:mockito-core:$version_mockito"
+    [
+            "junit:junit:$version_junit",
+            "org.mockito:mockito-core:$version_mockito",
+
+    ].forEach{ testImplementation it }
+
 }
