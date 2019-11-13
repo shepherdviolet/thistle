@@ -1,0 +1,9 @@
+{
+  "library": [
+    "thistle-common",
+    "thistle-crypto-plus"
+  ],
+  "bom": [
+    "thistle-bom"
+  ]
+}

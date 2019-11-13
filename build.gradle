@@ -1,101 +1,56 @@
 
-//构建脚本配置
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 脚本
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// [请勿修改] 'build.gradle'的初始化脚本
+apply from: 'gradle/build-init.gradle'
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 配置
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Gradle构建脚本本身的配置
 buildscript {
 
-    //装载其他配置文件
+    // 加载自定义properties文件
     ext {
-        //解析配置文件
+        // 读取配置文件
         def customProperties = new Properties()
         file("gradle-local.properties").withInputStream { stream -> customProperties.load(stream) }
-//        file("gradle-other.properties").withInputStream { stream -> customProperties.load(stream) }
+        //file("gradle-other.properties").withInputStream { stream -> customProperties.load(stream) }
 
-        //将配置放入公共配置, 在gradle中可直接引用
+        // 将配置放入公共配置, 在gradle中可直接引用
         customProperties.each {
-            rootProject.extensions.add("$it.key",it.value)
+            rootProject.extensions.add("$it.key", it.value)
         }
 
-        //默认值, 判断配置项是否存在, 需要使用rootProject.extensions.findByName('name'). 而确保配置项存在的情况下, 可直接引用
+        // 示例: 设置默认值: 判断配置项是否存在, 需要使用rootProject.extensions.findByName('name'). 而确保配置项存在的情况下, 可直接引用
         //upload_mavenVersion = rootProject.extensions.findByName('upload_mavenVersion') != null ? upload_mavenVersion : version_projectVersionName + '-SNAPSHOT'
     }
 
-    //构建脚本依赖仓库
+    // 构建脚本用的依赖仓库
     repositories {
-        //local repo
-        maven {url repository_localRepositoryPath}
-        //maven-central https://repo1.maven.org/maven2/
-        mavenCentral()
-        //jcenter http://jcenter.bintray.com/
-        jcenter()
-        //jitpack-io
-        // maven { url 'https://jitpack.io' }
+        maven { url repository_localRepositoryPath } // 本地仓库, 可选
+        maven { url 'https://plugins.gradle.org/m2/' } // Gradle插件库, 可选
+        mavenCentral() // https://repo1.maven.org/maven2/
+        //jcenter() // http://jcenter.bintray.com/
+        //maven { url 'https://jitpack.io' }
+        //maven { url 'http://repo.spring.io/plugins-release/' }
     }
 
-    //构建脚本依赖
+    // 构建脚本用的依赖(插件)
     dependencies {
-        classpath "com.netflix.nebula:gradle-extra-configurations-plugin:$version_nebula"
-//        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$version_kotlinVersion"
+        classpath "com.netflix.nebula:gradle-extra-configurations-plugin:$version_nebula" // nebula.optional-base
+        //classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$version_kotlinVersion"
     }
 
 }
 
-//全部工程通用配置////////////////////////////////////////////////////////////////////////////////////
+// 子工程通用配置
+apply from: 'build-common.gradle'
 
-allprojects {
-
-    apply plugin: 'java'
-    apply plugin: 'nebula.optional-base'
-    //apply plugin: 'kotlin'
-
-    group project_group_id
-    version project_version
-
-    //compat android
-    sourceCompatibility = 1.7
-    targetCompatibility = 1.7
-
-    //encoding
-    [compileJava, compileTestJava, javadoc]*.options*.encoding = "UTF-8"
-
-    //kotlin compile
-    //compileKotlin {
-    //    kotlinOptions {
-    //        jvmTarget = "1.6"
-    //    }
-    //}
-
-    //kotlin test compile
-    //compileTestKotlin {
-    //    kotlinOptions {
-    //        jvmTarget = "1.6"
-    //    }
-    //}
-
-    //工程依赖仓库
-    repositories {
-        //local repo
-        maven {url repository_localRepositoryPath}
-        //maven-central https://repo1.maven.org/maven2/
-        mavenCentral()
-        //jcenter http://jcenter.bintray.com/
-        jcenter()
-        //jitpack-io
-        // maven { url 'https://jitpack.io' }
-    }
-    
-}
-
-//库工程通用配置////////////////////////////////////////////////////////////////////////////////////
-
-configure(subprojects.findAll { it.name.startsWith('thistle-') }) {
-
-}
-
-//DEMO工程通用配置////////////////////////////////////////////////////////////////////////////////////
-
-configure(subprojects.findAll { it.name.startsWith('demo-') }) {
-
-}
-
-//其他////////////////////////////////////////////////////////////////////////////////////
-
+// Maven仓库上传配置
 apply from: 'build-upload.gradle'

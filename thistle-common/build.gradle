@@ -1,5 +1,10 @@
 
 dependencies {
+    //import bom
+//    compile platform(project(':thistle-bom'))//只对未指定版本的依赖生效
+//    compile platform("org.springframework.boot:spring-boot-dependencies:$version_springboot")//只对未指定版本的依赖生效
+//    compile enforcedPlatform("org.springframework.boot:spring-boot-dependencies:$version_springboot")//强制覆盖依赖版本
+
     //required
     compile "com.github.shepherdviolet:glaciion-core:$version_glaciion"
 

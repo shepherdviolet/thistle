@@ -23,43 +23,60 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Map;
 
 public class ReflectUtilsTest {
 
     @Test
-    public void getActualType(){
+    public void getActualType() throws ReflectUtils.TargetGenericClassNotFoundException {
         Assert.assertEquals("[class java.lang.Integer]",
-                Arrays.toString(ReflectUtils.getGenericClasses(Wrapper.class, Parent.class)));
-        Assert.assertEquals("[class java.lang.String]",
-                Arrays.toString(ReflectUtils.getGenericClasses(Wrapper.class, Eat.class)));
-        Assert.assertEquals("[interface java.util.Map]",
-                Arrays.toString(ReflectUtils.getGenericClasses(Wrapper.class, Game.class)));
+                Arrays.toString(ReflectUtils.getGenericClasses(C3.class, I1.class)));
+        Assert.assertEquals("[class java.lang.Object]",
+                Arrays.toString(ReflectUtils.getGenericClasses(C3.class, I2.class)));
+        Assert.assertEquals("[class java.lang.Double, class java.lang.Integer]",
+                Arrays.toString(ReflectUtils.getGenericClasses(C3.class, I3.class)));
+        Assert.assertEquals("[class java.lang.Long, class java.lang.Float, class java.lang.Double]",
+                Arrays.toString(ReflectUtils.getGenericClasses(C3.class, C2.class)));
+
+        Assert.assertEquals("[class java.lang.Object, class java.lang.Object]",
+                Arrays.toString(ReflectUtils.getGenericClasses(C1.class, I3.class)));
+        Assert.assertEquals("[class java.lang.Object, class java.lang.Object, class java.lang.Integer]",
+                Arrays.toString(ReflectUtils.getGenericClasses(C2.class, C1.class)));
     }
 
-    public static class Wrapper extends Child {
+    public interface I0 {
+
     }
 
-    public static class Child extends Parent<Integer> implements Game<Map<String, Object>>{
-        @Override
-        public void game(Map<String, Object> game) {
-        }
+    public interface I1 <I1T1> {
+
     }
 
-    public static class Parent <S> implements Eat<String> {
-        public void sleep(S time){
-        }
-        @Override
-        public void eat(String food) {
-        }
+    public interface I2 <I2T1> {
+
     }
 
-    public interface Eat<T> {
-        void eat(T food);
+    public interface I3 <I3T1, I3T2> extends I1<I3T2> {
+
     }
 
-    public interface Game<T> {
-        void game(T game);
+    public interface I4 <I4T1> {
+
+    }
+
+    public static class C0 {
+
+    }
+
+    public static abstract class C1 <C1T1, C1T2, C1T3> extends C0 implements I0, I2, I3<C1T2, C1T3> {
+
+    }
+
+    public static class C2 <C2T1, C2T2, C2T3> extends C1<C2T2, C2T3, Integer> implements I0, I4<String> {
+
+    }
+
+    public static class C3 extends C2<Long, Float, Double> {
+
     }
 
 }

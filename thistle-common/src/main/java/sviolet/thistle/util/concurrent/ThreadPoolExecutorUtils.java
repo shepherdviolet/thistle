@@ -187,12 +187,50 @@ public class ThreadPoolExecutorUtils {
      * @param executeListener nullable, 监听执行前执行后的事件
      */
     public static ExecutorService create(int corePoolSize,
-                                              int maximumPoolSize,
-                                              long keepAliveSeconds,
-                                              String threadNameFormat,
-                                              BlockingQueue<Runnable> workQueue,
-                                              RejectedExecutionHandler rejectHandler,
-                                              final ExecuteListener executeListener){
+                                         int maximumPoolSize,
+                                         long keepAliveSeconds,
+                                         String threadNameFormat,
+                                         BlockingQueue<Runnable> workQueue,
+                                         RejectedExecutionHandler rejectHandler,
+                                         final ExecuteListener executeListener){
+        return create(
+                corePoolSize,
+                maximumPoolSize,
+                keepAliveSeconds,
+                new CompatThreadFactoryBuilder().setNameFormat(threadNameFormat).build(),
+                workQueue,
+                rejectHandler,
+                executeListener
+        );
+    }
+
+    /**
+     * <p>创建线程池</p>
+     *
+     * <p>
+     * 5.使用LinkedBlockingQueue工作队列时, 在填满核心线程后, 后续任务会加入队列, 队列满之前都不会尝试增加非核心线程.<br>
+     * --5.1.如果队列满了, 会尝试增加非核心线程. 如果增加失败, 拒绝任务并由RejectedExecutionHandler处理.<br>
+     * --5.2.因此, 一般corePoolSize == maximumPoolSize, 或者corePoolSize = 0 maximumPoolSize = 1(会超时的单线程池).<br>
+     * 6.使用SynchronousQueue工作队列时, 并发任务会直接增加线程(包括核心线程和非核心线程).<br>
+     * --6.1.当并发量超过maximumPoolSize时, 拒绝任务并由RejectedExecutionHandler处理.<br>
+     * --6.2.因此, 一般maximumPoolSize >= corePoolSize.<br>
+     * </p>
+     *
+     * @param corePoolSize 核心线程数
+     * @param maximumPoolSize 最大线程数
+     * @param keepAliveSeconds 线程保活时间(秒)
+     * @param threadFactory 线程工厂
+     * @param workQueue 工作队列
+     * @param rejectHandler nullable, 拒绝处理器, 默认: new ThreadPoolExecutor.AbortPolicy()
+     * @param executeListener nullable, 监听执行前执行后的事件
+     */
+    public static ExecutorService create(int corePoolSize,
+                                         int maximumPoolSize,
+                                         long keepAliveSeconds,
+                                         ThreadFactory threadFactory,
+                                         BlockingQueue<Runnable> workQueue,
+                                         RejectedExecutionHandler rejectHandler,
+                                         final ExecuteListener executeListener){
 
         EnhancedThreadPoolExecutor executorService = new EnhancedThreadPoolExecutor(
                 corePoolSize,
@@ -200,7 +238,7 @@ public class ThreadPoolExecutorUtils {
                 keepAliveSeconds,
                 TimeUnit.SECONDS,
                 workQueue,
-                new CompatThreadFactoryBuilder().setNameFormat(threadNameFormat).build(),
+                threadFactory,
                 new RejectedExecutionHandlerWrapper(rejectHandler != null ? rejectHandler : new ThreadPoolExecutor.AbortPolicy()),
                 executeListener);
 
@@ -239,7 +277,30 @@ public class ThreadPoolExecutorUtils {
      * @param executeListener nullable, 监听执行前执行后的事件
      */
     public static ScheduledExecutorService createScheduled(int corePoolSize,
-                                         String threadNameFormat,
+                                                           String threadNameFormat,
+                                                           RejectedExecutionHandler rejectHandler,
+                                                           final ExecuteListener executeListener){
+        return createScheduled(
+                corePoolSize,
+                new CompatThreadFactoryBuilder().setNameFormat(threadNameFormat).build(),
+                rejectHandler,
+                executeListener);
+    }
+
+    /**
+     * <p>创建定时线程池</p>
+     *
+     * <p>
+     * 1.定时线程池能够延迟/循环执行任务
+     * </p>
+     *
+     * @param corePoolSize 核心线程数
+     * @param threadFactory 线程工厂
+     * @param rejectHandler nullable, 拒绝处理器, 默认: new ThreadPoolExecutor.AbortPolicy()
+     * @param executeListener nullable, 监听执行前执行后的事件
+     */
+    public static ScheduledExecutorService createScheduled(int corePoolSize,
+                                         ThreadFactory threadFactory,
                                          RejectedExecutionHandler rejectHandler,
                                          final ExecuteListener executeListener){
 
@@ -251,7 +312,7 @@ public class ThreadPoolExecutorUtils {
 
         EnhancedScheduledThreadPoolExecutor executorService = new EnhancedScheduledThreadPoolExecutor(
                 corePoolSize,
-                new CompatThreadFactoryBuilder().setNameFormat(threadNameFormat).build(),
+                threadFactory,
                 new RejectedExecutionHandlerWrapper(rejectHandler != null ? rejectHandler : new ThreadPoolExecutor.AbortPolicy()),
                 executeListener);
 
