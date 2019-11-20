@@ -3,24 +3,8 @@
 // 配置
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-// 所有子工程通用配置
-subprojects {
-
-    group project_group_id
-    version project_version
-
-    // 工程的依赖仓库
-    repositories {
-        maven { url repository_localRepositoryPath } // 本地仓库, 可选
-        mavenCentral() // https://repo1.maven.org/maven2/
-        jcenter() // http://jcenter.bintray.com/
-        //maven { url 'https://jitpack.io' }
-    }
-
-}
-
 // 库工程通用配置 (根据组别筛选)
-configure(subprojects.findAll { it.PROJECT_GROUP == 'library' }) {
+configure(subprojects.findAll { it.PROJECT_GROUP in ['library'] }) {
 
     apply plugin: 'java-library'
 //    apply plugin: 'java'
@@ -72,14 +56,12 @@ configure(subprojects.findAll { it.PROJECT_GROUP == 'bom' }) {
 //
 //}
 
-// 部分工程通用配置: 名称筛选
-//configure(subprojects.findAll { it.name.startsWith('prefix-') }) {
+// 所有子工程通用配置
+//subprojects {
 //
 //}
 
-// 示例: Gradle6.0开始默认生成module文件(类似于Maven的POM), 关闭方法如下
-//allprojects {
-//    tasks.withType(GenerateModuleMetadata) {
-//        enabled = false
-//    }
+// 部分工程通用配置: 名称筛选
+//configure(subprojects.findAll { it.name.startsWith('prefix-') }) {
+//
 //}

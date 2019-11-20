@@ -1,4 +1,4 @@
-# Thistle 14.9
+# Thistle 20.0.0
 
 * Comprehensive Java common library (Java7+)
 * https://github.com/shepherdviolet/thistle
@@ -28,9 +28,9 @@ repositories {
 }
 dependencies {
     //thistle
-    compile 'com.github.shepherdviolet:thistle-common:version'
+    compile 'com.github.shepherdviolet.thistle20:thistle-common:version'
     //thistle-crypto-plus
-    compile 'com.github.shepherdviolet:thistle-crypto-plus:version'
+    compile 'com.github.shepherdviolet.thistle20:thistle-crypto-plus:version'
 }
 
 ```
@@ -38,16 +38,14 @@ dependencies {
 ```maven
     <!-- thistle -->
     <dependency>    
-        <groupId>com.github.shepherdviolet</groupId>
+        <groupId>com.github.shepherdviolet.thistle20</groupId>
         <artifactId>thistle-common</artifactId>
         <version>version</version> 
     </dependency>
     <!-- thistle-crypto-plus -->
     <dependency>    
-        <groupId>com.github.shepherdviolet</groupId>
+        <groupId>com.github.shepherdviolet.thistle20</groupId>
         <artifactId>thistle-crypto-plus</artifactId>
         <version>version</version> 
     </dependency>
 ```
-
-* [Dependencies exclusion](https://github.com/shepherdviolet/thistle/blob/master/docs/dependencies-exclusion.md)
