@@ -31,19 +31,19 @@ import java.nio.channels.FileChannel;
  * @author S.Violet
  */
 public class FastFileCopyer {
-	
-	/**
+
+    /**
      * <p>
-	 * 单线程最快的复制文件方法<br/>
-	 * 目标文件的修改时间与原文件保持基本一致<br/>
-	 * 目标文件修改时间可能会偏大,偏差<2000ms, 例如:<br/>
-	 * 原始文件修改时间:****2356<br/>
-	 * 目标文件修改时间:****4000<br/>
+     * 单线程最快的复制文件方法<br/>
+     * 目标文件的修改时间与原文件保持基本一致<br/>
+     * 目标文件修改时间可能会偏大,偏差<2000ms, 例如:<br/>
+     * 原始文件修改时间:****2356<br/>
+     * 目标文件修改时间:****4000<br/>
      * </p>
-	 * 
-	 * @param source 源文件
-	 * @param target 目标文件
-	 */
+     *
+     * @param source 源文件
+     * @param target 目标文件
+     */
     public static void copy(File source,File target) throws IOException {
         FileChannel in = null;
         FileChannel out = null;
@@ -57,7 +57,7 @@ public class FastFileCopyer {
             long totalSize = in.size();
             long readSize = 0;
             while(totalSize > 0 && readSize < totalSize){
-            	readSize += in.transferTo(readSize, totalSize - readSize, out);
+                readSize += in.transferTo(readSize, totalSize - readSize, out);
             }
         } finally {
             try{in.close();}catch (Exception ignored){}

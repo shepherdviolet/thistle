@@ -34,54 +34,54 @@ import java.util.List;
  */
 public class ChineseSortUtils {
 
-	public static void sort(String[] list){
-		Arrays.sort(list, java.text.Collator.getInstance(java.util.Locale.CHINA));
-	}
+    public static void sort(String[] list){
+        Arrays.sort(list, java.text.Collator.getInstance(java.util.Locale.CHINA));
+    }
 
-	public static void sort(List<String> list){
-		Collections.sort(list, java.text.Collator.getInstance(java.util.Locale.CHINA));
-	}
-	
-	/**
-	 *	List<Item> list = ...
-	 *	list = ChineseSortUtils.keySort(list, new KeyGetter<Item>(){
-	 *		//根据Item对象的getName()方法得到关键字
-	 *		public String getKey(Item obj) {
-	 *			return obj.getName();
-	 *		}
-	 *	});
-	 */
-	public static <T> List<T> keySort(List<T> list, KeyGetter<T> keyGetter){
-		//取得对象们的关键字
-		String[] keyArray = new String[list.size()];
-		for(int i = 0 ; i < list.size() ; i++){
-			keyArray[i] = keyGetter.getKey(list.get(i));
-		}
+    public static void sort(List<String> list){
+        Collections.sort(list, java.text.Collator.getInstance(java.util.Locale.CHINA));
+    }
 
-		//关键字排序
-		sort(keyArray);
+    /**
+     *    List<Item> list = ...
+     *    list = ChineseSortUtils.keySort(list, new KeyGetter<Item>(){
+     *        //根据Item对象的getName()方法得到关键字
+     *        public String getKey(Item obj) {
+     *            return obj.getName();
+     *        }
+     *    });
+     */
+    public static <T> List<T> keySort(List<T> list, KeyGetter<T> keyGetter){
+        //取得对象们的关键字
+        String[] keyArray = new String[list.size()];
+        for(int i = 0 ; i < list.size() ; i++){
+            keyArray[i] = keyGetter.getKey(list.get(i));
+        }
 
-		//根据关键字顺序对对象进行排序
-		List<T> result = new ArrayList<>();
-		for(int i = 0 ; i < keyArray.length ; i++){
-			for(int j = 0 ; j < list.size() ; j++){
-				if(keyGetter.getKey(list.get(j)).equals(keyArray[i])){
-					result.add(list.get(j));
-					list.remove(j);
-					break;
-				}
-			}
-		}
-		return result;
-	}
+        //关键字排序
+        sort(keyArray);
 
-	public interface KeyGetter<T>{
-		/**
-		 * 实现从对象中获取key, 用于排序
-		 * @param obj 待排序对象
-		 * @return key
-		 */
-		String getKey(T obj);
-	}
+        //根据关键字顺序对对象进行排序
+        List<T> result = new ArrayList<>();
+        for(int i = 0 ; i < keyArray.length ; i++){
+            for(int j = 0 ; j < list.size() ; j++){
+                if(keyGetter.getKey(list.get(j)).equals(keyArray[i])){
+                    result.add(list.get(j));
+                    list.remove(j);
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
+    public interface KeyGetter<T>{
+        /**
+         * 实现从对象中获取key, 用于排序
+         * @param obj 待排序对象
+         * @return key
+         */
+        String getKey(T obj);
+    }
 
 }

@@ -370,21 +370,21 @@ public class AdvancedCertificateUtils extends CertificateUtils {
      *  <p>
      *  标识符:<Br>
      *  <pre>
-     *  rsaEncryption	RSA算法标识	1.2.840.113549.1.1.1
-     *  sha1withRSAEncryption	SHA1的RSA签名	1.2.840.113549.1.1.5
-     *  ECC	ECC算法标识	1.2.840.10045.2.1
-     *  SM2	SM2算法标识	1.2.156.10197.1.301
-     *  SM3WithSM2	SM3的SM2签名	1.2.156.10197.1.501
-     *  sha1withSM2	SHA1的SM2签名	1.2.156.10197.1.502
-     *  sha256withSM2	SHA256的SM2签名	1.2.156.10197.1.503
-     *  sm3withRSAEncryption	SM3的RSA签名	1.2.156.10197.1.504
-     *  commonName	主体名	2.5.4.3
-     *  emailAddress	邮箱	1.2.840.113549.1.9.1
-     *  cRLDistributionPoints	CRL分发点	2.5.29.31
-     *  extKeyUsage	扩展密钥用法	2.5.29.37
-     *  subjectAltName	使用者备用名称	2.5.29.17
-     *  CP	证书策略	2.5.29.32
-     *  clientAuth	客户端认证	1.3.6.1.5.5.7.3.2
+     *  rsaEncryption    RSA算法标识    1.2.840.113549.1.1.1
+     *  sha1withRSAEncryption    SHA1的RSA签名    1.2.840.113549.1.1.5
+     *  ECC    ECC算法标识    1.2.840.10045.2.1
+     *  SM2    SM2算法标识    1.2.156.10197.1.301
+     *  SM3WithSM2    SM3的SM2签名    1.2.156.10197.1.501
+     *  sha1withSM2    SHA1的SM2签名    1.2.156.10197.1.502
+     *  sha256withSM2    SHA256的SM2签名    1.2.156.10197.1.503
+     *  sm3withRSAEncryption    SM3的RSA签名    1.2.156.10197.1.504
+     *  commonName    主体名    2.5.4.3
+     *  emailAddress    邮箱    1.2.840.113549.1.9.1
+     *  cRLDistributionPoints    CRL分发点    2.5.29.31
+     *  extKeyUsage    扩展密钥用法    2.5.29.37
+     *  subjectAltName    使用者备用名称    2.5.29.17
+     *  CP    证书策略    2.5.29.32
+     *  clientAuth    客户端认证    1.3.6.1.5.5.7.3.2
      *  </pre></p>
      *
      * @param inputStream X509证书输入流, ASN.1编码, 非Base64编码

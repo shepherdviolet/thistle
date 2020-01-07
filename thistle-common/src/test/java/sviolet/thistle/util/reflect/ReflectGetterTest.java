@@ -62,11 +62,11 @@ public class ReflectGetterTest {
         );
         assertEquals(
                 596,
-                ReflectGetter.get(bean, "objectMap.obj.intValue", true)
+                (int)ReflectGetter.get(bean, "objectMap.obj.intValue", true)
         );
         assertEquals(
                 495L,
-                ReflectGetter.get(bean, "objectMap.map.list[1].longValue", true)
+                (long)ReflectGetter.get(bean, "objectMap.map.list[1].longValue", true)
         );
         assertArrayEquals(
                 new byte[]{51, 52, 53},
@@ -76,13 +76,20 @@ public class ReflectGetterTest {
                 new String[]{"a", "b", "c"},
                 ReflectGetter.<String[]>get(bean, "objectMap.ssss", true)
         );
+        //jdk 8
         assertEquals(
                 1.698f,
                 ReflectGetter.get(bean, "objectList[1].floatValue", true)
         );
+        //jdk 11
+//        assertEquals(
+//                1.698f,
+//                ReflectGetter.get(bean, "objectList[1].floatValue", true),
+//                0
+//        );
         assertEquals(
                 5453988,
-                ReflectGetter.get(bean, "objectList[2].list[0]", true)
+                (int)ReflectGetter.get(bean, "objectList[2].list[0]", true)
         );
         assertEquals(
                 "xxxx",
@@ -120,10 +127,17 @@ public class ReflectGetterTest {
                 "hello",
                 ReflectGetter.get(bean, "methodString", true)
         );
+        //jdk 8
         assertEquals(
                 5.9659554d,
                 ReflectGetter.get(bean, "methodBean.doubleValue", true)
         );
+        //jdk 11
+//        assertEquals(
+//                5.9659554d,
+//                ReflectGetter.get(bean, "methodBean.doubleValue", true),
+//                0
+//        );
     }
 
     private static Bean buildTestBean() {

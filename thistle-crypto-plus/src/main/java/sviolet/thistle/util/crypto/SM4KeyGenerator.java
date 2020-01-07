@@ -30,7 +30,7 @@ import java.security.SecureRandom;
  */
 public class SM4KeyGenerator {
 
-	public static final String KEY_ALGORITHM = "SM4";
+    public static final String KEY_ALGORITHM = "SM4";
 
     /**
      * <p>生成128位SM4对称密钥, 用于服务端场合, 产生随机密钥</p>

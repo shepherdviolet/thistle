@@ -295,7 +295,7 @@ public class RSACipher {
      * @throws IllegalBlockSizeException 无效的块大小(密码错误?)
      * @throws IOException IO错误
      */
-	public static byte[] encrypt(byte[] data, RSAPublicKey publicKey, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
+    public static byte[] encrypt(byte[] data, RSAPublicKey publicKey, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
         return BaseCipher.encryptByRSAPublicKey(data, publicKey, cryptoAlgorithm);
     }
 

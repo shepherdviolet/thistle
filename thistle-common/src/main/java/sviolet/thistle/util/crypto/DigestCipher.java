@@ -36,68 +36,68 @@ import java.io.UnsupportedEncodingException;
  */
 public class DigestCipher {
 
-	/**
-	 * 摘要类型:MD5
-	 */
-	public static final String TYPE_MD5 = "MD5";
+    /**
+     * 摘要类型:MD5
+     */
+    public static final String TYPE_MD5 = "MD5";
 
-	/**
-	 * 摘要类型:SHA1
-	 */
-	public static final String TYPE_SHA1 = "SHA1";
+    /**
+     * 摘要类型:SHA1
+     */
+    public static final String TYPE_SHA1 = "SHA1";
 
-	/**
-	 * 摘要类型:SHA256
-	 */
+    /**
+     * 摘要类型:SHA256
+     */
     public static final String TYPE_SHA256 = "SHA-256";
 
-	/**
-	 * 摘要类型:SHA-512
-	 */
-	public static final String TYPE_SHA512 = "SHA-512";
+    /**
+     * 摘要类型:SHA-512
+     */
+    public static final String TYPE_SHA512 = "SHA-512";
 
-	private static final String DEFAULT_ENCODING = "utf-8";
-	
-	/**
-	 * 摘要byte[]
-	 * 
-	 * @param bytes bytes
-	 * @param type 摘要算法
-	 * @return 摘要bytes
-	 */
-	public static byte[] digest(byte[] bytes,String type) {
-		return BaseDigestCipher.digest(bytes, type);
-	}
+    private static final String DEFAULT_ENCODING = "utf-8";
 
-	/**
-	 * 摘要字符串(.getBytes("UTF-8")), 注意抛出异常
-	 *
-	 * @param str 字符串
-	 * @param type 摘要算法
-	 * @return 摘要bytes
-	 */
-	public static byte[] digestStr(String str, String type){
-		return digestStr(str, type, DEFAULT_ENCODING);
-	}
+    /**
+     * 摘要byte[]
+     *
+     * @param bytes bytes
+     * @param type 摘要算法
+     * @return 摘要bytes
+     */
+    public static byte[] digest(byte[] bytes,String type) {
+        return BaseDigestCipher.digest(bytes, type);
+    }
 
-	/**
-	 * 摘要字符串(.getBytes(encoding))
-	 *
-	 * @param str bytes
-	 * @param type 摘要算法
-	 * @param encoding 编码方式
-	 * @return 摘要bytes
-	 */
-	public static byte[] digestStr(String str, String type, String encoding){
-		if (str == null){
-			throw new NullPointerException("[DigestCipher]digestStr: str is null");
-		}
-		try {
-			return BaseDigestCipher.digest(str.getBytes(encoding), type);
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException("[DigestCipher]Unsupported Encoding:" + encoding, e);
-		}
-	}
+    /**
+     * 摘要字符串(.getBytes("UTF-8")), 注意抛出异常
+     *
+     * @param str 字符串
+     * @param type 摘要算法
+     * @return 摘要bytes
+     */
+    public static byte[] digestStr(String str, String type){
+        return digestStr(str, type, DEFAULT_ENCODING);
+    }
+
+    /**
+     * 摘要字符串(.getBytes(encoding))
+     *
+     * @param str bytes
+     * @param type 摘要算法
+     * @param encoding 编码方式
+     * @return 摘要bytes
+     */
+    public static byte[] digestStr(String str, String type, String encoding){
+        if (str == null){
+            throw new NullPointerException("[DigestCipher]digestStr: str is null");
+        }
+        try {
+            return BaseDigestCipher.digest(str.getBytes(encoding), type);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("[DigestCipher]Unsupported Encoding:" + encoding, e);
+        }
+    }
 
     /**
      * 摘要十六进制字符串(ByteUtils.hexToBytes(hexStr))
@@ -106,40 +106,40 @@ public class DigestCipher {
      * @param type 摘要算法
      * @return 摘要bytes
      */
-	public static byte[] digestHexStr(String hexStr, String type){
-		if (hexStr == null){
-			throw new NullPointerException("[DigestCipher]digestHexStr: hexStr is null");
-		}
+    public static byte[] digestHexStr(String hexStr, String type){
+        if (hexStr == null){
+            throw new NullPointerException("[DigestCipher]digestHexStr: hexStr is null");
+        }
         return BaseDigestCipher.digest(ByteUtils.hexToBytes(hexStr), type);
-	}
+    }
 
-	/**
-	 * 摘要输入流, 处理完毕会关闭流
-	 * @param inputStream 输入流(处理完毕会关闭流)
-	 * @param type 摘要算法
-	 * @return 摘要bytes
-	 */
-	public static byte[] digestInputStream(InputStream inputStream, String type) throws IOException {
-		return BaseDigestCipher.digestInputStream(inputStream, type);
-	}
+    /**
+     * 摘要输入流, 处理完毕会关闭流
+     * @param inputStream 输入流(处理完毕会关闭流)
+     * @param type 摘要算法
+     * @return 摘要bytes
+     */
+    public static byte[] digestInputStream(InputStream inputStream, String type) throws IOException {
+        return BaseDigestCipher.digestInputStream(inputStream, type);
+    }
 
-	/**
-	 * 摘要文件, 根据运行时环境选择使用NIO或IO方式
-	 * @param file 文件
-	 * @param type 摘要算法
-	 * @return 摘要bytes
-	 */
-	public static byte[] digestFile(File file, String type) throws IOException {
-		return BaseDigestCipher.digestFile(file, type);
-	}
+    /**
+     * 摘要文件, 根据运行时环境选择使用NIO或IO方式
+     * @param file 文件
+     * @param type 摘要算法
+     * @return 摘要bytes
+     */
+    public static byte[] digestFile(File file, String type) throws IOException {
+        return BaseDigestCipher.digestFile(file, type);
+    }
 
     /**
      * 摘要文件NIO方式, 较快<br/>
-	 *
-	 * 注意:非安卓平台使用该方法前, 请使用FileUtils.isMappedByteBufferCanClean()判断MappedByteBuffer是否能被手动回收,
-	 * 如果isMappedByteBufferCanClean返回false, 建议使用digestFileIo, 否则操作后, 文件将在一段时间内无法被读写删除<br/>
-	 *
-	 * 注意:安卓平台API11以上使用, API10以下会很慢<br/>
+     *
+     * 注意:非安卓平台使用该方法前, 请使用FileUtils.isMappedByteBufferCanClean()判断MappedByteBuffer是否能被手动回收,
+     * 如果isMappedByteBufferCanClean返回false, 建议使用digestFileIo, 否则操作后, 文件将在一段时间内无法被读写删除<br/>
+     *
+     * 注意:安卓平台API11以上使用, API10以下会很慢<br/>
      *
      * @param file 文件
      * @param type 摘要算法

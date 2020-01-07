@@ -23,10 +23,7 @@ import sviolet.thistle.util.common.CloseableUtils;
 import sviolet.thistle.util.common.PlatformUtils;
 import sviolet.thistle.util.file.FileUtils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.security.MessageDigest;
@@ -131,12 +128,27 @@ public class BaseDigestCipher {
         FileInputStream inputStream = null;
         FileChannel channel = null;
         MappedByteBuffer byteBuffer = null;
+        long position = 0;
+
         try {
             inputStream = new FileInputStream(file);
             channel = inputStream.getChannel();
-            byteBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, file.length());
             MessageDigest cipher = MessageDigest.getInstance(type);
-            cipher.update(byteBuffer);
+            //handle length > Integer.MAX_VALUE
+            while (position < file.length()) {
+                long size = file.length() - position;
+                if (size > Integer.MAX_VALUE) {
+                    size = Integer.MAX_VALUE;
+                }
+                try {
+                    byteBuffer = channel.map(FileChannel.MapMode.READ_ONLY, position, size);
+                    cipher.update(byteBuffer);
+                } finally {
+                    //尝试将MappedByteBuffer回收, 解决后续文件无法被读写删除的问题
+                    FileUtils.cleanMappedByteBuffer(byteBuffer);
+                }
+                position += Integer.MAX_VALUE;
+            }
             return cipher.digest();
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("[DigestCipher]No Such Algorithm:" + type, e);
@@ -145,8 +157,6 @@ public class BaseDigestCipher {
         }finally {
             CloseableUtils.closeQuiet(inputStream);
             CloseableUtils.closeQuiet(channel);
-            //尝试将MappedByteBuffer回收, 解决后续文件无法被读写删除的问题
-            FileUtils.cleanMappedByteBuffer(byteBuffer);
         }
     }
 
@@ -158,9 +168,9 @@ public class BaseDigestCipher {
      * @return 摘要bytes
      */
     public static byte[] digestFileIo(File file, String type) throws IOException {
-        FileInputStream inputStream = null;
+        InputStream inputStream = null;
         try {
-            inputStream = new FileInputStream(file);
+            inputStream = new BufferedInputStream(new FileInputStream(file), CryptoConstants.BUFFER_SIZE << 2);
             MessageDigest cipher = MessageDigest.getInstance(type);
             byte[] buff = new byte[CryptoConstants.BUFFER_SIZE];
             int size;
