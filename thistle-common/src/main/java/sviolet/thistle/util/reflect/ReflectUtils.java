@@ -251,9 +251,13 @@ public class ReflectUtils {
      * 的, 所以无法获取到泛型具体类型
      */
     public static class TargetGenericClassNotFoundException extends Exception {
+
+        private static final long serialVersionUID = 8233374476663138140L;
+
         public TargetGenericClassNotFoundException(String message) {
             super(message);
         }
+
     }
 
     /**

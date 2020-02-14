@@ -1,7 +1,9 @@
 # Thistle 20.0.1
 
 * Comprehensive Java common library (Java7+)
-* https://github.com/shepherdviolet/thistle
+* [Github Home](https://github.com/shepherdviolet/thistle)
+* [Search in Maven Central](https://search.maven.org/search?q=g:com.github.shepherdviolet.thistle20)
+* [PGP Key](http://pool.sks-keyservers.net/pks/lookup?op=vindex&fingerprint=on&search=0x90998B78AABD6E96)
 
 # thistle-common
 
@@ -40,12 +42,12 @@ dependencies {
     <dependency>    
         <groupId>com.github.shepherdviolet.thistle20</groupId>
         <artifactId>thistle-common</artifactId>
-        <version>version</version> 
+        <version>?</version> 
     </dependency>
     <!-- thistle-crypto-plus -->
     <dependency>    
         <groupId>com.github.shepherdviolet.thistle20</groupId>
         <artifactId>thistle-crypto-plus</artifactId>
-        <version>version</version> 
+        <version>?</version> 
     </dependency>
 ```

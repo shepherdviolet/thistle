@@ -523,6 +523,8 @@ public class PurposefulBlockingMessagePool <K, I> {
      */
     public static class MessageDropException extends Exception{
 
+        private static final long serialVersionUID = 1915505356403872233L;
+
         public MessageDropException(String detailMessage) {
             super(detailMessage);
         }
@@ -533,6 +535,8 @@ public class PurposefulBlockingMessagePool <K, I> {
      * 注册等待消息数超出限制抛出异常
      */
     public static class OutOfLimitException extends Exception{
+
+        private static final long serialVersionUID = 2115724388185665168L;
 
         public OutOfLimitException(String detailMessage) {
             super(detailMessage);
@@ -545,9 +549,12 @@ public class PurposefulBlockingMessagePool <K, I> {
      */
     public static class TimeoutException extends Exception{
 
+        private static final long serialVersionUID = -1706311472131999721L;
+
         public TimeoutException(String detailMessage) {
             super(detailMessage);
         }
+
     }
 
 }

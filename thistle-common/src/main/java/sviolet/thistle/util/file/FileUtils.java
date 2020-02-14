@@ -238,9 +238,13 @@ public class FileUtils {
      * 文件长度超过限制
      */
     public static class LengthOutOfLimitException extends Exception {
+
+        private static final long serialVersionUID = -28200503942475448L;
+
         public LengthOutOfLimitException(String message) {
             super(message);
         }
+
     }
 
     /**

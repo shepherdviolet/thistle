@@ -26,6 +26,8 @@ package sviolet.thistle.x.util.trace;
  */
 public class InvalidBatonException extends Exception {
 
+    private static final long serialVersionUID = -1729806806481330924L;
+
     public InvalidBatonException(String message) {
         super(message);
     }

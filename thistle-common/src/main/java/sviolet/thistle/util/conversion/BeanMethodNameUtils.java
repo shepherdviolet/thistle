@@ -69,13 +69,13 @@ public class BeanMethodNameUtils {
             if (methodName.length() == 3) {
                 return null;
             }
-            char[] fieldNameChars = methodName.substring(3, methodName.length()).toCharArray();
+            char[] fieldNameChars = methodName.substring(3).toCharArray();
             if (fieldNameChars[0] > 64 && fieldNameChars[0] < 91) {
                 fieldNameChars[0] += 32;
             }
             return String.valueOf(fieldNameChars);
         } else if (methodName.startsWith("is")) {
-            char[] fieldNameChars = methodName.substring(2, methodName.length()).toCharArray();
+            char[] fieldNameChars = methodName.substring(2).toCharArray();
             if (fieldNameChars[0] > 64 && fieldNameChars[0] < 91) {
                 fieldNameChars[0] += 32;
             }

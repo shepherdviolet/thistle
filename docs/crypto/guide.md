@@ -227,12 +227,12 @@ dependencies {
     <dependency>    
         <groupId>com.github.shepherdviolet.thistle20</groupId>
         <artifactId>thistle-common</artifactId>
-        <version>version</version> 
+        <version>?</version> 
     </dependency>
     <!-- Advanced crypto utils -->
     <dependency>    
         <groupId>com.github.shepherdviolet.thistle20</groupId>
         <artifactId>thistle-crypto-plus</artifactId>
-        <version>version</version> 
+        <version>?</version> 
     </dependency>
 ```

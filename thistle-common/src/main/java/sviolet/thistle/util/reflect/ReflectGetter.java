@@ -624,6 +624,7 @@ public class ReflectGetter {
      * 类型不匹配异常
      */
     public static class TypeNotMatchException extends Exception{
+        private static final long serialVersionUID = -1320649019170185133L;
         public TypeNotMatchException(String message) {
             super(message);
         }
@@ -633,6 +634,7 @@ public class ReflectGetter {
      * 数组越界异常
      */
     public static class OutOfBoundException extends Exception{
+        private static final long serialVersionUID = 7582276186625326816L;
         public OutOfBoundException(String message) {
             super(message);
         }
@@ -642,6 +644,7 @@ public class ReflectGetter {
      * Bean对象中成员变量或Getter方法不存在
      */
     public static class FieldNotFoundException extends Exception {
+        private static final long serialVersionUID = -1216738558046238249L;
         public FieldNotFoundException(String message) {
             super(message);
         }
@@ -651,6 +654,7 @@ public class ReflectGetter {
      * Bean对象通过反射取值时异常
      */
     public static class ReflectException extends Exception {
+        private static final long serialVersionUID = 2534544438666088680L;
         public ReflectException(String message) {
             super(message);
         }
@@ -663,6 +667,7 @@ public class ReflectGetter {
      * 非法键路径异常
      */
     public static class IllegalKeyPathException extends Exception {
+        private static final long serialVersionUID = -360819106527518480L;
         public IllegalKeyPathException(String message) {
             super(message);
         }

@@ -28,7 +28,7 @@ import java.util.Map;
  */
 public class PollGettingMap {
 
-    private Map[] maps;
+    private Map<?, ?>[] maps;
     private String[] keyPrefixes;
     private ParseExceptionHandler exceptionHandler;
 
@@ -37,12 +37,12 @@ public class PollGettingMap {
      * @param leadingMap 第一个Map, 优先级最高
      * @param followingMaps 其他的Map
      */
-    public PollGettingMap(Map leadingMap, Map... followingMaps) {
+    public PollGettingMap(Map<?, ?> leadingMap, Map<?, ?>... followingMaps) {
         if (leadingMap == null) {
             throw new NullPointerException("leadingMap is null");
         }
         if (followingMaps != null) {
-            for (Map map : followingMaps) {
+            for (Map<?, ?> map : followingMaps) {
                 if (map == null) {
                     throw new NullPointerException("one of followingMaps is null");
                 }
@@ -199,6 +199,8 @@ public class PollGettingMap {
      * 当value解析为所需类型失败时抛出的异常
      */
     public static class ParseException extends RuntimeException {
+
+        private static final long serialVersionUID = -4994726574086562336L;
 
         public ParseException(String message) {
             super(message);

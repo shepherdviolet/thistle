@@ -26,6 +26,8 @@ package sviolet.thistle.entity.exception;
  */
 public class IllegalParamException extends Exception {
 
+    private static final long serialVersionUID = 4934066899733108486L;
+
     public IllegalParamException() {
     }
 

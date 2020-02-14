@@ -447,6 +447,8 @@ public class SimpleKeyValueEncoder {
 
     public static class DecodeException extends Exception {
 
+        private static final long serialVersionUID = 202454797847050441L;
+
         public DecodeException(String message) {
             super(message);
         }

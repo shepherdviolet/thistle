@@ -21,6 +21,8 @@ package sviolet.thistle.util.crypto.base;
 
 public class CommonCryptoException extends Exception {
 
+    private static final long serialVersionUID = 8038182466952157389L;
+
     public CommonCryptoException(String message) {
         super(message);
     }
