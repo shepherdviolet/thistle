@@ -27,7 +27,7 @@ import java.util.Arrays;
 public class ReflectUtilsTest {
 
     @Test
-    public void getActualType() throws ReflectUtils.TargetGenericClassNotFoundException {
+    public void getActualClasses() throws ReflectUtils.TargetGenericClassNotFoundException {
         Assert.assertEquals("[class java.lang.Integer]",
                 Arrays.toString(ReflectUtils.getGenericClasses(C3.class, I1.class)));
         Assert.assertEquals("[class java.lang.Object]",
@@ -41,6 +41,29 @@ public class ReflectUtilsTest {
                 Arrays.toString(ReflectUtils.getGenericClasses(C1.class, I3.class)));
         Assert.assertEquals("[class java.lang.Object, class java.lang.Object, class java.lang.Integer]",
                 Arrays.toString(ReflectUtils.getGenericClasses(C2.class, C1.class)));
+    }
+
+    @Test
+    public void getActualTypes() throws ReflectUtils.TargetGenericClassNotFoundException {
+        Assert.assertEquals("[class java.lang.Integer]",
+                Arrays.toString(ReflectUtils.getGenericTypes(C3.class, I1.class)));
+        Assert.assertEquals("[class java.lang.Object]",
+                Arrays.toString(ReflectUtils.getGenericTypes(C3.class, I2.class)));
+        Assert.assertEquals("[class java.lang.Double, class java.lang.Integer]",
+                Arrays.toString(ReflectUtils.getGenericTypes(C3.class, I3.class)));
+        Assert.assertEquals("[class java.lang.Long, class java.lang.Float, class java.lang.Double]",
+                Arrays.toString(ReflectUtils.getGenericTypes(C3.class, C2.class)));
+
+        Assert.assertEquals("[class java.lang.Object, class java.lang.Object]",
+                Arrays.toString(ReflectUtils.getGenericTypes(C1.class, I3.class)));
+        Assert.assertEquals("[class java.lang.Object, class java.lang.Object, class java.lang.Integer]",
+                Arrays.toString(ReflectUtils.getGenericTypes(C2.class, C1.class)));
+    }
+
+    @Test
+    public void getMethodCaller(){
+        Assert.assertEquals("MethodCaller{callerClass='sun.reflect.NativeMethodAccessorImpl', callerMethodName='invoke0'}",
+                String.valueOf(ReflectUtils.getMethodCaller(null, null)));
     }
 
     public interface I0 {
