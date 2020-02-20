@@ -23,192 +23,219 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 /**
- * 时间工具
+ * Date time utils (JDK7)
  * 
- * @author S.Violet ()
- *
+ * @author S.Violet
  */
-
 public class DateTimeUtils {
 
-    /**************************************************
-     * 获得当前日期相关
+    // Current ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Current date string, yyyy-MM-dd
      */
+    public static String currentDateString(){
+        return currentDateTimeString("yyyy-MM-dd", null, null);
+    }
 
-    private static ThreadLocal<SimpleDateFormat> defaultDateFormat = new ThreadLocal<>();
-    private static ThreadLocal<SimpleDateFormat> defaultTimeFormat = new ThreadLocal<>();
-    private static ThreadLocal<SimpleDateFormat> defaultDateTimeFormat = new ThreadLocal<>();
+    /**
+     * Current time string, HH:mm:ss.SSS
+     */
+    public static String currentTimeString(){
+        return currentDateTimeString("HH:mm:ss.SSS", null, null);
+    }
 
-    private static SimpleDateFormat getDefaultDateFormat(){
-        SimpleDateFormat format = defaultDateFormat.get();
-        if (format == null) {
-            format = new SimpleDateFormat("yyyy-MM-dd", Locale.SIMPLIFIED_CHINESE);
-            defaultDateFormat.set(format);
+    /**
+     * Current date time string, yyyy-MM-dd HH:mm:ss.SSS
+     */
+    public static String currentDateTimeString(){
+        return currentDateTimeString("yyyy-MM-dd HH:mm:ss.SSS", null, null);
+    }
+
+    /**
+     * Current date time string, custom format
+     *
+     * @param template date string format
+     */
+    public static String currentDateTimeString(String template){
+        return currentDateTimeString(template, null, null);
+    }
+
+    /**
+     * Current date time string, custom format
+     *
+     * @param template date string format
+     * @param locale Locale, nullable, e.g. Locale.SIMPLIFIED_CHINESE
+     * @param timeZone TimeZone, nullable, e.g. TimeZone.getTimeZone("GMT+08:00")
+     */
+    public static String currentDateTimeString(String template, Locale locale, TimeZone timeZone){
+        SimpleDateFormat formatter = new SimpleDateFormat(template, locale != null ? locale : Locale.getDefault(Locale.Category.FORMAT));
+        if (timeZone != null) {
+            formatter.setTimeZone(timeZone);
         }
-        return format;
-    }
-
-    private static SimpleDateFormat getDefaultTimeFormat(){
-        SimpleDateFormat format = defaultTimeFormat.get();
-        if (format == null) {
-            format = new SimpleDateFormat("HH:mm:ss.SSS", Locale.SIMPLIFIED_CHINESE);
-            defaultTimeFormat.set(format);
-        }
-        return format;
-    }
-
-    private static SimpleDateFormat getDefaultDateTimeFormat(){
-        SimpleDateFormat format = defaultDateTimeFormat.get();
-        if (format == null) {
-            format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", Locale.SIMPLIFIED_CHINESE);
-            defaultDateTimeFormat.set(format);
-        }
-        return format;
+        return formatter.format(new Date());
     }
 
     /**
-     * 获得当前日期
-     */
-    public static String getDate(){
-        return getDefaultDateFormat().format(new Date());
-    }
-
-    /**
-     * 获得当前时间
-     */
-    public static String getTime(){
-        return getDefaultTimeFormat().format(new Date());
-    }
-
-    /**
-     * 获得当前日期和时间
-     */
-    public static String getDateTime(){
-        return getDefaultDateTimeFormat().format(new Date());
-    }
-
-    /**
-     * 获得指定格式的时间
-     * @param template 格式
-     */
-    public static String getDateTime(String template){
-        SimpleDateFormat format = new SimpleDateFormat(template, Locale.SIMPLIFIED_CHINESE);
-        return format.format(new Date());
-    }
-
-    /**
-     * 得到当前毫秒值
+     * Current time millis
      */
     public static long getCurrentTimeMillis(){
         return System.currentTimeMillis();
     }
 
     /**
-     * 获得当前纳秒时间, 该时间仅用于计算程序经过时间, 不保证精确
+     * Current nano time, can only be used to measure elapsed time and is not related to any other notion of
+     * system or wall-clock time
      */
     public static long getNanoTime(){
         return System.nanoTime();
     }
 
-    /*************************************************
-     * 指定时间相关
-     */
+    // Millis / Date to date string //////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * 根据timeMillis获得日期
+     * Millis to date string, yyyy-MM-dd
      */
-    public static String getDate(long timeMillis){
-        return SimpleDateFormat.getDateInstance().format(new Date(timeMillis));
+    public static String millisToDateString(long timeMillis){
+        return millisToDateTimeString(timeMillis, "yyyy-MM-dd", null, null);
     }
 
     /**
-     * 根据timeMillis获得时间
+     * Millis to time string, HH:mm:ss.SSS
      */
-    public static String getTime(long timeMillis){
-        return SimpleDateFormat.getTimeInstance().format(new Date(timeMillis));
+    public static String millisToTimeString(long timeMillis){
+        return millisToDateTimeString(timeMillis, "HH:mm:ss.SSS", null, null);
     }
 
     /**
-     * 根据timeMillis获得日期和时间
+     * Millis to date time string, yyyy-MM-dd HH:mm:ss.SSS
      */
-    public static String getDateTime(long timeMillis){
-        return SimpleDateFormat.getDateTimeInstance().format(new Date(timeMillis));
+    public static String millisToDateTimeString(long timeMillis){
+        return millisToDateTimeString(timeMillis, "yyyy-MM-dd HH:mm:ss.SSS", null, null);
     }
 
     /**
-     * 根据timeMillis获得指定格式的时间
-     * @param template 格式
+     * Millis to date time string, custom format
+     *
+     * @param template date string format
      */
-    public static String getDateTime(String template, long timeMillis){
-        SimpleDateFormat format = new SimpleDateFormat(template, Locale.SIMPLIFIED_CHINESE);
-        return format.format(new Date(timeMillis));
+    public static String millisToDateTimeString(long timeMillis, String template){
+        return millisToDateTimeString(timeMillis, template, null, null);
     }
 
     /**
-     * 根据Date获得日期
+     * Millis to date time string, custom format
+     *
+     * @param template date string format
+     * @param locale Locale, nullable, e.g. Locale.SIMPLIFIED_CHINESE
+     * @param timeZone TimeZone, nullable, e.g. TimeZone.getTimeZone("GMT+08:00")
      */
-    public static String getDate(Date date){
-        return SimpleDateFormat.getDateInstance().format(date);
+    public static String millisToDateTimeString(long timeMillis, String template, Locale locale, TimeZone timeZone){
+        SimpleDateFormat formatter = new SimpleDateFormat(template, locale != null ? locale : Locale.getDefault(Locale.Category.FORMAT));
+        if (timeZone != null) {
+            formatter.setTimeZone(timeZone);
+        }
+        return formatter.format(new Date(timeMillis));
     }
 
     /**
-     * 根据Date获得时间
+     * Date to date string, yyyy-MM-dd
      */
-    public static String getTime(Date date){
-        return SimpleDateFormat.getTimeInstance().format(date);
+    public static String dateToDateString(Date date){
+        return dateToDateTimeString(date, "yyyy-MM-dd", null, null);
     }
 
     /**
-     * 根据Date获得日期和时间
+     * Date to time string, HH:mm:ss.SSS
      */
-    public static String getDateTime(Date date){
-        return SimpleDateFormat.getDateTimeInstance().format(date);
+    public static String dateToTimeString(Date date){
+        return dateToDateTimeString(date, "HH:mm:ss.SSS", null, null);
     }
 
     /**
-     * 根据Date获得指定格式的时间
-     * @param template 格式
+     * Date to date time string, yyyy-MM-dd HH:mm:ss.SSS
      */
-    public static String getDateTime(String template, Date date){
-        SimpleDateFormat format = new SimpleDateFormat(template, Locale.SIMPLIFIED_CHINESE);
-        return format.format(date);
-    }
-
-    /*******************************************
-     *  String转换为日期
-     */
-
-    /**
-     * 将字符串按格式转换为Date
-     * @param dateStr 日期字符串
-     * @param pattern 格式, 例如yyyy-MM-dd HH-mm-ss
-     * @throws ParseException
-     */
-    public static Date parseDate(String dateStr, String pattern) throws ParseException {
-        SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.SIMPLIFIED_CHINESE);
-        return format.parse(dateStr);
+    public static String dateToDateTimeString(Date date){
+        return dateToDateTimeString(date, "yyyy-MM-dd HH:mm:ss.SSS", null, null);
     }
 
     /**
-     * 将字符串按格式转换为Date, 若转换异常则返回fallback值
-     * @param dateStr 日期字符串
-     * @param pattern 格式, 例如yyyy-MM-dd HH-mm-ss
-     * @param fallback 若转换异常则返回该值
+     * Date to date time string, custom format
+     *
+     * @param template date string format
      */
-    public static Date parseDate(String dateStr, String pattern, Date fallback) {
-        SimpleDateFormat format = new SimpleDateFormat(pattern, Locale.SIMPLIFIED_CHINESE);
+    public static String dateToDateTimeString(Date date, String template){
+        return dateToDateTimeString(date, template, null, null);
+    }
+
+    /**
+     * Date to date time string, custom format
+     *
+     * @param template date string format
+     * @param locale Locale, nullable, e.g. Locale.SIMPLIFIED_CHINESE
+     * @param timeZone TimeZone, nullable, e.g. TimeZone.getTimeZone("GMT+08:00")
+     */
+    public static String dateToDateTimeString(Date date, String template, Locale locale, TimeZone timeZone){
+        SimpleDateFormat formatter = new SimpleDateFormat(template, locale != null ? locale : Locale.getDefault(Locale.Category.FORMAT));
+        if (timeZone != null) {
+            formatter.setTimeZone(timeZone);
+        }
+        return formatter.format(date);
+    }
+
+    // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Date string to Date
+     * @param dateStr Date string
+     * @param pattern Date format, e.g. yyyy-MM-dd HH-mm-ss
+     */
+    public static Date stringToDate(String dateStr, String pattern) throws ParseException {
+        return stringToDate(dateStr, pattern, null, null);
+    }
+
+    /**
+     * Date string to Date
+     * @param dateStr Date string
+     * @param pattern Date format, e.g. yyyy-MM-dd HH-mm-ss
+     * @param locale Locale, e.g. Locale.SIMPLIFIED_CHINESE
+     * @param timeZone TimeZone, nullable, e.g. TimeZone.getTimeZone("GMT+08:00")
+     */
+    public static Date stringToDate(String dateStr, String pattern, Locale locale, TimeZone timeZone) throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat(pattern, locale != null ? locale : Locale.getDefault(Locale.Category.FORMAT));
+        if (timeZone != null) {
+            formatter.setTimeZone(timeZone);
+        }
+        return formatter.parse(dateStr);
+    }
+
+    /**
+     * Date string to Date, return fallback if fails
+     * @param dateStr Date string
+     * @param pattern Date format, e.g. yyyy-MM-dd HH-mm-ss
+     * @param fallback return this if fails
+     */
+    public static Date stringToDate(String dateStr, String pattern, Date fallback) {
+        return stringToDate(dateStr, pattern, fallback, null, null);
+    }
+
+    /**
+     * Date string to Date, return fallback if fails
+     * @param dateStr Date string
+     * @param pattern Date format, e.g. yyyy-MM-dd HH-mm-ss
+     * @param fallback return this if fails
+     * @param locale Locale, e.g. Locale.SIMPLIFIED_CHINESE
+     * @param timeZone TimeZone, nullable, e.g. TimeZone.getTimeZone("GMT+08:00")
+     */
+    public static Date stringToDate(String dateStr, String pattern, Date fallback, Locale locale, TimeZone timeZone) {
         try {
-            return format.parse(dateStr);
+            return stringToDate(dateStr, pattern, locale, timeZone);
         } catch (ParseException e) {
             return fallback;
         }
     }
-
-    /********************************************
-     * 日期计算
-     */
-
 
 }

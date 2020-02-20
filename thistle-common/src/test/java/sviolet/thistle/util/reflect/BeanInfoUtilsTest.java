@@ -49,6 +49,16 @@ public class BeanInfoUtilsTest {
 //        System.out.println(stringBuilder.toString());
     }
 
+    public static void main(String[] args) throws IntrospectionException {
+        Map<String, BeanInfoUtils.PropertyInfo> propertyInfos = null;
+        long time = System.currentTimeMillis();
+        for (int i = 0 ; i < 10000 ; i++) {
+            propertyInfos = BeanInfoUtils.getPropertyInfos(Bean2.class, true);
+        }
+        System.out.println(System.currentTimeMillis() - time);
+        System.out.println(propertyInfos);
+    }
+
     public static class Bean0 <A, B, C, D, E> {
 
         public A getA(){

@@ -27,8 +27,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Bean info utils
@@ -37,17 +39,53 @@ import java.util.Map;
  */
 public class BeanInfoUtils {
 
+    private static final Map<Class<?>, Object> CACHE = new ConcurrentHashMap<>(128);
+
     /**
-     * Get property info of Java Bean, No cache
+     * Get property info of Java Bean, With cache
      *
      * @param beanClass Bean class
      * @throws IntrospectionException Inspect error
      */
     public static Map<String, PropertyInfo> getPropertyInfos(Class<?> beanClass) throws IntrospectionException {
+        return getPropertyInfos(beanClass, true);
+    }
+
+    /**
+     * Get property info of Java Bean
+     *
+     * @param beanClass Bean class
+     * @param cacheEnabled Is cache enabled
+     * @throws IntrospectionException Inspect error
+     */
+    public static Map<String, PropertyInfo> getPropertyInfos(Class<?> beanClass, boolean cacheEnabled) throws IntrospectionException {
         if (beanClass == null) {
             throw new NullPointerException("beanClass is null");
         }
 
+        if (!cacheEnabled) {
+            return getPropertyInfos0(beanClass);
+        }
+
+        Object propertyInfos = CACHE.get(beanClass);
+        if (propertyInfos == null) {
+            try {
+                propertyInfos = getPropertyInfos0(beanClass);
+                propertyInfos = Collections.unmodifiableMap((Map<?, ?>) propertyInfos);
+            } catch (IntrospectionException e) {
+                propertyInfos = e;
+            }
+            CACHE.put(beanClass, propertyInfos);
+        }
+
+        if (propertyInfos instanceof IntrospectionException) {
+            throw (IntrospectionException) propertyInfos;
+        }
+
+        return (Map<String, PropertyInfo>) propertyInfos;
+    }
+
+    private static Map<String, PropertyInfo> getPropertyInfos0(Class<?> beanClass) throws IntrospectionException {
         BeanInfo beanInfo = Introspector.getBeanInfo(beanClass, Object.class);
         PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
         Map<String, PropertyInfo> propertyInfos = new HashMap<>(propertyDescriptors.length << 1);
@@ -85,8 +123,12 @@ public class BeanInfoUtils {
             } else if (!isAcceptedType(propertyType)) {
                 propertyType = propertyClass;
             }
-            propertyInfos.put(propertyDescriptor.getName(), new PropertyInfo(
-                    propertyDescriptor.getName(),
+            String propertyName = propertyDescriptor.getName();
+            if (propertyName != null) {
+                propertyName = propertyName.intern();
+            }
+            propertyInfos.put(propertyName, new PropertyInfo(
+                    propertyName,
                     propertyClass,
                     propertyType,
                     readMethod,

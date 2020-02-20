@@ -272,4 +272,30 @@ public class GenericClassUtils {
 
     }
 
+    // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Type转Class.
+     *
+     * null -> null
+     * Class -> input
+     * ParameterizedType -> input.getRawType()
+     * Else -> Object.class
+     *
+     * @param type Type
+     * @return Class
+     */
+    public static Class<?> typeToRawClass(Type type) {
+        if (type == null) {
+            return null;
+        }
+        if (type instanceof Class) {
+            return (Class<?>) type;
+        }
+        if (type instanceof ParameterizedType) {
+            return (Class<?>) ((ParameterizedType) type).getRawType();
+        }
+        return Object.class;
+    }
+
 }
