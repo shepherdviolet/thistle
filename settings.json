@@ -1,7 +1,8 @@
 {
   "library": [
     "thistle-common",
-    "thistle-crypto-plus"
+    "thistle-crypto-plus",
+    "thistle-trace"
   ],
   "bom": [
     "thistle-bom"
