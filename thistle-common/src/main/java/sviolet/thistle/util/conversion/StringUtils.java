@@ -23,6 +23,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -191,6 +192,46 @@ public class StringUtils {
             result.add(trimmed);
         }
         return result;
+    }
+
+    /**
+     * 裁切字符串, 使得它的UTF-8编码字节长度小于指定值 (尾部裁切)
+     *
+     * @param string 字符串
+     * @param toLength 指定字节长度
+     * @return UTF-8编码字节长度不大于toLength的字符串 (尾部裁切)
+     */
+    public static String truncateByUtf8ByteLength(String string, int toLength){
+        if (string == null) {
+            return null;
+        }
+        if (toLength <= 0) {
+            return "";
+        }
+        // Assume 4 bytes per char
+        if ((string.length() << 2) <= toLength) {
+            return string;
+        }
+        // To UTF-8 byte array
+        byte[] bytes = string.getBytes(StandardCharsets.UTF_8);
+        if (bytes.length <= toLength) {
+            return string;
+        }
+        // The char after last one
+        int i = toLength;
+        int flag = bytes[i] & 0b11000000;
+        if (flag != 0b10000000) {
+            // The char after last one is [0xxxxxxx : One byte char] or [11xxxxxx : Head of multiple byte char]
+            return new String(bytes, 0, toLength, StandardCharsets.UTF_8);
+        }
+        // The char after last one is [10xxxxxx : Body of multiple byte char] looking for the head
+        while (--i > 0) {
+            if ((bytes[i] & 0b11000000) == 0b11000000) {
+                // Meet [11xxxxxx : Head of multiple byte char] (0xxxxxxx is impossible here)
+                return new String(bytes, 0, i, StandardCharsets.UTF_8);
+            }
+        }
+        return "";
     }
 
 }
