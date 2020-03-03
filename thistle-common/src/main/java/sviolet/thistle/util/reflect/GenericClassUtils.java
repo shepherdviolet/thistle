@@ -19,6 +19,7 @@
 
 package sviolet.thistle.util.reflect;
 
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -59,27 +60,44 @@ public class GenericClassUtils {
      *     Class<?> rawClass = AopProxyUtils.ultimateTargetClass(bean);
      * </pre>
      *
-     * @param clazz 类
+     * @param type 类
      * @param targetGenericClass 泛型定义类, 指定要获取的泛型定义在哪个类/接口
-     * @return 不为空, NonNull, 类型:Class
+     * @return 不为空, NonNull, 类型: Class
      * @throws TargetGenericClassNotFoundException 异常情况: 给定类的父类或接口中找不到泛型定义类
      */
-    public static Map<String, Class<?>> getActualClasses(Class<?> clazz, Class<?> targetGenericClass) throws TargetGenericClassNotFoundException {
-        if (clazz == null) {
-            throw new NullPointerException("clazz is null");
-        }
-        if (targetGenericClass == null) {
-            throw new NullPointerException("targetGenericClass is null");
-        }
+    public static Map<String, Class<?>> getActualClasses(Type type, Class<?> targetGenericClass) throws TargetGenericClassNotFoundException {
+        //检查
+        checkInput(type, targetGenericClass);
         if (targetGenericClass.getTypeParameters().length <= 0) {
             return new LinkedHashMap<>();
         }
-        //当前类 / 当前类对于子类的泛型对象 / 指定要获取的泛型定义在哪个类/接口 / 是否转成Class
-        Type[] actualTypes = getActualTypes0(clazz, null, targetGenericClass, true);
+
+        //如果是数组类型/泛型数组类型(T[]), 脱壳处理
+        Type componentType = getComponentType(type);
+        Type[] actualTypes;
+        if (componentType instanceof Class) {
+            //当前类 / 当前类对于子类的泛型对象 / 指定要获取的泛型定义在哪个类/接口 / 是否转成Class
+            actualTypes = getActualTypes0((Class<?>) componentType, null, targetGenericClass, true);
+        } else if (componentType instanceof ParameterizedType) {
+            //当前类 / 当前类对于子类的泛型对象 / 指定要获取的泛型定义在哪个类/接口 / 是否转成Class
+            actualTypes = getActualTypes0((Class<?>) ((ParameterizedType) componentType).getRawType(), componentType, targetGenericClass, true);
+        } else {
+            //不可能找到指定泛型类
+            throw new TargetGenericClassNotFoundException("The targetGenericClass '" + targetGenericClass.getName() +
+                    "' was not found in the super classes or interfaces of given type '" + type +
+                    "', We can only handle Class and ParameterizedType");
+        }
+
+        //没找到指定泛型类
         if (actualTypes == null) {
             throw new TargetGenericClassNotFoundException("The targetGenericClass '" + targetGenericClass.getName() +
-                    "' was not found in the super classes or interfaces of given class " + clazz.getName());
+                    "' was not found in the super classes or interfaces of given type '" + type + "'");
         }
+
+        //过滤结果
+        filterActualTypes(actualTypes, true);
+
+        //组装结果
         Map<String, Class<?>> actualTypeMap = new LinkedHashMap<>();
         TypeVariable<?>[] typeVariables = targetGenericClass.getTypeParameters();
         for (int i = 0 ; i < actualTypes.length ; i++) {
@@ -115,27 +133,44 @@ public class GenericClassUtils {
      *     Class<?> rawClass = AopProxyUtils.ultimateTargetClass(bean);
      * </pre>
      *
-     * @param clazz 类
+     * @param type 类
      * @param targetGenericClass 泛型定义类, 指定要获取的泛型定义在哪个类/接口
-     * @return 不为空, NonNull, 类型:Class/ParameterizedType, 返回null表示未找到指定的声明泛型的类
+     * @return 不为空, NonNull, 类型: Class/ParameterizedType, 返回null表示未找到指定的声明泛型的类, 暂不支持GenericArrayType
      * @throws TargetGenericClassNotFoundException 异常情况: 给定类的父类或接口中找不到泛型定义类
      */
-    public static Map<String, Type> getActualTypes(Class<?> clazz, Class<?> targetGenericClass) throws TargetGenericClassNotFoundException {
-        if (clazz == null) {
-            throw new NullPointerException("clazz is null");
-        }
-        if (targetGenericClass == null) {
-            throw new NullPointerException("targetGenericClass is null");
-        }
+    public static Map<String, Type> getActualTypes(Type type, Class<?> targetGenericClass) throws TargetGenericClassNotFoundException {
+        //检查
+        checkInput(type, targetGenericClass);
         if (targetGenericClass.getTypeParameters().length <= 0) {
             return new LinkedHashMap<>();
         }
-        //当前类 / 当前类对于子类的泛型对象 / 指定要获取的泛型定义在哪个类/接口 / 是否转成Class
-        Type[] actualTypes = getActualTypes0(clazz, null, targetGenericClass, false);
+
+        //如果是数组类型/泛型数组类型(T[]), 脱壳处理
+        Type componentType = getComponentType(type);
+        Type[] actualTypes;
+        if (componentType instanceof Class) {
+            //当前类 / 当前类对于子类的泛型对象 / 指定要获取的泛型定义在哪个类/接口 / 是否转成Class
+            actualTypes = getActualTypes0((Class<?>) componentType, null, targetGenericClass, false);
+        } else if (componentType instanceof ParameterizedType) {
+            //当前类 / 当前类对于子类的泛型对象 / 指定要获取的泛型定义在哪个类/接口 / 是否转成Class
+            actualTypes = getActualTypes0((Class<?>) ((ParameterizedType) componentType).getRawType(), componentType, targetGenericClass, false);
+        } else {
+            //不可能找到指定泛型类
+            throw new TargetGenericClassNotFoundException("The targetGenericClass '" + targetGenericClass.getName() +
+                    "' was not found in the super classes or interfaces of given type '" + type +
+                    "', We can only handle Class and ParameterizedType");
+        }
+
+        //没找到指定泛型类
         if (actualTypes == null) {
             throw new TargetGenericClassNotFoundException("The targetGenericClass '" + targetGenericClass.getName() +
-                    "' was not found in the super classes or interfaces of given class " + clazz.getName());
+                    "' was not found in the super classes or interfaces of given type '" + type + "'");
         }
+
+        //过滤结果
+        filterActualTypes(actualTypes, false);
+
+        //组装结果
         Map<String, Type> actualTypeMap = new LinkedHashMap<>();
         TypeVariable<?>[] typeVariables = targetGenericClass.getTypeParameters();
         for (int i = 0 ; i < actualTypes.length ; i++) {
@@ -144,6 +179,69 @@ public class GenericClassUtils {
         return actualTypeMap;
     }
 
+    /**
+     * 输入检查
+     */
+    private static void checkInput(Type type, Class<?> targetGenericClass) {
+        if (type == null) {
+            throw new NullPointerException("clazz is null");
+        }
+        if (targetGenericClass == null) {
+            throw new NullPointerException("targetGenericClass is null");
+        }
+        if (targetGenericClass.isArray()) {
+            throw new IllegalArgumentException("targetGenericClass is an array Class");
+        }
+    }
+
+    /**
+     * 如果是数组, 或者泛型数组(T[]), 脱壳处理
+     */
+    private static Type getComponentType(Type type) {
+        if (type instanceof Class) {
+            // 如果是数组类型的话, 脱壳得到类
+            Class<?> componentType = (Class<?>) type;
+            while (componentType.isArray()) {
+                componentType = componentType.getComponentType();
+            }
+            return componentType;
+        }
+        if (type instanceof GenericArrayType) {
+            // 如果是泛型数组类型(例如: T[])的话, 脱壳得到T
+            Type componentType = ((GenericArrayType) type).getGenericComponentType();
+            while (componentType instanceof GenericArrayType) {
+                componentType = ((GenericArrayType) componentType).getGenericComponentType();
+            }
+            return componentType;
+        }
+        return type;
+    }
+
+    /**
+     * 过滤结果
+     */
+    private static void filterActualTypes(Type[] actualTypes, boolean preferRawClass) {
+        for (int i = 0 ; i < actualTypes.length ; i++) {
+            Type type = actualTypes[i];
+            if (type instanceof TypeVariable) {
+                //到最后还是没有找到实际类型的话, 就视为Object.class
+                actualTypes[i] = Object.class;
+            } else if (type instanceof ParameterizedType) {
+                //可以选择转成Class
+                if (preferRawClass) {
+                    actualTypes[i] = ((ParameterizedType) type).getRawType();
+                }
+            } else if (!(type instanceof Class)){
+                //其他类型均视为Object.class
+                //未实现的情况: GenericArrayType, 泛型实际类型是一个数组类型, 例如: <Bean[]>. 这个如果要实现, 得脱壳以后, 再创建一个GenericArrayType, 得复制GenericArrayTypeImpl的源码.
+                actualTypes[i] = Object.class;
+            }
+        }
+    }
+
+    /**
+     * 递归主逻辑
+     */
     private static Type[] getActualTypes0(Class<?> currentClass, Type currentGenericType, Class<?> targetGenericClass, boolean preferRawClass) {
         Type[] actualTypes = null;
 
@@ -249,7 +347,8 @@ public class GenericClassUtils {
                         actualTypes[i] = ((ParameterizedType) type).getRawType();
                     }
                 } else if (!(type instanceof Class)){
-                    //特殊: 遇到奇怪的Type类型, 一般不会出现这种情况, 这里简单的将类型赋值为Object
+                    //其他类型均视为Object.class
+                    //未实现的情况: GenericArrayType, 泛型实际类型是一个数组类型, 例如: <Bean[]>. 这个如果要实现, 得脱壳以后, 再创建一个GenericArrayType, 得复制GenericArrayTypeImpl的源码.
                     actualTypes[i] = Object.class;
                 }
             }
@@ -277,11 +376,6 @@ public class GenericClassUtils {
     /**
      * Type转Class.
      *
-     * null -> null
-     * Class -> input
-     * ParameterizedType -> input.getRawType()
-     * Else -> Object.class
-     *
      * @param type Type
      * @return Class
      */
@@ -289,13 +383,37 @@ public class GenericClassUtils {
         if (type == null) {
             return null;
         }
-        if (type instanceof Class) {
-            return (Class<?>) type;
+        // 如果是泛型数组类型(例如: T[])的话, 脱壳得到T
+        Type componentType = type;
+        int arrayDepth = 0;
+        while (componentType instanceof GenericArrayType) {
+            componentType = ((GenericArrayType) componentType).getGenericComponentType();
+            arrayDepth++;
         }
-        if (type instanceof ParameterizedType) {
-            return (Class<?>) ((ParameterizedType) type).getRawType();
+        // Type 转 Class
+        Class<?> componentClass;
+        if (componentType instanceof Class) {
+            componentClass = (Class<?>) componentType;
+        } else if (componentType instanceof ParameterizedType) {
+            componentClass = (Class<?>) ((ParameterizedType) componentType).getRawType();
+        } else {
+            componentClass = Object.class;
         }
-        return Object.class;
+        // 如果不是泛型数组类型, 直接返回
+        if (arrayDepth <= 0) {
+            return componentClass;
+        }
+        // 如果是泛型数组类型, 再转成数组类型
+        StringBuilder prefix = new StringBuilder("[");
+        for (int i = 1; i < arrayDepth; i++) {
+            prefix.append("[");
+        }
+        try {
+            return Class.forName(prefix.toString() + "L" + componentClass.getName() + ";");
+        } catch (ClassNotFoundException e) {
+            // 一般不会报错的, 因为componentClass存在
+            throw new RuntimeException("Error while creating array Class", e);
+        }
     }
 
 }

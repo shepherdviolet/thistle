@@ -19,14 +19,14 @@
 
 package sviolet.thistle.util.reflect;
 
+import sviolet.thistle.compat.reflect.CompatGenericArrayType;
+import sviolet.thistle.compat.reflect.CompatParameterizedType;
+
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
+import java.lang.reflect.*;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -89,40 +89,33 @@ public class BeanInfoUtils {
         BeanInfo beanInfo = Introspector.getBeanInfo(beanClass, Object.class);
         PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
         Map<String, PropertyInfo> propertyInfos = new HashMap<>(propertyDescriptors.length << 1);
+        // Handle properties
         for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
+            // Property type
             Class<?> propertyClass = propertyDescriptor.getPropertyType();
             Type propertyType;
+            // Setter / Getter
             Method readMethod = propertyDescriptor.getReadMethod();
             Method writeMethod = propertyDescriptor.getWriteMethod();
-            Class<?> declaringClass;
+            // Fallback
             if (propertyClass == null) {
                 propertyClass = Object.class;
             }
+            // Setter first
             if (readMethod != null) {
                 propertyType = readMethod.getGenericReturnType();
-                declaringClass = readMethod.getDeclaringClass();
             } else {
                 // writeMethod must exist if readMethod is null
                 Type[] parameterTypes = writeMethod.getGenericParameterTypes();
                 // IndexedPropertyDescriptor has 2 parameters, see Introspector
                 propertyType = parameterTypes[parameterTypes.length - 1];
-                declaringClass = writeMethod.getDeclaringClass();
             }
-            if (propertyType instanceof TypeVariable && ((TypeVariable<?>) propertyType).getGenericDeclaration() instanceof Class) {
-                Type actualType = null;
-                try {
-                    // try to find generic type in class
-                    actualType = GenericClassUtils.getActualTypes(beanClass, declaringClass)
-                            .get(((TypeVariable<?>) propertyType).getName());
-                } catch (GenericClassUtils.TargetGenericClassNotFoundException ignore) {
-                }
-                if (!isAcceptedType(actualType)) {
-                    actualType = propertyClass;
-                }
-                propertyType = actualType;
-            } else if (!isAcceptedType(propertyType)) {
+            // Get actual type of property
+            propertyType = getActualType(propertyType, beanClass);
+            if (propertyType == null) {
                 propertyType = propertyClass;
             }
+            // Name
             String propertyName = propertyDescriptor.getName();
             if (propertyName != null) {
                 propertyName = propertyName.intern();
@@ -138,8 +131,67 @@ public class BeanInfoUtils {
         return propertyInfos;
     }
 
-    private static boolean isAcceptedType(Type type) {
-        return type instanceof Class || type instanceof ParameterizedType;
+    private static Type getActualType(Type propertyType, Class<?> beanClass) {
+        if (propertyType == null) {
+            return null;
+        }
+
+        // If it is a generic array Type (T[]), get the component type (T)
+        Type componentType = propertyType;
+        int arrayDepth = 0;
+        while (componentType instanceof GenericArrayType) {
+            componentType = ((GenericArrayType) componentType).getGenericComponentType();
+            arrayDepth++;
+        }
+
+        // If the component type is generic, get the actual type from declaring class
+        if (componentType instanceof TypeVariable && ((TypeVariable<?>) componentType).getGenericDeclaration() instanceof Class) {
+            try {
+                // try to find generic type in class
+                componentType = GenericClassUtils.getActualTypes(beanClass, (Class<?>) ((TypeVariable<?>) componentType).getGenericDeclaration())
+                        .get(((TypeVariable<?>) componentType).getName());
+            } catch (GenericClassUtils.TargetGenericClassNotFoundException ignore) {
+                return null;
+            }
+        }
+
+        if (componentType instanceof ParameterizedType) {
+            // Get actual type if type arguments as generic
+            Type[] actualTypeArguments = ((ParameterizedType) componentType).getActualTypeArguments();
+            boolean rebuild = false;
+            for (int i = 0 ; i < actualTypeArguments.length ; i++) {
+                Type actualTypeArgument = actualTypeArguments[i];
+                if ((actualTypeArgument instanceof TypeVariable && ((TypeVariable<?>) actualTypeArgument).getGenericDeclaration() instanceof Class) ||
+                        actualTypeArgument instanceof GenericArrayType) {
+                    Type actualType = getActualType(actualTypeArgument, beanClass);
+                    if (actualType != null) {
+                        rebuild = true;
+                        actualTypeArguments[i] = actualType;
+                    }
+                }
+            }
+            // Rebuild ParameterizedType
+            if (rebuild) {
+                componentType = CompatParameterizedType.make((Class<?>) (
+                        (ParameterizedType) componentType).getRawType(),
+                        actualTypeArguments,
+                        ((ParameterizedType) componentType).getOwnerType());
+            }
+        } else if (!(componentType instanceof Class)) {
+            return null;
+        }
+
+        // If it is not a generic array Type (T[]), return directly
+        if (arrayDepth <= 0) {
+            return componentType;
+        }
+
+        // If it is a generic array Type (T[]), rebuild GenericArrayType
+        for (int i = 0; i < arrayDepth; i++) {
+            componentType = CompatGenericArrayType.make(componentType);
+        }
+
+        return componentType;
     }
 
     public static class PropertyInfo {
@@ -173,7 +225,7 @@ public class BeanInfoUtils {
         }
 
         /**
-         * Generic type of property, Not null
+         * Generic type of property, Not null, instance of Class / ParameterizedType / GenericArrayType
          */
         public Type getPropertyType() {
             return propertyType;
