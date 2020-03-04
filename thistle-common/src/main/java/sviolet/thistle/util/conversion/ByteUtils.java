@@ -47,6 +47,12 @@ public class ByteUtils {
      * @return jointed bytes
      */
     public static byte[] joint(byte[] left, byte[] right){
+        if (left == null) {
+            return right;
+        }
+        if (right == null) {
+            return left;
+        }
         byte[] result = new byte[left.length + right.length];
         System.arraycopy(left, 0, result, 0, left.length);
         System.arraycopy(right, 0, result, left.length, right.length);
@@ -62,6 +68,15 @@ public class ByteUtils {
      * @return jointed bytes
      */
     public static byte[] joint(byte[] left, byte[] middle, byte[] right){
+        if (left == null) {
+            return joint(middle, right);
+        }
+        if (middle == null) {
+            return joint(left, right);
+        }
+        if (right == null) {
+            return joint(left, middle);
+        }
         byte[] result = new byte[left.length + middle.length + right.length];
         System.arraycopy(left, 0, result, 0, left.length);
         System.arraycopy(middle, 0, result, left.length, middle.length);
@@ -98,16 +113,13 @@ public class ByteUtils {
      */
     public static byte[] sub(byte[] data, int start){
         if (data == null) {
-            throw new ArrayIndexOutOfBoundsException("byte[] is null");
+            return null;
         }
-        if (start == data.length) {
+        if (start >= data.length) {
             return new byte[0];
         }
-        if (start < 0) {
-            throw new ArrayIndexOutOfBoundsException("start < 0");
-        }
-        if (start > data.length) {
-            throw new ArrayIndexOutOfBoundsException("start > max-length " + data.length);
+        if (start <= 0) {
+            return data;
         }
         byte[] result = new byte[data.length - start];
         System.arraycopy(data, start, result, 0, result.length);
@@ -122,19 +134,45 @@ public class ByteUtils {
      */
     public static byte[] sub(byte[] data, int start, int length){
         if (data == null) {
-            throw new ArrayIndexOutOfBoundsException("byte[] is null");
+            return null;
         }
         if (start < 0) {
-            throw new ArrayIndexOutOfBoundsException("start < 0");
+            start = 0;
         }
-        if (length < 0) {
-            throw new ArrayIndexOutOfBoundsException("length < 0");
+        if (length <= 0) {
+            return new byte[0];
         }
         if (start + length > data.length) {
-            throw new ArrayIndexOutOfBoundsException("start + length > max-length " + data.length);
+            length = data.length - start;
         }
         byte[] result = new byte[length];
         System.arraycopy(data, start, result, 0, length);
+        return result;
+    }
+
+    /**
+     * 去掉二进制数据头部(左边)的0x00
+     *
+     * @param data 二进制数据
+     */
+    public static byte[] trimHeader(byte[] data){
+        if (data == null) {
+            return null;
+        }
+        if (data.length <= 0) {
+            return new byte[0];
+        }
+        int i = 0;
+        for (; i < data.length ; i++) {
+            if (data[i] != 0x00) {
+                break;
+            }
+        }
+        if (i <= 0) {
+            return data;
+        }
+        byte[] result = new byte[data.length - i];
+        System.arraycopy(data, i, result, 0, result.length);
         return result;
     }
 
@@ -167,6 +205,9 @@ public class ByteUtils {
      * @return upper case hex string
      */
     public static String bytesToUpperCaseHex(byte[] bytes){
+        if (bytes == null) {
+            return null;
+        }
         return bytesToHex(bytes).toUpperCase();
     }
 

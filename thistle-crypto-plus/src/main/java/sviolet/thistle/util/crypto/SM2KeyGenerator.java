@@ -34,13 +34,22 @@ import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
 
 /**
- * <p>SM2秘钥生成工具</p>
+ * <p>SM2秘钥生成工具</p><br>
  *
  * <p>BouncyCastle是使用XXXKeyParameters密钥实例的, 而JDK默认使用XXXKey密钥实例, 本工具类在加解密加解签时, 统一使用BouncyCastle
- * 的XXXKeyParameters密钥实例, 这与RSA/ECDSA工具类中使用XXXKey实例不同. 另外, 本工具类提供将密钥实例转换为JDK密钥实例的方法. </p>
+ * 的XXXKeyParameters密钥实例, 这与RSA/ECDSA工具类中使用XXXKey实例不同. 另外, 本工具类提供将密钥实例转换为JDK密钥实例的方法. </p><br>
  *
  * <p>SM2算法首先要选择一个合适的椭圆曲线, 椭圆曲线参数包含: Curve (P A B) / G-Point (X Y) / N / H , SM2算法的公钥是一个这个
- * 椭圆曲线上的点Q(X Y), 私钥是次数D, PKCS8/X509编码的私钥公钥除了Q点和次数D以外, 也包含的椭圆曲线参数. </p>
+ * 椭圆曲线上的点Q(X Y), 私钥是次数D, PKCS8/X509编码的私钥公钥除了Q点和次数D以外, 也包含的椭圆曲线参数. </p><br>
+ *
+ * <p>D值 / Q值(X/Y) 获取方法 + 各种格式转换: </p>
+ * <p>获取D值: ecPrivateKeyParameters.getD() </p>
+ * <p>获取Q(X)值: ecPublicKeyParameters.getQ().getAffineXCoord().toBigInteger() </p>
+ * <p>获取Q(Y)值: ecPublicKeyParameters.getQ().getAffineYCoord().toBigInteger() </p>
+ * <p>BigInteger转HexString: bigInteger.toString() </p>
+ * <p>BigInteger转byte[]: ByteUtils.trimHeader(bigInteger.toByteArray())), 注意要去掉头部的0x00</p>
+ * <p>HexString转BigInteger: new BigInteger(string, 16)</p>
+ * <p>byte[]转BigInteger: new BigInteger(bytes)</p>
  *
  * @author S.Violet
  */
@@ -85,7 +94,17 @@ public class SM2KeyGenerator {
     }
 
     /**
-     * 根据已知的D值生成SM2私钥实例(sm2p256v1)
+     * <p>根据已知的D值生成SM2私钥实例(sm2p256v1).</p>
+     * <p>如果D值是Base64/Hex字符串, 尝试转成byte[]然后new BigInteger(bytes).</p><br>
+     *
+     * <p>D值 / Q值(X/Y) 获取方法 + 各种格式转换: </p>
+     * <p>获取D值: ecPrivateKeyParameters.getD() </p>
+     * <p>获取Q(X)值: ecPublicKeyParameters.getQ().getAffineXCoord().toBigInteger() </p>
+     * <p>获取Q(Y)值: ecPublicKeyParameters.getQ().getAffineYCoord().toBigInteger() </p>
+     * <p>BigInteger转HexString: bigInteger.toString() </p>
+     * <p>BigInteger转byte[]: ByteUtils.trimHeader(bigInteger.toByteArray())), 注意要去掉头部的0x00</p>
+     * <p>HexString转BigInteger: new BigInteger(string, 16)</p>
+     * <p>byte[]转BigInteger: new BigInteger(bytes)</p>
      *
      * @param d D值
      * @return 私钥实例(与JDK的密钥实例不同)
@@ -105,10 +124,19 @@ public class SM2KeyGenerator {
     }
 
     /**
-     * 根据已知的坐标(X/Y)生成SM2公钥实例(sm2p256v1)
+     * <p>根据已知的坐标(X/Y)生成SM2公钥实例(sm2p256v1)</p><br>
      *
-     * @param xBytes 坐标X, 字节形式(bigInteger.toByteArray()获得)
-     * @param yBytes 坐标Y, 字节形式(bigInteger.toByteArray()获得)
+     * <p>D值 / Q值(X/Y) 获取方法 + 各种格式转换: </p>
+     * <p>获取D值: ecPrivateKeyParameters.getD() </p>
+     * <p>获取Q(X)值: ecPublicKeyParameters.getQ().getAffineXCoord().toBigInteger() </p>
+     * <p>获取Q(Y)值: ecPublicKeyParameters.getQ().getAffineYCoord().toBigInteger() </p>
+     * <p>BigInteger转HexString: bigInteger.toString() </p>
+     * <p>BigInteger转byte[]: ByteUtils.trimHeader(bigInteger.toByteArray())), 注意要去掉头部的0x00</p>
+     * <p>HexString转BigInteger: new BigInteger(string, 16)</p>
+     * <p>byte[]转BigInteger: new BigInteger(bytes)</p>
+     *
+     * @param xBytes 坐标X, 如果给的是Base64/Hex字符串, 尝试转成byte[]
+     * @param yBytes 坐标Y, 如果给的是Base64/Hex字符串, 尝试转成byte[]
      * @return 公钥实例(与JDK的密钥实例不同)
      */
     public static ECPublicKeyParameters generatePublicKeyParams(byte[] xBytes, byte[] yBytes) throws CommonCryptoException {
@@ -116,10 +144,19 @@ public class SM2KeyGenerator {
     }
 
     /**
-     * 根据已知的坐标(X/Y)生成SM2公钥实例(sm2p256v1)
+     * <p>根据已知的坐标(X/Y)生成SM2公钥实例(sm2p256v1)</p><br>
      *
-     * @param x 坐标X
-     * @param y 坐标Y
+     * <p>D值 / Q值(X/Y) 获取方法 + 各种格式转换: </p>
+     * <p>获取D值: ecPrivateKeyParameters.getD() </p>
+     * <p>获取Q(X)值: ecPublicKeyParameters.getQ().getAffineXCoord().toBigInteger() </p>
+     * <p>获取Q(Y)值: ecPublicKeyParameters.getQ().getAffineYCoord().toBigInteger() </p>
+     * <p>BigInteger转HexString: bigInteger.toString() </p>
+     * <p>BigInteger转byte[]: ByteUtils.trimHeader(bigInteger.toByteArray())), 注意要去掉头部的0x00</p>
+     * <p>HexString转BigInteger: new BigInteger(string, 16)</p>
+     * <p>byte[]转BigInteger: new BigInteger(bytes)</p>
+     *
+     * @param x 坐标X, 如果给的是Base64/Hex字符串, 尝试转成byte[]然后new BigInteger(bytes)
+     * @param y 坐标Y, 如果给的是Base64/Hex字符串, 尝试转成byte[]然后new BigInteger(bytes)
      * @return 公钥实例(与JDK的密钥实例不同)
      */
     public static ECPublicKeyParameters generatePublicKeyParams(BigInteger x, BigInteger y) throws CommonCryptoException {
@@ -128,6 +165,8 @@ public class SM2KeyGenerator {
         }
         return BaseBCAsymKeyGenerator.parseEcPublicKeyParams(SM2DefaultCurve.DOMAIN_PARAMS, x.toByteArray(), y.toByteArray());
     }
+
+    // Encode //////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * 将私钥实例转换为PKCS8编码的数据
@@ -163,6 +202,8 @@ public class SM2KeyGenerator {
         //SM2的密钥标记为EC
         return BaseBCAsymKeyGenerator.ecPublicKeyParamsToEcPublicKey(publicKeyParams, EC_KEY_ALGORITHM).getEncoded();
     }
+
+    // Conversion ///////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * 将BouncyCastle的XXXKeyParameters私钥实例转换为JDK的XXXKey私钥实例, 用于与JDK加密工具适配, 或获取PKCS8编码的私钥数据
@@ -218,6 +259,8 @@ public class SM2KeyGenerator {
         return BaseBCAsymKeyGenerator.parseEcPublicKeyParamsFromCertificate(SM2DefaultCurve.DOMAIN_PARAMS, certificate);
     }
 
+    // Key Pair /////////////////////////////////////////////////////////////////////////////////////////////////////
+
     public static class SM2KeyParamsPair {
 
         private ECPublicKeyParameters publicKeyParams;
@@ -264,7 +307,27 @@ public class SM2KeyGenerator {
         }
 
         /**
-         * 获取私钥的D值
+         * <p>获取公钥的X值 (QX).</p>
+         * <p>转byte[], ByteUtils.trimHeader(SM2KeyParamsPair.getPublicX().toByteArray())), 注意要去掉头部的0x00.</p>
+         * <p>转Hex, SM2KeyParamsPair.getPublicX().toString().</p>
+         */
+        public BigInteger getPublicX(){
+            return publicKeyParams.getQ().getAffineXCoord().toBigInteger();
+        }
+
+        /**
+         * <p>获取公钥的Y值 (QY).</p>
+         * <p>转byte[], ByteUtils.trimHeader(SM2KeyParamsPair.getPublicY().toByteArray())), 注意要去掉头部的0x00.</p>
+         * <p>转Hex, SM2KeyParamsPair.getPublicY().toString().</p>
+         */
+        public BigInteger getPublicY(){
+            return publicKeyParams.getQ().getAffineYCoord().toBigInteger();
+        }
+
+        /**
+         * <p>获取私钥的D值.</p>
+         * <p>转byte[], ByteUtils.trimHeader(SM2KeyParamsPair.getPrivateD().toByteArray())), 注意要去掉头部的0x00.</p>
+         * <p>转Hex, SM2KeyParamsPair.getPrivateD().toString().</p>
          */
         public BigInteger getPrivateD(){
             return privateKeyParams.getD();

@@ -58,6 +58,11 @@ public class SM4Cipher {
     public static final String CRYPTO_ALGORITHM_SM4_CBC_PKCS5PADDING = "SM4/CBC/PKCS5Padding";
 
     /**
+     * 加密算法:SM4 + CBC/PKCS7Padding填充
+     */
+    public static final String CRYPTO_ALGORITHM_SM4_CBC_PKCS7PADDING = "SM4/CBC/PKCS7Padding";
+
+    /**
      * 加密(byte[]数据)
      *
      * @param data 数据
