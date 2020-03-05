@@ -2,7 +2,7 @@
 
 * Comprehensive Java common library (Java7+)
 * [Github Home](https://github.com/shepherdviolet/thistle)
-* [Search in Maven Central](https://search.maven.org/search?q=g:com.github.shepherdviolet.thistle20)
+* [Search in Maven Central](https://search.maven.org/search?q=g:com.github.shepherdviolet)
 * [PGP Key](http://pool.sks-keyservers.net/pks/lookup?op=vindex&fingerprint=on&search=0x90998B78AABD6E96)
 
 <br>
@@ -66,6 +66,10 @@
 
 # Import dependencies from maven repository
 
+* [Search `thistle-common` in Maven Central](https://search.maven.org/search?q=g:com.github.shepherdviolet%20a:thistle-common)
+* [Search `thistle-crypto-plus` in Maven Central](https://search.maven.org/search?q=g:com.github.shepherdviolet%20a:thistle-crypto-plus)
+* [Search `thistle-trace` in Maven Central](https://search.maven.org/search?q=g:com.github.shepherdviolet%20a:thistle-trace)
+
 ```gradle
 
 repositories {
@@ -73,26 +77,26 @@ repositories {
     mavenCentral()
 }
 dependencies {
-    compile 'com.github.shepherdviolet.thistle20:thistle-common:version'
-    compile 'com.github.shepherdviolet.thistle20:thistle-crypto-plus:version'
-    compile 'com.github.shepherdviolet.thistle20:thistle-trace:version'
+    compile 'com.github.shepherdviolet:thistle-common:?'
+    compile 'com.github.shepherdviolet:thistle-crypto-plus:?'
+    compile 'com.github.shepherdviolet:thistle-trace:?'
 }
 
 ```
 
 ```maven
     <dependency>    
-        <groupId>com.github.shepherdviolet.thistle20</groupId>
+        <groupId>com.github.shepherdviolet</groupId>
         <artifactId>thistle-common</artifactId>
         <version>?</version> 
     </dependency>
     <dependency>    
-        <groupId>com.github.shepherdviolet.thistle20</groupId>
+        <groupId>com.github.shepherdviolet</groupId>
         <artifactId>thistle-crypto-plus</artifactId>
         <version>?</version> 
     </dependency>
     <dependency>    
-        <groupId>com.github.shepherdviolet.thistle20</groupId>
+        <groupId>com.github.shepherdviolet</groupId>
         <artifactId>thistle-trace</artifactId>
         <version>?</version> 
     </dependency>

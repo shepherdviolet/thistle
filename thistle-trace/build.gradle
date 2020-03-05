@@ -2,8 +2,8 @@
 dependencies {
     //import bom
 //    api platform(project(':thistle-bom'))//只对未指定版本的依赖生效
-//    api platform("com.github.shepherdviolet.thistle20:thistle-bom:$version_thistle")//只对未指定版本的依赖生效
-//    api enforcedPlatform("com.github.shepherdviolet.thistle20:thistle-bom:$version_thistle")//强制覆盖依赖版本
+//    api platform("com.github.shepherdviolet:thistle-bom:$version_thistle")//只对未指定版本的依赖生效
+//    api enforcedPlatform("com.github.shepherdviolet:thistle-bom:$version_thistle")//强制覆盖依赖版本
 
     //required
     [
