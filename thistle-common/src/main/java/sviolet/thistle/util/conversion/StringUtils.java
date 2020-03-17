@@ -234,4 +234,86 @@ public class StringUtils {
         return "";
     }
 
+    /**
+     * <p>在字符串左边添加指定字符或删除字符, 直至满足长度要求</p><br>
+     *
+     * <p>
+     * 示例: <br>
+     * ("12345678", 6, 6, '0') -> "345678" <br>
+     * ("12345678", 10, 10, '0') -> "0012345678" <br>
+     * ("12345678", 6, 10, '0') -> "12345678" <br>
+     * ("12345678", 4, 6, '0') -> "345678" <br>
+     * ("12345678", 10, 12, '0') -> "0012345678" <br>
+     * </p>
+     *
+     * @param string 字符串
+     * @param minLength 最小长度
+     * @param maxLength 最大长度
+     * @param paddingChar 填充字符
+     * @return 满足长度要求的字符串
+     */
+    public static String leftPaddingToLength(String string, int minLength, int maxLength, char paddingChar) {
+        if (string == null) {
+            string = "";
+        }
+        if (minLength < 0) {
+            minLength = 0;
+        }
+        if (maxLength < minLength) {
+            maxLength = minLength;
+        }
+        int length = string.length();
+        if (length > maxLength) {
+            return string.substring(length - maxLength);
+        }
+        if (length >= minLength) {
+            return string;
+        }
+        int paddingLength = minLength - length;
+        if (paddingLength == 1) {
+            return paddingChar + string;
+        }
+        StringBuilder padding = new StringBuilder(paddingLength);
+        for (int i = 0 ; i < paddingLength ; i++) {
+            padding.append(paddingChar);
+        }
+        return padding.toString() + string;
+    }
+
+    /**
+     * <p>从字符串左边开始, 将指定字符删掉, 直到出现其他字符或到达最小长度</p><br>
+     *
+     * <p>
+     * 示例: <br>
+     * ("12345678", 0, '0') -> "12345678" <br>
+     * ("0012345678", 0, '0') -> "12345678" <br>
+     * ("0000", 0, '0') -> "" <br>
+     * ("0000", 1, '0') -> "0" <br>
+     * ("0000", 2, '0') -> "00" <br>
+     * ("0000", 5, '0') -> "0000" <br>
+     * </p>
+     *
+     * @param string 字符串
+     * @param minLength 最小长度
+     * @param trimChar 需要删除的字符
+     */
+    public static String leftTrimToLength(String string, int minLength, char trimChar) {
+        if (string == null) {
+            string = "";
+        }
+        if (minLength < 0) {
+            minLength = 0;
+        }
+        int start = 0;
+        for ( ; start < string.length() - minLength ; start++) {
+            if (string.charAt(start) != trimChar) {
+                break;
+            }
+        }
+        if (start <= 0) {
+            return string;
+        }
+        return string.substring(start);
+    }
+
 }

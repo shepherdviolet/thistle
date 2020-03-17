@@ -51,4 +51,24 @@ public class StringUtilsTest {
         Assert.assertEquals(expected, StringUtils.truncateByUtf8ByteLength(string, toLength));
     }
 
+    @Test
+    public void leftPaddingToLength(){
+        Assert.assertEquals("", StringUtils.leftPaddingToLength("12345678", 0, 0, '0'));
+        Assert.assertEquals("345678", StringUtils.leftPaddingToLength("12345678", 6, 6, '0'));
+        Assert.assertEquals("0012345678", StringUtils.leftPaddingToLength("12345678", 10, 10, '0'));
+        Assert.assertEquals("12345678", StringUtils.leftPaddingToLength("12345678", 6, 10, '0'));
+        Assert.assertEquals("345678", StringUtils.leftPaddingToLength("12345678", 4, 6, '0'));
+        Assert.assertEquals("012345678", StringUtils.leftPaddingToLength("12345678", 9, 12, '0'));
+    }
+
+    @Test
+    public void leftTrimToLength(){
+        Assert.assertEquals("12345678", StringUtils.leftTrimToLength("12345678", 0, '0'));
+        Assert.assertEquals("12345678", StringUtils.leftTrimToLength("0012345678", 0, '0'));
+        Assert.assertEquals("", StringUtils.leftTrimToLength("0000", 0, '0'));
+        Assert.assertEquals("0", StringUtils.leftTrimToLength("0000", 1, '0'));
+        Assert.assertEquals("00", StringUtils.leftTrimToLength("0000", 2, '0'));
+        Assert.assertEquals("0000", StringUtils.leftTrimToLength("0000", 5, '0'));
+    }
+
 }
