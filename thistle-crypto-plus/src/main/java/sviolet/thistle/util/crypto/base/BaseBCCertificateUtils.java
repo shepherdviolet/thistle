@@ -130,6 +130,21 @@ public class BaseBCCertificateUtils {
      * @param issuerPublicKey 颁发者公钥
      * @return true:有效
      */
+    public static boolean verifyCertificate(X509Certificate certificate, RSAPublicKey issuerPublicKey) {
+        try {
+            certificate.verify(issuerPublicKey, BouncyCastleProvider.PROVIDER_NAME);
+        } catch (Exception ex) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 使用颁发者公钥验证证书有效性
+     * @param certificate 证书
+     * @param issuerPublicKey 颁发者公钥
+     * @return true:有效
+     */
     public static boolean verifyCertificate(X509Certificate certificate, BCECPublicKey issuerPublicKey) {
         try {
             certificate.verify(issuerPublicKey, BouncyCastleProvider.PROVIDER_NAME);

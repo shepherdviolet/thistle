@@ -29,7 +29,7 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
-public class PKCS12KeyStoreTest {
+public class RSACertTest {
 
     @Test
     public void common() throws CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException, OperatorCreationException {
@@ -43,6 +43,8 @@ public class PKCS12KeyStoreTest {
                 3650,
                 AdvancedCertificateUtils.SIGN_ALGORITHM_RSA_SHA256
         );
+
+        Assert.assertTrue(AdvancedCertificateUtils.verifyCertificate(rootCertificate, rootKeyPair.getPublicKey()));
 
         PKCS12KeyStoreUtils.storeCertificateAndKey(
                 "./out/test-case/pkcs12-test-ca.p12",
@@ -60,6 +62,8 @@ public class PKCS12KeyStoreTest {
                 AdvancedCertificateUtils.SIGN_ALGORITHM_RSA_SHA256,
                 rootCertificate,
                 rootKeyPair.getPrivateKey());
+
+        Assert.assertTrue(AdvancedCertificateUtils.verifyCertificate(subjectCertificate, rootKeyPair.getPublicKey()));
 
         PKCS12KeyStoreUtils.storeCertificateAndKey(
                 "./out/test-case/pkcs12-test.p12",

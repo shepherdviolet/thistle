@@ -109,6 +109,16 @@ public class AdvancedCertificateUtils extends CertificateUtils {
      * @param issuerPublicKey 颁发者公钥
      * @return true:有效
      */
+    public static boolean verifyCertificate(X509Certificate certificate, RSAPublicKey issuerPublicKey) {
+        return BaseBCCertificateUtils.verifyCertificate(certificate, issuerPublicKey);
+    }
+
+    /**
+     * 使用颁发者公钥验证证书有效性
+     * @param certificate 证书
+     * @param issuerPublicKey 颁发者公钥
+     * @return true:有效
+     */
     public static boolean verifyCertificate(X509Certificate certificate, BCECPublicKey issuerPublicKey) {
         return BaseBCCertificateUtils.verifyCertificate(certificate, issuerPublicKey);
     }
