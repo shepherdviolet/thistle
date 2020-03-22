@@ -394,6 +394,15 @@ public class BaseBCCertificateUtils {
      ***********************************************************************************************/
 
     /**
+     * 将证书的DN信息转成X500Name实例 (便于获取里面具体的值, 例如获取CN)
+     * @param dn DN信息
+     * @return X500Name
+     */
+    public static X500Name dnToX500Name(String dn) throws IOException {
+        return new X500Name(dn);
+    }
+
+    /**
      * <p>解析ASN.1编码的X509证书数据</p>
      *
      * <p><pre>

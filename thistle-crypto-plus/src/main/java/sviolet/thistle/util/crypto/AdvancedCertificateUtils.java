@@ -19,6 +19,7 @@
 
 package sviolet.thistle.util.crypto;
 
+import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.KeyUsage;
 import org.bouncycastle.asn1.x509.X509CertificateStructure;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
@@ -31,10 +32,7 @@ import sviolet.thistle.util.crypto.base.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.SignatureException;
+import java.security.*;
 import java.security.cert.CertPath;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -392,6 +390,24 @@ public class AdvancedCertificateUtils extends CertificateUtils {
     /***********************************************************************************************
      * Others
      ***********************************************************************************************/
+
+    /**
+     * 将证书的DN信息转成X500Name实例 (便于获取里面具体的值, 例如获取CN)
+     * @param dn DN信息
+     * @return X500Name
+     */
+    public static X500Name dnToX500Name(String dn) throws IOException {
+        return BaseBCCertificateUtils.dnToX500Name(dn);
+    }
+
+    /**
+     * 将证书的DN信息转成X500Name实例 (便于获取里面具体的值, 例如获取CN)
+     * @param principal DN信息, Certificate#getSubjectDN / getIssuerDN/ getSubjectX500Principal / getIssuerX500Principal得到
+     * @return X500Name
+     */
+    public static X500Name dnToX500Name(Principal principal) throws IOException {
+        return BaseBCCertificateUtils.dnToX500Name(principal.getName());
+    }
 
     /**
      * <p>解析ASN.1编码的X509证书数据</p>

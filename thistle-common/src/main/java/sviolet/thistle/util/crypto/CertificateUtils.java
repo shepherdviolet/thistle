@@ -19,13 +19,10 @@
 
 package sviolet.thistle.util.crypto;
 
-import sun.security.x509.X500Name;
 import sviolet.thistle.util.crypto.base.BaseCertificateUtils;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.security.Principal;
 import java.security.cert.*;
 
 /**
@@ -78,28 +75,6 @@ public class CertificateUtils {
      */
     public static byte[] parseCertPathToPKCS7Encoded(CertPath certPath) throws CertificateEncodingException {
         return BaseCertificateUtils.encodeCertPath(certPath, "PKCS7");
-    }
-
-    /* **********************************************************************************************
-     * Certificate information utils
-     ********************************************************************************************** */
-
-    /**
-     * 将证书的DN信息转成X500Name实例 (便于获取里面具体的值, 例如获取CN)
-     * @param dn DN信息
-     * @return X500Name
-     */
-    public static X500Name dnToX500Name(String dn) throws IOException {
-        return BaseCertificateUtils.dnToX500Name(dn);
-    }
-
-    /**
-     * 将证书的DN信息转成X500Name实例 (便于获取里面具体的值, 例如获取CN)
-     * @param principal DN信息, Certificate#getSubjectDN / getIssuerDN/ getSubjectX500Principal / getIssuerX500Principal得到
-     * @return X500Name
-     */
-    public static X500Name dnToX500Name(Principal principal) throws IOException {
-        return BaseCertificateUtils.dnToX500Name(principal.getName());
     }
 
 }
