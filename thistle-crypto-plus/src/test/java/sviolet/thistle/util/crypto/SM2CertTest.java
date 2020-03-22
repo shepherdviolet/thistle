@@ -38,7 +38,7 @@ import java.util.List;
 public class SM2CertTest {
 
     @Test
-    public void common() throws OperatorCreationException, CertificateException, InvalidKeySpecException, NoSuchAlgorithmException, IOException, PKCSException, NoSuchProviderException, UnrecoverableKeyException, KeyStoreException {
+    public void common() throws OperatorCreationException, CertificateException, InvalidKeySpecException, NoSuchAlgorithmException, IOException, PKCSException, NoSuchProviderException, UnrecoverableKeyException, KeyStoreException, SignatureException, InvalidKeyException {
         //生成根证书的随机密钥对
         SM2KeyGenerator.SM2KeyParamsPair rootKeyPair = SM2KeyGenerator.generateKeyParamsPair();
 
@@ -50,7 +50,7 @@ public class SM2CertTest {
                 rootKeyPair.getPrivateKeyParams());
 
         //简单验证证书
-        Assert.assertTrue(AdvancedCertificateUtils.verifyCertificate(rootCert, rootKeyPair.getPublicKeyParams()));
+        AdvancedCertificateUtils.verifyCertificate(rootCert, rootKeyPair.getPublicKeyParams());
 
 //        System.out.println(PEMEncodeUtils.certificateToPEMEncoded(AdvancedCertificateUtils.parseCertificateToEncoded(rootCert)));
 
@@ -71,7 +71,7 @@ public class SM2CertTest {
                 rootKeyPair.getPrivateKeyParams());
 
         //简单验证证书
-        Assert.assertTrue(AdvancedCertificateUtils.verifyCertificate(userCert, rootKeyPair.getPublicKeyParams()));
+        AdvancedCertificateUtils.verifyCertificate(userCert, rootKeyPair.getPublicKeyParams());
 
         //证书转为X509标准格式数据
         byte[] certX509 = AdvancedCertificateUtils.parseCertificateToEncoded(userCert);
@@ -83,7 +83,7 @@ public class SM2CertTest {
 
         //从X509编码的证书数据中解析证书实例
         X509Certificate userCert2 = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(certX509);
-        Assert.assertTrue(AdvancedCertificateUtils.verifyCertificate(userCert2, rootKeyPair.getPublicKeyParams()));
+        AdvancedCertificateUtils.verifyCertificate(userCert2, rootKeyPair.getPublicKeyParams());
 
         //不常用:组装证书链对象
         List<X509Certificate> certificateList = new ArrayList<>(2);

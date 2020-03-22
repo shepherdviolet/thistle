@@ -51,16 +51,13 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PublicKey;
+import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.*;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * [Bouncy castle]证书处理基本逻辑<p>
@@ -130,16 +127,11 @@ public class BaseBCCertificateUtils {
      * @param certificate 证书
      * @param issuerPublicKey 颁发者公钥
      * @param currentTime 当前时间(用于有效期验证)
-     * @return true:有效
      */
-    public static boolean verifyCertificate(X509Certificate certificate, PublicKey issuerPublicKey, Date currentTime) {
-        try {
-            certificate.verify(issuerPublicKey, BouncyCastleProvider.PROVIDER_NAME);
-            certificate.checkValidity(currentTime);
-        } catch (Exception ex) {
-            return false;
-        }
-        return true;
+    public static void verifyCertificate(X509Certificate certificate, PublicKey issuerPublicKey, Date currentTime)
+            throws NoSuchProviderException, CertificateException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        certificate.verify(issuerPublicKey, BouncyCastleProvider.PROVIDER_NAME);
+        certificate.checkValidity(currentTime);
     }
 
     /**
@@ -147,17 +139,12 @@ public class BaseBCCertificateUtils {
      * @param certificate 证书
      * @param issuerPublicKeyParams 颁发者公钥
      * @param currentTime 当前时间(用于有效期验证)
-     * @return true:有效
      */
-    public static boolean verifyCertificate(X509Certificate certificate, ECPublicKeyParameters issuerPublicKeyParams, Date currentTime) {
-        try {
-            certificate.verify(BaseBCAsymKeyGenerator.ecPublicKeyParamsToEcPublicKey(issuerPublicKeyParams, "EC"),
-                    BouncyCastleProvider.PROVIDER_NAME);
-            certificate.checkValidity(currentTime);
-        } catch (Exception ex) {
-            return false;
-        }
-        return true;
+    public static void verifyCertificate(X509Certificate certificate, ECPublicKeyParameters issuerPublicKeyParams, Date currentTime)
+            throws NoSuchProviderException, CertificateException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+        certificate.verify(BaseBCAsymKeyGenerator.ecPublicKeyParamsToEcPublicKey(issuerPublicKeyParams, "EC"),
+                BouncyCastleProvider.PROVIDER_NAME);
+        certificate.checkValidity(currentTime);
     }
 
     /***********************************************************************************************

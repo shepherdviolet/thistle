@@ -32,7 +32,7 @@ import java.security.cert.X509Certificate;
 public class RSACertTest {
 
     @Test
-    public void common() throws CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException, OperatorCreationException {
+    public void common() throws CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException, OperatorCreationException, InvalidKeyException, NoSuchProviderException, SignatureException {
 
         RSAKeyGenerator.RSAKeyPair rootKeyPair = RSAKeyGenerator.generateKeyPair(2048);
 
@@ -44,7 +44,7 @@ public class RSACertTest {
                 AdvancedCertificateUtils.SIGN_ALGORITHM_RSA_SHA256
         );
 
-        Assert.assertTrue(AdvancedCertificateUtils.verifyCertificate(rootCertificate, rootKeyPair.getPublicKey()));
+        AdvancedCertificateUtils.verifyCertificate(rootCertificate, rootKeyPair.getPublicKey());
 
         PKCS12KeyStoreUtils.storeCertificateAndKey(
                 "./out/test-case/pkcs12-test-ca.p12",
@@ -63,7 +63,7 @@ public class RSACertTest {
                 rootCertificate,
                 rootKeyPair.getPrivateKey());
 
-        Assert.assertTrue(AdvancedCertificateUtils.verifyCertificate(subjectCertificate, rootKeyPair.getPublicKey()));
+        AdvancedCertificateUtils.verifyCertificate(subjectCertificate, rootKeyPair.getPublicKey());
 
         PKCS12KeyStoreUtils.storeCertificateAndKey(
                 "./out/test-case/pkcs12-test.p12",

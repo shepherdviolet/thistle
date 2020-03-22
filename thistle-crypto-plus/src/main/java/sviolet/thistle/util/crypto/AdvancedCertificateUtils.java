@@ -34,8 +34,10 @@ import sviolet.thistle.util.crypto.base.SM2DefaultCurve;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.SignatureException;
 import java.security.cert.CertPath;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -108,30 +110,30 @@ public class AdvancedCertificateUtils extends CertificateUtils {
      * 使用颁发者公钥验证证书有效性
      * @param certificate 证书
      * @param issuerPublicKey 颁发者公钥
-     * @return true:有效
      */
-    public static boolean verifyCertificate(X509Certificate certificate, RSAPublicKey issuerPublicKey) {
-        return BaseBCCertificateUtils.verifyCertificate(certificate, issuerPublicKey, new Date());
+    public static void verifyCertificate(X509Certificate certificate, RSAPublicKey issuerPublicKey)
+            throws NoSuchAlgorithmException, CertificateException, NoSuchProviderException, InvalidKeyException, SignatureException {
+        BaseBCCertificateUtils.verifyCertificate(certificate, issuerPublicKey, new Date());
     }
 
     /**
      * 使用颁发者公钥验证证书有效性
      * @param certificate 证书
      * @param issuerPublicKey 颁发者公钥
-     * @return true:有效
      */
-    public static boolean verifyCertificate(X509Certificate certificate, BCECPublicKey issuerPublicKey) {
-        return BaseBCCertificateUtils.verifyCertificate(certificate, issuerPublicKey, new Date());
+    public static void verifyCertificate(X509Certificate certificate, BCECPublicKey issuerPublicKey)
+            throws NoSuchAlgorithmException, CertificateException, NoSuchProviderException, InvalidKeyException, SignatureException {
+        BaseBCCertificateUtils.verifyCertificate(certificate, issuerPublicKey, new Date());
     }
 
     /**
      * 使用颁发者公钥验证证书有效性
      * @param certificate 证书
      * @param issuerPublicKeyParams 颁发者公钥
-     * @return true:有效
      */
-    public static boolean verifyCertificate(X509Certificate certificate, ECPublicKeyParameters issuerPublicKeyParams) {
-        return BaseBCCertificateUtils.verifyCertificate(certificate, issuerPublicKeyParams, new Date());
+    public static void verifyCertificate(X509Certificate certificate, ECPublicKeyParameters issuerPublicKeyParams)
+            throws NoSuchAlgorithmException, CertificateException, NoSuchProviderException, InvalidKeyException, SignatureException {
+        BaseBCCertificateUtils.verifyCertificate(certificate, issuerPublicKeyParams, new Date());
     }
 
     /**
@@ -139,10 +141,10 @@ public class AdvancedCertificateUtils extends CertificateUtils {
      * @param certificate 证书
      * @param issuerPublicKey 颁发者公钥
      * @param currentTime 当前时间(用于有效期验证)
-     * @return true:有效
      */
-    public static boolean verifyCertificate(X509Certificate certificate, RSAPublicKey issuerPublicKey, Date currentTime) {
-        return BaseBCCertificateUtils.verifyCertificate(certificate, issuerPublicKey, currentTime);
+    public static void verifyCertificate(X509Certificate certificate, RSAPublicKey issuerPublicKey, Date currentTime)
+            throws NoSuchAlgorithmException, CertificateException, NoSuchProviderException, InvalidKeyException, SignatureException {
+        BaseBCCertificateUtils.verifyCertificate(certificate, issuerPublicKey, currentTime);
     }
 
     /**
@@ -150,10 +152,10 @@ public class AdvancedCertificateUtils extends CertificateUtils {
      * @param certificate 证书
      * @param issuerPublicKey 颁发者公钥
      * @param currentTime 当前时间(用于有效期验证)
-     * @return true:有效
      */
-    public static boolean verifyCertificate(X509Certificate certificate, BCECPublicKey issuerPublicKey, Date currentTime) {
-        return BaseBCCertificateUtils.verifyCertificate(certificate, issuerPublicKey, currentTime);
+    public static void verifyCertificate(X509Certificate certificate, BCECPublicKey issuerPublicKey, Date currentTime)
+            throws NoSuchAlgorithmException, CertificateException, NoSuchProviderException, InvalidKeyException, SignatureException {
+        BaseBCCertificateUtils.verifyCertificate(certificate, issuerPublicKey, currentTime);
     }
 
     /**
@@ -161,10 +163,10 @@ public class AdvancedCertificateUtils extends CertificateUtils {
      * @param certificate 证书
      * @param issuerPublicKeyParams 颁发者公钥
      * @param currentTime 当前时间(用于有效期验证)
-     * @return true:有效
      */
-    public static boolean verifyCertificate(X509Certificate certificate, ECPublicKeyParameters issuerPublicKeyParams, Date currentTime) {
-        return BaseBCCertificateUtils.verifyCertificate(certificate, issuerPublicKeyParams, currentTime);
+    public static void verifyCertificate(X509Certificate certificate, ECPublicKeyParameters issuerPublicKeyParams, Date currentTime)
+            throws NoSuchAlgorithmException, CertificateException, NoSuchProviderException, InvalidKeyException, SignatureException {
+        BaseBCCertificateUtils.verifyCertificate(certificate, issuerPublicKeyParams, currentTime);
     }
 
     /***********************************************************************************************
