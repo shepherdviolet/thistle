@@ -19,6 +19,9 @@
 
 package sviolet.thistle.util.crypto.base;
 
+import sun.security.x509.X500Name;
+
+import java.io.IOException;
 import java.io.InputStream;
 import java.security.cert.*;
 
@@ -35,9 +38,9 @@ public class BaseCertificateUtils {
 
     public static final String TYPE_X509 = "X.509";
 
-    /***********************************************************************************************
-     * Common
-     ***********************************************************************************************/
+    /* **********************************************************************************************
+     * certificate decode / encode
+     ********************************************************************************************** */
 
     /**
      * <p>解析证书, 返回Certificate对象, 可用来获取证书公钥实例等, JDK版本较弱. 解析SM2等证书请使用BaseBCCertificateUtils. </p>
@@ -80,6 +83,19 @@ public class BaseCertificateUtils {
             return null;
         }
         return certPath.getEncoded(encoding);
+    }
+
+    /* **********************************************************************************************
+     * Certificate information utils
+     ********************************************************************************************** */
+
+    /**
+     * 将证书的DN信息转成X500Name实例 (便于获取里面具体的值, 例如获取CN)
+     * @param dn DN信息
+     * @return X500Name
+     */
+    public static X500Name dnToX500Name(String dn) throws IOException {
+        return new X500Name(dn);
     }
 
 }
