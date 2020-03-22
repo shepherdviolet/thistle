@@ -42,6 +42,7 @@ import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -110,7 +111,7 @@ public class AdvancedCertificateUtils extends CertificateUtils {
      * @return true:有效
      */
     public static boolean verifyCertificate(X509Certificate certificate, RSAPublicKey issuerPublicKey) {
-        return BaseBCCertificateUtils.verifyCertificate(certificate, issuerPublicKey);
+        return BaseBCCertificateUtils.verifyCertificate(certificate, issuerPublicKey, new Date());
     }
 
     /**
@@ -120,7 +121,7 @@ public class AdvancedCertificateUtils extends CertificateUtils {
      * @return true:有效
      */
     public static boolean verifyCertificate(X509Certificate certificate, BCECPublicKey issuerPublicKey) {
-        return BaseBCCertificateUtils.verifyCertificate(certificate, issuerPublicKey);
+        return BaseBCCertificateUtils.verifyCertificate(certificate, issuerPublicKey, new Date());
     }
 
     /**
@@ -130,7 +131,40 @@ public class AdvancedCertificateUtils extends CertificateUtils {
      * @return true:有效
      */
     public static boolean verifyCertificate(X509Certificate certificate, ECPublicKeyParameters issuerPublicKeyParams) {
-        return BaseBCCertificateUtils.verifyCertificate(certificate, issuerPublicKeyParams);
+        return BaseBCCertificateUtils.verifyCertificate(certificate, issuerPublicKeyParams, new Date());
+    }
+
+    /**
+     * 使用颁发者公钥验证证书有效性
+     * @param certificate 证书
+     * @param issuerPublicKey 颁发者公钥
+     * @param currentTime 当前时间(用于有效期验证)
+     * @return true:有效
+     */
+    public static boolean verifyCertificate(X509Certificate certificate, RSAPublicKey issuerPublicKey, Date currentTime) {
+        return BaseBCCertificateUtils.verifyCertificate(certificate, issuerPublicKey, currentTime);
+    }
+
+    /**
+     * 使用颁发者公钥验证证书有效性
+     * @param certificate 证书
+     * @param issuerPublicKey 颁发者公钥
+     * @param currentTime 当前时间(用于有效期验证)
+     * @return true:有效
+     */
+    public static boolean verifyCertificate(X509Certificate certificate, BCECPublicKey issuerPublicKey, Date currentTime) {
+        return BaseBCCertificateUtils.verifyCertificate(certificate, issuerPublicKey, currentTime);
+    }
+
+    /**
+     * 使用颁发者公钥验证证书有效性
+     * @param certificate 证书
+     * @param issuerPublicKeyParams 颁发者公钥
+     * @param currentTime 当前时间(用于有效期验证)
+     * @return true:有效
+     */
+    public static boolean verifyCertificate(X509Certificate certificate, ECPublicKeyParameters issuerPublicKeyParams, Date currentTime) {
+        return BaseBCCertificateUtils.verifyCertificate(certificate, issuerPublicKeyParams, currentTime);
     }
 
     /***********************************************************************************************

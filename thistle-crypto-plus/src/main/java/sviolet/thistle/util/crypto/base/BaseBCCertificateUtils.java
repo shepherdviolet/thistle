@@ -23,8 +23,8 @@ import org.bouncycastle.asn1.*;
 import org.bouncycastle.asn1.x500.RDN;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.style.BCStyle;
-import org.bouncycastle.asn1.x509.*;
 import org.bouncycastle.asn1.x509.Extension;
+import org.bouncycastle.asn1.x509.*;
 import org.bouncycastle.asn1.x9.X9ECPoint;
 import org.bouncycastle.asn1.x9.X9ObjectIdentifiers;
 import org.bouncycastle.cert.X509CertificateHolder;
@@ -53,8 +53,9 @@ import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.security.cert.*;
+import java.security.PublicKey;
 import java.security.cert.Certificate;
+import java.security.cert.*;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
@@ -125,14 +126,16 @@ public class BaseBCCertificateUtils {
     }
 
     /**
-     * 使用颁发者公钥验证证书有效性
+     * 使用颁发者公钥验证证书有效性(包括有效期验证)
      * @param certificate 证书
      * @param issuerPublicKey 颁发者公钥
+     * @param currentTime 当前时间(用于有效期验证)
      * @return true:有效
      */
-    public static boolean verifyCertificate(X509Certificate certificate, RSAPublicKey issuerPublicKey) {
+    public static boolean verifyCertificate(X509Certificate certificate, PublicKey issuerPublicKey, Date currentTime) {
         try {
             certificate.verify(issuerPublicKey, BouncyCastleProvider.PROVIDER_NAME);
+            certificate.checkValidity(currentTime);
         } catch (Exception ex) {
             return false;
         }
@@ -140,30 +143,17 @@ public class BaseBCCertificateUtils {
     }
 
     /**
-     * 使用颁发者公钥验证证书有效性
-     * @param certificate 证书
-     * @param issuerPublicKey 颁发者公钥
-     * @return true:有效
-     */
-    public static boolean verifyCertificate(X509Certificate certificate, BCECPublicKey issuerPublicKey) {
-        try {
-            certificate.verify(issuerPublicKey, BouncyCastleProvider.PROVIDER_NAME);
-        } catch (Exception ex) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * 使用颁发者公钥验证证书有效性
+     * 使用颁发者公钥验证证书有效性(包括有效期验证)
      * @param certificate 证书
      * @param issuerPublicKeyParams 颁发者公钥
+     * @param currentTime 当前时间(用于有效期验证)
      * @return true:有效
      */
-    public static boolean verifyCertificate(X509Certificate certificate, ECPublicKeyParameters issuerPublicKeyParams) {
+    public static boolean verifyCertificate(X509Certificate certificate, ECPublicKeyParameters issuerPublicKeyParams, Date currentTime) {
         try {
             certificate.verify(BaseBCAsymKeyGenerator.ecPublicKeyParamsToEcPublicKey(issuerPublicKeyParams, "EC"),
                     BouncyCastleProvider.PROVIDER_NAME);
+            certificate.checkValidity(currentTime);
         } catch (Exception ex) {
             return false;
         }
