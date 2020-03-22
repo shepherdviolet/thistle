@@ -166,11 +166,11 @@ public class BaseBCCertificateUtils {
         X509Certificate issuer;
         String currentDn = current.getSubjectDN().getName();
         String issuerDn = current.getIssuerDN().getName();
-        StringBuilder dnPath = new StringBuilder(currentDn + " -> " + issuerDn);
-        // 待验证的证书不允许是根证书, 避免客户端拿根证书骗过验证
         if (currentDn.equals(issuerDn)) {
+            // 待验证的证书不允许是根证书, 避免客户端拿根证书骗过验证
             throw new CertificateException("The certificate to be verified is a root certificate. verifying certificate: " + certificate);
         }
+        StringBuilder dnPath = new StringBuilder().append("[").append(currentDn).append("] -> [").append(issuerDn).append("]");
         for (int i = 0 ; i < 10 ; i++) {
             issuer = issuerProvider.findIssuer(issuerDn, issuerProviderParameter);
             if (issuer == null) {
@@ -188,7 +188,7 @@ public class BaseBCCertificateUtils {
             current = issuer;
             currentDn = current.getSubjectDN().getName();
             issuerDn = current.getIssuerDN().getName();
-            dnPath.append(" -> ").append(issuerDn);
+            dnPath.append(" -> [").append(issuerDn).append("]");
         }
         throw new CertificateException("Too many CA certifications (> 10). " + dnPath + ". verifying certificate: " + certificate);
     }

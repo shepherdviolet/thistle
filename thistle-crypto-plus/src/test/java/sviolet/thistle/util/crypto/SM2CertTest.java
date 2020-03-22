@@ -23,6 +23,7 @@ import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.pkcs.PKCSException;
 import org.junit.Assert;
 import org.junit.Test;
+import sviolet.thistle.util.crypto.base.SimpleIssuerResolver;
 
 import java.io.IOException;
 import java.security.*;
@@ -31,9 +32,7 @@ import java.security.cert.CertPath;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 
 public class SM2CertTest {
 
@@ -127,6 +126,9 @@ public class SM2CertTest {
 
         Assert.assertArrayEquals(new Certificate[]{userCert, rootCert}, certificateChainAndKey.getCertificateChain());
         Assert.assertEquals(userKeyPair.getJdkPrivateKey(), certificateChainAndKey.getPrivateKey());
+
+        //证书链验证证书有效性
+        AdvancedCertificateUtils.verifyCertificateByIssuers(userCert, new Date(), new SimpleIssuerResolver(Collections.singletonList(rootCert)));
 
     }
 

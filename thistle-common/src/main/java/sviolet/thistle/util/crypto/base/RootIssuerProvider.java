@@ -64,6 +64,9 @@ public class RootIssuerProvider implements IssuerProvider<List<X509Certificate>>
             return issuer;
         }
         // 从客户端上送的中间CA证书中查找
+        if (caIssuers == null) {
+            return null;
+        }
         for (X509Certificate caIssuer : caIssuers) {
             String issuerDn = caIssuer.getSubjectDN().getName();
             if (issuerDn.equals(dn)) {
