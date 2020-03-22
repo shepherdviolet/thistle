@@ -57,7 +57,8 @@ import java.security.cert.*;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 
 /**
  * [Bouncy castle]证书处理基本逻辑<p>
@@ -145,6 +146,51 @@ public class BaseBCCertificateUtils {
         certificate.verify(BaseBCAsymKeyGenerator.ecPublicKeyParamsToEcPublicKey(issuerPublicKeyParams, "EC"),
                 BouncyCastleProvider.PROVIDER_NAME);
         certificate.checkValidity(currentTime);
+    }
+
+    /**
+     * 证书链的方式验证证书是否有效.
+     * @param certificate 待验证的证书. 注意, 不可以是根证书.
+     * @param currentTime 当前时间(用于有效期验证)
+     * @param issuerProvider 提供验证所需的证书颁发者. 例如: SimpleIssuerResolver / RootIssuerProvider
+     * @param issuerProviderParameter 传给IssuerProvider的参数, 可选, 取决于IssuerProvider是否需要
+     */
+    public static <ParameterType> void verifyCertificateByIssuers(X509Certificate certificate, Date currentTime, IssuerProvider<ParameterType> issuerProvider, ParameterType issuerProviderParameter) throws CertificateException {
+        if (issuerProvider == null) {
+            throw new IllegalArgumentException("issuerProvider is null");
+        }
+        if (certificate == null) {
+            throw new CertificateException("certificate is null");
+        }
+        X509Certificate current = certificate;
+        X509Certificate issuer;
+        String currentDn = current.getSubjectDN().getName();
+        String issuerDn = current.getIssuerDN().getName();
+        StringBuilder dnPath = new StringBuilder(currentDn + " -> " + issuerDn);
+        // 待验证的证书不允许是根证书, 避免客户端拿根证书骗过验证
+        if (currentDn.equals(issuerDn)) {
+            throw new CertificateException("The certificate to be verified is a root certificate. verifying certificate: " + certificate);
+        }
+        for (int i = 0 ; i < 10 ; i++) {
+            issuer = issuerProvider.findIssuer(issuerDn, issuerProviderParameter);
+            if (issuer == null) {
+                throw new CertificateException("Certificate issuer '" + issuerDn + "' not found. " + dnPath + " (Not Found!). verifying certificate: " + certificate);
+            }
+            try {
+                verifyCertificate(current, issuer.getPublicKey(), currentTime);
+            } catch (Exception e) {
+                throw new CertificateException("Certificate '" + current + "' invalid. " + dnPath + " (Invalid!). verifying certificate: " + certificate);
+            }
+            // 遇到根证书结束, 验证成功
+            if (currentDn.equals(issuerDn)) {
+                return;
+            }
+            current = issuer;
+            currentDn = current.getSubjectDN().getName();
+            issuerDn = current.getIssuerDN().getName();
+            dnPath.append(" -> ").append(issuerDn);
+        }
+        throw new CertificateException("Too many CA certifications (> 10). " + dnPath + ". verifying certificate: " + certificate);
     }
 
     /***********************************************************************************************

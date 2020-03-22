@@ -26,10 +26,7 @@ import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
 import org.bouncycastle.operator.OperatorCreationException;
 import sviolet.thistle.util.conversion.Base64Utils;
-import sviolet.thistle.util.crypto.base.BaseBCAsymKeyGenerator;
-import sviolet.thistle.util.crypto.base.BaseBCCertificateUtils;
-import sviolet.thistle.util.crypto.base.BaseCertificateUtils;
-import sviolet.thistle.util.crypto.base.SM2DefaultCurve;
+import sviolet.thistle.util.crypto.base.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -167,6 +164,27 @@ public class AdvancedCertificateUtils extends CertificateUtils {
     public static void verifyCertificate(X509Certificate certificate, ECPublicKeyParameters issuerPublicKeyParams, Date currentTime)
             throws NoSuchAlgorithmException, CertificateException, NoSuchProviderException, InvalidKeyException, SignatureException {
         BaseBCCertificateUtils.verifyCertificate(certificate, issuerPublicKeyParams, currentTime);
+    }
+
+    /**
+     * 证书链的方式验证证书是否有效.
+     * @param certificate 待验证的证书. 注意, 不可以是根证书.
+     * @param currentTime 当前时间(用于有效期验证), 可以简单地new Date()
+     * @param issuerProvider 提供验证所需的证书颁发者. 例如: SimpleIssuerResolver / RootIssuerProvider
+     */
+    public static void verifyCertificateByIssuers(X509Certificate certificate, Date currentTime, IssuerProvider<?> issuerProvider) throws CertificateException {
+        BaseBCCertificateUtils.verifyCertificateByIssuers(certificate, currentTime, issuerProvider, null);
+    }
+
+    /**
+     * 证书链的方式验证证书是否有效.
+     * @param certificate 待验证的证书. 注意, 不可以是根证书.
+     * @param currentTime 当前时间(用于有效期验证), 可以简单地new Date()
+     * @param issuerProvider 提供验证所需的证书颁发者. 例如: SimpleIssuerResolver / RootIssuerProvider
+     * @param issuerProviderParameter 传给IssuerProvider的参数, 可选, 取决于IssuerProvider是否需要
+     */
+    public static <ParameterType> void verifyCertificateByIssuers(X509Certificate certificate, Date currentTime, IssuerProvider<ParameterType> issuerProvider, ParameterType issuerProviderParameter) throws CertificateException {
+        BaseBCCertificateUtils.verifyCertificateByIssuers(certificate, currentTime, issuerProvider, issuerProviderParameter);
     }
 
     /***********************************************************************************************
