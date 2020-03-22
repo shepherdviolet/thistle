@@ -86,8 +86,8 @@ public class RSAKeyGenerator {
     /**
      * 用模和指数生成RSA公钥
      *
-     * @param modulus  模
-     * @param exponent 指数
+     * @param modulus  模, 与私钥的模数一致
+     * @param exponent 指数, 常用65537
      */
     public static RSAPublicKey generatePublicKey(BigInteger modulus, BigInteger exponent) throws InvalidKeySpecException {
         return BaseAsymKeyGenerator.parseRsaPublicKey(modulus, exponent, RSA_KEY_ALGORITHM);
@@ -96,7 +96,7 @@ public class RSAKeyGenerator {
     /**
      * 用模和指数生成RSA私钥
      *
-     * @param modulus  模
+     * @param modulus  模, 与公钥的模数一致
      * @param exponent 指数
      */
     public static RSAPrivateKey generatePrivateKey(BigInteger modulus, BigInteger exponent) throws InvalidKeySpecException {
