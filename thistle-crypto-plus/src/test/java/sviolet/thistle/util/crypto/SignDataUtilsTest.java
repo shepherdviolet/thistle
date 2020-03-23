@@ -61,7 +61,7 @@ public class SignDataUtilsTest {
                 signedData
         );
 
-        System.out.println(data);
+//        System.out.println(data);
     }
 
 }

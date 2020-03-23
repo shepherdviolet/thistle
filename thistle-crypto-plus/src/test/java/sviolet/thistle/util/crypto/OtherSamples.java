@@ -37,7 +37,9 @@ import sviolet.thistle.util.conversion.ByteUtils;
 import sviolet.thistle.util.crypto.base.BouncyCastleProviderUtils;
 import sviolet.thistle.util.crypto.base.IssuerProvider;
 import sviolet.thistle.util.crypto.base.SimpleIssuerProvider;
+import sviolet.thistle.util.judge.CheckUtils;
 
+import javax.security.auth.x500.X500Principal;
 import java.io.IOException;
 import java.security.*;
 import java.security.cert.CertificateException;
@@ -138,7 +140,7 @@ public class OtherSamples {
 
         checkSignByCertificates(plainText,
                 sm2Signature,
-                "CN=Thistle test subject, OU=Thistle group, O=Violet Shell, L=Ningbo, ST=Zhejiang, C=CN",
+                "CN=Test User, OU=IT Dept, O=My Company, L=Ningbo, ST=Zhejiang, C=CN",
                 sm2SubjectCert,
                 issuerProvider);
 
@@ -158,8 +160,16 @@ public class OtherSamples {
             throw new IllegalArgumentException("issuerProvider is null");
         }
         // DN 不符
-        if (userDn != null && !userDn.equals(certificate.getSubjectX500Principal())) {
-            throw new CertificateException("Certificate and user DN do not match, expect: " + userDn + ", actual: " + certificate.getSubjectX500Principal());
+        if (!CheckUtils.isEmpty(userDn)) {
+            X500Principal expect;
+            try {
+                expect = new X500Principal(userDn);
+            } catch (Exception e) {
+                throw new CertificateException("Illegal user DN: " + userDn, e);
+            }
+            if (!expect.equals(certificate.getSubjectX500Principal())) {
+                throw new CertificateException("Certificate and user DN do not match, expect: " + expect + ", actual: " + certificate.getSubjectX500Principal());
+            }
         }
         // 验证书
         AdvancedCertificateUtils.verifyCertificateByIssuers(certificate, new Date(), issuerProvider);

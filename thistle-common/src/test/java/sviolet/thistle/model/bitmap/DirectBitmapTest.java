@@ -88,7 +88,7 @@ public class DirectBitmapTest {
 
         String dataString2 = ByteUtils.bytesToHex(bitmap.extractAll());
         Assert.assertEquals(dataString, dataString2);
-        System.out.println(dataString2);
+//        System.out.println(dataString2);
     }
 
 
