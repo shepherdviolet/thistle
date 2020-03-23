@@ -26,7 +26,7 @@ import org.junit.Test;
 import sviolet.thistle.util.conversion.Base64Utils;
 import sviolet.thistle.util.crypto.base.IssuerProvider;
 import sviolet.thistle.util.crypto.base.RootIssuerProvider;
-import sviolet.thistle.util.crypto.base.SimpleIssuerResolver;
+import sviolet.thistle.util.crypto.base.SimpleIssuerProvider;
 import sviolet.thistle.util.crypto.base.X500NameWrapper;
 
 import java.io.IOException;
@@ -34,6 +34,7 @@ import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -41,7 +42,7 @@ import java.util.Date;
 public class RSACertTest {
 
     @Test
-    public void common() throws CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException, OperatorCreationException, InvalidKeyException, NoSuchProviderException, SignatureException {
+    public void common() throws CertificateException, IOException, KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException, OperatorCreationException, InvalidKeyException, NoSuchProviderException, SignatureException, InvalidKeySpecException {
 
         RSAKeyGenerator.RSAKeyPair rootKeyPair = RSAKeyGenerator.generateKeyPair(2048);
 
@@ -54,6 +55,7 @@ public class RSACertTest {
         );
 
         AdvancedCertificateUtils.verifyCertificate(rootCertificate, rootKeyPair.getPublicKey());
+//        System.out.println(Base64Utils.encodeToString(AdvancedCertificateUtils.parseCertificateToEncoded(rootCertificate)));
 
         PKCS12KeyStoreUtils.storeCertificateAndKey(
                 "./out/test-case/pkcs12-test-ca.p12",
@@ -73,6 +75,8 @@ public class RSACertTest {
                 rootKeyPair.getPrivateKey());
 
         AdvancedCertificateUtils.verifyCertificate(subjectCertificate, rootKeyPair.getPublicKey());
+//        System.out.println(Base64Utils.encodeToString(AdvancedCertificateUtils.parseCertificateToEncoded(subjectCertificate)));
+//        System.out.println(Base64Utils.encodeToString(subjectKeyPair.getPKCS8EncodedPrivateKey()));
 
         PKCS12KeyStoreUtils.storeCertificateAndKey(
                 "./out/test-case/pkcs12-test.p12",
@@ -101,7 +105,7 @@ public class RSACertTest {
 
     }
 
-    static String CERT = "MIIJoDCCCIigAwIBAgIMOAdzA8kea9OdhhhSMA0GCSqGSIb3DQEBCwUAMGYxCzAJ\n" +
+    private static final String CERT = "MIIJoDCCCIigAwIBAgIMOAdzA8kea9OdhhhSMA0GCSqGSIb3DQEBCwUAMGYxCzAJ\n" +
             "BgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTwwOgYDVQQDEzNH\n" +
             "bG9iYWxTaWduIE9yZ2FuaXphdGlvbiBWYWxpZGF0aW9uIENBIC0gU0hBMjU2IC0g\n" +
             "RzIwHhcNMjAwMTEzMDMwMjA1WhcNMjAwNjI1MDUzMTAyWjCBpzELMAkGA1UEBhMC\n" +
@@ -154,7 +158,7 @@ public class RSACertTest {
             "mt7G8HdKRcTLAv/RVm4kP9DC0wf4UmjvvtcEk4nBQejK6MIzz7WaW4zsh7JzjDFo\n" +
             "LLkKGKMibPjJqZskrQGEs2iurzU=";
 
-    public String CA_CERT = "MIIEaTCCA1GgAwIBAgILBAAAAAABRE7wQkcwDQYJKoZIhvcNAQELBQAwVzELMAkG\n" +
+    private static final String CA_CERT = "MIIEaTCCA1GgAwIBAgILBAAAAAABRE7wQkcwDQYJKoZIhvcNAQELBQAwVzELMAkG\n" +
             "A1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNVBAsTB1Jv\n" +
             "b3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw0xNDAyMjAxMDAw\n" +
             "MDBaFw0yNDAyMjAxMDAwMDBaMGYxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9i\n" +
@@ -179,7 +183,7 @@ public class RSACertTest {
             "SOlCdjSXVWkkDoPWoC209fN5ikkodBpBocLTJIg1MGCUF7ThBCIxPTsvFwayuJ2G\n" +
             "K1pp74P1S8SqtCr4fKGxhZSM9AyHDPSsQPhZSZg=";
 
-    public String ROOT_CERT = "MIIDdTCCAl2gAwIBAgILBAAAAAABFUtaw5QwDQYJKoZIhvcNAQEFBQAwVzELMAkG\n" +
+    private static final String ROOT_CERT = "MIIDdTCCAl2gAwIBAgILBAAAAAABFUtaw5QwDQYJKoZIhvcNAQEFBQAwVzELMAkG\n" +
             "A1UEBhMCQkUxGTAXBgNVBAoTEEdsb2JhbFNpZ24gbnYtc2ExEDAOBgNVBAsTB1Jv\n" +
             "b3QgQ0ExGzAZBgNVBAMTEkdsb2JhbFNpZ24gUm9vdCBDQTAeFw05ODA5MDExMjAw\n" +
             "MDBaFw0yODAxMjgxMjAwMDBaMFcxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9i\n" +
@@ -233,7 +237,7 @@ public class RSACertTest {
         X509Certificate caCert = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(Base64Utils.decode(CA_CERT));
         X509Certificate rootCert = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(Base64Utils.decode(ROOT_CERT));
         // 根证书 和 CA证书都由服务端限定, 客户端上送自己的证书
-        AdvancedCertificateUtils.verifyCertificateByIssuers(cert, new Date(), new SimpleIssuerResolver(Arrays.asList(caCert, rootCert)));
+        AdvancedCertificateUtils.verifyCertificateByIssuers(cert, new Date(), new SimpleIssuerProvider(Arrays.asList(caCert, rootCert)));
     }
 
     @Test
@@ -242,7 +246,7 @@ public class RSACertTest {
         X509Certificate caCert = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(Base64Utils.decode(CA_CERT));
         // CA证书由服务端限定, 且服务端把CA证书当根证书用, 客户端上送自己的证书
         AdvancedCertificateUtils.verifyCertificateByIssuers(cert, new Date(),
-                new SimpleIssuerResolver(Collections.singletonList(new IssuerProvider.ActAsRoot(caCert))));
+                new SimpleIssuerProvider(Collections.singletonList(new IssuerProvider.ActAsRoot(caCert))));
     }
 
     @Test
@@ -283,7 +287,7 @@ public class RSACertTest {
     @Test(expected = CertificateException.class)
     public void verifyCertificateByIssuersError3() throws CertificateException, NoSuchProviderException {
         X509Certificate rootCert = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(Base64Utils.decode(ROOT_CERT));
-        AdvancedCertificateUtils.verifyCertificateByIssuers(rootCert, new Date(), new SimpleIssuerResolver(null));
+        AdvancedCertificateUtils.verifyCertificateByIssuers(rootCert, new Date(), new SimpleIssuerProvider(null));
     }
 
 }

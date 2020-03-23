@@ -23,12 +23,12 @@ import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.pkcs.PKCSException;
 import org.junit.Assert;
 import org.junit.Test;
-import sviolet.thistle.util.crypto.base.SimpleIssuerResolver;
+import sviolet.thistle.util.crypto.base.SimpleIssuerProvider;
 
 import java.io.IOException;
 import java.security.*;
-import java.security.cert.Certificate;
 import java.security.cert.CertPath;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
@@ -79,6 +79,7 @@ public class SM2CertTest {
         String certPEM = PEMEncodeUtils.certificateToPEMEncoded(certX509);
 
 //        System.out.println(certPEM);
+//        System.out.println(Base64Utils.encodeToString(userKeyPair.getPKCS8EncodedPrivateKey()));
 
         //从X509编码的证书数据中解析证书实例
         X509Certificate userCert2 = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(certX509);
@@ -128,7 +129,7 @@ public class SM2CertTest {
         Assert.assertEquals(userKeyPair.getJdkPrivateKey(), certificateChainAndKey.getPrivateKey());
 
         //证书链验证证书有效性
-        AdvancedCertificateUtils.verifyCertificateByIssuers(userCert, new Date(), new SimpleIssuerResolver(Collections.singletonList(rootCert)));
+        AdvancedCertificateUtils.verifyCertificateByIssuers(userCert, new Date(), new SimpleIssuerProvider(Collections.singletonList(rootCert)));
 
     }
 
