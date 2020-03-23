@@ -154,7 +154,7 @@ public class BaseBCCertificateUtils {
      * 证书链的方式验证证书是否有效.
      * @param certificate 待验证的证书. 注意, 不可以是根证书.
      * @param currentTime 当前时间(用于有效期验证)
-     * @param issuerProvider 提供验证所需的证书颁发者. 例如: SimpleIssuerResolver / RootIssuerProvider
+     * @param issuerProvider 提供验证所需的证书颁发者. 例如: SimpleIssuerProvider / RootIssuerProvider
      * @param issuerProviderParameter 传给IssuerProvider的参数, 可选, 取决于IssuerProvider是否需要
      */
     public static <ParameterType> void verifyCertificateByIssuers(X509Certificate certificate, Date currentTime, IssuerProvider<ParameterType> issuerProvider, ParameterType issuerProviderParameter) throws CertificateException {

@@ -29,7 +29,7 @@ import java.util.Set;
  * 提供验证所需的证书颁发者
  *
  * @param <ParameterType> IssuerProvider接收的参数类型, 可选
- * @see SimpleIssuerResolver
+ * @see SimpleIssuerProvider
  * @see RootIssuerProvider
  */
 public interface IssuerProvider<ParameterType> {

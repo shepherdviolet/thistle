@@ -31,14 +31,14 @@ import java.util.Map;
  *
  * @author S.Violet
  */
-public class SimpleIssuerResolver implements IssuerProvider<Object> {
+public class SimpleIssuerProvider implements IssuerProvider<Object> {
 
     private final Map<String, X509Certificate> issuers;
 
     /**
      * @param issuers 固定的颁发者集合
      */
-    public SimpleIssuerResolver(List<? extends X509Certificate> issuers) {
+    public SimpleIssuerProvider(List<? extends X509Certificate> issuers) {
         if (issuers == null) {
             this.issuers = Collections.emptyMap();
             return;
