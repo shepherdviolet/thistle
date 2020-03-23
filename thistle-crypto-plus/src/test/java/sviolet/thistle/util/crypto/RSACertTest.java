@@ -212,6 +212,22 @@ public class RSACertTest {
     }
 
     @Test
+    public void getDomainNamesFromCertificate() throws CertificateException, NoSuchProviderException, IOException {
+        X509Certificate cert = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(Base64Utils.decode(CERT));
+        Assert.assertEquals("[baidu.com, baidu.com, baifubao.com, www.baidu.cn, www.baidu.com.cn, " +
+                        "mct.y.nuomi.com, apollo.auto, dwz.cn, *.baidu.com, *.baifubao.com, *.baidustatic.com, " +
+                        "*.bdstatic.com, *.bdimg.com, *.hao123.com, *.nuomi.com, *.chuanke.com, *.trustgo.com, " +
+                        "*.bce.baidu.com, *.eyun.baidu.com, *.map.baidu.com, *.mbd.baidu.com, *.fanyi.baidu.com, " +
+                        "*.baidubce.com, *.mipcdn.com, *.news.baidu.com, *.baidupcs.com, *.aipage.com, *.aipage.cn, " +
+                        "*.bcehost.com, *.safe.baidu.com, *.im.baidu.com, *.baiducontent.com, *.dlnel.com, " +
+                        "*.dlnel.org, *.dueros.baidu.com, *.su.baidu.com, *.91.com, *.hao123.baidu.com, " +
+                        "*.apollo.auto, *.xueshu.baidu.com, *.bj.baidubce.com, *.gz.baidubce.com, *.smartapps.cn, " +
+                        "*.bdtjrcv.com, *.hao222.com, *.haokan.com, *.pae.baidu.com, click.hm.baidu.com, " +
+                        "log.hm.baidu.com, cm.pos.baidu.com, wn.pos.baidu.com, update.pan.baidu.com]",
+                String.valueOf(AdvancedCertificateUtils.getDomainNamesFromCertificate(cert)));
+    }
+
+    @Test
     public void verifyCertificateByIssuers0() throws CertificateException, NoSuchProviderException {
         X509Certificate cert = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(Base64Utils.decode(CERT));
         X509Certificate caCert = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(Base64Utils.decode(CA_CERT));

@@ -57,6 +57,8 @@ import java.security.cert.*;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -192,6 +194,38 @@ public class BaseBCCertificateUtils {
             dnPath.append(" -> [").append(issuerDn).append("]");
         }
         throw new CertificateException("Too many CA certifications (> 10). " + dnPath + ". verifying certificate: " + certificate);
+    }
+
+    /**
+     * 获取证书支持的所有域名, 从CN和Alternative Names中获取
+     * @param certificate 证书
+     */
+    public static List<String> getDomainNamesFromCertificate(X509Certificate certificate) throws CertificateParsingException, IOException {
+        if (certificate == null) {
+            return new ArrayList<>(0);
+        }
+        List<String> domainNames;
+        // 取CN
+        X500NameWrapper x500NameWrapper = dnToX500Name(certificate.getSubjectDN().getName());
+        List<String> cns = x500NameWrapper.getObjects(BCStyle.CN);
+        // 取Alternative Names
+        Collection<List<?>> alternativeNames = certificate.getSubjectAlternativeNames();
+        if (alternativeNames != null && alternativeNames.size() > 0) {
+            domainNames = new ArrayList<>(alternativeNames.size() + cns.size());
+            domainNames.addAll(cns);
+            for (List<?> typeValue : alternativeNames) {
+                if (typeValue.size() != 2) {
+                    continue;
+                }
+                if (typeValue.get(0).equals(2)) {
+                    domainNames.add(String.valueOf(typeValue.get(1)));
+                }
+            }
+        } else {
+            domainNames = new ArrayList<>(cns.size());
+            domainNames.addAll(cns);
+        }
+        return domainNames;
     }
 
     /***********************************************************************************************

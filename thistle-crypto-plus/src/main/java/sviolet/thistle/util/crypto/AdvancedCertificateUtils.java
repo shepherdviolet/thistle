@@ -34,6 +34,7 @@ import java.io.InputStream;
 import java.security.*;
 import java.security.cert.CertPath;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -182,6 +183,14 @@ public class AdvancedCertificateUtils extends CertificateUtils {
      */
     public static <ParameterType> void verifyCertificateByIssuers(X509Certificate certificate, Date currentTime, IssuerProvider<ParameterType> issuerProvider, ParameterType issuerProviderParameter) throws CertificateException {
         BaseBCCertificateUtils.verifyCertificateByIssuers(certificate, currentTime, issuerProvider, issuerProviderParameter);
+    }
+
+    /**
+     * 获取证书支持的所有域名, 从CN和Alternative Names中获取
+     * @param certificate 证书
+     */
+    public static List<String> getDomainNamesFromCertificate(X509Certificate certificate) throws CertificateParsingException, IOException {
+        return BaseBCCertificateUtils.getDomainNamesFromCertificate(certificate);
     }
 
     /***********************************************************************************************
