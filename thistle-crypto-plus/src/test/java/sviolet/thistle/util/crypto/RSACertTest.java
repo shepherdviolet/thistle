@@ -19,12 +19,14 @@
 
 package sviolet.thistle.util.crypto;
 
+import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.junit.Assert;
 import org.junit.Test;
 import sviolet.thistle.util.conversion.Base64Utils;
 import sviolet.thistle.util.crypto.base.RootIssuerProvider;
 import sviolet.thistle.util.crypto.base.SimpleIssuerResolver;
+import sviolet.thistle.util.crypto.base.X500NameWrapper;
 
 import java.io.IOException;
 import java.security.*;
@@ -195,6 +197,18 @@ public class RSACertTest {
             "AbEVtQwdpf5pLGkkeB6zpxxxYu7KyJesF12KwvhHhm4qxFYxldBniYUr+WymXUad\n" +
             "DKqC5JlR3XC321Y9YeRq4VzW9v493kHMB65jUr9TU/Qr6cf9tveCX4XSQRjbgbME\n" +
             "HMUfpIBvFSDJ3gyICh3WZlXi/EjJKSZp4A==";
+
+    @Test
+    public void dnToX500Name() throws CertificateException, NoSuchProviderException, IOException {
+        X509Certificate cert = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(Base64Utils.decode(CERT));
+        X500NameWrapper x500NameWrapper = AdvancedCertificateUtils.dnToX500Name(cert.getSubjectDN());
+        Assert.assertEquals("baidu.com",
+                x500NameWrapper.getObject(BCStyle.CN));
+        Assert.assertEquals("CN",
+                x500NameWrapper.getObject(BCStyle.C));
+        Assert.assertArrayEquals(new String[]{"aaa", "bbb", "ccc"},
+                AdvancedCertificateUtils.dnToX500Name("CN=aaa+CN=bbb, CN=ccc").getObjects(BCStyle.CN).toArray());
+    }
 
     @Test
     public void verifyCertificateByIssuers0() throws CertificateException, NoSuchProviderException {
