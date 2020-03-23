@@ -38,7 +38,7 @@ public class SimpleIssuerResolver implements IssuerProvider<Object> {
     /**
      * @param issuers 固定的颁发者集合
      */
-    public SimpleIssuerResolver(List<X509Certificate> issuers) {
+    public SimpleIssuerResolver(List<? extends X509Certificate> issuers) {
         if (issuers == null) {
             this.issuers = Collections.emptyMap();
             return;
@@ -54,10 +54,10 @@ public class SimpleIssuerResolver implements IssuerProvider<Object> {
 
     /**
      * @param dn DN信息
-     * @param issuerProviderParameter 这里不用
+     * @param useless 这里不用
      */
     @Override
-    public X509Certificate findIssuer(String dn, Object issuerProviderParameter) throws CertificateException {
+    public X509Certificate findIssuer(String dn, Object useless) throws CertificateException {
         return issuers.get(dn);
     }
 

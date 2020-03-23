@@ -31,14 +31,14 @@ import java.util.Map;
  *
  * @author S.Violet
  */
-public class RootIssuerProvider implements IssuerProvider<List<X509Certificate>> {
+public class RootIssuerProvider implements IssuerProvider<List<? extends X509Certificate>> {
 
     private final Map<String, X509Certificate> issuers;
 
     /**
      * @param rootIssuers 根证书(由服务端限定)
      */
-    public RootIssuerProvider(List<X509Certificate> rootIssuers) {
+    public RootIssuerProvider(List<? extends X509Certificate> rootIssuers) {
         if (rootIssuers == null) {
             this.issuers = Collections.emptyMap();
             return;
@@ -57,7 +57,7 @@ public class RootIssuerProvider implements IssuerProvider<List<X509Certificate>>
      * @param caIssuers 客户端上送的中间CA证书, 不允许存在根证书
      */
     @Override
-    public X509Certificate findIssuer(String dn, List<X509Certificate> caIssuers) throws CertificateException {
+    public X509Certificate findIssuer(String dn, List<? extends X509Certificate> caIssuers) throws CertificateException {
         // 服务端限定的证书优先
         X509Certificate issuer = issuers.get(dn);
         if (issuer != null) {

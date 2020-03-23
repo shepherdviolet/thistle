@@ -24,6 +24,7 @@ import org.bouncycastle.operator.OperatorCreationException;
 import org.junit.Assert;
 import org.junit.Test;
 import sviolet.thistle.util.conversion.Base64Utils;
+import sviolet.thistle.util.crypto.base.IssuerProvider;
 import sviolet.thistle.util.crypto.base.RootIssuerProvider;
 import sviolet.thistle.util.crypto.base.SimpleIssuerResolver;
 import sviolet.thistle.util.crypto.base.X500NameWrapper;
@@ -215,6 +216,7 @@ public class RSACertTest {
         X509Certificate cert = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(Base64Utils.decode(CERT));
         X509Certificate caCert = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(Base64Utils.decode(CA_CERT));
         X509Certificate rootCert = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(Base64Utils.decode(ROOT_CERT));
+        // 根证书 和 CA证书都由服务端限定, 客户端上送自己的证书
         AdvancedCertificateUtils.verifyCertificateByIssuers(cert, new Date(), new SimpleIssuerResolver(Arrays.asList(caCert, rootCert)));
     }
 
@@ -222,7 +224,17 @@ public class RSACertTest {
     public void verifyCertificateByIssuers1() throws CertificateException, NoSuchProviderException {
         X509Certificate cert = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(Base64Utils.decode(CERT));
         X509Certificate caCert = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(Base64Utils.decode(CA_CERT));
+        // CA证书由服务端限定, 且服务端把CA证书当根证书用, 客户端上送自己的证书
+        AdvancedCertificateUtils.verifyCertificateByIssuers(cert, new Date(),
+                new SimpleIssuerResolver(Collections.singletonList(new IssuerProvider.ActAsRoot(caCert))));
+    }
+
+    @Test
+    public void verifyCertificateByIssuers2() throws CertificateException, NoSuchProviderException {
+        X509Certificate cert = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(Base64Utils.decode(CERT));
+        X509Certificate caCert = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(Base64Utils.decode(CA_CERT));
         X509Certificate rootCert = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(Base64Utils.decode(ROOT_CERT));
+        // 根证书由服务端限定, 客户端上送自己的证书和CA证书
         AdvancedCertificateUtils.verifyCertificateByIssuers(cert, new Date(), new RootIssuerProvider(Collections.singletonList(rootCert)), Collections.singletonList(caCert));
     }
 
