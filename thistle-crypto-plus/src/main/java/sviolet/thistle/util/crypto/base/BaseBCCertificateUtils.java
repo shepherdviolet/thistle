@@ -176,13 +176,19 @@ public class BaseBCCertificateUtils {
             if (issuer == null) {
                 throw new CertificateException("Certificate issuer '" + issuerDn + "' not found. " + dnPath + " (Not Found!). verifying certificate: " + certificate);
             }
+            // issuerProvider返回的证书如果是ActAsRoot, 则视为根证书处理, 不再继续查找签发者
+            boolean actAsRoot = false;
+            if (issuer instanceof IssuerProvider.ActAsRoot) {
+                issuer = ((IssuerProvider.ActAsRoot) issuer).getActualCertificate();
+                actAsRoot = true;
+            }
             try {
                 verifyCertificate(current, issuer.getPublicKey(), currentTime);
             } catch (Exception e) {
                 throw new CertificateException("Certificate '" + current + "' invalid. " + dnPath + " (Invalid!). verifying certificate: " + certificate);
             }
             // 遇到根证书结束, 验证成功
-            if (currentDn.equals(issuerDn)) {
+            if (actAsRoot || currentDn.equals(issuerDn)) {
                 return;
             }
             current = issuer;

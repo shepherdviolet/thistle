@@ -19,6 +19,8 @@
 
 package sviolet.thistle.util.crypto.base;
 
+import sun.security.x509.X509CertImpl;
+
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
@@ -39,5 +41,28 @@ public interface IssuerProvider<ParameterType> {
      * @return 颁发者的证书
      */
     X509Certificate findIssuer(String dn, ParameterType issuerProviderParameter) throws CertificateException;
+
+    /**
+     * [仅限于IssuerProvider使用] 将一个非根证书当成根证书使用, 即不再继续查找签发者. 见BaseBCCertificateUtils.
+     */
+    class ActAsRoot extends X509CertImpl {
+
+        private X509Certificate certificate;
+
+        public ActAsRoot(X509Certificate certificate) {
+            this.certificate = certificate;
+        }
+
+        public X509Certificate getActualCertificate(){
+            return certificate;
+        }
+
+        @Override
+        public String toString() {
+            return "ActAsRoot{" +
+                    "certificate=" + certificate +
+                    '}';
+        }
+    }
 
 }
