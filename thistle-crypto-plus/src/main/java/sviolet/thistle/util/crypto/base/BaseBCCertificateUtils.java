@@ -398,8 +398,8 @@ public class BaseBCCertificateUtils {
      * @param dn DN信息
      * @return X500Name
      */
-    public static X500Name dnToX500Name(String dn) throws IOException {
-        return new X500Name(dn);
+    public static X500NameWrapper dnToX500Name(String dn) throws IOException {
+        return new X500NameWrapper(dn);
     }
 
     /**

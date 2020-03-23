@@ -19,7 +19,6 @@
 
 package sviolet.thistle.util.crypto;
 
-import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.KeyUsage;
 import org.bouncycastle.asn1.x509.X509CertificateStructure;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
@@ -396,7 +395,7 @@ public class AdvancedCertificateUtils extends CertificateUtils {
      * @param dn DN信息
      * @return X500Name
      */
-    public static X500Name dnToX500Name(String dn) throws IOException {
+    public static X500NameWrapper dnToX500Name(String dn) throws IOException {
         return BaseBCCertificateUtils.dnToX500Name(dn);
     }
 
@@ -405,7 +404,7 @@ public class AdvancedCertificateUtils extends CertificateUtils {
      * @param principal DN信息, Certificate#getSubjectDN / getIssuerDN/ getSubjectX500Principal / getIssuerX500Principal得到
      * @return X500Name
      */
-    public static X500Name dnToX500Name(Principal principal) throws IOException {
+    public static X500NameWrapper dnToX500Name(Principal principal) throws IOException {
         return BaseBCCertificateUtils.dnToX500Name(principal.getName());
     }
 
