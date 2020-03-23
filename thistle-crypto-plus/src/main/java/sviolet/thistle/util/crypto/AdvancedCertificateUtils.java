@@ -410,7 +410,7 @@ public class AdvancedCertificateUtils extends CertificateUtils {
 
     /**
      * 将证书的DN信息转成X500Name实例 (便于获取里面具体的值, 例如获取CN)
-     * @param principal DN信息, Certificate#getSubjectDN / getIssuerDN/ getSubjectX500Principal / getIssuerX500Principal得到
+     * @param principal DN信息, Certificate#getSubjectX500Principal / getIssuerX500Principal得到
      * @return X500Name
      */
     public static X500NameWrapper dnToX500Name(Principal principal) throws IOException {

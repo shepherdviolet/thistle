@@ -206,7 +206,7 @@ public class RSACertTest {
     @Test
     public void dnToX500Name() throws CertificateException, NoSuchProviderException, IOException {
         X509Certificate cert = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(Base64Utils.decode(CERT));
-        X500NameWrapper x500NameWrapper = AdvancedCertificateUtils.dnToX500Name(cert.getSubjectDN());
+        X500NameWrapper x500NameWrapper = AdvancedCertificateUtils.dnToX500Name(cert.getSubjectX500Principal());
         Assert.assertEquals("baidu.com",
                 x500NameWrapper.getObject(BCStyle.CN));
         Assert.assertEquals("CN",

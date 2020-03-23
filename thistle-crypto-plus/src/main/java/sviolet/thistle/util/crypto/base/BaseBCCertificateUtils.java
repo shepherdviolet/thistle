@@ -166,8 +166,8 @@ public class BaseBCCertificateUtils {
         }
         X509Certificate current = certificate;
         X509Certificate issuer;
-        String currentDn = current.getSubjectDN().getName();
-        String issuerDn = current.getIssuerDN().getName();
+        String currentDn = current.getSubjectX500Principal().getName();
+        String issuerDn = current.getIssuerX500Principal().getName();
         if (currentDn.equals(issuerDn)) {
             // 待验证的证书不允许是根证书, 避免客户端拿根证书骗过验证
             throw new CertificateException("The certificate to be verified is a root certificate. verifying certificate: " + certificate);
@@ -189,8 +189,8 @@ public class BaseBCCertificateUtils {
                 return;
             }
             current = issuer;
-            currentDn = current.getSubjectDN().getName();
-            issuerDn = current.getIssuerDN().getName();
+            currentDn = current.getSubjectX500Principal().getName();
+            issuerDn = current.getIssuerX500Principal().getName();
             dnPath.append(" -> [").append(issuerDn).append("]");
         }
         throw new CertificateException("Too many CA certifications (> 10). " + dnPath + ". verifying certificate: " + certificate);
@@ -206,7 +206,7 @@ public class BaseBCCertificateUtils {
         }
         List<String> domainNames;
         // 取CN
-        X500NameWrapper x500NameWrapper = dnToX500Name(certificate.getSubjectDN().getName());
+        X500NameWrapper x500NameWrapper = dnToX500Name(certificate.getSubjectX500Principal().getName());
         List<String> cns = x500NameWrapper.getObjects(BCStyle.CN);
         // 取Alternative Names
         Collection<List<?>> alternativeNames = certificate.getSubjectAlternativeNames();

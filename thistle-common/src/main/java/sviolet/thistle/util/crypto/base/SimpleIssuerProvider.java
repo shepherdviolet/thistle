@@ -48,7 +48,7 @@ public class SimpleIssuerProvider implements IssuerProvider<Object> {
             if (issuer == null) {
                 continue;
             }
-            this.issuers.put(issuer.getSubjectDN().getName(), issuer);
+            this.issuers.put(issuer.getSubjectX500Principal().getName(), issuer);
         }
     }
 

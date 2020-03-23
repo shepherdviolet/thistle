@@ -48,7 +48,7 @@ public class RootIssuerProvider implements IssuerProvider<List<? extends X509Cer
             if (issuer == null) {
                 continue;
             }
-            this.issuers.put(issuer.getSubjectDN().getName(), issuer);
+            this.issuers.put(issuer.getSubjectX500Principal().getName(), issuer);
         }
     }
 
@@ -68,10 +68,10 @@ public class RootIssuerProvider implements IssuerProvider<List<? extends X509Cer
             return null;
         }
         for (X509Certificate caIssuer : caIssuers) {
-            String issuerDn = caIssuer.getSubjectDN().getName();
+            String issuerDn = caIssuer.getSubjectX500Principal().getName();
             if (issuerDn.equals(dn)) {
                 // 不允许客户端上送根证书
-                if (issuerDn.equals(caIssuer.getIssuerDN().getName())) {
+                if (issuerDn.equals(caIssuer.getIssuerX500Principal().getName())) {
                     throw new CertificateException("The client is not allowed to send the root certificate to the server, the illegal ca certificate:" + caIssuer);
                 }
                 return caIssuer;
