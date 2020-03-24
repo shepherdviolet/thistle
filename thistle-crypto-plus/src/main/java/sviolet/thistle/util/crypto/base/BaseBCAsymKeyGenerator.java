@@ -24,10 +24,14 @@ import org.bouncycastle.asn1.pkcs.PrivateKeyInfo;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x9.X962Parameters;
 import org.bouncycastle.asn1.x9.X9ECParameters;
+import org.bouncycastle.asn1.x9.X9ECPoint;
 import org.bouncycastle.asn1.x9.X9ObjectIdentifiers;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.generators.ECKeyPairGenerator;
-import org.bouncycastle.crypto.params.*;
+import org.bouncycastle.crypto.params.ECDomainParameters;
+import org.bouncycastle.crypto.params.ECKeyGenerationParameters;
+import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
+import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
 import org.bouncycastle.jcajce.provider.asymmetric.util.EC5Util;
@@ -352,9 +356,10 @@ public class BaseBCAsymKeyGenerator {
             return new X962Parameters(asn1ObjectIdentifier);
         }
         ECCurve ecCurve = EC5Util.convertCurve(ecParameterSpec.getCurve());
+        java.security.spec.ECPoint ecPoint = ecParameterSpec.getGenerator();
         X9ECParameters x9ECParameters = new X9ECParameters(
                 ecCurve,
-                EC5Util.convertPoint(ecCurve, ecParameterSpec.getGenerator(), withCompression),
+                new X9ECPoint(ecCurve.createPoint(ecPoint.getAffineX(), ecPoint.getAffineY()), withCompression),
                 ecParameterSpec.getOrder(),
                 BigInteger.valueOf(ecParameterSpec.getCofactor()),
                 ecParameterSpec.getCurve().getSeed());
