@@ -17,7 +17,7 @@
  * Email: shepherdviolet@163.com
  */
 
-package sviolet.thistle.util.crypto;
+package sviolet.thistle.util.crypto.sample;
 
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Sequence;
@@ -34,6 +34,7 @@ import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequestBuilder;
 import org.junit.Test;
 import sviolet.thistle.util.conversion.Base64Utils;
 import sviolet.thistle.util.conversion.ByteUtils;
+import sviolet.thistle.util.crypto.*;
 import sviolet.thistle.util.crypto.base.BouncyCastleProviderUtils;
 import sviolet.thistle.util.crypto.base.IssuerProvider;
 import sviolet.thistle.util.crypto.base.SimpleIssuerProvider;
@@ -50,11 +51,11 @@ import java.util.Arrays;
 import java.util.Date;
 
 /**
- * 一些其他的示例
+ * 一些证书相关的示例
  *
  * @author S.Violet
  */
-public class OtherSamples {
+public class CertificateSamples {
 
     static {
         BouncyCastleProviderUtils.installProvider();
