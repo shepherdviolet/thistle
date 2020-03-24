@@ -42,6 +42,13 @@ import java.util.List;
  *     certmgr.msc
  * </p>
  *
+ * <p>
+ *     可以用同样的代码操作 JKS 密钥文件, 只要 ALGORITHM = "JKS" 即可.
+ *     没有把PKCS12和JKS整合是因为AdvancedPKCS12KeyStoreUtils中操作PKCS12的代码无法通用, 而JKS文件可以用keytool命令转PKCS12.
+ *     keytool -list -v -keystore name.jks
+ *     keytool -importkeystore -srckeystore name.jks -destkeystore name.p12 -deststoretype pkcs12
+ * </p>
+ *
  * @author S.Violet
  */
 public class PKCS12KeyStoreUtils {
