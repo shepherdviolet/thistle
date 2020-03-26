@@ -26,10 +26,7 @@ import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
 import sviolet.thistle.entity.exception.IllegalParamException;
 import sviolet.thistle.util.conversion.Base64Utils;
 import sviolet.thistle.util.conversion.ByteUtils;
-import sviolet.thistle.util.crypto.AdvancedCertificateUtils;
-import sviolet.thistle.util.crypto.PEMEncodeUtils;
-import sviolet.thistle.util.crypto.RSAKeyGenerator;
-import sviolet.thistle.util.crypto.SM2KeyGenerator;
+import sviolet.thistle.util.crypto.*;
 
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
@@ -57,7 +54,7 @@ public class GuessWhoIAm {
             "+5Lhxg+fsDi94VkvZtaXhObxS5yrk/0=\n" +
             "-----END CERTIFICATE-----";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 //        guess(Base64Utils.encodeToString(RSAKeyGenerator.generateKeyPair(1024).getPKCS8EncodedPrivateKey()));
 //        guess(Base64Utils.encodeToString(RSAKeyGenerator.generateKeyPair(1024).getX509EncodedPublicKey()));
 //        guess(Base64Utils.encodeToString(RSAKeyGenerator.generateKeyPair(2048).getPKCS8EncodedPrivateKey()));
@@ -175,8 +172,11 @@ public class GuessWhoIAm {
 
         try {
             X509Certificate certificate = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(dataBytes);
-            System.out.println("Is a X509 Certificate");
-            System.out.println(certificate);
+            if (certificate != null) {
+                System.out.println("Is a X509 Certificate");
+                System.out.println("Public Key (X509):" + Base64Utils.encodeToString(certificate.getPublicKey().getEncoded()));
+                System.out.println("Certificate:" + certificate);
+            }
             return;
         } catch (Throwable ignore) {
         }
