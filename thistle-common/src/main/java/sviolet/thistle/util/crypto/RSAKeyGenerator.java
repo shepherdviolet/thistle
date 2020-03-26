@@ -84,7 +84,12 @@ public class RSAKeyGenerator {
     }
 
     /**
-     * 用模和指数生成RSA公钥
+     * <p>用模和指数生成RSA公钥</p>
+     *
+     * <p>BigInteger转HexString: bigInteger.toString(16) </p>
+     * <p>BigInteger转byte[]: ByteUtils.trimHeader(bigInteger.toByteArray())), 注意要去掉头部的0x00</p>
+     * <p>HexString转BigInteger: new BigInteger(string, 16)</p>
+     * <p>byte[]转BigInteger: new BigInteger(bytes), 有时头部没0x00变负数, 试试new BigInteger(ByteUtils.bytesToHex(bytes), 16)</p>
      *
      * @param modulus  模, 与私钥的模数一致
      * @param exponent 指数, 常用65537
@@ -94,7 +99,12 @@ public class RSAKeyGenerator {
     }
 
     /**
-     * 用模和指数生成RSA私钥
+     * <p>用模和指数生成RSA私钥</p>
+     *
+     * <p>BigInteger转HexString: bigInteger.toString(16) </p>
+     * <p>BigInteger转byte[]: ByteUtils.trimHeader(bigInteger.toByteArray())), 注意要去掉头部的0x00</p>
+     * <p>HexString转BigInteger: new BigInteger(string, 16)</p>
+     * <p>byte[]转BigInteger: new BigInteger(bytes), 有时头部没0x00变负数, 试试new BigInteger(ByteUtils.bytesToHex(bytes), 16)</p>
      *
      * @param modulus  模, 与公钥的模数一致
      * @param exponent 指数

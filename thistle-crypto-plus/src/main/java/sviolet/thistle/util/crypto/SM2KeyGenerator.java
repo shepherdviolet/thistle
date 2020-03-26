@@ -49,7 +49,7 @@ import java.security.spec.InvalidKeySpecException;
  * <p>BigInteger转HexString: bigInteger.toString(16) </p>
  * <p>BigInteger转byte[]: ByteUtils.trimHeader(bigInteger.toByteArray())), 注意要去掉头部的0x00</p>
  * <p>HexString转BigInteger: new BigInteger(string, 16)</p>
- * <p>byte[]转BigInteger: new BigInteger(bytes)</p>
+ * <p>byte[]转BigInteger: new BigInteger(bytes), 有时头部没0x00变负数, 试试new BigInteger(ByteUtils.bytesToHex(bytes), 16)</p>
  *
  * @author S.Violet
  */
@@ -104,7 +104,7 @@ public class SM2KeyGenerator {
      * <p>BigInteger转HexString: bigInteger.toString(16) </p>
      * <p>BigInteger转byte[]: ByteUtils.trimHeader(bigInteger.toByteArray())), 注意要去掉头部的0x00</p>
      * <p>HexString转BigInteger: new BigInteger(string, 16)</p>
-     * <p>byte[]转BigInteger: new BigInteger(bytes)</p>
+     * <p>byte[]转BigInteger: new BigInteger(bytes), 有时头部没0x00变负数, 试试new BigInteger(ByteUtils.bytesToHex(bytes), 16)</p>
      *
      * @param d D值
      * @return 私钥实例(与JDK的密钥实例不同)
@@ -133,7 +133,7 @@ public class SM2KeyGenerator {
      * <p>BigInteger转HexString: bigInteger.toString(16) </p>
      * <p>BigInteger转byte[]: ByteUtils.trimHeader(bigInteger.toByteArray())), 注意要去掉头部的0x00</p>
      * <p>HexString转BigInteger: new BigInteger(string, 16)</p>
-     * <p>byte[]转BigInteger: new BigInteger(bytes)</p>
+     * <p>byte[]转BigInteger: new BigInteger(bytes), 有时头部没0x00变负数, 试试new BigInteger(ByteUtils.bytesToHex(bytes), 16)</p>
      *
      * @param xBytes 坐标X, 如果给的是Base64/Hex字符串, 尝试转成byte[]
      * @param yBytes 坐标Y, 如果给的是Base64/Hex字符串, 尝试转成byte[]
@@ -153,7 +153,7 @@ public class SM2KeyGenerator {
      * <p>BigInteger转HexString: bigInteger.toString(16) </p>
      * <p>BigInteger转byte[]: ByteUtils.trimHeader(bigInteger.toByteArray())), 注意要去掉头部的0x00</p>
      * <p>HexString转BigInteger: new BigInteger(string, 16)</p>
-     * <p>byte[]转BigInteger: new BigInteger(bytes)</p>
+     * <p>byte[]转BigInteger: new BigInteger(bytes), 有时头部没0x00变负数, 试试new BigInteger(ByteUtils.bytesToHex(bytes), 16)</p>
      *
      * @param x 坐标X, 如果给的是Base64/Hex字符串, 尝试转成byte[]然后new BigInteger(bytes)
      * @param y 坐标Y, 如果给的是Base64/Hex字符串, 尝试转成byte[]然后new BigInteger(bytes)
