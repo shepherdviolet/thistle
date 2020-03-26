@@ -78,7 +78,7 @@ public class SM4Cipher {
      *
      * @param data 数据
      * @param key 秘钥(SM4:128bit)
-     * @param ivSeed iv初始化向量, 16 bytes, 例如:"1234567812345678".getBytes("UTF-8")
+     * @param ivSeed iv初始化向量, 16 bytes, 例如:"1234567812345678".getBytes("UTF-8"), 留空默认0x0000....
      * @param cryptoAlgorithm 加密算法/填充算法
      */
     public static byte[] encryptCBC(byte[] data, byte[] key, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, NoSuchProviderException {
@@ -103,7 +103,7 @@ public class SM4Cipher {
      * @param in 待加密数据流
      * @param out 加密后数据流
      * @param key 秘钥(SM4:128bit)
-     * @param ivSeed iv初始化向量, 16 bytes, 例如:"1234567812345678".getBytes("UTF-8")
+     * @param ivSeed iv初始化向量, 16 bytes, 例如:"1234567812345678".getBytes("UTF-8"), 留空默认0x0000....
      * @param cryptoAlgorithm 加密算法/填充算法
      */
     public static void encryptCBC(InputStream in, OutputStream out, byte[] key, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException, NoSuchProviderException {
@@ -126,7 +126,7 @@ public class SM4Cipher {
      *
      * @param data 数据
      * @param key 秘钥(SM4:128bit)
-     * @param ivSeed iv初始化向量, 16 bytes, "1234567812345678".getBytes("UTF-8")
+     * @param ivSeed iv初始化向量, 16 bytes, "1234567812345678".getBytes("UTF-8"), 留空默认0x0000....
      * @param cryptoAlgorithm 加密算法/填充算法
      */
     public static byte[] decryptCBC(byte[] data, byte[] key, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, NoSuchProviderException {
@@ -151,7 +151,7 @@ public class SM4Cipher {
      * @param in 待解密数据流
      * @param out 解密后数据流
      * @param key 秘钥(SM4:128bit)
-     * @param ivSeed iv初始化向量, 16 bytes, "1234567812345678".getBytes("UTF-8")
+     * @param ivSeed iv初始化向量, 16 bytes, "1234567812345678".getBytes("UTF-8"), 留空默认0x0000....
      * @param cryptoAlgorithm 加密算法/填充算法
      */
     public static void decryptCBC(InputStream in, OutputStream out, byte[] key, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException, NoSuchProviderException {

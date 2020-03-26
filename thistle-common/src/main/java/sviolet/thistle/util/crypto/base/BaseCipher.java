@@ -72,7 +72,7 @@ public class BaseCipher {
      * @param data 数据
      * @param key 秘钥(AES:128/256bit, DES:64/192bit)
      * @param keyAlgorithm 秘钥算法
-     * @param ivSeed iv初始化向量, AES 16 bytes, DES 8bytes
+     * @param ivSeed iv初始化向量, AES 16 bytes, DES 8bytes, 留空默认0x0000....
      * @param cryptoAlgorithm 加密算法/填充算法
      */
     public static byte[] encryptCBC(byte[] data, byte[] key, String keyAlgorithm, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
@@ -81,7 +81,7 @@ public class BaseCipher {
         }
         SecretKeySpec keySpec = new SecretKeySpec(key, keyAlgorithm);
         Cipher cipher = Cipher.getInstance(cryptoAlgorithm);
-        IvParameterSpec iv = new IvParameterSpec(ivSeed);
+        IvParameterSpec iv = new IvParameterSpec(ivSeed != null ? ivSeed : new byte[cipher.getBlockSize()]);
         cipher.init(Cipher.ENCRYPT_MODE, keySpec, iv);
         return cipher.doFinal(data);
     }
@@ -150,7 +150,7 @@ public class BaseCipher {
      * @param out 加密后数据流
      * @param key 秘钥(AES:128/256bit, DES:64/192bit)
      * @param keyAlgorithm 秘钥算法
-     * @param ivSeed iv初始化向量, AES 16 bytes, DES 8bytes
+     * @param ivSeed iv初始化向量, AES 16 bytes, DES 8bytes, 留空默认0x0000....
      * @param cryptoAlgorithm 加密算法/填充算法
      */
     public static void encryptCBC(InputStream in, OutputStream out, byte[] key, String keyAlgorithm, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException {
@@ -164,7 +164,7 @@ public class BaseCipher {
         try {
             SecretKeySpec keySpec = new SecretKeySpec(key, keyAlgorithm);
             Cipher cipher = Cipher.getInstance(cryptoAlgorithm);
-            IvParameterSpec iv = new IvParameterSpec(ivSeed);
+            IvParameterSpec iv = new IvParameterSpec(ivSeed != null ? ivSeed : new byte[cipher.getBlockSize()]);
             cipher.init(Cipher.ENCRYPT_MODE, keySpec, iv);
 
             in = new CipherInputStream(in, cipher);
@@ -242,7 +242,7 @@ public class BaseCipher {
      * @param data 数据
      * @param key 秘钥(AES:128/256bit, DES:64/192bit)
      * @param keyAlgorithm 秘钥算法
-     * @param ivSeed iv初始化向量, AES 16 bytes, DES 8bytes
+     * @param ivSeed iv初始化向量, AES 16 bytes, DES 8bytes, 留空默认0x0000....
      * @param cryptoAlgorithm 加密算法/填充算法
      */
     public static byte[] decryptCBC(byte[] data, byte[] key, String keyAlgorithm, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException{
@@ -251,7 +251,7 @@ public class BaseCipher {
         }
         SecretKeySpec keySpec = new SecretKeySpec(key, keyAlgorithm);
         Cipher cipher = Cipher.getInstance(cryptoAlgorithm);
-        IvParameterSpec iv = new IvParameterSpec(ivSeed);
+        IvParameterSpec iv = new IvParameterSpec(ivSeed != null ? ivSeed : new byte[cipher.getBlockSize()]);
         cipher.init(Cipher.DECRYPT_MODE, keySpec, iv);
         return cipher.doFinal(data);
     }
@@ -320,7 +320,7 @@ public class BaseCipher {
      * @param out 解密后数据流
      * @param key 秘钥(AES:128/256bit, DES:64/192bit)
      * @param keyAlgorithm 秘钥算法
-     * @param ivSeed iv初始化向量, AES 16 bytes, DES 8bytes
+     * @param ivSeed iv初始化向量, AES 16 bytes, DES 8bytes, 留空默认0x0000....
      * @param cryptoAlgorithm 加密算法/填充算法
      */
     public static void decryptCBC(InputStream in, OutputStream out, byte[] key, String keyAlgorithm, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException {
@@ -334,7 +334,7 @@ public class BaseCipher {
         try {
             SecretKeySpec keySpec = new SecretKeySpec(key, keyAlgorithm);
             Cipher cipher = Cipher.getInstance(cryptoAlgorithm);
-            IvParameterSpec iv = new IvParameterSpec(ivSeed);
+            IvParameterSpec iv = new IvParameterSpec(ivSeed != null ? ivSeed : new byte[cipher.getBlockSize()]);
             cipher.init(Cipher.DECRYPT_MODE, keySpec, iv);
 
             out = new CipherOutputStream(out, cipher);

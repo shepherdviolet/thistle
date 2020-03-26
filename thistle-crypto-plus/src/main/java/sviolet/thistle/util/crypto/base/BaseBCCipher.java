@@ -87,7 +87,7 @@ public class BaseBCCipher {
      * @param data 数据
      * @param key 秘钥(SM4:128位)
      * @param keyAlgorithm 秘钥算法
-     * @param ivSeed iv初始化向量, SM4 16 bytes
+     * @param ivSeed iv初始化向量, SM4 16 bytes, 留空默认0x0000....
      * @param cryptoAlgorithm 加密算法/填充算法
      */
     public static byte[] encryptCBC(byte[] data, byte[] key, String keyAlgorithm, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, NoSuchProviderException, InvalidAlgorithmParameterException {
@@ -96,7 +96,7 @@ public class BaseBCCipher {
         }
         Cipher cipher = Cipher.getInstance(cryptoAlgorithm, BouncyCastleProvider.PROVIDER_NAME);
         SecretKeySpec keySpec = new SecretKeySpec(key, keyAlgorithm);
-        IvParameterSpec ivParameterSpec = new IvParameterSpec(ivSeed);
+        IvParameterSpec ivParameterSpec = new IvParameterSpec(ivSeed != null ? ivSeed : new byte[cipher.getBlockSize()]);
         cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivParameterSpec);
         return cipher.doFinal(data);
     }
@@ -142,7 +142,7 @@ public class BaseBCCipher {
      * @param out 加密后数据流
      * @param key 秘钥(SM4:128位)
      * @param keyAlgorithm 秘钥算法
-     * @param ivSeed iv初始化向量, SM4 16 bytes
+     * @param ivSeed iv初始化向量, SM4 16 bytes, 留空默认0x0000....
      * @param cryptoAlgorithm 加密算法/填充算法
      */
     public static void encryptCBC(InputStream in, OutputStream out, byte[] key, String keyAlgorithm, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException, NoSuchProviderException {
@@ -156,7 +156,7 @@ public class BaseBCCipher {
         try {
             Cipher cipher = Cipher.getInstance(cryptoAlgorithm, BouncyCastleProvider.PROVIDER_NAME);
             SecretKeySpec keySpec = new SecretKeySpec(key, keyAlgorithm);
-            IvParameterSpec ivParameterSpec = new IvParameterSpec(ivSeed);
+            IvParameterSpec ivParameterSpec = new IvParameterSpec(ivSeed != null ? ivSeed : new byte[cipher.getBlockSize()]);
             cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivParameterSpec);
 
             in = new CipherInputStream(in, cipher);
@@ -195,7 +195,7 @@ public class BaseBCCipher {
      * @param data 数据
      * @param key 秘钥(SM4:128位)
      * @param keyAlgorithm 秘钥算法
-     * @param ivSeed iv初始化向量, AES 16 bytes, DES 8bytes
+     * @param ivSeed iv初始化向量, SM4 16 bytes, 留空默认0x0000....
      * @param cryptoAlgorithm 加密算法/填充算法
      */
     public static byte[] decryptCBC(byte[] data, byte[] key, String keyAlgorithm, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, NoSuchProviderException {
@@ -204,7 +204,7 @@ public class BaseBCCipher {
         }
         Cipher cipher = Cipher.getInstance(cryptoAlgorithm, BouncyCastleProvider.PROVIDER_NAME);
         SecretKeySpec keySpec = new SecretKeySpec(key, keyAlgorithm);
-        IvParameterSpec ivParameterSpec = new IvParameterSpec(ivSeed);
+        IvParameterSpec ivParameterSpec = new IvParameterSpec(ivSeed != null ? ivSeed : new byte[cipher.getBlockSize()]);
         cipher.init(Cipher.DECRYPT_MODE, keySpec, ivParameterSpec);
         return cipher.doFinal(data);
     }
@@ -250,7 +250,7 @@ public class BaseBCCipher {
      * @param out 解密后数据流
      * @param key 秘钥(SM4:128位)
      * @param keyAlgorithm 秘钥算法
-     * @param ivSeed iv初始化向量, SM4 16 bytes
+     * @param ivSeed iv初始化向量, SM4 16 bytes, 留空默认0x0000....
      * @param cryptoAlgorithm 加密算法/填充算法
      */
     public static void decryptCBC(InputStream in, OutputStream out, byte[] key, String keyAlgorithm, byte[] ivSeed, String cryptoAlgorithm) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException, NoSuchProviderException {
@@ -264,7 +264,7 @@ public class BaseBCCipher {
         try {
             Cipher cipher = Cipher.getInstance(cryptoAlgorithm, BouncyCastleProvider.PROVIDER_NAME);
             SecretKeySpec keySpec = new SecretKeySpec(key, keyAlgorithm);
-            IvParameterSpec ivParameterSpec = new IvParameterSpec(ivSeed);
+            IvParameterSpec ivParameterSpec = new IvParameterSpec(ivSeed != null ? ivSeed : new byte[cipher.getBlockSize()]);
             cipher.init(Cipher.DECRYPT_MODE, keySpec, ivParameterSpec);
 
             out = new CipherOutputStream(out, cipher);
