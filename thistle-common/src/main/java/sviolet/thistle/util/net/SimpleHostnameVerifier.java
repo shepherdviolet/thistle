@@ -41,6 +41,10 @@ public class SimpleHostnameVerifier implements HostnameVerifier {
 
     private static final Integer DNS_NAME = 2;
 
+    /**
+     * @param hostname 实际访问的域名
+     * @param session SSL会话, 可以从中获取证书
+     */
     @Override
     public boolean verify(String hostname, SSLSession session) {
         try {
@@ -88,7 +92,7 @@ public class SimpleHostnameVerifier implements HostnameVerifier {
         return false;
     }
 
-    private String getCn(String dn) {
+    protected String getCn(String dn) {
         if (CheckUtils.isEmptyOrBlank(dn)) {
             return null;
         }
@@ -109,7 +113,12 @@ public class SimpleHostnameVerifier implements HostnameVerifier {
         return dn.substring(cnStart + 3, cnEnd).trim();
     }
 
-    private boolean isHostnameMatch(String hostname, String cn) {
+    /**
+     * @param hostname 实际访问的域名
+     * @param cn 证书的CN或者subjectAlternativeNames
+     * @return true: 实际访问的域名与证书声明的域名相符, false: 不符, 会继续匹配其他的subjectAlternativeNames
+     */
+    protected boolean isHostnameMatch(String hostname, String cn) {
         if (CheckUtils.isEmptyOrBlank(cn)) {
             return false;
         }
