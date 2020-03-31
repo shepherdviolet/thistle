@@ -26,6 +26,7 @@ import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -117,7 +118,7 @@ public class PKCS12KeyStoreUtils {
      *
      * @param keyStoreOutputStream keyStore的输出流, 完成后会关闭
      * @param keyStorePassword keyStore的密码
-     * @param alias 证书和私钥的别名
+     * @param alias 证书和私钥的别名, 无私钥且证书不止一个时, 别名会变成0,1,2,...
      * @param privateKey 证书对应的私钥(如果为空, 则仅保存证书)
      * @param certificateChain 证书链, 通常传入一个证书即可, 用户证书/CA证书/根证书一般会分别导出独立的文件. 如果需要一次性导出整个
      *                         证书链到一个文件, 也可以传入多个证书, 顺序是个人证书->二级CA证书->根证书, {userCertificate, subCaCertificate, rootCertificate}
@@ -131,9 +132,13 @@ public class PKCS12KeyStoreUtils {
             keyStore.load(null, null);
             if (privateKey != null) {
                 keyStore.setKeyEntry(alias, privateKey, keyStorePassword != null ? keyStorePassword.toCharArray() : null, certificateChain);
+            } else if (certificateChain.length == 1) {
+                keyStore.setCertificateEntry(alias, certificateChain[0]);
             } else {
+                //无私钥且证书不止一个时, 别名改成0,1,2,...
+                int i = 0;
                 for (Certificate certificate : certificateChain){
-                    keyStore.setCertificateEntry(alias, certificate);
+                    keyStore.setCertificateEntry(String.valueOf(i++), certificate);
                 }
             }
             keyStore.store(keyStoreOutputStream, keyStorePassword != null ? keyStorePassword.toCharArray() : null);
@@ -328,6 +333,14 @@ public class PKCS12KeyStoreUtils {
             return privateKey;
         }
 
+        @Override
+        public String toString() {
+            return "CertificateChainAndKey{" +
+                    "alias='" + alias + '\'' +
+                    ", certificateChain=" + Arrays.toString(certificateChain) +
+                    ", privateKey=" + privateKey +
+                    '}';
+        }
     }
 
 }
