@@ -21,6 +21,8 @@ package sviolet.thistle.util.crypto;
 
 import sviolet.thistle.util.crypto.base.BaseKeyGenerator;
 
+import java.security.SecureRandom;
+
 /**
  * 安全随机数工具
  *
@@ -58,6 +60,10 @@ public class SecureRandomUtils {
 
     public static long nextLong(){
         return BaseKeyGenerator.getSystemSecureRandom().nextLong();
+    }
+
+    public static SecureRandom getSystemSecureRandom(){
+        return BaseKeyGenerator.getSystemSecureRandom();
     }
 
 }

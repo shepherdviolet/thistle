@@ -339,10 +339,16 @@ public class BaseBCCertificateUtils {
                 dn,
                 SubjectPublicKeyInfo.getInstance(publicKeyEncoded));
 
+//        // 扩展信息, critical表示该信息是否强制执行
 //        ExtensionsGenerator extensionsGenerator = new ExtensionsGenerator();
-//        // true: 申请签发CA证书
+//        // true: 申请签发CA证书  ///////////////////////////////////////////////////////////////////////////////////////
 //        //extensionsGenerator.addExtension(Extension.basicConstraints, true, new BasicConstraints(true));
-//        // 这个只是CSR(P10)请求CA颁发这些用途的证书, CA可以选择拒绝, 也可以选择无视
+//        // 增加可选域名 ////////////////////////////////////////////////////////////////////////////////////////////////
+//        GeneralName[] subjectAltNames = new GeneralName[2];
+//        subjectAltNames[0] = new GeneralName(GeneralName.dNSName, "1.host.com");
+//        subjectAltNames[1] = new GeneralName(GeneralName.dNSName, "2.host.com");
+//        extensionsGenerator.addExtension(Extension.subjectAlternativeName, false, new GeneralNames(subjectAltNames));
+//        // CSR(P10)请求CA颁发这些用途的证书, CA可以选择拒绝, 也可以选择无视 ////////////////////////////////////////////////
 //        // 用于签名: KeyUsage.digitalSignature | KeyUsage.nonRepudiation
 //        // 用于加密: KeyUsage.keyEncipherment | KeyUsage.dataEncipherment
 //        // 用于签发证书: KeyUsage.digitalSignature | KeyUsage.keyCertSign | KeyUsage.cRLSign
@@ -380,14 +386,17 @@ public class BaseBCCertificateUtils {
      *              用于签名: new KeyUsage(KeyUsage.digitalSignature | KeyUsage.nonRepudiation).
      *              用于加密: new KeyUsage(KeyUsage.keyEncipherment | KeyUsage.dataEncipherment).
      *              用于签发证书: new KeyUsage(KeyUsage.digitalSignature | KeyUsage.keyCertSign | KeyUsage.cRLSign).
+     * @param subjectAlternativeName 可选域名, 可为空, new GeneralName[]{new GeneralName(GeneralName.dNSName, "1.host.com"),
+     *                               new GeneralName(GeneralName.dNSName, "2.host.com")}
      */
     public static X509Certificate generateSm2X509Certificate(byte[] csr,
-                                                      int validity,
-                                                      String issuerDn,
-                                                      ECPublicKeyParameters issuerPublicKeyParams,
-                                                      ECPrivateKeyParameters issuerPrivateKeyParams,
-                                                      boolean generateCaCert,
-                                                      KeyUsage usage) throws IOException, InvalidKeySpecException, NoSuchAlgorithmException, OperatorCreationException, CertificateException {
+                                                             int validity,
+                                                             String issuerDn,
+                                                             ECPublicKeyParameters issuerPublicKeyParams,
+                                                             ECPrivateKeyParameters issuerPrivateKeyParams,
+                                                             boolean generateCaCert,
+                                                             KeyUsage usage,
+                                                             GeneralName[] subjectAlternativeName) throws IOException, InvalidKeySpecException, NoSuchAlgorithmException, OperatorCreationException, CertificateException {
         //解析CSR
         PKCS10CertificationRequest request = new PKCS10CertificationRequest(csr);
         byte[] publicKeyEncoded = request.getSubjectPublicKeyInfo().toASN1Primitive().getEncoded(ASN1Encoding.DER);
@@ -432,6 +441,14 @@ public class BaseBCCertificateUtils {
                 Extension.keyUsage,
                 false, //是否强制执行
                 usage);
+        // 可选域名
+        if (subjectAlternativeName != null && subjectAlternativeName.length > 0) {
+            certificateBuilder.addExtension(
+                    Extension.subjectAlternativeName,
+                    false, //是否强制执行
+                    new GeneralNames(subjectAlternativeName)
+            );
+        }
         //签名器
         JcaContentSignerBuilder contentSignerBuilder = new JcaContentSignerBuilder("SM3withSM2");
         contentSignerBuilder.setProvider(BouncyCastleProvider.PROVIDER_NAME);

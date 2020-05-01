@@ -19,6 +19,7 @@
 
 package sviolet.thistle.util.crypto;
 
+import org.bouncycastle.asn1.x509.GeneralName;
 import org.bouncycastle.asn1.x509.KeyUsage;
 import org.bouncycastle.asn1.x509.X509CertificateStructure;
 import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
@@ -330,7 +331,8 @@ public class AdvancedCertificateUtils extends CertificateUtils {
                 issuerPublicKeyParams,
                 issuerPrivateKeyParams,
                 true,
-                new KeyUsage(KeyUsage.digitalSignature | KeyUsage.keyCertSign | KeyUsage.cRLSign));
+                new KeyUsage(KeyUsage.digitalSignature | KeyUsage.keyCertSign | KeyUsage.cRLSign),
+                null);
     }
 
     /**
@@ -361,7 +363,8 @@ public class AdvancedCertificateUtils extends CertificateUtils {
                 BaseBCAsymKeyGenerator.parseEcPublicKeyParamsFromCertificate(SM2DefaultCurve.DOMAIN_PARAMS, issuerCertificate),
                 issuerPrivateKeyParams,
                 true,
-                new KeyUsage(KeyUsage.digitalSignature | KeyUsage.keyCertSign | KeyUsage.cRLSign));
+                new KeyUsage(KeyUsage.digitalSignature | KeyUsage.keyCertSign | KeyUsage.cRLSign),
+                null);
     }
 
     /**
@@ -384,12 +387,15 @@ public class AdvancedCertificateUtils extends CertificateUtils {
      *              用于签名: new KeyUsage(KeyUsage.digitalSignature | KeyUsage.nonRepudiation).
      *              用于加密: new KeyUsage(KeyUsage.keyEncipherment | KeyUsage.dataEncipherment).
      *              用于签发证书: new KeyUsage(KeyUsage.digitalSignature | KeyUsage.keyCertSign | KeyUsage.cRLSign).
+     * @param subjectAlternativeName 可选域名, 可为空, new GeneralName[]{new GeneralName(GeneralName.dNSName, "1.host.com"),
+     *                               new GeneralName(GeneralName.dNSName, "2.host.com")}
      */
     public static X509Certificate generateSm2X509Certificate(byte[] csr,
                                                              int validity,
                                                              X509Certificate issuerCertificate,
                                                              ECPrivateKeyParameters issuerPrivateKeyParams,
-                                                             KeyUsage usage) throws InvalidKeySpecException, OperatorCreationException, CertificateException, NoSuchAlgorithmException, IOException {
+                                                             KeyUsage usage,
+                                                             GeneralName[] subjectAlternativeName) throws InvalidKeySpecException, OperatorCreationException, CertificateException, NoSuchAlgorithmException, IOException {
         return BaseBCCertificateUtils.generateSm2X509Certificate(
                 csr,
                 validity,
@@ -397,7 +403,8 @@ public class AdvancedCertificateUtils extends CertificateUtils {
                 BaseBCAsymKeyGenerator.parseEcPublicKeyParamsFromCertificate(SM2DefaultCurve.DOMAIN_PARAMS, issuerCertificate),
                 issuerPrivateKeyParams,
                 false,
-                usage);
+                usage,
+                subjectAlternativeName);
     }
 
     /**
@@ -428,7 +435,8 @@ public class AdvancedCertificateUtils extends CertificateUtils {
                 BaseBCAsymKeyGenerator.parseEcPublicKeyParamsFromCertificate(SM2DefaultCurve.DOMAIN_PARAMS, issuerCertificate),
                 issuerPrivateKeyParams,
                 false,
-                new KeyUsage(KeyUsage.digitalSignature | KeyUsage.nonRepudiation | KeyUsage.keyEncipherment | KeyUsage.dataEncipherment));
+                new KeyUsage(KeyUsage.digitalSignature | KeyUsage.nonRepudiation | KeyUsage.keyEncipherment | KeyUsage.dataEncipherment),
+                null);
     }
 
     /***********************************************************************************************
