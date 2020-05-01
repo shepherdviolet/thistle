@@ -338,6 +338,18 @@ public class BaseBCCertificateUtils {
         PKCS10CertificationRequestBuilder certReqBuilder = new PKCS10CertificationRequestBuilder(
                 dn,
                 SubjectPublicKeyInfo.getInstance(publicKeyEncoded));
+
+//        ExtensionsGenerator extensionsGenerator = new ExtensionsGenerator();
+//        // true: 申请签发CA证书
+//        //extensionsGenerator.addExtension(Extension.basicConstraints, true, new BasicConstraints(true));
+//        // 这个只是CSR(P10)请求CA颁发这些用途的证书, CA可以选择拒绝, 也可以选择无视
+//        // 用于签名: KeyUsage.digitalSignature | KeyUsage.nonRepudiation
+//        // 用于加密: KeyUsage.keyEncipherment | KeyUsage.dataEncipherment
+//        // 用于签发证书: KeyUsage.digitalSignature | KeyUsage.keyCertSign | KeyUsage.cRLSign
+//        KeyUsage keyUsage = new KeyUsage(KeyUsage.digitalSignature | KeyUsage.nonRepudiation);
+//        extensionsGenerator.addExtension(Extension.keyUsage, true, keyUsage);// 证书用途
+//        certReqBuilder.addAttribute(PKCSObjectIdentifiers.pkcs_9_at_extensionRequest, extensionsGenerator.generate());
+
         ContentSigner signer = new JcaContentSignerBuilder("SM3withSM2")
                 .setProvider(BouncyCastleProvider.PROVIDER_NAME)
                 .build(privateKey);
@@ -347,7 +359,7 @@ public class BaseBCCertificateUtils {
     }
 
     /**
-     * 生成SM2证书
+     * 生成SM2证书, 这个方法只从CSR(P10)中获取公钥和DN信息, 其他扩展信息忽略了.
      *
      * <p>
      * CN=(名称或域名),
@@ -364,7 +376,10 @@ public class BaseBCCertificateUtils {
      * @param issuerPublicKeyParams 证书颁发者(CA)的公钥
      * @param issuerPrivateKeyParams 证书颁发者(CA)的私钥
      * @param generateCaCert true:生成CA证书 false:生成用户证书
-     * @param usage 证书用途, new KeyUsage(KeyUsage.digitalSignature | KeyUsage.dataEncipherment | KeyUsage.keyCertSign | KeyUsage.cRLSign)
+     * @param usage 证书用途, 本方法签发证书时, 会忽略CSR中请求的证书用途, 用这个参数强制覆盖.
+     *              用于签名: new KeyUsage(KeyUsage.digitalSignature | KeyUsage.nonRepudiation).
+     *              用于加密: new KeyUsage(KeyUsage.keyEncipherment | KeyUsage.dataEncipherment).
+     *              用于签发证书: new KeyUsage(KeyUsage.digitalSignature | KeyUsage.keyCertSign | KeyUsage.cRLSign).
      */
     public static X509Certificate generateSm2X509Certificate(byte[] csr,
                                                       int validity,
@@ -401,19 +416,21 @@ public class BaseBCCertificateUtils {
         //扩展参数
         certificateBuilder.addExtension(
                 Extension.subjectKeyIdentifier,
-                false,
+                false, //是否强制执行
                 extensionUtils.createSubjectKeyIdentifier(SubjectPublicKeyInfo.getInstance(publicKey.getEncoded())));
         certificateBuilder.addExtension(
                 Extension.authorityKeyIdentifier,
-                false,
+                false, //是否强制执行
                 extensionUtils.createAuthorityKeyIdentifier(SubjectPublicKeyInfo.getInstance(issuerPublicKey.getEncoded())));
+        // 证书用途 (这里是强制覆盖的, 无视了CSR中的请求信息)
         certificateBuilder.addExtension(
                 Extension.basicConstraints,
-                false,
+                false, //是否强制执行
                 new BasicConstraints(generateCaCert));
+        // 证书用途 (这里是强制覆盖的, 无视了CSR中的请求信息)
         certificateBuilder.addExtension(
                 Extension.keyUsage,
-                false,
+                false, //是否强制执行
                 usage);
         //签名器
         JcaContentSignerBuilder contentSignerBuilder = new JcaContentSignerBuilder("SM3withSM2");

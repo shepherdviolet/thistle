@@ -330,7 +330,7 @@ public class AdvancedCertificateUtils extends CertificateUtils {
                 issuerPublicKeyParams,
                 issuerPrivateKeyParams,
                 true,
-                new KeyUsage(KeyUsage.digitalSignature | KeyUsage.dataEncipherment | KeyUsage.keyCertSign | KeyUsage.cRLSign));
+                new KeyUsage(KeyUsage.digitalSignature | KeyUsage.keyCertSign | KeyUsage.cRLSign));
     }
 
     /**
@@ -361,11 +361,47 @@ public class AdvancedCertificateUtils extends CertificateUtils {
                 BaseBCAsymKeyGenerator.parseEcPublicKeyParamsFromCertificate(SM2DefaultCurve.DOMAIN_PARAMS, issuerCertificate),
                 issuerPrivateKeyParams,
                 true,
-                new KeyUsage(KeyUsage.digitalSignature | KeyUsage.dataEncipherment | KeyUsage.keyCertSign | KeyUsage.cRLSign));
+                new KeyUsage(KeyUsage.digitalSignature | KeyUsage.keyCertSign | KeyUsage.cRLSign));
     }
 
     /**
-     * 生成SM2用户证书
+     * 生成SM2用户证书, 这个方法只从CSR(P10)中获取公钥和DN信息, 其他扩展信息忽略了.
+     *
+     * <p>
+     * CN=(名称或域名),
+     * OU=(部门名称),
+     * O=(组织名称),
+     * L=(城市或区域名称),
+     * ST=(州或省份名称),
+     * C=(国家代码)
+     * </p>
+     *
+     * @param csr 证书申请数据, BaseBCCertificateUtils.generateSm2Csr(...)
+     * @param validity 申请证书的有效期(天), 例:3650
+     * @param issuerCertificate 证书颁发者(CA)的证书
+     * @param issuerPrivateKeyParams 证书颁发者(CA)的私钥
+     * @param usage 证书用途, 本方法签发证书时, 会忽略CSR中请求的证书用途, 用这个参数强制覆盖.
+     *              用于签名: new KeyUsage(KeyUsage.digitalSignature | KeyUsage.nonRepudiation).
+     *              用于加密: new KeyUsage(KeyUsage.keyEncipherment | KeyUsage.dataEncipherment).
+     *              用于签发证书: new KeyUsage(KeyUsage.digitalSignature | KeyUsage.keyCertSign | KeyUsage.cRLSign).
+     */
+    public static X509Certificate generateSm2X509Certificate(byte[] csr,
+                                                             int validity,
+                                                             X509Certificate issuerCertificate,
+                                                             ECPrivateKeyParameters issuerPrivateKeyParams,
+                                                             KeyUsage usage) throws InvalidKeySpecException, OperatorCreationException, CertificateException, NoSuchAlgorithmException, IOException {
+        return BaseBCCertificateUtils.generateSm2X509Certificate(
+                csr,
+                validity,
+                issuerCertificate.getSubjectX500Principal().toString(),
+                BaseBCAsymKeyGenerator.parseEcPublicKeyParamsFromCertificate(SM2DefaultCurve.DOMAIN_PARAMS, issuerCertificate),
+                issuerPrivateKeyParams,
+                false,
+                usage);
+    }
+
+    /**
+     * 生成SM2用户证书, 这个方法只从CSR(P10)中获取公钥和DN信息, 其他扩展信息忽略了.
      *
      * <p>
      * CN=(名称或域名),
@@ -382,9 +418,9 @@ public class AdvancedCertificateUtils extends CertificateUtils {
      * @param issuerPrivateKeyParams 证书颁发者(CA)的私钥
      */
     public static X509Certificate generateSm2X509Certificate(byte[] csr,
-                                                               int validity,
-                                                               X509Certificate issuerCertificate,
-                                                               ECPrivateKeyParameters issuerPrivateKeyParams) throws InvalidKeySpecException, OperatorCreationException, CertificateException, NoSuchAlgorithmException, IOException {
+                                                             int validity,
+                                                             X509Certificate issuerCertificate,
+                                                             ECPrivateKeyParameters issuerPrivateKeyParams) throws InvalidKeySpecException, OperatorCreationException, CertificateException, NoSuchAlgorithmException, IOException {
         return BaseBCCertificateUtils.generateSm2X509Certificate(
                 csr,
                 validity,
@@ -392,7 +428,7 @@ public class AdvancedCertificateUtils extends CertificateUtils {
                 BaseBCAsymKeyGenerator.parseEcPublicKeyParamsFromCertificate(SM2DefaultCurve.DOMAIN_PARAMS, issuerCertificate),
                 issuerPrivateKeyParams,
                 false,
-                new KeyUsage(KeyUsage.digitalSignature | KeyUsage.dataEncipherment));
+                new KeyUsage(KeyUsage.digitalSignature | KeyUsage.nonRepudiation | KeyUsage.keyEncipherment | KeyUsage.dataEncipherment));
     }
 
     /***********************************************************************************************
