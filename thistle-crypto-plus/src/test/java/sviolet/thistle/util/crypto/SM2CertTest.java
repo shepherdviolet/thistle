@@ -19,6 +19,8 @@
 
 package sviolet.thistle.util.crypto;
 
+import org.bouncycastle.asn1.x509.GeneralName;
+import org.bouncycastle.asn1.x509.KeyUsage;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.pkcs.PKCSException;
 import org.junit.Assert;
@@ -67,7 +69,12 @@ public class SM2CertTest {
                 csr,
                 3650,
                 rootCert,
-                rootKeyPair.getPrivateKeyParams());
+                rootKeyPair.getPrivateKeyParams(),
+                new KeyUsage(KeyUsage.digitalSignature | KeyUsage.nonRepudiation | KeyUsage.keyEncipherment | KeyUsage.dataEncipherment),
+                new GeneralName[]{
+                        new GeneralName(GeneralName.dNSName, "1.host.com"),
+                        new GeneralName(GeneralName.dNSName, "2.host.com")
+                });
 
         //简单验证证书
         AdvancedCertificateUtils.verifyCertificate(userCert, rootKeyPair.getPublicKeyParams());
