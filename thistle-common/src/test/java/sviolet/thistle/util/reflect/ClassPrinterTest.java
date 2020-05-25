@@ -28,11 +28,6 @@ import java.math.BigDecimal;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 
-/**
- * TODO 打印父类/接口类
- * TODO 更明显的父类递进关系
- * TODO 打印静态成员变量的值
- */
 public class ClassPrinterTest {
 
     @Test
@@ -42,68 +37,49 @@ public class ClassPrinterTest {
                         "        extends sviolet.thistle.util.reflect.ClassPrinterTest$ElectronicCar\n" +
                         "        implements java.util.concurrent.Callable {\n" +
                         "    // Fields\n" +
-                        "    private static final java.lang.String sfName = sfNameValue1\n" +
                         "    private java.lang.String name = nameValue1\n" +
+                        "    private static final java.lang.String sfName = sfNameValue1\n" +
                         "    // Constructors\n" +
                         "    public SuperElectronicCar(sviolet.thistle.util.reflect.ClassPrinterTest) {...}\n" +
                         "    // Methods\n" +
-                        "    public void run() {...}\n" +
-                        "    protected java.lang.Integer getInt() {...}\n" +
-                        "    public void execute(java.lang.Runnable) {...}\n" +
-                        "    public void close() {...}\n" +
+                        "    public java.lang.Object call() throws java.lang.Exception {...}\n" +
+                        "    public void close() throws java.io.IOException {...}\n" +
+                        "    public void execute(java.lang.Runnable) throws java.lang.RuntimeException {...}\n" +
                         "    public java.math.BigDecimal getBigDecimal() {...}\n" +
-                        "    public java.lang.Object call() {...}\n" +
+                        "    protected java.lang.Integer getInt() throws java.io.IOException {...}\n" +
+                        "    public void run() {...}\n" +
                         "}\n" +
                         "++++ Super Class +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n" +
                         "protected static abstract class sviolet.thistle.util.reflect.ClassPrinterTest$ElectronicCar\n" +
                         "        extends sviolet.thistle.util.reflect.ClassPrinterTest$Car\n" +
                         "        implements java.io.Closeable, java.lang.Runnable {\n" +
                         "    // Fields\n" +
-                        "    private static final java.lang.String sfName = sfNameValue2\n" +
-                        "    private static java.lang.String sName = sNameValue2\n" +
                         "    private java.lang.String name = nameValue2\n" +
+                        "    private static java.lang.String sName = sNameValue2\n" +
+                        "    private static final java.lang.String sfName = sfNameValue2\n" +
                         "    // Constructors\n" +
                         "    public ElectronicCar() {...}\n" +
                         "    public ElectronicCar(java.lang.String) {...}\n" +
                         "    // Methods\n" +
-                        "    public void run() {...}\n" +
-                        "    public void close() {...}\n" +
+                        "    public void close() throws java.io.IOException {...}\n" +
                         "    public abstract java.math.BigDecimal getBigDecimal() {...}\n" +
+                        "    public void run() {...}\n" +
                         "}\n" +
                         "++++ Super Class +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n" +
                         "private static class sviolet.thistle.util.reflect.ClassPrinterTest$Car\n" +
                         "        extends java.lang.Object\n" +
                         "        implements java.util.concurrent.Executor {\n" +
                         "    // Fields\n" +
-                        "    private static final java.lang.String sfName = sfNameValue3\n" +
-                        "    private static java.lang.String sName = sNameValue3\n" +
                         "    private java.lang.String name = nameValue3\n" +
+                        "    private static java.lang.String sName = sNameValue3\n" +
+                        "    private static final java.lang.String sfName = sfNameValue3\n" +
                         "    // Constructors\n" +
                         "    public Car() {...}\n" +
                         "    public Car(java.lang.String) {...}\n" +
                         "    // Methods\n" +
-                        "    public void execute(java.lang.Runnable) {...}\n" +
-                        "}\n" +
-                        "++++ Super Class +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n" +
-                        "public class java.lang.Object {\n" +
-                        "    // Fields\n" +
-                        "    // Constructors\n" +
-                        "    public Object() {...}\n" +
-                        "    // Methods\n" +
-                        "    protected void finalize() {...}\n" +
-                        "    public final void wait() {...}\n" +
-                        "    public final void wait(long, int) {...}\n" +
-                        "    public final native void wait(long) {...}\n" +
-                        "    public boolean equals(java.lang.Object) {...}\n" +
-                        "    public java.lang.String toString() {...}\n" +
-                        "    public native int hashCode() {...}\n" +
-                        "    public final native java.lang.Class getClass() {...}\n" +
-                        "    protected native java.lang.Object clone() {...}\n" +
-                        "    public final native void notify() {...}\n" +
-                        "    public final native void notifyAll() {...}\n" +
-                        "    private static native void registerNatives() {...}\n" +
+                        "    public void execute(java.lang.Runnable) throws java.lang.RuntimeException {...}\n" +
                         "}\n",
-                ClassPrinter.print(new SuperElectronicCar(), null));
+                ClassPrinter.print(new SuperElectronicCar(), new ClassPrinter.Params().setSorted(true)));
     }
 
     public class SuperElectronicCar extends ElectronicCar implements Callable {
@@ -113,7 +89,7 @@ public class ClassPrinterTest {
         public SuperElectronicCar() {
         }
 
-        protected Integer getInt() {
+        protected Integer getInt() throws IOException {
             return 0;
         }
 
@@ -164,7 +140,7 @@ public class ClassPrinterTest {
         }
 
         @Override
-        public void execute(Runnable command) {
+        public void execute(Runnable command) throws RuntimeException {
         }
     }
 

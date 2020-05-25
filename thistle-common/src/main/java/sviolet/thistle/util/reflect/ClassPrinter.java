@@ -23,6 +23,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.Comparator;
 
 import sviolet.thistle.util.judge.CheckUtils;
 
@@ -69,7 +71,7 @@ public class ClassPrinter {
         Class<?> current = clazz;
         StringBuilder stringBuilder = new StringBuilder();
         print(current, null, stringBuilder, params);
-        while (params.isTraversals() && (current = current.getSuperclass()) != null) {
+        while (params.isTraversals() && (current = current.getSuperclass()) != null && !Object.class.equals(current)) {
             print(current, null, stringBuilder, params);
         }
         return stringBuilder.toString();
@@ -101,7 +103,7 @@ public class ClassPrinter {
         Class<?> current = obj.getClass();
         StringBuilder stringBuilder = new StringBuilder();
         print(current, obj, stringBuilder, params);
-        while (params.isTraversals() && (current = current.getSuperclass()) != null) {
+        while (params.isTraversals() && (current = current.getSuperclass()) != null && !Object.class.equals(current)) {
             print(current, obj, stringBuilder, params);
         }
         return stringBuilder.toString();
@@ -124,6 +126,9 @@ public class ClassPrinter {
     private static void printClassMethods(Class<?> clazz, StringBuilder stringBuilder, Params params) {
         stringBuilder.append("    ").append(params.buildMethodTitle()).append('\n');
         Method[] methods = ReflectCache.getDeclaredMethods(clazz);
+        if (params.isSorted()) {
+            Arrays.sort(methods, METHOD_COMPARATOR);
+        }
         for (Method method : methods) {
             String name = method.getName();
             if (!params.isIncludeSpecial() && name.contains("$")) {
@@ -136,42 +141,66 @@ public class ClassPrinter {
                     .append(name)
                     .append("(");
             Class<?>[] paramTypes = method.getParameterTypes();
-            if (paramTypes != null) {
-                for (int i = 0; i < paramTypes.length; i++) {
-                    if (i != 0) {
+            for (int i = 0; i < paramTypes.length; i++) {
+                if (i != 0) {
+                    stringBuilder.append(", ");
+                }
+                stringBuilder.append(paramTypes[i].getName());
+            }
+            stringBuilder.append(")");
+            Class<?>[] exceptions = method.getExceptionTypes();
+            if (exceptions.length > 0) {
+                stringBuilder.append(" throws ");
+                for (int i = 0 ; i < exceptions.length ; i++) {
+                    stringBuilder.append(exceptions[i].getName());
+                    if (i < exceptions.length - 1) {
                         stringBuilder.append(", ");
                     }
-                    stringBuilder.append(paramTypes[i].getName());
                 }
             }
-            stringBuilder.append(") {...}\n");
+            stringBuilder.append(" {...}\n");
         }
     }
 
     private static void printClassConstructors(Class<?> clazz, StringBuilder stringBuilder, Params params) {
         stringBuilder.append("    ").append(params.buildConstructorTitle()).append('\n');
         Constructor<?>[] constructors = ReflectCache.getDeclaredConstructors(clazz);
+        if (params.isSorted()) {
+            Arrays.sort(constructors, CONSTRUCTOR_COMPARATOR);
+        }
         for (Constructor<?> constructor : constructors) {
             stringBuilder.append("    ");
             printModifiers(constructor.getModifiers(), stringBuilder, POSITION_CONSTRUCTOR);
             stringBuilder.append(clazz.getSimpleName())
                     .append("(");
             Class<?>[] paramTypes = constructor.getParameterTypes();
-            if (paramTypes != null) {
-                for (int j = 0; j < paramTypes.length; j++) {
-                    if (j != 0) {
+            for (int j = 0; j < paramTypes.length; j++) {
+                if (j != 0) {
+                    stringBuilder.append(", ");
+                }
+                stringBuilder.append(paramTypes[j].getName());
+            }
+            stringBuilder.append(")");
+            Class<?>[] exceptions = constructor.getExceptionTypes();
+            if (exceptions.length > 0) {
+                stringBuilder.append(" throws ");
+                for (int i = 0 ; i < exceptions.length ; i++) {
+                    stringBuilder.append(exceptions[i].getName());
+                    if (i < exceptions.length - 1) {
                         stringBuilder.append(", ");
                     }
-                    stringBuilder.append(paramTypes[j].getName());
                 }
             }
-            stringBuilder.append(") {...}\n");
+            stringBuilder.append(" {...}\n");
         }
     }
 
     private static void printClassFields(Class<?> clazz, Object obj, StringBuilder stringBuilder, Params params) throws IllegalAccessException {
         stringBuilder.append("    ").append(params.buildFieldTitle()).append('\n');
         Field[] fields = ReflectCache.getDeclaredFields(clazz);
+        if (params.isSorted()) {
+            Arrays.sort(fields, FIELD_COMPARATOR);
+        }
         for (Field field : fields) {
             int modifiers = field.getModifiers();
             String name = field.getName();
@@ -207,11 +236,14 @@ public class ClassPrinter {
             stringBuilder.append("\n        extends ").append(superClass.getName());
         }
         Class<?>[] interfaces = clazz.getInterfaces();
-        if (interfaces != null && interfaces.length > 0) {
+        if (interfaces.length > 0) {
+            if (params.isSorted()) {
+                Arrays.sort(interfaces, CLASS_COMPARATOR);
+            }
             stringBuilder.append("\n        implements ");
             for (int i = 0 ; i < interfaces.length ; i++) {
                 stringBuilder.append(interfaces[i].getName());
-                if (i != interfaces.length - 1) {
+                if (i < interfaces.length - 1) {
                     stringBuilder.append(", ");
                 }
             }
@@ -255,6 +287,42 @@ public class ClassPrinter {
         }
     }
 
+    private static final Comparator<Class<?>> CLASS_COMPARATOR = new Comparator<Class<?>>() {
+        @Override
+        public int compare(Class<?> o1, Class<?> o2) {
+            return o1.getName().compareTo(o2.getName());
+        }
+    };
+
+    private static final Comparator<Field> FIELD_COMPARATOR = new Comparator<Field>() {
+        @Override
+        public int compare(Field o1, Field o2) {
+            return o1.getName().compareTo(o2.getName());
+        }
+    };
+
+    private static final Comparator<Constructor<?>> CONSTRUCTOR_COMPARATOR = new Comparator<Constructor<?>>() {
+        @Override
+        public int compare(Constructor<?> o1, Constructor<?> o2) {
+            int result = o1.getName().compareTo(o2.getName());
+            if (result != 0) {
+                return result;
+            }
+            return o1.toString().compareTo(o2.toString());
+        }
+    };
+
+    private static final Comparator<Method> METHOD_COMPARATOR = new Comparator<Method>() {
+        @Override
+        public int compare(Method o1, Method o2) {
+            int result = o1.getName().compareTo(o2.getName());
+            if (result != 0) {
+                return result;
+            }
+            return o1.toString().compareTo(o2.toString());
+        }
+    };
+
     public static class Params {
 
         private boolean traversals = true;
@@ -263,6 +331,7 @@ public class ClassPrinter {
         private boolean printConstructors = true;
         private boolean printMethods = true;
         private boolean includeSpecial = false;
+        private boolean sorted = false;
 
         private String classTitle = "#### Class #########################################################################################";
         private String superClassTitle = "++++ Super Class +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++";
@@ -339,6 +408,18 @@ public class ClassPrinter {
          */
         public Params setIncludeSpecial(boolean includeSpecial) {
             this.includeSpecial = includeSpecial;
+            return this;
+        }
+
+        public boolean isSorted() {
+            return sorted;
+        }
+
+        /**
+         * 内容排序, 使同一个类/对象打印出来的结果保持一致(否则每次顺序可能不同), 默认false
+         */
+        public Params setSorted(boolean sorted) {
+            this.sorted = sorted;
             return this;
         }
 
