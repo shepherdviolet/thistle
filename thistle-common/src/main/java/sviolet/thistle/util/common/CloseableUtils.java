@@ -46,6 +46,16 @@ public class CloseableUtils {
         }
     }
 
+    public static void closeQuiet(AutoCloseable closeable) {
+        if (closeable == null) {
+            return;
+        }
+        try {
+            closeable.close();
+        } catch (Exception ignore) {
+        }
+    }
+
     public static void closeQuiet(Destroyable destroyable) {
         if (destroyable == null) {
             return;
@@ -63,6 +73,8 @@ public class CloseableUtils {
         try {
             if (obj instanceof Closeable){
                 ((Closeable) obj).close();
+            } else if (obj instanceof AutoCloseable) {
+                ((AutoCloseable) obj).close();
             } else if (obj instanceof Destroyable) {
                 ((Destroyable) obj).onDestroy();
             }
