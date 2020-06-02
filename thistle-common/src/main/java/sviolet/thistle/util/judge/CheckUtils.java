@@ -26,8 +26,8 @@ package sviolet.thistle.util.judge;
 public class CheckUtils {
 
     /**
-     * 检查String是否为空<br/>
-     * null / "" <br/>
+     * 检查String为空<br/>
+     * null || "" <br/>
      * @param input 检查数据
      * @return true 空 false 非空
      */
@@ -36,13 +36,33 @@ public class CheckUtils {
     }
 
     /**
-     * 检查String是否为空或空白<br/>
-     * null / "" | "  " <br/>
+     * 检查String不为空<br/>
+     * !(null || "") <br/>
+     * @param input 检查数据
+     * @return true 非空 false 空
+     */
+    public static boolean notEmpty(String input){
+        return input != null && input.length() > 0;
+    }
+
+    /**
+     * 检查String为空或空白<br/>
+     * null || "" || "  " <br/>
      * @param input 检查数据
      * @return true 空 false 非空
      */
     public static boolean isEmptyOrBlank(String input){
-        return isEmpty(input) || input.trim().length() <= 0;
+        return input == null || input.length() <= 0 || input.trim().length() <= 0;
+    }
+
+    /**
+     * 检查String为空或空白<br/>
+     * !(null || "" || "  ") <br/>
+     * @param input 检查数据
+     * @return true 非空 false 空
+     */
+    public static boolean notEmptyNotBlank(String input){
+        return input != null && input.length() > 0 && input.trim().length() > 0;
     }
 
     /**
