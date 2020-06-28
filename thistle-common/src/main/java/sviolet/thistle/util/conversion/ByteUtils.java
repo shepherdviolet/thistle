@@ -244,23 +244,28 @@ public class ByteUtils {
         if (hexString == null) {
             return null;
         }
-        if (hexString.length() <= 0){
+        int hexLength = hexString.length();
+        if (hexLength <= 0){
             return new byte[0];
         }
-        int length = hexString.length() / 2;
+        if (hexLength % 2 != 0) {
+            hexString = "0" + hexString;
+            hexLength = hexString.length();
+        }
+        int resultLength = hexLength / 2;
         char[] hexChars = hexString.toCharArray();
-        byte[] result = new byte[length];
-        for (int i = 0; i < length; i++) {
-            int step = i * 2;
-            result[i] = (byte) (charToByte(hexChars[step], hexString) << 4 | charToByte(hexChars[step + 1], hexString));
+        byte[] result = new byte[resultLength];
+        for (int resultIndex = 0; resultIndex < resultLength; resultIndex++) {
+            int hexIndex = resultIndex * 2;
+            result[resultIndex] = (byte) (hexCharToByte(hexChars[hexIndex], hexString) << 4 | hexCharToByte(hexChars[hexIndex + 1], hexString));
         }
         return result;
     }
 
-    private static byte charToByte(char c, String hexString) {
+    private static byte hexCharToByte(char c, String hexString) {
         int index = HEX_STRING_MAPPING.indexOf(c);
         if (index < 0){
-            throw new IllegalArgumentException("[ByteUtils]hexToBytes: illegal char:" + c + ", hex string:" + hexString);
+            throw new IllegalArgumentException("[ByteUtils]hexToBytes: Illegal char '" + c + "' in hex string: " + hexString);
         }
         return (byte) (index % 16);
     }
