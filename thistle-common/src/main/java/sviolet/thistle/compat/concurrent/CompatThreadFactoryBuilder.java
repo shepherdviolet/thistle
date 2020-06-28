@@ -21,6 +21,10 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
+ * Get source code from ThreadFactoryBuilder (Guava)
+ *
+ * ---------------------------------------------------------------------
+ *
  * A ThreadFactory builder, providing any combination of these features:
  * <ul>
  * <li>whether threads should be marked as {@linkplain Thread#setDaemon daemon} threads

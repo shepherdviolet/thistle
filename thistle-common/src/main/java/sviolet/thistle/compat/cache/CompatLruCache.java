@@ -63,7 +63,7 @@ import java.util.Map;
  * of <a href="http://developer.android.com/sdk/compatibility-library.html">Android's
  * Support Package</a> for earlier releases.
  *
- * @author SOMEONE
+ * @author Google
  */
 public class CompatLruCache<K, V> {
     private final LinkedHashMap<K, V> map;

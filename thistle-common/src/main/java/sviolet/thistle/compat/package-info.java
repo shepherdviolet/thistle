@@ -18,7 +18,8 @@
  */
 
 /**
- * 为了兼容性, 将一些其他工程的源代码复制到这里, 有可能会做一些调整
+ * In order to be compatible with different platforms and different versions. We copied some source code from other
+ * libraries or newer JDK, and put them here. We may modify some source code to meet special needs.
  *
  * @author S.Violet
  */

@@ -15,11 +15,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-// BEGIN android-note
-// removed link to collections framework docs
-// END android-note
-
 /**
+ * Get source code from java.util.concurrent.LinkedBlockingDeque (JDK 8)
+ *
+ * ---------------------------------------------------------------------
+ *
  * An optionally-bounded {@linkplain BlockingDeque blocking deque} based on
  * linked nodes.
  *
