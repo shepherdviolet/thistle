@@ -691,8 +691,8 @@ public class CompatBase64 {
                         continue;
                     else
                         throw new IllegalArgumentException(
-                                "Illegal base64 character " +
-                                        Integer.toString(src[sp - 1], 16));
+                                "Illegal base64 character '" +
+                                        Integer.toString(src[sp - 1], 16) + "' (" + src[sp - 1] + ")");
                 }
                 bits |= (b << shiftto);
                 shiftto -= 6;
@@ -938,8 +938,8 @@ public class CompatBase64 {
                     if (isMIME)                 // skip if for rfc2045
                         continue;
                     else
-                        throw new IOException("Illegal base64 character " +
-                                Integer.toString(v, 16));
+                        throw new IOException("Illegal base64 character '" +
+                                Integer.toString(v, 16) + "' (" + v + ")");
                 }
                 bits |= (v << nextin);
                 if (nextin == 0) {
