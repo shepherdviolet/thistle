@@ -170,18 +170,18 @@ public class BaseBCCertificateUtils {
         String issuerDn = current.getIssuerX500Principal().getName();
         if (currentDn.equals(issuerDn)) {
             // 待验证的证书不允许是根证书, 避免客户端拿根证书骗过验证
-            throw new CertificateException("The certificate to be verified is a root certificate. verifying certificate: " + certificate);
+            throw new CertificateException("The certificate to be verified is a root certificate. When verifying certificate: " + certificate);
         }
         StringBuilder dnPath = new StringBuilder().append("[").append(currentDn).append("] -> [").append(issuerDn).append("]");
         for (int i = 0 ; i < 10 ; i++) {
             issuer = issuerProvider.findIssuer(issuerDn, issuerProviderParameter);
             if (issuer == null) {
-                throw new CertificateException("Certificate issuer '" + issuerDn + "' not found. " + dnPath + " (Not Found!). verifying certificate: " + certificate);
+                throw new CertificateException("Certificate issuer '" + issuerDn + "' not found. " + dnPath + " (Not Found!). When verifying certificate: " + certificate);
             }
             try {
                 verifyCertificate(current, issuer.getPublicKey(), currentTime);
             } catch (Exception e) {
-                throw new CertificateException("Certificate '" + current + "' invalid. " + dnPath + " (Invalid!). verifying certificate: " + certificate);
+                throw new CertificateException("One of the certificate is invalid (in chain). " + dnPath + " (Invalid!). The invalid certificate is '" + current + "'. When verifying certificate: " + certificate, e);
             }
             // 遇到根证书结束, 验证成功
             // issuerProvider返回的证书如果是ActAsRoot, 则视为根证书处理, 不再继续查找签发者
@@ -193,7 +193,7 @@ public class BaseBCCertificateUtils {
             issuerDn = current.getIssuerX500Principal().getName();
             dnPath.append(" -> [").append(issuerDn).append("]");
         }
-        throw new CertificateException("Too many CA certifications (> 10). " + dnPath + ". verifying certificate: " + certificate);
+        throw new CertificateException("Too many CA certifications (> 10). " + dnPath + ". When verifying certificate: " + certificate);
     }
 
     /**

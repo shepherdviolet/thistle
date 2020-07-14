@@ -24,6 +24,7 @@ import org.bouncycastle.operator.OperatorCreationException;
 import org.junit.Assert;
 import org.junit.Test;
 import sviolet.thistle.util.conversion.Base64Utils;
+import sviolet.thistle.util.conversion.DateTimeUtils;
 import sviolet.thistle.util.crypto.base.IssuerProvider;
 import sviolet.thistle.util.crypto.base.RootIssuerProvider;
 import sviolet.thistle.util.crypto.base.SimpleIssuerProvider;
@@ -35,6 +36,7 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -232,30 +234,30 @@ public class RSACertTest {
     }
 
     @Test
-    public void verifyCertificateByIssuers0() throws CertificateException, NoSuchProviderException {
+    public void verifyCertificateByIssuers0() throws CertificateException, NoSuchProviderException, ParseException {
         X509Certificate cert = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(Base64Utils.decode(CERT));
         X509Certificate caCert = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(Base64Utils.decode(CA_CERT));
         X509Certificate rootCert = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(Base64Utils.decode(ROOT_CERT));
         // 根证书 和 CA证书都由服务端限定, 客户端上送自己的证书
-        AdvancedCertificateUtils.verifyCertificateByIssuers(cert, new Date(), new SimpleIssuerProvider(Arrays.asList(caCert, rootCert)));
+        AdvancedCertificateUtils.verifyCertificateByIssuers(cert, DateTimeUtils.stringToDate("2020-05-21", "yyyy-MM-dd"), new SimpleIssuerProvider(Arrays.asList(caCert, rootCert)));
     }
 
     @Test
-    public void verifyCertificateByIssuers1() throws CertificateException, NoSuchProviderException {
+    public void verifyCertificateByIssuers1() throws CertificateException, NoSuchProviderException, ParseException {
         X509Certificate cert = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(Base64Utils.decode(CERT));
         X509Certificate caCert = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(Base64Utils.decode(CA_CERT));
         // CA证书由服务端限定, 且服务端把CA证书当根证书用, 客户端上送自己的证书
-        AdvancedCertificateUtils.verifyCertificateByIssuers(cert, new Date(),
+        AdvancedCertificateUtils.verifyCertificateByIssuers(cert, DateTimeUtils.stringToDate("2020-05-21", "yyyy-MM-dd"),
                 new SimpleIssuerProvider(Collections.singletonList(new IssuerProvider.ActAsRoot(caCert))));
     }
 
     @Test
-    public void verifyCertificateByIssuers2() throws CertificateException, NoSuchProviderException {
+    public void verifyCertificateByIssuers2() throws CertificateException, NoSuchProviderException, ParseException {
         X509Certificate cert = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(Base64Utils.decode(CERT));
         X509Certificate caCert = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(Base64Utils.decode(CA_CERT));
         X509Certificate rootCert = AdvancedCertificateUtils.parseX509ToCertificateAdvanced(Base64Utils.decode(ROOT_CERT));
         // 根证书由服务端限定, 客户端上送自己的证书和CA证书
-        AdvancedCertificateUtils.verifyCertificateByIssuers(cert, new Date(), new RootIssuerProvider(Collections.singletonList(rootCert)), Collections.singletonList(caCert));
+        AdvancedCertificateUtils.verifyCertificateByIssuers(cert, DateTimeUtils.stringToDate("2020-05-21", "yyyy-MM-dd"), new RootIssuerProvider(Collections.singletonList(rootCert)), Collections.singletonList(caCert));
     }
 
 //    @Test
