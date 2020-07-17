@@ -37,8 +37,6 @@ import java.nio.charset.Charset;
 
 public class ByteUtils {
 
-    private static final String HEX_STRING_MAPPING = "0123456789abcdef0123456789ABCDEF";
-
     /**
      * 把两个byte[]前后拼接成一个byte[]
      *
@@ -194,7 +192,7 @@ public class ByteUtils {
         int unitInt = bytes & 0xFF;
         String unitHex = Integer.toHexString(unitInt);
         if (unitHex.length() < 2) {
-            return "0" + unitHex;
+            return '0' + unitHex;
         }
         return unitHex;
     }
@@ -220,20 +218,23 @@ public class ByteUtils {
         if (bytes == null) {
             return null;
         }
-        if (bytes.length <= 0){
+        int bytesLength = bytes.length;
+        if (bytesLength <= 0){
             return "";
         }
-        StringBuilder stringBuilder = new StringBuilder();
-        for (byte unit : bytes) {
-            int unitInt = unit & 0xFF;
-            String unitHex = Integer.toHexString(unitInt);
-            if (unitHex.length() < 2) {
-                stringBuilder.append(0);
-            }
-            stringBuilder.append(unitHex);
+        char[] result = new char[bytesLength * 2];
+        int resultIndex = 0;
+        for (byte b : bytes) {
+            result[resultIndex++] = BYTE_TO_HEX_CHAR_MAP[b >>> 4 & 0xF];
+            result[resultIndex++] = BYTE_TO_HEX_CHAR_MAP[b & 0xF];
         }
-        return stringBuilder.toString();
+        return new String(result);
     }
+
+    /**
+     * byte -> 十六进制字符 映射表
+     */
+    private static final char[] BYTE_TO_HEX_CHAR_MAP = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
     /**
      * hexString转为bytes
@@ -248,26 +249,57 @@ public class ByteUtils {
         if (hexLength <= 0){
             return new byte[0];
         }
-        if (hexLength % 2 != 0) {
-            hexString = "0" + hexString;
-            hexLength = hexString.length();
-        }
-        int resultLength = hexLength / 2;
+        // Vars
         char[] hexChars = hexString.toCharArray();
-        byte[] result = new byte[resultLength];
-        for (int resultIndex = 0; resultIndex < resultLength; resultIndex++) {
-            int hexIndex = resultIndex * 2;
-            result[resultIndex] = (byte) (hexCharToByte(hexChars[hexIndex], hexString) << 4 | hexCharToByte(hexChars[hexIndex + 1], hexString));
+        int hexIndex;
+        byte[] result;
+        int resultIndex = 0;
+        // Check if the length is a multiple of 2
+        if (hexLength % 2 != 0) {
+            hexIndex = -1;
+            result = new byte[(hexLength + 1) / 2];
+        } else {
+            hexIndex = 0;
+            result = new byte[hexLength / 2];
+        }
+        // Convert
+        for (; hexIndex < hexLength; hexIndex += 2) {
+            char c0 = hexIndex >= 0 ? hexChars[hexIndex] : '0';
+            char c1 = hexChars[hexIndex + 1];
+            result[resultIndex++] = (byte) ((HEX_CHAR_TO_BYTE_MAP[hexCharToIndex(c0, hexString)] << 4) |
+                    HEX_CHAR_TO_BYTE_MAP[hexCharToIndex(c1, hexString)]);
         }
         return result;
     }
 
-    private static byte hexCharToByte(char c, String hexString) {
-        int index = HEX_STRING_MAPPING.indexOf(c);
-        if (index < 0){
+    /**
+     * 十六进制字符 -> byte 映射表
+     */
+    private static final byte[] HEX_CHAR_TO_BYTE_MAP = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f};
+
+    /**
+     * 十六进制字符 -> byte 映射表 的索引
+     */
+    private static int hexCharToIndex(char c, String hexString) {
+        if (c < '0') {
             throw new IllegalArgumentException("[ByteUtils]hexToBytes: Illegal char '" + c + "' in hex string: " + hexString);
         }
-        return (byte) (index % 16);
+        if (c <= '9') {
+            return c - '0';
+        }
+        if (c < 'A') {
+            throw new IllegalArgumentException("[ByteUtils]hexToBytes: Illegal char '" + c + "' in hex string: " + hexString);
+        }
+        if (c <= 'F') {
+            return c - 'A' + 10;
+        }
+        if (c < 'a') {
+            throw new IllegalArgumentException("[ByteUtils]hexToBytes: Illegal char '" + c + "' in hex string: " + hexString);
+        }
+        if (c <= 'f') {
+            return c - 'a' + 10;
+        }
+        throw new IllegalArgumentException("[ByteUtils]hexToBytes: Illegal char '" + c + "' in hex string: " + hexString);
     }
 
     /**
