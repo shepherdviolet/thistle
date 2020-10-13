@@ -23,6 +23,9 @@ import sviolet.thistle.util.common.CloseableUtils;
 
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * 文件工具
@@ -228,6 +231,38 @@ public class FileUtils {
      */
     public static boolean cleanMappedByteBuffer(ByteBuffer byteBuffer) {
         return CloseableUtils.cleanMappedByteBuffer(byteBuffer);
+    }
+
+    /**
+     * 递归列出目录下所有的文件(不含目录, 包含子目录下的文件)
+     * @param directory 目录 (如果是文件就返回该文件)
+     * @return 目录下所有的文件(不含目录, 包含子目录下的文件)
+     */
+    public static List<File> listAllFilesRecursively(File directory) {
+        if (directory == null || !directory.exists()) {
+            return Collections.emptyList();
+        }
+        if (!directory.isDirectory()) {
+            return Collections.singletonList(directory);
+        }
+        List<File> list = new ArrayList<>();
+        listAllFilesRecursively_inner(directory, list);
+        return list;
+    }
+
+    private static void listAllFilesRecursively_inner(File directory, List<File> list) {
+        File[] subFiles = directory.listFiles();
+        if (subFiles == null) {
+            return;
+        }
+        for (File subFile : subFiles) {
+            if (subFile.isFile()) {
+                list.add(subFile);
+            } else if (subFile.isDirectory()) {
+                listAllFilesRecursively_inner(subFile, list);
+            }
+        }
+
     }
 
     /****************************************************************************************************
