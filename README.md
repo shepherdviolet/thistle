@@ -10,7 +10,7 @@
 
 ## Module 'thistle-common'
 
-[![Depends](https://img.shields.io/badge/Depends-glaciion--core-dc143c.svg?style=flat)](https://github.com/shepherdviolet/glaciion)
+[![Depends](https://img.shields.io/badge/Depends-glaciion--api-dc143c.svg?style=flat)](https://github.com/shepherdviolet/glaciion)
 
 > Core module of thistle
 
@@ -54,6 +54,7 @@
 ## Module 'thistle-trace'
 
 [![Depends](https://img.shields.io/badge/Depends-thistle--common-6a5acd.svg?style=flat)](https://github.com/shepherdviolet/thistle)
+[![Depends](https://img.shields.io/badge/Depends-glaciion--core-dc143c.svg?style=flat)](https://github.com/shepherdviolet/glaciion)
 
 > The module for tracing
 

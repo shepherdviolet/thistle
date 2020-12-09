@@ -7,7 +7,7 @@ dependencies {
 
     //required
     [
-            "com.github.shepherdviolet:glaciion-core:$version_glaciion",
+            "com.github.shepherdviolet:glaciion-api:$version_glaciion",
 
     ].forEach{ api it }
 

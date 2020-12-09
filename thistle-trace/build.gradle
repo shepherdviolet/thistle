@@ -8,6 +8,7 @@ dependencies {
     //required
     [
             project(':thistle-common') { group project_group_id; version project_version },
+            "com.github.shepherdviolet:glaciion-core:$version_glaciion",
 
     ].forEach{ api it }
 
