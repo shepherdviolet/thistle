@@ -63,16 +63,16 @@ public class UuidUtils {
     }
 
     /**
-     * 生成一个压缩的 UUID 字符串,
-     * URL-Safe BASE64编码的 UUID, 比较短, 包含数字 字母 "-" "_"
+     * 生成一个压缩的 UUID 字符串, 比较短,
+     * 用URL-Safe BASE64编码的 UUID, 包含数字 字母 "-" "_", 并删掉了末尾的 "=="
      */
     public static String newStringUuidCompressed() {
         return toStringUuidCompressed(null);
     }
 
     /**
-     * 转换为 压缩的 UUID 字符串,
-     * URL-Safe BASE64编码的 UUID, 比较短, 包含数字 字母 "-" "_"
+     * 转换为 压缩的 UUID 字符串, 比较短,
+     * 用URL-Safe BASE64编码的 UUID, 包含数字 字母 "-" "_", 并删掉了末尾的 "=="
      */
     public static String toStringUuidCompressed(UUID uuid) {
         return Base64Utils.encodeToUrlSafeString(bytesUuid(uuid)).substring(0, 22);

@@ -37,4 +37,17 @@ public class UuidUtilsTest {
                 UuidUtils.toStringUuidCompressed(uuid));
     }
 
+//    public static void main(String[] args) {
+//        String uuid = null;
+//        long time = System.currentTimeMillis();
+//        for (int i = 0 ; i < 10000000 ; i++) {
+////            uuid = UUID.randomUUID().toString().replaceAll("-", "");//12072ms
+////            uuid = UuidUtils.newStringUuid();//7499ms
+//            uuid = UuidUtils.newStringUuidWithoutDash();//4532ms
+////            uuid = UuidUtils.newStringUuidCompressed();//4746ms
+//        }
+//        System.out.println(System.currentTimeMillis() - time);
+//        System.out.println(uuid);
+//    }
+
 }
