@@ -61,12 +61,12 @@ threadPool.execute(Trace.traceable(()-> {
 # 默认特性
 
 * 默认实现为: DefaultTraceProvider
-* 追踪号和其他追踪信息保存在ThreadLocal中
-* 如果应用依赖SLF4J, 追踪号还会存入MDC, KEY为`_trace_id_`, 可以打印在日志中
+* `追踪号`和其他追踪信息保存在ThreadLocal中
+* 如果应用依赖SLF4J, `追踪号`还会存入MDC, KEY为`_trace_id_`, 可以打印在日志中
 * 以logback打印追踪号为例:
 
 ```text
-    <property name="logging.pattern" value="${log.pattern:-%d %p %t %c{40} %X{_trace_id_}: %m%n}"/>
+    <property name="logging.pattern" value="${log.pattern:-%d %X{_trace_id_} %-5p %t %c{40} %L: %m%n}"/>
 
     <appender name="ConsoleAppender" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -74,6 +74,21 @@ threadPool.execute(Trace.traceable(()-> {
         </encoder>
         ......
     </appender>
+```
+
+* `追踪号`默认为无符号的UUID (例如:3e164de2db664773bdfe9427dd05e3f8)
+* `追踪号`可以设置为较短的URL-Safe-Base64格式 (例如:PhZN4ttmR3O9_pQn3QXj-A, `RFC4648_URLSAFE编码, 并去掉了末尾的==`)
+
+```text
+// 方式一: (高优先级) 通过Java启动参数将追踪号设置为URL-Safe-Base64格式
+-Dthistle.trace.trace-id-compressed=true
+
+// 方式二: 通过Glaciion SPI扩展点 的特性设置
+1.在Classpath下创建文件: META-INF/glaciion/properties/sviolet.thistle.x.util.trace.DefaultTraceProvider
+2.编写内容:
+
+traceIdCompressed=true
+
 ```
 
 <br>
