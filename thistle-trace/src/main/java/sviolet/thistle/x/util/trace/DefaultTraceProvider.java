@@ -19,11 +19,12 @@
 
 package sviolet.thistle.x.util.trace;
 
+import com.github.shepherdviolet.glaciion.api.annotation.PropertyInject;
+import sviolet.thistle.util.conversion.UuidUtils;
 import sviolet.thistle.util.judge.CheckUtils;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * <p>全局追踪默认实现</p>
@@ -53,6 +54,12 @@ public class DefaultTraceProvider implements TraceProvider {
 
     private ThreadLocal<Map<String, String>> traceData = new ThreadLocal<>();
 
+    /**
+     * 追踪号压缩(URL-Safe Base64编码, 并删除末尾==)
+     */
+    @PropertyInject(getVmOptionFirst = "thistle.trace.trace-id-compressed")
+    private boolean traceIdCompressed = false;
+
     @Override
     public void start() {
         handoff(null, null);
@@ -67,12 +74,19 @@ public class DefaultTraceProvider implements TraceProvider {
     public void handoff(String traceId, Map<String, String> data) {
         //generate id if not exists
         if (CheckUtils.isEmpty(traceId)) {
-            traceId = UUID.randomUUID().toString().replaceAll("-", "");
+            traceId = generateTraceID();
         }
         //put id into MDC
         TRACE_ID_PROVIDER.set(traceId);
         //put data into thread local
         traceData.set(data);
+    }
+
+    protected String generateTraceID() {
+        if (traceIdCompressed) {
+            return UuidUtils.newStringUuidCompressed();
+        }
+        return UuidUtils.newStringUuidWithoutDash();
     }
 
     @Override
