@@ -108,12 +108,7 @@ public class BitmapTest {
 
     private void computeTest0(Bitmap bitmap1, Bitmap bitmap2, byte[] expected) {
         Bitmap result = new HeapBitmap(bitmap1.size());
-        bitmap1.computeWith(bitmap2, result, new Bitmap.ComputeFunction() {
-            @Override
-            public byte compute(byte b1, byte b2) {
-                return (byte) (b1 ^ b2);
-            }
-        });
+        bitmap1.computeWith(bitmap2, result, Bitmap.ComputeFunction.XOR);
 //        System.out.println(ByteUtils.bytesToHex(result.extractAll()));
         Assert.assertArrayEquals(expected, result.extractAll());
     }

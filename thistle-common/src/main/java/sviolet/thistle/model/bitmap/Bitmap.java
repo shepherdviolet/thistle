@@ -85,6 +85,9 @@ public interface Bitmap extends Closeable, AutoCloseable {
      */
     void computeWith(Bitmap computeWith, Bitmap resultBitmap, ComputeFunction computeFunction);
 
+    /**
+     * 两个Bitmap进行计算的逻辑接口
+     */
     interface ComputeFunction {
 
         /**
@@ -93,6 +96,33 @@ public interface Bitmap extends Closeable, AutoCloseable {
          * @return 结果, 存入resultBitmap中对应位置(方法第二个参数)
          */
         byte compute(byte b1, byte b2);
+
+        /**
+         * 两个Bitmap按位异或
+         */
+        static ComputeFunction XOR = new ComputeFunction() {
+            @Override
+            public byte compute(byte b1, byte b2) {
+                return (byte) (b1 ^ b2);
+            }
+        };
+
+        /**
+         * 两个Bitmap按位与
+         */
+        static ComputeFunction AND = new ComputeFunction() {
+            @Override
+            public byte compute(byte b1, byte b2) {
+                return (byte) (b1 & b2);
+            }
+        };
+
+        static ComputeFunction OR = new ComputeFunction() {
+            @Override
+            public byte compute(byte b1, byte b2) {
+                return (byte) (b1 | b2);
+            }
+        };
 
     }
 
