@@ -28,7 +28,7 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class DirectBitmapTest {
+public class BitmapTest {
 
     @Test
     public void test(){
@@ -172,23 +172,32 @@ public class DirectBitmapTest {
      * 一致性测试
      */
     private static void consistency(){
+        // 单线程给HeapBitmap赋值
         byte[] correct = consistencySync(new HeapBitmap(1000000));
         String correctData = ByteUtils.bytesToHex(correct);
         String correctHash = ByteUtils.bytesToHex(DigestCipher.digest(correct, DigestCipher.TYPE_SHA1));
         System.out.println(correctData);
         System.out.println("标准值:" + correctHash);
 
-        byte[] data1 = consistencyAsync(new HeapBitmap(1000000));//这个肯定测试不通过
+        // 多线程给HeapBitmap赋值, 这个大概率会和标准值不同
+        byte[] data1 = consistencyAsync(new HeapBitmap(1000000));
         String hash1 = ByteUtils.bytesToHex(DigestCipher.digest(data1, DigestCipher.TYPE_SHA1));
         System.out.println("肯定不同" + hash1);
 
+        // 多线程给ConcurrentHeapBitmap赋值
         byte[] data2 = consistencyAsync(new ConcurrentHeapBitmap(1000000));
         String hash2 = ByteUtils.bytesToHex(DigestCipher.digest(data2, DigestCipher.TYPE_SHA1));
         System.out.println("必须相同" + hash2);
 
+        // 多线程给SyncHeapBitmap赋值
         byte[] data3 = consistencyAsync(new SyncHeapBitmap(1000000));
         String hash3 = ByteUtils.bytesToHex(DigestCipher.digest(data3, DigestCipher.TYPE_SHA1));
         System.out.println("必须相同" + hash3);
+
+        // 单线程给DirectBitmap赋值
+        byte[] data4 = consistencySync(new DirectBitmap(1000000));
+        String hash4 = ByteUtils.bytesToHex(DigestCipher.digest(data4, DigestCipher.TYPE_SHA1));
+        System.out.println("必须相同" + hash4);
     }
 
     private static byte[] consistencySync(final BloomBitmap bitmap){

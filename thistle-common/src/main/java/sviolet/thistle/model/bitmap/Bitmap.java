@@ -19,6 +19,8 @@
 
 package sviolet.thistle.model.bitmap;
 
+import java.io.Closeable;
+
 /**
  * <p>Bitmap</p>
  *
@@ -26,21 +28,22 @@ package sviolet.thistle.model.bitmap;
  *
  * @author S.Violet
  */
-public interface Bitmap {
+public interface Bitmap extends Closeable, AutoCloseable {
 
     /**
-     * 取值
+     * 取值(一个bit)
      * @param bitIndex 索引位置(比特位置)
      * @return true / false
      */
     boolean get(int bitIndex);
 
     /**
-     * 存值
+     * 存值(一个bit)
      * @param bitIndex 索引位置(比特位置)
      * @param value 值
+     * @return true: 存值成功, false: 存值失败(部分实现中可能会返回false, 比如ConcurrentHeapBitmap)
      */
-    void put(int bitIndex, boolean value);
+    boolean put(int bitIndex, boolean value);
 
     /**
      * 抽取(复制)全部数据
@@ -50,19 +53,19 @@ public interface Bitmap {
     /**
      * 抽取(复制)部分数据
      * @param dst 抽取的数据存放到这里
-     * @param offset 起始位置(注意, 这个不是比特位置, 是字节位置; 这是内部Bitmap的位置, 不是入参dst的位置, dst始终会从0位开始填充直至结束)
+     * @param byteOffset 起始位置(注意, 这个不是比特位置, 是字节位置; 这是内部Bitmap的位置, 不是入参dst的位置, dst始终会从0位开始填充直至结束)
      */
-    void extract(byte[] dst, int offset);
+    void extract(byte[] dst, int byteOffset);
 
     /**
      * 导入数据
      * @param src 需要被导入的数据
-     * @param offset 起始位置(注意, 这个不是比特位置, 是字节位置; 这是内部Bitmap的位置, 不是入参src的位置, src始终会从0位开始读取直至结束)
+     * @param byteOffset 起始位置(注意, 这个不是比特位置, 是字节位置; 这是内部Bitmap的位置, 不是入参src的位置, src始终会从0位开始读取直至结束)
      */
-    void inject(byte[] src, int offset);
+    void inject(byte[] src, int byteOffset);
 
     /**
-     * Bitmap的总比特长度
+     * Bitmap的总比特长度(bit容量)
      */
     int size();
 

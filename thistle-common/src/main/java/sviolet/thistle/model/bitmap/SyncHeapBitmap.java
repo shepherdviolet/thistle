@@ -22,7 +22,7 @@ package sviolet.thistle.model.bitmap;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * [线程安全:同步锁版]使用堆内存(HEAP)的Bitmap, 占用内存 = size / 8 .
+ * [线程安全:同步锁版]使用堆内存(HEAP)的Bitmap, 占用内存 8bit -> 1byte.
  *
  * 特点: 这个Bitmap的put/get/bloomAdd/bloomContains操作性能较HeapBitmap/ConcurrentHeapBitmap有较大幅度的下降(因为同步锁开销),
  * 但内存占用情况比ConcurrentHeapBitmap小.
@@ -69,22 +69,22 @@ public class SyncHeapBitmap extends HeapBitmap {
     }
 
     @Override
-    protected byte getSlot(int slotIndex) {
+    protected byte dataAccess_getSlot(int slotIndex) {
         ReentrantLock lock = locks[slotIndex % lockNum];
+        lock.lock();
         try {
-            lock.lock();
-            return super.getSlot(slotIndex);
+            return super.dataAccess_getSlot(slotIndex);
         } finally {
             lock.unlock();
         }
     }
 
     @Override
-    protected boolean putValue(int slotIndex, int slotOffset, boolean value) {
+    protected boolean putBitToSlot(int slotIndex, int slotOffset, boolean value) {
         ReentrantLock lock = locks[slotIndex % lockNum];
+        lock.lock();
         try {
-            lock.lock();
-            return super.putValue(slotIndex, slotOffset, value);
+            return super.putBitToSlot(slotIndex, slotOffset, value);
         } finally {
             lock.unlock();
         }

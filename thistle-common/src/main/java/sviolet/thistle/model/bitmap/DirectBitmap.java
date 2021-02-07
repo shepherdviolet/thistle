@@ -21,12 +21,14 @@ package sviolet.thistle.model.bitmap;
 
 import sviolet.thistle.util.common.CloseableUtils;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
 /**
- * [非线程安全]使用直接内存的Bitmap, 占用内存 = size / 8 .
+ * [非线程安全]使用直接内存的Bitmap, 占用内存 8bit -> 1byte.
  *
  * 注意!!! 这个类请谨慎使用, 内存分配在堆外, 小心内存泄露!!!
+ * 注意!!! 使用完后请调用close()方法回收内存!!!
  *
  * 一致性: extract/inject操作有同步锁, put/get/bloomAdd/bloomContains无同步锁, 且不保证内存可见性(非CAS操作).
  *
@@ -34,7 +36,10 @@ import java.nio.ByteBuffer;
  * @see BloomBitmap
  * @author S.Violet
  */
-public class DirectBitmap extends HeapBitmap {
+public class DirectBitmap extends AbstractBitmap {
+
+    //Direct buffer
+    private ByteBuffer buffer;
 
     public DirectBitmap(int size) {
         super(size);
@@ -45,44 +50,40 @@ public class DirectBitmap extends HeapBitmap {
     }
 
     @Override
-    protected final BitmapOperator buildBuffer(final int bufferSize) {
-        return new BitmapOperator() {
-
-            //Direct buffer
-            private final ByteBuffer buffer = ByteBuffer.allocateDirect(bufferSize);
-
-            @Override
-            public byte get(int index) {
-                return buffer.get(index);
-            }
-
-            @Override
-            public synchronized void extract(byte[] dst, int offset) {
-                buffer.position(offset);
-                buffer.get(dst, 0, dst.length);
-            }
-
-            @Override
-            public boolean put(int index, byte newValue, byte oldValue) {
-                buffer.put(index, newValue);
-                return true;
-            }
-
-            @Override
-            public synchronized void inject(byte[] src, int offset) {
-                buffer.position(offset);
-                buffer.put(src, 0, src.length);
-            }
-
-            @Override
-            public Object getProvider() {
-                return buffer;
-            }
-        };
+    protected void dataAccess_init(int slotSize) {
+        buffer = ByteBuffer.allocateDirect(slotSize);
     }
 
-    public boolean destroy(){
-        return CloseableUtils.cleanMappedByteBuffer((ByteBuffer) operator.getProvider());
+    @Override
+    protected byte dataAccess_getSlot(int index) {
+        return buffer.get(index);
+    }
+
+    @Override
+    protected boolean dataAccess_putSlot(int index, byte newValue, byte oldValue) {
+        buffer.put(index, newValue);
+        return true;
+    }
+
+    @Override
+    protected void dataAccess_extract(byte[] dst, int offset) {
+        synchronized (this) {
+            buffer.position(offset);
+            buffer.get(dst, 0, dst.length);
+        }
+    }
+
+    @Override
+    protected void dataAccess_inject(byte[] src, int offset) {
+        synchronized (this) {
+            buffer.position(offset);
+            buffer.put(src, 0, src.length);
+        }
+    }
+
+    @Override
+    public void close() throws IOException {
+        CloseableUtils.cleanMappedByteBuffer(buffer);
     }
 
 }

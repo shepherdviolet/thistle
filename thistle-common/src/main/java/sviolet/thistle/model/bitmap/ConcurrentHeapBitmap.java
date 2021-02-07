@@ -22,7 +22,7 @@ package sviolet.thistle.model.bitmap;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
 /**
- * [线程安全:CAS版]使用堆内存(HEAP)的Bitmap, 占用内存 = size / 2 .
+ * [线程安全:CAS版]使用堆内存(HEAP)的Bitmap, 占用内存 8bit -> 4byte !
  *
  * 特点: 这个Bitmap占用内存比HeapBitmap大四倍, put/get/bloomAdd/bloomContains性能有轻微下降, extract/inject性能有较大下降,
  * extract/inject操作过程更占内存, 因为会进行数据类型转换(byte - int).
@@ -34,9 +34,11 @@ import java.util.concurrent.atomic.AtomicIntegerArray;
  * @see BloomBitmap
  * @author S.Violet
  */
-public class ConcurrentHeapBitmap extends HeapBitmap {
+public class ConcurrentHeapBitmap extends AbstractBitmap {
 
     private static final int RETRY_TIMES = 100;
+
+    private AtomicIntegerArray buffer;
 
     public ConcurrentHeapBitmap(int size) {
         super(size);
@@ -47,56 +49,53 @@ public class ConcurrentHeapBitmap extends HeapBitmap {
     }
 
     @Override
-    protected boolean putValue(int slotIndex, int slotOffset, boolean value) {
+    protected void dataAccess_init(int slotSize) {
+        buffer = new AtomicIntegerArray(slotSize);
+    }
+
+    @Override
+    protected byte dataAccess_getSlot(int index) {
+        return (byte) buffer.get(index);
+    }
+
+    @Override
+    protected boolean dataAccess_putSlot(int index, byte newValue, byte oldValue) {
+        return buffer.compareAndSet(index, oldValue, newValue);
+    }
+
+    @Override
+    protected void dataAccess_extract(byte[] dst, int offset) {
+        synchronized (this) {
+            if (dst == null) {
+                return;
+            }
+            for (int i = 0 ; i < dst.length ; i++) {
+                dst[i] = (byte) buffer.get(offset + i);
+            }
+        }
+    }
+
+    @Override
+    protected void dataAccess_inject(byte[] src, int offset) {
+        synchronized (this) {
+            if (src == null) {
+                return;
+            }
+            for (int i = 0 ; i < src.length ; i++) {
+                buffer.set(offset + i, src[i]);
+            }
+        }
+    }
+
+    @Override
+    protected boolean putBitToSlot(int slotIndex, int slotOffset, boolean value) {
         //乐观锁
         for (int i = 0 ; i < RETRY_TIMES ; i++) {
-            if (super.putValue(slotIndex, slotOffset, value)) {
+            if (super.putBitToSlot(slotIndex, slotOffset, value)) {
                 return true;
             }
         }
         return false;
     }
 
-    @Override
-    protected BitmapOperator buildBuffer(final int bufferSize) {
-        return new BitmapOperator() {
-
-            private final AtomicIntegerArray buffer = new AtomicIntegerArray(bufferSize);
-
-            @Override
-            public byte get(int index) {
-                return (byte) buffer.get(index);
-            }
-
-            @Override
-            public synchronized void extract(byte[] dst, int offset) {
-                if (dst == null) {
-                    return;
-                }
-                for (int i = 0 ; i < dst.length ; i++) {
-                    dst[i] = (byte) buffer.get(offset + i);
-                }
-            }
-
-            @Override
-            public boolean put(int index, byte newValue, byte oldValue) {
-                return buffer.compareAndSet(index, oldValue, newValue);
-            }
-
-            @Override
-            public synchronized void inject(byte[] src, int offset) {
-                if (src == null) {
-                    return;
-                }
-                for (int i = 0 ; i < src.length ; i++) {
-                    buffer.set(offset + i, src[i]);
-                }
-            }
-
-            @Override
-            public Object getProvider() {
-                return buffer;
-            }
-        };
-    }
 }
