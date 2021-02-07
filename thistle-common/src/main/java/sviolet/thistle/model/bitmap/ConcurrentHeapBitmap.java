@@ -22,13 +22,17 @@ package sviolet.thistle.model.bitmap;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
 /**
- * [线程安全:CAS版]使用堆内存(HEAP)的Bitmap, 占用内存 8bit -> 4byte !
+ * <p>[线程安全:CAS版]使用堆内存(HEAP)的Bitmap</p>
  *
- * 特点: 这个Bitmap占用内存比HeapBitmap大四倍, put/get/bloomAdd/bloomContains性能有轻微下降, extract/inject性能有较大下降,
- * extract/inject操作过程更占内存, 因为会进行数据类型转换(byte - int).
+ * <p>堆内存占用 = 56 byte + 4 byte * ( 容量 / 8 )</p>
+ * <p>容量: 指的是比特数, 不是指字节数</p>
  *
- * 一致性: extract/inject操作有同步锁, put/get/bloomAdd/bloomContains采用CAS操作, 保证了内存可见性, put/bloomAdd使用了乐观锁, 防止更新操作前的脏读.
- * 注意, extract/inject会强制赋值(一般用于初始数据导入导出), extract/inject与put/bloomAdd同时进行时不保证严格的一致性.
+ * <p>一致性: extract/inject操作有同步锁, put/get/bloomAdd/bloomContains采用CAS操作, 保证了内存可见性, put/bloomAdd使用了乐观锁,
+ * 防止更新操作前的脏读, 但有极小概率写入失败(返回false). computeWith无同步锁.</p>
+ * <p>注意, extract/inject会强制赋值(一般用于初始数据导入导出), extract/inject与put/bloomAdd同时进行时不保证严格的一致性.</p>
+ *
+ * <p>特点: 数据占内存很大(4倍)!!! bit读写速度比SyncHeapBitmap快 (但是比HeapBitmap慢), bit读写支持多线程; extract/inject性能有较大下降 (比其他版本),
+ * 且extract/inject操作过程更占内存, 因为会进行数据类型转换(byte - int). </p>
  *
  * @see Bitmap
  * @see BloomBitmap
@@ -40,10 +44,16 @@ public class ConcurrentHeapBitmap extends AbstractBitmap {
 
     private AtomicIntegerArray buffer;
 
+    /**
+     * @inheritDoc
+     */
     public ConcurrentHeapBitmap(int size) {
         super(size);
     }
 
+    /**
+     * @inheritDoc
+     */
     public ConcurrentHeapBitmap(byte[] data) {
         super(data);
     }

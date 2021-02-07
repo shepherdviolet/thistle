@@ -51,6 +51,11 @@ public abstract class AbstractBitmap implements BloomBitmap {
     // bit size
     protected final int size;
 
+    /**
+     * 创建指定容量的Bitmap
+     *
+     * @param size 容量, 比特数(不是字节数)
+     */
     public AbstractBitmap(int size) {
         if (size < 0) {
             throw new IllegalArgumentException("The size must be >= 0, but it's " + size);
@@ -62,6 +67,11 @@ public abstract class AbstractBitmap implements BloomBitmap {
         dataAccess_init(bitIndexToSlotIndex(size));
     }
 
+    /**
+     * 根据二进制数据创建相同容量的Bitmap
+     *
+     * @param data 二进制数据
+     */
     public AbstractBitmap(byte[] data) {
         if (data == null) {
             data = new byte[0];

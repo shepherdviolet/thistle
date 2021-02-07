@@ -22,13 +22,16 @@ package sviolet.thistle.model.bitmap;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * [线程安全:同步锁版]使用堆内存(HEAP)的Bitmap, 占用内存 8bit -> 1byte.
+ * <p>[线程安全:同步锁版]使用堆内存(HEAP)的Bitmap</p>
  *
- * 特点: 这个Bitmap的put/get/bloomAdd/bloomContains操作性能较HeapBitmap/ConcurrentHeapBitmap有较大幅度的下降(因为同步锁开销),
- * 但内存占用情况比ConcurrentHeapBitmap小.
+ * <p>堆内存占用 = 64 byte + 1 byte * ( 容量 / 8 ) + 52 byte * 锁数</p>
+ * <p>容量: 指的是比特数, 不是指字节数</p>
+ * <p>锁数: 同步锁的数量, 越多并发性能越好, 但是要注意锁比较占内存</p>
  *
- * 一致性: extract/inject操作有同步锁1, put/get/bloomAdd/bloomContains有同步锁2, 同步锁1和同步锁2不互斥.
- * 注意, extract/inject会强制赋值(一般用于初始数据导入导出), extract/inject与put/bloomAdd同时进行时不保证严格的一致性.
+ * <p>一致性: extract/inject操作有同步锁(1), put/get/bloomAdd/bloomContains有同步锁(2), 同步锁(1)和同步锁(2)不互斥. computeWith无同步锁.</p>
+ * <p>注意, extract/inject会强制赋值(一般用于初始数据导入导出), extract/inject与put/bloomAdd同时进行时不保证严格的一致性.</p>
+ *
+ * <p>特点: 数据占内存小, 但锁占内存较大, 适合Bitmap实例数少, 但数据量较大的场合; bit读写速度最慢, bit读写支持多线程</p>
  *
  * @see Bitmap
  * @see BloomBitmap
@@ -39,10 +42,16 @@ public class SyncHeapBitmap extends HeapBitmap {
     private ReentrantLock[] locks;
     private int lockNum;
 
+    /**
+     * @inheritDoc
+     */
     public SyncHeapBitmap(int size) {
         this(size, 64);
     }
 
+    /**
+     * @inheritDoc
+     */
     public SyncHeapBitmap(byte[] data) {
         this(data, 64);
     }

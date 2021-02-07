@@ -20,9 +20,14 @@
 package sviolet.thistle.model.bitmap;
 
 /**
- * [非线程安全]使用堆内存(HEAP)的Bitmap, 占用内存 8bit -> 1byte.
+ * <p>[非线程安全]使用堆内存(HEAP)的Bitmap</p>
  *
- * 一致性: extract/inject操作有同步锁, put/get/bloomAdd/bloomContains无同步锁, 且不保证内存可见性(非CAS操作).
+ * <p>堆内存占用 = 40 byte + 1 byte * ( 容量 / 8 )</p>
+ * <p>容量: 指的是比特数, 不是指字节数</p>
+ *
+ * <p>一致性: extract/inject操作有同步锁, put/get/bloomAdd/bloomContains/computeWith无同步锁, 且不保证内存可见性(非CAS操作).</p>
+ *
+ * <p>特点: 内存占用小, bit读写速度快, bit读写不支持多线程</p>
  *
  * @see Bitmap
  * @see BloomBitmap
@@ -33,10 +38,16 @@ public class HeapBitmap extends AbstractBitmap {
     //Heap buffer
     private byte[] data;
 
+    /**
+     * @inheritDoc
+     */
     public HeapBitmap(int size) {
         super(size);
     }
 
+    /**
+     * @inheritDoc
+     */
     public HeapBitmap(byte[] data) {
         super(data);
     }
