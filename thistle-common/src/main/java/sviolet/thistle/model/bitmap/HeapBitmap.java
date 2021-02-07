@@ -19,8 +19,6 @@
 
 package sviolet.thistle.model.bitmap;
 
-import java.nio.ByteBuffer;
-
 /**
  * [非线程安全]使用堆内存(HEAP)的Bitmap, 占用内存 8bit -> 1byte.
  *
@@ -33,7 +31,7 @@ import java.nio.ByteBuffer;
 public class HeapBitmap extends AbstractBitmap {
 
     //Heap buffer
-    private ByteBuffer buffer;
+    private byte[] data;
 
     public HeapBitmap(int size) {
         super(size);
@@ -45,33 +43,49 @@ public class HeapBitmap extends AbstractBitmap {
 
     @Override
     protected void dataAccess_init(int slotSize) {
-        buffer = ByteBuffer.allocate(slotSize);
+        data = new byte[slotSize];
     }
 
     @Override
     protected byte dataAccess_getSlot(int index) {
-        return buffer.get(index);
+        return data[index];
     }
 
     @Override
     protected boolean dataAccess_putSlot(int index, byte newValue, byte oldValue) {
-        buffer.put(index, newValue);
+        data[index] = newValue;
         return true;
     }
 
     @Override
     protected void dataAccess_extract(byte[] dst, int offset) {
+        if (offset < 0) {
+            throw new ArrayIndexOutOfBoundsException("offset < 0");
+        }
+        if (offset >= data.length) {
+            throw new ArrayIndexOutOfBoundsException("offset >= max " + data.length);
+        }
+        if (offset + dst.length > data.length) {
+            throw new ArrayIndexOutOfBoundsException("offset + dst.length > max " + data.length);
+        }
         synchronized (this) {
-            buffer.position(offset);
-            buffer.get(dst, 0, dst.length);
+            System.arraycopy(data, offset, dst, 0, dst.length);
         }
     }
 
     @Override
     protected void dataAccess_inject(byte[] src, int offset) {
+        if (offset < 0) {
+            throw new ArrayIndexOutOfBoundsException("offset < 0");
+        }
+        if (offset >= data.length) {
+            throw new ArrayIndexOutOfBoundsException("offset >= max " + data.length);
+        }
+        if (offset + src.length > data.length) {
+            throw new ArrayIndexOutOfBoundsException("offset + src.length > max " + data.length);
+        }
         synchronized (this) {
-            buffer.position(offset);
-            buffer.put(src, 0, src.length);
+            System.arraycopy(src, 0, data, offset, src.length);
         }
     }
 

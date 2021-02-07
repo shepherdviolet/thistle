@@ -208,7 +208,7 @@ public class BitmapTest {
         // 多线程给HeapBitmap赋值, 这个大概率会和标准值不同
         byte[] data1 = consistencyAsync(new HeapBitmap(1000000));
         String hash1 = ByteUtils.bytesToHex(DigestCipher.digest(data1, DigestCipher.TYPE_SHA1));
-        System.out.println("肯定不同" + hash1);
+        System.out.println("可能不同" + hash1);
 
         // 多线程给ConcurrentHeapBitmap赋值
         byte[] data2 = consistencyAsync(new ConcurrentHeapBitmap(1000000));
