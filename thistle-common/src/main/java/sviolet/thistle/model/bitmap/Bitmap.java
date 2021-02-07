@@ -69,4 +69,31 @@ public interface Bitmap extends Closeable, AutoCloseable {
      */
     int size();
 
+    /**
+     * <p>将当前Bitmap和指定Bitmap(第一个参数)的每个字节按顺序通过computeFunction(第三个参数)计算, 并将结果保存到resultBitmap中(第二个参数).
+     * 要求三个Bitmap容量必须一致.</p>
+     *
+     * <p>注意!!! 该方法非线程安全, 禁止拿三个正在变化的Bitmap做计算, 数据会出现异常, 例如: 结果中前半段是老数据, 后半段是新数据.
+     * 如果resultBitmap正在变化, 还有可能出现写入失败的情况. </p>
+     *
+     * <p>用途示例:</p>
+     * <p>两个Bitmap按位异或: bitmap1.computeWith(bitmap2, resultBitmap, (b1, b2) -> (byte) (b1 ^ b2));</p>
+     *
+     * @param computeWith 参与计算的Bitmap, 要求三个Bitmap容量必须一致.
+     * @param resultBitmap 结果保存在这个Bitmap(数据会被覆盖), 要求三个Bitmap容量必须一致.
+     * @param computeFunction 计算逻辑
+     */
+    void computeWith(Bitmap computeWith, Bitmap resultBitmap, ComputeFunction computeFunction);
+
+    interface ComputeFunction {
+
+        /**
+         * @param b1 第一个Bitmap(当前Bitmap)中的一个字节(相同位置)
+         * @param b2 第二个Bitmap(方法第一个参数)中的一个字节(相同位置)
+         * @return 结果, 存入resultBitmap中对应位置(方法第二个参数)
+         */
+        byte compute(byte b1, byte b2);
+
+    }
+
 }

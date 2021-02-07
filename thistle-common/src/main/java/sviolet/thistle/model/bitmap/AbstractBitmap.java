@@ -154,6 +154,45 @@ public abstract class AbstractBitmap implements BloomBitmap {
 
     /**
      * @inheritDoc
+     *
+     * 注意!!! 这个方法不是线程安全的, 计算过程中, 三个Bitmap的数据如果正在变化, 会出问题!!!
+     */
+    @Override
+    public void computeWith(Bitmap computeWith, Bitmap resultBitmap, ComputeFunction computeFunction) {
+        if (computeWith == null) {
+            throw new IllegalArgumentException("Bitmap 'computeWith' is null");
+        }
+        if (resultBitmap == null) {
+            throw new IllegalArgumentException("Bitmap 'resultBitmap' is null");
+        }
+        if (computeFunction == null) {
+            throw new IllegalArgumentException("ComputeFunction is null");
+        }
+        if (!(computeWith instanceof AbstractBitmap)) {
+            throw new IllegalArgumentException("Bitmap 'computeWith' is not an instance of AbstractBitmap");
+        }
+        if (!(resultBitmap instanceof AbstractBitmap)) {
+            throw new IllegalArgumentException("Bitmap 'resultBitmap' is not an instance of AbstractBitmap");
+        }
+        if (size() != computeWith.size() || size() != resultBitmap.size()) {
+            throw new IllegalArgumentException("The size of the three Bitmaps must be the same, this size: " + size() +
+                    ", 'computeWith' size:" + computeWith.size() + ", 'resultBitmap' size :" + resultBitmap.size());
+        }
+        if (size() <= 0) {
+            return;
+        }
+        AbstractBitmap that = (AbstractBitmap) computeWith;
+        AbstractBitmap result = (AbstractBitmap) resultBitmap;
+        for (int i = 0 ; i < bitIndexToSlotIndex(size()) ; i++) {
+            // 不保证写入成功, 如果result的数据正在变化, 这里可能会写入失败(不会报错)
+            result.dataAccess_putSlot(i,
+                    computeFunction.compute(this.dataAccess_getSlot(i), that.dataAccess_getSlot(i)),
+                    result.dataAccess_getSlot(i));
+        }
+    }
+
+    /**
+     * @inheritDoc
      */
     @Override
     public void bloomAdd(byte[] data){

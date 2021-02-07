@@ -91,6 +91,32 @@ public class BitmapTest {
 //        System.out.println(dataString2);
     }
 
+    @Test
+    public void computeTest(){
+        byte[] data1 = ByteUtils.hexToBytes("0123456789abcdef6573543543548adcefaadccdef");
+        byte[] data2 = ByteUtils.hexToBytes("3216549870fedcbaadcedcdbcdef54685465354354");
+        byte[] expected = new byte[data1.length];
+        for (int i = 0 ; i < data1.length ; i++) {
+            expected[i] = (byte) (data1[i] ^ data2[i]);
+        }
+//        System.out.println(ByteUtils.bytesToHex(expected));
+        computeTest0(new HeapBitmap(data1), new HeapBitmap(data2), expected);
+        computeTest0(new DirectBitmap(data1), new DirectBitmap(data2), expected);
+        computeTest0(new SyncHeapBitmap(data1), new SyncHeapBitmap(data2), expected);
+        computeTest0(new ConcurrentHeapBitmap(data1), new ConcurrentHeapBitmap(data2), expected);
+    }
+
+    private void computeTest0(Bitmap bitmap1, Bitmap bitmap2, byte[] expected) {
+        Bitmap result = new HeapBitmap(bitmap1.size());
+        bitmap1.computeWith(bitmap2, result, new Bitmap.ComputeFunction() {
+            @Override
+            public byte compute(byte b1, byte b2) {
+                return (byte) (b1 ^ b2);
+            }
+        });
+//        System.out.println(ByteUtils.bytesToHex(result.extractAll()));
+        Assert.assertArrayEquals(expected, result.extractAll());
+    }
 
     /* *********************************************************************************************************** */
 
