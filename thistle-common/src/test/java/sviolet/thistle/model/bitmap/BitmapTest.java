@@ -107,10 +107,10 @@ public class BitmapTest {
 
     /**
      * 性能
-     * HeapBitmap 2989
-     * DirectBitmap 2913
-     * ConcurrentHeapBitmap 3719
-     * SyncHeapBitmap 7642
+     * HeapBitmap 1799
+     * DirectBitmap 1900
+     * ConcurrentHeapBitmap 2583
+     * SyncHeapBitmap 3182
      */
     private static void baseline1() {
         Bitmap bitmap = new HeapBitmap(BITMAP_SIZE);
