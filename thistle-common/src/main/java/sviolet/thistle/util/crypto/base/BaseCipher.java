@@ -46,6 +46,8 @@ import java.security.interfaces.RSAPublicKey;
  *
  * @author S.Violet
  */
+// About suppressed warnings: It's a util, the algorithm type should not be restricted
+@SuppressWarnings({"lgtm[java/weak-cryptographic-algorithm]"})
 public class BaseCipher {
 
     /**

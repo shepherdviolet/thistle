@@ -45,26 +45,15 @@ public class FastFileCopyer {
      * @param target 目标文件
      */
     public static void copy(File source,File target) throws IOException {
-        FileChannel in = null;
-        FileChannel out = null;
-        FileInputStream inStream = null;
-        FileOutputStream outStream = null;
-        try {
-            inStream = new FileInputStream(source);
-            outStream = new FileOutputStream(target);
-            in = inStream.getChannel();
-            out = outStream.getChannel();
-            long totalSize = in.size();
-            long readSize = 0;
-            while(totalSize > 0 && readSize < totalSize){
-                readSize += in.transferTo(readSize, totalSize - readSize, out);
+        try (FileInputStream inStream = new FileInputStream(source); FileOutputStream outStream = new FileOutputStream(target)) {
+            try (FileChannel in = inStream.getChannel(); FileChannel out = outStream.getChannel()){
+                long totalSize = in.size();
+                long readSize = 0;
+                while(totalSize > 0 && readSize < totalSize){
+                    readSize += in.transferTo(readSize, totalSize - readSize, out);
+                }
             }
-        } finally {
-            try{in.close();}catch (Exception ignored){}
-            try{inStream.close();}catch (Exception ignored){}
-            try{outStream.flush();}catch (Exception ignored){}
-            try{out.close();}catch (Exception ignored){}
-            try{outStream.close();}catch (Exception ignored){}
+            outStream.flush();
         }
         //使目标文件修改时间与源文件保持一致
         long lastModified = source.lastModified();

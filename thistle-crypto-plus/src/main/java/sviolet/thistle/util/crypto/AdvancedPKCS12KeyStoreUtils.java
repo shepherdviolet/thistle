@@ -83,7 +83,9 @@ public class AdvancedPKCS12KeyStoreUtils extends PKCS12KeyStoreUtils {
                 throw new IOException("Can not make directory for keyStore, path:" + dirFile.getAbsolutePath());
             }
         }
-        storeCertificateAndKeyAdvanced(new FileOutputStream(keyStoreFile), keystorePassword, alias, privateKey, certificateChain);
+        try (OutputStream outputStream = new FileOutputStream(keyStoreFile)) {
+            storeCertificateAndKeyAdvanced(outputStream, keystorePassword, alias, privateKey, certificateChain);
+        }
     }
 
     /**

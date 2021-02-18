@@ -37,6 +37,8 @@ import java.security.SecureRandom;
  *
  * @author S.Violet
  */
+// About suppressed warnings: It's a util, the algorithm type should not be restricted
+@SuppressWarnings({"lgtm[java/weak-cryptographic-algorithm]"})
 public class BaseKeyGenerator {
 
     /**

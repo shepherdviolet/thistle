@@ -92,7 +92,9 @@ public class PKCS12KeyStoreUtils {
                 throw new IOException("Can not make directory for keyStore, path:" + dirFile.getAbsolutePath());
             }
         }
-        storeCertificateAndKey(new FileOutputStream(keyStoreFile), keyStorePassword, alias, privateKey, certificateChain);
+        try (FileOutputStream keyStoreOutputStream = new FileOutputStream(keyStoreFile)) {
+            storeCertificateAndKey(keyStoreOutputStream, keyStorePassword, alias, privateKey, certificateChain);
+        }
     }
 
     /**

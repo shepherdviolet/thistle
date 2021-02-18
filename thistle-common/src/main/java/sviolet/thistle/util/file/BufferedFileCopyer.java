@@ -19,8 +19,6 @@
 
 package sviolet.thistle.util.file;
 
-import sviolet.thistle.util.common.CloseableUtils;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -69,27 +67,16 @@ public class BufferedFileCopyer {
     }
 
     private static void copy(File source, File target, int buffSize) throws IOException {
-        FileChannel in = null;
-        FileChannel out = null;
-        FileInputStream inStream = null;
-        FileOutputStream outStream = null;
-        try {
-            inStream = new FileInputStream(source);
-            outStream = new FileOutputStream(target);
-            in = inStream.getChannel();
-            out = outStream.getChannel();
-            ByteBuffer buffer = ByteBuffer.allocate(buffSize);
-            while (in.read(buffer) != -1) {
-                buffer.flip();
-                out.write(buffer);
-                buffer.clear();
+        try (FileInputStream inStream = new FileInputStream(source); FileOutputStream outStream = new FileOutputStream(target)) {
+            try (FileChannel in = inStream.getChannel(); FileChannel out = outStream.getChannel()){
+                ByteBuffer buffer = ByteBuffer.allocate(buffSize);
+                while (in.read(buffer) != -1) {
+                    buffer.flip();
+                    out.write(buffer);
+                    buffer.clear();
+                }
             }
-        } finally {
-            CloseableUtils.closeQuiet(in);
-            CloseableUtils.closeQuiet(inStream);
-            try{outStream.flush();}catch (Exception ignored){}
-            CloseableUtils.closeQuiet(out);
-            CloseableUtils.closeQuiet(outStream);
+            outStream.flush();
         }
         //使目标文件修改时间与源文件保持一致
         long lastModified = source.lastModified();
@@ -101,31 +88,20 @@ public class BufferedFileCopyer {
     }
 
     private static void copy(File source, File target, int buffSize, ProgressWatcher watcher) throws IOException {
-        FileChannel in = null;
-        FileChannel out = null;
-        FileInputStream inStream = null;
-        FileOutputStream outStream = null;
-        try {
-            inStream = new FileInputStream(source);
-            outStream = new FileOutputStream(target);
-            in = inStream.getChannel();
-            out = outStream.getChannel();
-            ByteBuffer buffer = ByteBuffer.allocate(buffSize);
-            long total = source.length();
-            long current = 0;
-            while (in.read(buffer) != -1) {
-                buffer.flip();
-                current += buffer.limit();
-                out.write(buffer);
-                buffer.clear();
-                watcher.onUpdate(total, current);
+        try (FileInputStream inStream = new FileInputStream(source); FileOutputStream outStream = new FileOutputStream(target)) {
+            try (FileChannel in = inStream.getChannel(); FileChannel out = outStream.getChannel()){
+                ByteBuffer buffer = ByteBuffer.allocate(buffSize);
+                long total = source.length();
+                long current = 0;
+                while (in.read(buffer) != -1) {
+                    buffer.flip();
+                    current += buffer.limit();
+                    out.write(buffer);
+                    buffer.clear();
+                    watcher.onUpdate(total, current);
+                }
             }
-        } finally {
-            try{in.close();}catch (Exception ignored){}
-            try{inStream.close();}catch (Exception ignored){}
-            try{outStream.flush();}catch (Exception ignored){}
-            try{out.close();}catch (Exception ignored){}
-            try{outStream.close();}catch (Exception ignored){}
+            outStream.flush();
         }
         //使目标文件修改时间与源文件保持一致
         long lastModified = source.lastModified();

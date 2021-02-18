@@ -458,6 +458,7 @@ public final class DiskLruCache implements Closeable {
      * exist is not currently readable. If a value is returned, it is moved to
      * the head of the LRU queue.
      */
+    @SuppressWarnings({"lgtm[java/input-resource-leak]"})
     public synchronized Snapshot get(String key) throws IOException {
         checkNotClosed();
         validateKey(key);
@@ -478,6 +479,7 @@ public final class DiskLruCache implements Closeable {
         InputStream[] ins = new InputStream[valueCount];
         try {
             for (int i = 0; i < valueCount; i++) {
+                // About suppressed warnings: The InputStream will be closed in Snapshot#close()
                 ins[i] = new FileInputStream(entry.getCleanFile(i));
             }
         } catch (FileNotFoundException e) {

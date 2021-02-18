@@ -274,6 +274,7 @@ public class BaseBCCertificateUtils {
      * @param issuerCertificate 证书颁发者(CA)的证书
      * @param issuerPrivateKey 证书颁发者(CA)的RSA私钥
      */
+    @SuppressWarnings({"lgtm[java/input-resource-leak]"})
     public static X509Certificate generateRSAX509Certificate(String subjectDn, RSAPublicKey subjectPublicKey, int subjectValidity, String signAlgorithm, X509Certificate issuerCertificate, RSAPrivateKey issuerPrivateKey) throws IOException, CertificateException, OperatorCreationException {
         //certificate builder
         X509v3CertificateBuilder certificateBuilder = new X509v3CertificateBuilder(
@@ -287,7 +288,7 @@ public class BaseBCCertificateUtils {
                 new Date(System.currentTimeMillis() + subjectValidity * 24L * 60L * 60L * 1000L),
                 //subject dn
                 new X500Name(REVERSED_BC_STYLE, subjectDn),
-                //public key
+                //public key, About suppressed warnings: ASN1InputStream (with byte[] data) doesn't need to close
                 SubjectPublicKeyInfo.getInstance(new ASN1InputStream(subjectPublicKey.getEncoded()).readObject()));
 
         //sign

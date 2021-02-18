@@ -51,6 +51,7 @@ public class FileUtils {
      * @param charset 字符编码
      * @param append true:追加 false:覆盖
      */
+    @SuppressWarnings({"lgtm[java/input-resource-leak]"})
     public static void writeString(File file, String msg, String charset, boolean append) throws IOException {
         File dirFile = file.getParentFile();
         if (dirFile != null && !dirFile.exists()){
@@ -58,13 +59,10 @@ public class FileUtils {
                 throw new IOException("Can not make directory before write string to file, path:" + dirFile.getAbsolutePath());
             }
         }
-        BufferedWriter writer = null;
-        try {
-            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, append), charset));
+        // About suppressed warnings: FileOutputStream will be closed by BufferedWriter
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, append), charset))) {
             writer.write(msg);
-        } finally {
-            try { if (writer != null) {writer.flush();} } catch (IOException ignored) { }
-            try { if (writer != null) {writer.close();} } catch (IOException ignored) { }
+            writer.flush();
         }
     }
 
@@ -85,6 +83,7 @@ public class FileUtils {
      * @param maxLength 最大长度, 如果文件大小超过该设定值, 会抛出异常
      * @return 字符串
      */
+    @SuppressWarnings({"lgtm[java/input-resource-leak]"})
     public static String readString(File file, String charset, int maxLength) throws LengthOutOfLimitException, IOException {
 
         if (!file.exists() || !file.isFile()) {
@@ -95,6 +94,7 @@ public class FileUtils {
             throw new LengthOutOfLimitException("File length out of limit, file:" + file.getAbsolutePath() + ", length:" + file.length());
         }
 
+        // About suppressed warnings: FileInputStream will be closed by BufferedReader
         try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(file), charset))) {
             StringBuilder stringBuilder = new StringBuilder();
             char[] buff = new char[1024];
