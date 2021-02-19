@@ -51,7 +51,7 @@ public class FileUtils {
      * @param charset 字符编码
      * @param append true:追加 false:覆盖
      */
-    @SuppressWarnings({"lgtm[java/input-resource-leak]"})
+    @SuppressWarnings({"lgtm[java/output-resource-leak]"})
     public static void writeString(File file, String msg, String charset, boolean append) throws IOException {
         File dirFile = file.getParentFile();
         if (dirFile != null && !dirFile.exists()){
