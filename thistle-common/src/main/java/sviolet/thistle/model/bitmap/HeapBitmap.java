@@ -38,16 +38,10 @@ public class HeapBitmap extends AbstractBitmap {
     //Heap buffer
     private byte[] data;
 
-    /**
-     * @inheritDoc
-     */
     public HeapBitmap(int size) {
         super(size);
     }
 
-    /**
-     * @inheritDoc
-     */
     public HeapBitmap(byte[] data) {
         super(data);
     }

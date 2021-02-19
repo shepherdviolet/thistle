@@ -44,16 +44,10 @@ public class ConcurrentHeapBitmap extends AbstractBitmap {
 
     private AtomicIntegerArray buffer;
 
-    /**
-     * @inheritDoc
-     */
     public ConcurrentHeapBitmap(int size) {
         super(size);
     }
 
-    /**
-     * @inheritDoc
-     */
     public ConcurrentHeapBitmap(byte[] data) {
         super(data);
     }

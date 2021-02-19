@@ -47,16 +47,10 @@ public class DirectBitmap extends AbstractBitmap {
     //Direct buffer
     private ByteBuffer buffer;
 
-    /**
-     * @inheritDoc
-     */
     public DirectBitmap(int size) {
         super(size);
     }
 
-    /**
-     * @inheritDoc
-     */
     public DirectBitmap(byte[] data) {
         super(data);
     }

@@ -42,16 +42,10 @@ public class SyncHeapBitmap extends HeapBitmap {
     private ReentrantLock[] locks;
     private int lockNum;
 
-    /**
-     * @inheritDoc
-     */
     public SyncHeapBitmap(int size) {
         this(size, 64);
     }
 
-    /**
-     * @inheritDoc
-     */
     public SyncHeapBitmap(byte[] data) {
         this(data, 64);
     }

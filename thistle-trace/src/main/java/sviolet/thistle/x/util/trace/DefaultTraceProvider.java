@@ -31,7 +31,7 @@ import java.util.Map;
  *
  * <p>
  *     1.追踪号和其他追踪信息保存在ThreadLocal中. <br>
- *     2.如果应用依赖SLF4J, 追踪号还会存入MDC, KEY为{@value Trace#TRACE_ID_KEY}, 可以打印在日志中. <br>
+ *     2.如果应用依赖SLF4J, 追踪号还会存入MDC, KEY为{@value sviolet.thistle.x.util.trace.Trace#TRACE_ID_KEY}, 可以打印在日志中. <br>
  * </p>
  *
  * @author zhuqinchao

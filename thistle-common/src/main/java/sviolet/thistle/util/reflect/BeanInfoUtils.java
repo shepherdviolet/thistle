@@ -58,6 +58,7 @@ public class BeanInfoUtils {
      * @param cacheEnabled Is cache enabled
      * @throws IntrospectionException Inspect error
      */
+    @SuppressWarnings("unchecked")
     public static Map<String, PropertyInfo> getPropertyInfos(Class<?> beanClass, boolean cacheEnabled) throws IntrospectionException {
         if (beanClass == null) {
             throw new NullPointerException("beanClass is null");
