@@ -60,7 +60,8 @@ public class FileUtils {
             }
         }
         // About suppressed warnings: FileOutputStream will be closed by BufferedWriter
-        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, append), charset))) {
+        try (OutputStream outputStream = new FileOutputStream(file, append);
+             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, charset))) {
             writer.write(msg);
             writer.flush();
         }
@@ -95,7 +96,8 @@ public class FileUtils {
         }
 
         // About suppressed warnings: FileInputStream will be closed by BufferedReader
-        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(file), charset))) {
+        try (InputStream inputStream = new FileInputStream(file);
+             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, charset))) {
             StringBuilder stringBuilder = new StringBuilder();
             char[] buff = new char[1024];
             int length;
@@ -169,7 +171,7 @@ public class FileUtils {
                         //write to line data
                         boolean outOfLimit = readLines_writeLine(buff, lineData, buffStartIndex, buffCurrentIndex, limitPerLine);
                         //consume
-                        if (!readLines_consume(consumer, lineData, outOfLimit)) return;
+                        if (!readLines_consume(consumer, lineData, outOfLimit)) {return;}
                         //set start index to next byte
                         buffStartIndex = buffCurrentIndex + 1;
 
@@ -182,7 +184,7 @@ public class FileUtils {
                 //out of limit
                 if (outOfLimit) {
                     //consume
-                    if (!readLines_consume(consumer, lineData, true)) return;
+                    if (!readLines_consume(consumer, lineData, true)) {return;}
                     //mark outOfLengthFlag to true
                     outOfLengthFlag = true;
                 }
