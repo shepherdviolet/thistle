@@ -62,6 +62,16 @@ public class StringUtilsTest {
     }
 
     @Test
+    public void rightPaddingToLength(){
+        Assert.assertEquals("", StringUtils.rightPaddingToLength("12345678", 0, 0, '0'));
+        Assert.assertEquals("123456", StringUtils.rightPaddingToLength("12345678", 6, 6, '0'));
+        Assert.assertEquals("1234567800", StringUtils.rightPaddingToLength("12345678", 10, 10, '0'));
+        Assert.assertEquals("12345678", StringUtils.rightPaddingToLength("12345678", 6, 10, '0'));
+        Assert.assertEquals("123456", StringUtils.rightPaddingToLength("12345678", 4, 6, '0'));
+        Assert.assertEquals("123456780", StringUtils.rightPaddingToLength("12345678", 9, 12, '0'));
+    }
+
+    @Test
     public void leftTrimToLength(){
         Assert.assertEquals("12345678", StringUtils.leftTrimToLength("12345678", 0, '0'));
         Assert.assertEquals("12345678", StringUtils.leftTrimToLength("0012345678", 0, '0'));

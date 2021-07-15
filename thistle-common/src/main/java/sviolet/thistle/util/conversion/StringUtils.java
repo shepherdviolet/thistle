@@ -281,6 +281,52 @@ public class StringUtils {
     }
 
     /**
+     * <p>在字符串右边添加指定字符或删除字符, 直至满足长度要求</p><br>
+     *
+     * <p>
+     * 示例: <br>
+     * ("12345678", 6, 6, '0') -> "123456" <br>
+     * ("12345678", 10, 10, '0') -> "1234567800" <br>
+     * ("12345678", 6, 10, '0') -> "12345678" <br>
+     * ("12345678", 4, 6, '0') -> "123456" <br>
+     * ("12345678", 10, 12, '0') -> "1234567800" <br>
+     * </p>
+     *
+     * @param string 字符串
+     * @param minLength 最小长度
+     * @param maxLength 最大长度
+     * @param paddingChar 填充字符
+     * @return 满足长度要求的字符串
+     */
+    public static String rightPaddingToLength(String string, int minLength, int maxLength, char paddingChar) {
+        if (string == null) {
+            string = "";
+        }
+        if (minLength < 0) {
+            minLength = 0;
+        }
+        if (maxLength < minLength) {
+            maxLength = minLength;
+        }
+        int length = string.length();
+        if (length > maxLength) {
+            return string.substring(0, maxLength);
+        }
+        if (length >= minLength) {
+            return string;
+        }
+        int paddingLength = minLength - length;
+        if (paddingLength == 1) {
+            return string + paddingChar;
+        }
+        StringBuilder padding = new StringBuilder(paddingLength);
+        for (int i = 0 ; i < paddingLength ; i++) {
+            padding.append(paddingChar);
+        }
+        return string + padding.toString();
+    }
+
+    /**
      * <p>从字符串左边开始, 将指定字符删掉, 直到出现其他字符或到达最小长度</p><br>
      *
      * <p>
