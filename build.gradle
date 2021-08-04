@@ -1,12 +1,8 @@
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// 脚本
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// [请勿修改] 'build.gradle'的初始化脚本
-apply from: 'gradle/build-init.gradle'
-
-
+// Gradle Advanced Modularity | Gradle 高级模块化
+// [DO NOT MODIFY] Initialization script before build
+// [请勿修改] 构建前的初始化脚本
+apply from: 'gradle/advanced-modularity/before-build.gradle'
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 配置
@@ -42,6 +38,7 @@ buildscript {
 
     // 构建脚本用的依赖(插件)
     dependencies {
+        classpath localGroovy() // [Gradle Advanced Modularity] Depends on groovy, avoid importing groovy package errors
 //        classpath "org.springframework.boot:spring-boot-gradle-plugin:$version_spring_boot"
     }
 
