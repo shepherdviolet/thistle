@@ -35,6 +35,26 @@ import java.util.List;
 public class FileUtils {
 
     /**
+     * 向文件写入字节数据(仅限少量数据)
+     * @param file 目标文件
+     * @param bytes 数据
+     * @param append true:追加 false:覆盖
+     */
+    public static void writeBytes(File file, byte[] bytes, boolean append) throws IOException {
+        File dirFile = file.getParentFile();
+        if (dirFile != null && !dirFile.exists()){
+            if (!dirFile.mkdirs()){
+                throw new IOException("Can not make directory before write bytes to file, path:" + dirFile.getAbsolutePath());
+            }
+        }
+        // About suppressed warnings: FileOutputStream will be closed by BufferedWriter
+        try (OutputStream outputStream = new FileOutputStream(file, append)) {
+            outputStream.write(bytes);
+            outputStream.flush();
+        }
+    }
+
+    /**
      * 向文件写入字符串
      * @param file 文件
      * @param msg 字符串
