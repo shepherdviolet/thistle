@@ -50,7 +50,7 @@ public class ImageCaptchaUtils {
             new Font("Dialog", Font.PLAIN, 10),
             new Font("SansSerif", Font.PLAIN, 10)};
 
-    private static final Font[] FONTS_CHN = {
+    private static final Font[] FONTS_CN = {
             new Font("宋体", Font.PLAIN, 10),
             new Font("华文楷体", Font.PLAIN, 10),
             new Font("黑体", Font.PLAIN, 10),
@@ -59,6 +59,9 @@ public class ImageCaptchaUtils {
 
     // options ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    /**
+     * 320*100 easy colourful
+     */
     public static final Options OPTIONS_LARGE_320_100_EASY_COLORFUL = new OptionsBuilder()
             .imageFormat("png")
             .backgroundSize(320, 100)
@@ -70,6 +73,9 @@ public class ImageCaptchaUtils {
             .interferenceGranule(80, 100, 1, 3, 6)
             .build();
 
+    /**
+     * 320*100 easy black
+     */
     public static final Options OPTIONS_LARGE_320_100_EASY_BLACK = new OptionsBuilder()
             .imageFormat("png")
             .backgroundSize(320, 100)
@@ -81,17 +87,23 @@ public class ImageCaptchaUtils {
             .interferenceGranule(80, 100, 1, 3, 6)
             .build();
 
-    public static final Options OPTIONS_LARGE_320_100_EASY_CHN = new OptionsBuilder()
+    /**
+     * 320*100 easy CN fonts
+     */
+    public static final Options OPTIONS_LARGE_320_100_EASY_CN = new OptionsBuilder()
             .imageFormat("png")
             .backgroundSize(320, 100)
             .backgroundColor(250, 250, 250, 255)
             .randomFontColor(0, 180, 0, 180, 0, 180)
-            .randomFonts(FONTS_CHN)
+            .randomFonts(FONTS_CN)
             .randomFontAffineTransform(0.7f, 0.9f, -0.3f, 0.3f, -0.1f, 0.1f)
             .interferenceLine(6, 8, 1, 2)
             .interferenceGranule(80, 100, 1, 3, 6)
             .build();
 
+    /**
+     * 360*100 hard colourful
+     */
     public static final Options OPTIONS_LARGE_360_100_HARD_COLORFUL = new OptionsBuilder()
             .imageFormat("png")
             .backgroundSize(360, 100)
@@ -103,6 +115,9 @@ public class ImageCaptchaUtils {
             .interferenceGranule(120, 140, 1, 3, 6)
             .build();
 
+    /**
+     * 360*100 hard black
+     */
     public static final Options OPTIONS_LARGE_360_100_HARD_BLACK = new OptionsBuilder()
             .imageFormat("png")
             .backgroundSize(360, 100)
@@ -114,17 +129,23 @@ public class ImageCaptchaUtils {
             .interferenceGranule(120, 140, 1, 3, 6)
             .build();
 
-    public static final Options OPTIONS_LARGE_360_100_HARD_CHN = new OptionsBuilder()
+    /**
+     * 360*100 hard CN fonts
+     */
+    public static final Options OPTIONS_LARGE_360_100_HARD_CN = new OptionsBuilder()
             .imageFormat("png")
             .backgroundSize(360, 100)
             .backgroundColor(250, 250, 250, 255)
             .randomFontColor(0, 180, 0, 180, 0, 180)
-            .randomFonts(FONTS_CHN)
+            .randomFonts(FONTS_CN)
             .randomFontAffineTransform(0.6f, 0.8f, -0.4f, 0.4f, -0.1f, 0.1f)
             .interferenceLine(7, 9, 1, 2)
             .interferenceGranule(120, 140, 1, 3, 6)
             .build();
 
+    /**
+     * 160*50 easy colorful
+     */
     public static final Options OPTIONS_MEDIUM_160_50_EASY_COLORFUL = new OptionsBuilder()
             .imageFormat("png")
             .backgroundSize(160, 50)
@@ -136,6 +157,9 @@ public class ImageCaptchaUtils {
             .interferenceGranule(40, 60, 1, 1, 4)
             .build();
 
+    /**
+     * 160*50 easy black
+     */
     public static final Options OPTIONS_MEDIUM_160_50_EASY_BLACK = new OptionsBuilder()
             .imageFormat("png")
             .backgroundSize(160, 50)
@@ -147,17 +171,23 @@ public class ImageCaptchaUtils {
             .interferenceGranule(40, 60, 1, 1, 4)
             .build();
 
-    public static final Options OPTIONS_MEDIUM_160_50_EASY_CHN = new OptionsBuilder()
+    /**
+     * 160*50 easy cn
+     */
+    public static final Options OPTIONS_MEDIUM_160_50_EASY_CN = new OptionsBuilder()
             .imageFormat("png")
             .backgroundSize(160, 50)
             .backgroundColor(250, 250, 250, 255)
             .randomFontColor(0, 150, 0, 150, 0, 150)
-            .randomFonts(FONTS_CHN)
+            .randomFonts(FONTS_CN)
             .randomFontAffineTransform(0.9f, 1.0f, -0.25f, 0.25f, -0.05f, 0.05f)
             .interferenceLine(6, 8, 1, 1)
             .interferenceGranule(40, 60, 1, 1, 4)
             .build();
 
+    /**
+     * 180*50 hard colorful
+     */
     public static final Options OPTIONS_MEDIUM_180_50_HARD_COLORFUL = new OptionsBuilder()
             .imageFormat("png")
             .backgroundSize(180, 50)
@@ -169,6 +199,9 @@ public class ImageCaptchaUtils {
             .interferenceGranule(50, 70, 1, 2, 4)
             .build();
 
+    /**
+     * 180*50 hard black
+     */
     public static final Options OPTIONS_MEDIUM_180_50_HARD_BLACK = new OptionsBuilder()
             .imageFormat("png")
             .backgroundSize(180, 50)
@@ -180,17 +213,23 @@ public class ImageCaptchaUtils {
             .interferenceGranule(50, 70, 1, 2, 4)
             .build();
 
-    public static final Options OPTIONS_MEDIUM_180_50_HARD_CHN = new OptionsBuilder()
+    /**
+     * 180*50 hard CN fonts
+     */
+    public static final Options OPTIONS_MEDIUM_180_50_HARD_CN = new OptionsBuilder()
             .imageFormat("png")
             .backgroundSize(180, 50)
             .backgroundColor(250, 250, 250, 255)
             .randomFontColor(0, 150, 0, 150, 0, 150)
-            .randomFonts(FONTS_CHN)
+            .randomFonts(FONTS_CN)
             .randomFontAffineTransform(0.9f, 1.0f, -0.35f, 0.35f, -0.05f, 0.05f)
             .interferenceLine(6, 8, 1, 1)
             .interferenceGranule(50, 70, 1, 2, 4)
             .build();
 
+    /**
+     * 90*25 easy colorful
+     */
     public static final Options OPTIONS_SMALL_90_25_EASY_COLORFUL = new OptionsBuilder()
             .imageFormat("png")
             .backgroundSize(90, 25)
@@ -202,6 +241,9 @@ public class ImageCaptchaUtils {
             .interferenceGranule(20, 30, 1, 1, 3)
             .build();
 
+    /**
+     * 90*25 easy black
+     */
     public static final Options OPTIONS_SMALL_90_25_EASY_BLACK = new OptionsBuilder()
             .imageFormat("png")
             .backgroundSize(90, 25)
@@ -213,7 +255,12 @@ public class ImageCaptchaUtils {
             .interferenceGranule(20, 30, 1, 1, 3)
             .build();
 
-
+    /**
+     * draw captcha image
+     * @param text captcha text
+     * @param outputStream output stream
+     * @param options options
+     */
     public static void drawImage(String text, OutputStream outputStream, Options options) throws IOException {
         try {
             // check
@@ -228,6 +275,7 @@ public class ImageCaptchaUtils {
 
             // Draw background //////////////////////////////////////////////////////////////////////
 
+            // draw background
             Graphics2D graphics = image.createGraphics();
             graphics.setBackground(options.backgroundColor);
             graphics.clearRect(0, 0, backgroundWidth, backgroundHeight);
@@ -236,9 +284,9 @@ public class ImageCaptchaUtils {
             // Draw text  ///////////////////////////////////////////////////////////////////////////
 
             int textLength = text.length();
-
             if (textLength > 0) {
 
+                // text container image
                 BufferedImage textImage = new BufferedImage(backgroundWidth, backgroundHeight, BufferedImage.TYPE_4BYTE_ABGR);
 
                 int wordMaxWidth = backgroundWidth / textLength;
@@ -246,6 +294,7 @@ public class ImageCaptchaUtils {
                 int wordMaxHeight = backgroundHeight;
                 int wordSize = Math.min(wordMaxWidth, wordMaxHeight);
 
+                // draw each words
                 for (int i = 0 ; i < text.length() ; i++) {
                     String word = String.valueOf(text.charAt(i));
                     drawWord(options, textImage, wordMaxWidth, wordMaxHeight, wordSize, i, word);
@@ -271,6 +320,7 @@ public class ImageCaptchaUtils {
                 Random random = ThreadLocalRandom.current();
                 int interferenceLineNum = options.randomInterferenceLineNum();
 
+                // draw each line
                 for (int i = 0 ; i < interferenceLineNum ; i++) {
                     int x1 = random.nextInt(backgroundWidth / 2);
                     int y1 = random.nextInt(backgroundHeight);
@@ -292,6 +342,7 @@ public class ImageCaptchaUtils {
                 Random random = ThreadLocalRandom.current();
                 int interferenceGranuleNum = options.randomInterferenceGranuleNum();
 
+                // draw each granule
                 for (int i = 0 ; i < interferenceGranuleNum ; i++) {
                     int x1 = random.nextInt(backgroundWidth);
                     int y1 = random.nextInt(backgroundHeight);
@@ -307,6 +358,7 @@ public class ImageCaptchaUtils {
 
             // Output     ///////////////////////////////////////////////////////////////////////////
 
+            // write image to output stream
             ImageIO.write(image, options.imageFormat, outputStream);
 
         } finally {
@@ -314,6 +366,9 @@ public class ImageCaptchaUtils {
         }
     }
 
+    /**
+     * draw a word
+     */
     private static void drawWord(Options options, BufferedImage textImage, int wordMaxWidth, int wordMaxHeight, int wordSize, int index, String word) {
         BufferedImage wordImage = new BufferedImage(wordMaxWidth, wordMaxHeight, BufferedImage.TYPE_4BYTE_ABGR);
 
@@ -348,6 +403,9 @@ public class ImageCaptchaUtils {
         return text;
     }
 
+    /**
+     * Options, created by "new OptionsBuilder().build()"
+     */
     private static class Options {
 
         private String imageFormat;
@@ -391,11 +449,13 @@ public class ImageCaptchaUtils {
 
         private Font randomFont(int size){
             Random random = ThreadLocalRandom.current();
+            // random font type
             return randomFonts[random.nextInt(randomFonts.length)].deriveFont(Font.PLAIN, size);
         }
 
         private Color randomFontColor(int alpha){
             Random random = ThreadLocalRandom.current();
+            // random color
             return new Color(randomFontColorRedMin + random.nextInt(randomFontColorRedMax - randomFontColorRedMin + 1),
                     randomFontColorGreenMin + random.nextInt(randomFontColorGreenMax - randomFontColorGreenMin + 1),
                     randomFontColorBlueMin + random.nextInt(randomFontColorBlueMax - randomFontColorBlueMin + 1),
@@ -416,10 +476,11 @@ public class ImageCaptchaUtils {
             float shearX = shearMin + shearRange * polarize(random.nextFloat());
             float shearY = shearMin + shearRange * polarize(random.nextFloat());
             float translateX = maxWidth * (translateRatioMin + translateRatioRange * polarize(random.nextFloat()))
-                    + maxWidth * (1f - scaleX) / 2f; // scale偏移补正
+                    + maxWidth * (1f - scaleX) / 2f; // scaling offset correction
             float translateY = maxHeight * (translateRatioMin + translateRatioRange * polarize(random.nextFloat()))
-                    + maxHeight * (1f - scaleY) / 2f; // scale偏移补正
+                    + maxHeight * (1f - scaleY) / 2f; // scaling offset correction
 
+            // random AffineTransform
             return new AffineTransform(scaleX, shearY, shearX, scaleY, translateX, translateY);
         }
 
@@ -437,11 +498,12 @@ public class ImageCaptchaUtils {
             float shearX = shearMin + shearRange * polarize(random.nextFloat());
             float shearY = shearMin + shearRange * polarize(random.nextFloat());
             float translateX = wordMaxWidth * (translateRatioMin + translateRatioRange * polarize(random.nextFloat()))
-                    + wordMaxWidth * (1f - scaleX) / 2f // scale偏移补正
-                    + offsetX; // 字符偏移量
+                    + wordMaxWidth * (1f - scaleX) / 2f // scaling offset correction
+                    + offsetX; // offset of word
             float translateY = wordMaxHeight * (translateRatioMin + translateRatioRange * polarize(random.nextFloat()))
-                    + wordMaxHeight * (1f - scaleY) / 2f; // scale偏移补正
+                    + wordMaxHeight * (1f - scaleY) / 2f; // scaling offset correction
 
+            // random AffineTransform
             return new AffineTransform(scaleX, shearY, shearX, scaleY, translateX, translateY);
         }
 
@@ -482,6 +544,9 @@ public class ImageCaptchaUtils {
 
     }
 
+    /**
+     * OptionsBuilder
+     */
     public static class OptionsBuilder {
 
         private String imageFormat = "png";
@@ -526,11 +591,18 @@ public class ImageCaptchaUtils {
         public OptionsBuilder() {
         }
 
+        /**
+         * @param imageFormat Image format, png, jpg ...
+         */
         public OptionsBuilder imageFormat(String imageFormat) {
             this.imageFormat = imageFormat;
             return this;
         }
 
+        /**
+         * @param width captcha width
+         * @param height captcha height
+         */
         public OptionsBuilder backgroundSize(int width, int height) {
             if (width < 1) {
                 throw new IllegalArgumentException("backgroundSize width cannot be less than 1");
@@ -543,6 +615,13 @@ public class ImageCaptchaUtils {
             return this;
         }
 
+        /**
+         * background color
+         * @param red red, [0, 255]
+         * @param green green, [0, 255]
+         * @param blue blue, [0, 255]
+         * @param alpha alpha, [0, 255]
+         */
         public OptionsBuilder backgroundColor(int red, int green, int blue, int alpha) {
             checkColorInt(red, "backgroundColor red");
             checkColorInt(green, "backgroundColor green");
@@ -552,6 +631,15 @@ public class ImageCaptchaUtils {
             return this;
         }
 
+        /**
+         * random font color
+         * @param redMin red min value, [0, 255]
+         * @param redMax red max value, [0, 255]
+         * @param greenMin green min value, [0, 255]
+         * @param greenMax green max value, [0, 255]
+         * @param blueMin blue min value, [0, 255]
+         * @param blueMax blue max value, [0, 255]
+         */
         public OptionsBuilder randomFontColor(int redMin, int redMax,
                                               int greenMin, int greenMax,
                                               int blueMin, int blueMax){
@@ -588,6 +676,15 @@ public class ImageCaptchaUtils {
             return this;
         }
 
+        /**
+         * random affine transform for each word, 每个字随机缩放/扭曲/平移
+         * @param scaleMin scale min value, (0, 1], 缩放最小值
+         * @param scaleMax scale max value, (0, 1], 缩放最大值
+         * @param shearMin shear min value, [-1, 1], 扭曲最小值
+         * @param shearMax shear max value, [-1, 1], 扭曲最大值
+         * @param translateRatioMin translate ratio min value, [-1, 1], 平移最小值(相对于背景宽高的比值)
+         * @param translateRatioMax translate ratio max value, [-1, 1], 平移最大值(相对于背景宽高的比值)
+         */
         public OptionsBuilder randomFontAffineTransform(float scaleMin, float scaleMax,
                                                         float shearMin, float shearMax,
                                                         float translateRatioMin, float translateRatioMax){
@@ -603,6 +700,15 @@ public class ImageCaptchaUtils {
             return this;
         }
 
+        /**
+         * random affine transform for global, 整体随机缩放/扭曲/平移
+         * @param scaleMin scale min value, (0, 1], 缩放最小值
+         * @param scaleMax scale max value, (0, 1], 缩放最大值
+         * @param shearMin shear min value, [-1, 1], 扭曲最小值
+         * @param shearMax shear max value, [-1, 1], 扭曲最大值
+         * @param translateRatioMin translate ratio min value, [-1, 1], 平移最小值(相对于背景宽高的比值)
+         * @param translateRatioMax translate ratio max value, [-1, 1], 平移最大值(相对于背景宽高的比值)
+         */
         public OptionsBuilder randomGlobalAffineTransform(float scaleMin, float scaleMax,
                                                           float shearMin, float shearMax,
                                                           float translateRatioMin, float translateRatioMax){
@@ -618,6 +724,13 @@ public class ImageCaptchaUtils {
             return this;
         }
 
+        /**
+         * interference line | 干扰线
+         * @param lineNumMin min num
+         * @param lineNumMax max num
+         * @param lineStrokeMin min stroke
+         * @param lineStrokeMax max stroke
+         */
         public OptionsBuilder interferenceLine(int lineNumMin, int lineNumMax, int lineStrokeMin, int lineStrokeMax) {
             checkMinMaxInt(lineNumMin, lineNumMax, "interferenceLine lineNum");
             checkMinMaxInt(lineStrokeMin, lineStrokeMax, "interferenceLine lineStroke");
@@ -628,6 +741,14 @@ public class ImageCaptchaUtils {
             return this;
         }
 
+        /**
+         * interference granule | 干扰点
+         * @param granuleNumMin min num
+         * @param granuleNumMax max num
+         * @param granuleStrokeMin min stroke
+         * @param granuleStrokeMax max stroke
+         * @param granuleLengthMax max length
+         */
         public OptionsBuilder interferenceGranule(int granuleNumMin, int granuleNumMax, int granuleStrokeMin, int granuleStrokeMax, int granuleLengthMax) {
             checkMinMaxInt(granuleNumMin, granuleNumMax, "interferenceGranule granuleNum");
             checkMinMaxInt(granuleStrokeMin, granuleStrokeMax, "interferenceGranule granuleStroke");
