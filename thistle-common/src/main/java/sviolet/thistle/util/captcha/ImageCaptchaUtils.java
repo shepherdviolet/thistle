@@ -271,7 +271,7 @@ public class ImageCaptchaUtils {
             int backgroundHeight = options.backgroundHeight;
 
             // create image instance
-            BufferedImage image = new BufferedImage(backgroundWidth, backgroundHeight, BufferedImage.TYPE_4BYTE_ABGR);
+            BufferedImage image = new BufferedImage(backgroundWidth, backgroundHeight, BufferedImage.TYPE_INT_BGR);
 
             // Draw background //////////////////////////////////////////////////////////////////////
 
