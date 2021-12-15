@@ -309,7 +309,7 @@ public class SM2KeyGenerator {
         /**
          * <p>获取公钥的X值 (QX).</p>
          * <p>转byte[], ByteUtils.trimHeader(SM2KeyParamsPair.getPublicX().toByteArray())), 注意要去掉头部的0x00.</p>
-         * <p>转Hex, SM2KeyParamsPair.getPublicX().toString().</p>
+         * <p>转Hex, SM2KeyParamsPair.getPublicX().toString(16).</p>
          */
         public BigInteger getPublicX(){
             return publicKeyParams.getQ().getAffineXCoord().toBigInteger();
