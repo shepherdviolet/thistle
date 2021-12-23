@@ -300,7 +300,8 @@ public class SM2KeyGenerator {
         }
 
         /**
-         * 获取公钥坐标点的ASN.1编码数据(非压缩)
+         * 获取公钥坐标点的ASN.1编码数据(非压缩).
+         * 未压缩格式开头有个0x04, 有些加解密工具没0x04.
          */
         public byte[] getPublicASN1Encoding(){
             return publicKeyParams.getQ().getEncoded(false);

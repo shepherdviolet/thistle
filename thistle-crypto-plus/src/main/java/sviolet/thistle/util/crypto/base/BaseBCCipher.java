@@ -425,6 +425,8 @@ public class BaseBCCipher {
 
     /**
      * 使用SM2公钥加密(密文为C1C2C3格式, 若需要C1C3C2新格式请用工具转换)
+     * 密文开头有0x04, 表示未压缩, 有些工具加密的密文前面没有0x04, 可以尝试手工增加或者去掉实现兼容.
+     *
      * @param publicKeyParams SM2公钥
      * @param data 原文数据
      * @return 密文, 密文为C1C2C3格式, C1区域为随机公钥点数据(ASN.1格式), C2为密文数据, C3为摘要数据(SM3).
@@ -444,6 +446,8 @@ public class BaseBCCipher {
 
     /**
      * 使用SM2私钥解密(密文为C1C2C3格式, 若需要C1C3C2新格式请用工具转换)
+     * 密文开头有0x04, 表示未压缩, 有些工具加密的密文前面没有0x04, 可以尝试手工增加或者去掉实现兼容.
+     *
      * @param privateKeyParams SM2私钥
      * @param data 密文数据, 密文为C1C2C3格式, C1区域为随机公钥点数据(ASN.1格式), C2为密文数据, C3为摘要数据(SM3).
      * @return 原文
@@ -467,6 +471,8 @@ public class BaseBCCipher {
     /**
      * 将SM2算法用于加密的密文格式, 从C1C2C3改为C1C3C2 (默认为C1C2C3).
      * C1区域为随机公钥点数据(ASN.1格式), C2为密文数据, C3为摘要数据(SM3).
+     * 密文开头有0x04, 表示未压缩, 有些工具加密的密文前面没有0x04, 可以尝试手工增加或者去掉实现兼容.
+     *
      * @param cipherText C1C2C3格式的密文
      * @param c1Length C1区域长度, BaseBCAsymKeyGenerator.calculateSM2C1Length(SM2DefaultCurve.DOMAIN_PARAMS)
      * @param c3Length C3区域长度, 即SM3摘要结果长度, SM3DigestCipher.SM3_HASH_LENGTH
@@ -494,6 +500,8 @@ public class BaseBCCipher {
     /**
      * 将SM2算法用于加密的密文格式, 从C1C3C2改为C1C2C3 (默认为C1C2C3).
      * C1区域为随机公钥点数据(ASN.1格式), C2为密文数据, C3为摘要数据(SM3).
+     * 密文开头有0x04, 表示未压缩, 有些工具加密的密文前面没有0x04, 可以尝试手工增加或者去掉实现兼容.
+     *
      * @param cipherText C1C3C2格式的密文
      * @param c1Length C1区域长度, BaseBCAsymKeyGenerator.calculateSM2C1Length(SM2DefaultCurve.DOMAIN_PARAMS)
      * @param c3Length C3区域长度, 即SM3摘要结果长度, SM3DigestCipher.SM3_HASH_LENGTH
@@ -519,7 +527,8 @@ public class BaseBCCipher {
     }
 
     /**
-     * 将SM2用于加密时的密文C1C2C3转为DER编码数据（SM2密码算法使用规范 GM/T 0009-2012）
+     * 将SM2用于加密时的密文C1C2C3转为DER编码数据（SM2密码算法使用规范 GM/T 0009-2012）.
+     * C1C2C3格式的密文开头有0x04, 表示未压缩, 有些工具加密的密文前面没有0x04, 可以尝试手工增加或者去掉实现兼容. DER格式前面没0x04.
      *
      * @param c1c2c3 C1C2C3格式的SM2加密密文calculateSM2CurveLength(ECDomainParameters domainParameters)
      * @param curveLength 曲线数据长度, BaseBCCryptoUtils.calculateSM2CurveLength(SM2DefaultCurve.DOMAIN_PARAMS)
@@ -558,7 +567,8 @@ public class BaseBCCipher {
     }
 
     /**
-     * 将DER编码数据转为SM2用于加密时的密文C1C2C3（SM2密码算法使用规范 GM/T 0009-2012）
+     * 将DER编码数据转为SM2用于加密时的密文C1C2C3（SM2密码算法使用规范 GM/T 0009-2012）.
+     * C1C2C3格式的密文开头有0x04, 表示未压缩, 有些工具加密的密文前面没有0x04, 可以尝试手工增加或者去掉实现兼容. DER格式前面没0x04.
      *
      * @param der DER格式的密文
      * @return C1C2C3格式密文
