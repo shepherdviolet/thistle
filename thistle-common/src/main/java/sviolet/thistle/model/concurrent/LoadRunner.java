@@ -26,7 +26,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 负载执行器, 多线程执行同一个任务, 可以实时调整并发数/时间间隔
+ * 负载执行器, 多线程执行同一个任务, 可以实时调整并发数/时间间隔, 需要调用start方法启动, 调用close方法停止
  *
  * @author shepherdviolet
  */
@@ -34,6 +34,7 @@ public class LoadRunner implements AutoCloseable, Closeable {
 
     private final Task task;
 
+    private volatile boolean started = false;
     private volatile int maxThreadNum = 0;
     private volatile int intervalMillis = 0;
 
@@ -65,7 +66,9 @@ public class LoadRunner implements AutoCloseable, Closeable {
 
     public LoadRunner setMaxThreadNum(int maxThreadNum) {
         this.maxThreadNum = maxThreadNum;
-        start();
+        if (started) {
+            dispatcherThreadPool.execute(DISPATCH_TASK);
+        }
         return this;
     }
 
@@ -75,21 +78,14 @@ public class LoadRunner implements AutoCloseable, Closeable {
     }
 
     public LoadRunner start() {
+        started = true;
         dispatcherThreadPool.execute(DISPATCH_TASK);
         return this;
     }
 
     @Override
     public void close() {
-        setMaxThreadNum(0);
-        try {
-            workerThreadPool.shutdownNow();
-        } catch (Throwable ignore){
-        }
-        try {
-            dispatcherThreadPool.shutdownNow();
-        } catch (Throwable ignore){
-        }
+        started = false;
     }
 
     public int getMaxThreadNum() {
@@ -107,13 +103,13 @@ public class LoadRunner implements AutoCloseable, Closeable {
     private final Runnable DISPATCH_TASK = new Runnable() {
         @Override
         public void run() {
-            for (int i = 0 ; i < maxThreadNum && currentThreadNum.get() < maxThreadNum ; i++) {
+            for (int i = 0 ; i < maxThreadNum && started && currentThreadNum.get() < maxThreadNum ; i++) {
 
                 workerThreadPool.execute(new Runnable() {
                     @Override
                     public void run() {
                         int id = currentThreadNum.getAndIncrement();
-                        while (id < maxThreadNum) {
+                        while (started && id < maxThreadNum) {
                             try {
                                 if (intervalMillis > 0L) {
                                     //noinspection BusyWait
