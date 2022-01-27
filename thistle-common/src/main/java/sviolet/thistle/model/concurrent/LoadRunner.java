@@ -38,6 +38,9 @@ public class LoadRunner implements AutoCloseable, Closeable {
     private volatile int maxThreadNum = 0;
     private volatile int intervalMillis = 0;
 
+    private volatile long startupDelay = 0L;
+    private volatile long createThreadDelay = 0L;
+
     private final AtomicInteger currentThreadNum = new AtomicInteger(0);
 
     private final ExecutorService dispatcherThreadPool = ThreadPoolExecutorUtils.createLazy(10, "LoadRunner-dispatcher");
@@ -64,6 +67,10 @@ public class LoadRunner implements AutoCloseable, Closeable {
         this.intervalMillis = intervalMillis;
     }
 
+    /**
+     * 设置最大执行线程数
+     * @param maxThreadNum 最大执行线程数
+     */
     public LoadRunner setMaxThreadNum(int maxThreadNum) {
         this.maxThreadNum = maxThreadNum;
         if (started) {
@@ -72,17 +79,45 @@ public class LoadRunner implements AutoCloseable, Closeable {
         return this;
     }
 
+    /**
+     * 设置每个线程执行任务的间隔
+     * @param intervalMillis 每个线程执行任务的间隔, ms
+     */
     public LoadRunner setIntervalMillis(int intervalMillis) {
         this.intervalMillis = intervalMillis;
         return this;
     }
 
+    /**
+     * 设置启动延迟, 每次启动(start)或追加线程(setMaxThreadNum)前, 会延迟指定时间
+     * @param startupDelay 启动延迟, ms
+     */
+    public LoadRunner setStartupDelay(long startupDelay){
+        this.startupDelay = startupDelay;
+        return this;
+    }
+
+    /**
+     * 设置线程创建延迟, 每创建一个新的执行线程前, 会延迟指定时间
+     * @param createThreadDelay 线程创建延迟, ms
+     */
+    public LoadRunner setCreateThreadDelay(long createThreadDelay){
+        this.createThreadDelay = createThreadDelay;
+        return this;
+    }
+
+    /**
+     * 启动
+     */
     public LoadRunner start() {
         started = true;
         dispatcherThreadPool.execute(DISPATCH_TASK);
         return this;
     }
 
+    /**
+     * 停止, 不会打断执行中的线程
+     */
     @Override
     public void close() {
         started = false;
@@ -103,7 +138,22 @@ public class LoadRunner implements AutoCloseable, Closeable {
     private final Runnable DISPATCH_TASK = new Runnable() {
         @Override
         public void run() {
+            if (startupDelay > 0L) {
+                try {
+                    Thread.sleep(startupDelay);
+                } catch (InterruptedException ignore) {
+                }
+            }
+
             for (int i = 0 ; i < maxThreadNum && started && currentThreadNum.get() < maxThreadNum ; i++) {
+
+                if (createThreadDelay > 0L) {
+                    try {
+                        //noinspection BusyWait
+                        Thread.sleep(createThreadDelay);
+                    } catch (InterruptedException ignore) {
+                    }
+                }
 
                 workerThreadPool.execute(new Runnable() {
                     @Override
