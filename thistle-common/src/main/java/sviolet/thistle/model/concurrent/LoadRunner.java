@@ -26,7 +26,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 负载执行器, 多线程执行同一个任务, 可以实时调整并发数/时间间隔, 需要调用start方法启动, 调用close方法停止
+ * <p>负载执行器(用于压测)</p>
+ * <p>多线程执行同一个任务, 可以实时调整并发数/时间间隔, 需要调用start方法启动, 调用close方法停止.</p>
+ * <p></p>
+ * <p>注意:</p>
+ * <p>1.设置完毕后, 调用start方法启动.</p>
+ * <p>2.记得调用close方法停止, 但执行线程不会立刻终止, 要等单个任务执行完毕才会停止.</p>
+ * <p>3.配合Apollo之类的配置中心使用更佳, 执行参数可以实时调整(实时生效).</p>
+ * <p>4.压测的时候, 关闭程序的日志输出能大大提高TPS, 可以只保留必要的日志写盘. 日志输出到磁盘性能影响巨大, 输出到Console性能影响较小.</p>
  *
  * @author shepherdviolet
  */
