@@ -77,14 +77,14 @@ public class ThreadPoolExecutorUtils {
 
     /**
      * <p>[特殊用途]惰性单线程池, 核心线程数0, 最大线程数1, 队列长度1, 策略DiscardPolicy</p>
-     *
+     * <p></p>
      * <p>
      *     警告: 请明确用途后再使用!!!<br>
      *     WARNING: This ThreadPool should be used with caution!!!<br>
      * </p>
-     *
+     * <p></p>
      * <p>特性:</p>
-     *
+     * <p></p>
      * <p>
      * 1.单线程, 同时只能执行一个任务, 线程有存活期限.<br>
      * 2.队列长度1, 同时执行(execute)多个任务时, 至多执行2个, 多余的任务会被抛弃(且不会抛出异常).<br>
@@ -94,12 +94,24 @@ public class ThreadPoolExecutorUtils {
      * 队列, 能保证队列中的元素都被及时处理(每次execute之后必然会有一次完整的处理流程); 因为核心线程数0, 闲时能释放线程, 比无限
      * 循环的实现方式占资源少, 比定时执行的实现方式实时性高.<br>
      * </p>
-     *
+     * <p></p>
+     * <p>笔记:</p>
+     * <p></p>
      * <p>
      * 5.使用LinkedBlockingQueue工作队列时, 在填满核心线程后, 后续任务会加入队列, 队列满之前都不会尝试增加非核心线程.<br>
      * --5.1.如果队列满了, 会尝试增加非核心线程. 如果增加失败, 拒绝任务并由RejectedExecutionHandler处理.<br>
      * --5.2.因此, 一般corePoolSize == maximumPoolSize, 或者corePoolSize = 0 maximumPoolSize = 1(会超时的单线程池).<br>
      * </p>
+     * <p></p>
+     * <p>如果忽略掉本工具类提供的新特性, 可以简化为:</p>
+     * <pre>
+     *          // 这么写就没有本工具类提供的新特性了: 自定义线程名, 执行前后监听, 统一管理和销毁...
+     *          new ThreadPoolExecutor(0, 1, 60L,
+     *                     TimeUnit.SECONDS,
+     *                     new LinkedBlockingQueue<Runnable>(1),
+     *                     Executors.defaultThreadFactory(),
+     *                     new ThreadPoolExecutor.DiscardPolicy());
+     * </pre>
      *
      * @param keepAliveSeconds 线程保活时间(秒)
      * @param threadNameFormat 线程名称格式(rpc-pool-%d)
