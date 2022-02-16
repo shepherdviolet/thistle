@@ -76,6 +76,29 @@ public class ThreadPoolExecutorUtils {
     }
 
     /**
+     * <p>会超时的单线程池, 核心线程数0, 最大线程数1, 队列长度Integer.MAX_VALUE</p>
+     *
+     * <p>
+     * 5.使用LinkedBlockingQueue工作队列时, 在填满核心线程后, 后续任务会加入队列, 队列满之前都不会尝试增加非核心线程.<br>
+     * --5.1.如果队列满了, 会尝试增加非核心线程. 如果增加失败, 拒绝任务并由RejectedExecutionHandler处理.<br>
+     * --5.2.因此, 一般corePoolSize == maximumPoolSize, 或者corePoolSize = 0 maximumPoolSize = 1(会超时的单线程池).<br>
+     * </p>
+     *
+     * @param keepAliveSeconds 线程保活时间(秒)
+     * @param threadFactory 线程工厂 (可以设置线程名称, 是否daemon等)
+     */
+    public static ExecutorService createSingle(long keepAliveSeconds, ThreadFactory threadFactory){
+        return create(
+                0,
+                1,
+                keepAliveSeconds,
+                threadFactory,
+                new LinkedBlockingQueue<Runnable>(),
+                new ThreadPoolExecutor.AbortPolicy(),
+                null);
+    }
+
+    /**
      * <p>[特殊用途]惰性单线程池, 核心线程数0, 最大线程数1, 队列长度1, 策略DiscardPolicy</p>
      * <p></p>
      * <p>
@@ -128,6 +151,58 @@ public class ThreadPoolExecutorUtils {
     }
 
     /**
+     * <p>[特殊用途]惰性单线程池, 核心线程数0, 最大线程数1, 队列长度1, 策略DiscardPolicy</p>
+     * <p></p>
+     * <p>
+     *     警告: 请明确用途后再使用!!!<br>
+     *     WARNING: This ThreadPool should be used with caution!!!<br>
+     * </p>
+     * <p></p>
+     * <p>特性:</p>
+     * <p></p>
+     * <p>
+     * 1.单线程, 同时只能执行一个任务, 线程有存活期限.<br>
+     * 2.队列长度1, 同时执行(execute)多个任务时, 至多执行2个, 多余的任务会被抛弃(且不会抛出异常).<br>
+     * 3.能保证在最后一次执行(execute)之后, 有一次完整的任务处理(Runnable.run()).<br>
+     * 4.用于实现调度/清扫. 例如: 实现一个调度任务, 从某个队列中, 循环获取元素进行处理的功能. 在每次元素入队列时, 使用本线程池
+     * 执行调度任务, 任务中循环处理队列中的元素直到队列为空. 因为是单线程池, 所以处理逻辑不会被同时重复执行; 因为长度为1的等待
+     * 队列, 能保证队列中的元素都被及时处理(每次execute之后必然会有一次完整的处理流程); 因为核心线程数0, 闲时能释放线程, 比无限
+     * 循环的实现方式占资源少, 比定时执行的实现方式实时性高.<br>
+     * </p>
+     * <p></p>
+     * <p>笔记:</p>
+     * <p></p>
+     * <p>
+     * 5.使用LinkedBlockingQueue工作队列时, 在填满核心线程后, 后续任务会加入队列, 队列满之前都不会尝试增加非核心线程.<br>
+     * --5.1.如果队列满了, 会尝试增加非核心线程. 如果增加失败, 拒绝任务并由RejectedExecutionHandler处理.<br>
+     * --5.2.因此, 一般corePoolSize == maximumPoolSize, 或者corePoolSize = 0 maximumPoolSize = 1(会超时的单线程池).<br>
+     * </p>
+     * <p></p>
+     * <p>如果忽略掉本工具类提供的新特性, 可以简化为:</p>
+     * <pre>
+     *          // 这么写就没有本工具类提供的新特性了: 自定义线程名, 执行前后监听, 统一管理和销毁...
+     *          new ThreadPoolExecutor(0, 1, 60L,
+     *                     TimeUnit.SECONDS,
+     *                     new LinkedBlockingQueue<Runnable>(1),
+     *                     Executors.defaultThreadFactory(),
+     *                     new ThreadPoolExecutor.DiscardPolicy());
+     * </pre>
+     *
+     * @param keepAliveSeconds 线程保活时间(秒)
+     * @param threadFactory 线程工厂 (可以设置线程名称, 是否daemon等)
+     */
+    public static ExecutorService createLazy(long keepAliveSeconds, ThreadFactory threadFactory){
+        return create(
+                0,
+                1,
+                keepAliveSeconds,
+                threadFactory,
+                new LinkedBlockingQueue<Runnable>(1),
+                new ThreadPoolExecutor.DiscardPolicy(),
+                null);
+    }
+
+    /**
      * <p>固定线程数的线程池, 核心线程数poolSize, 最大线程数poolSize, 队列长度Integer.MAX_VALUE</p>
      *
      * <p>
@@ -145,6 +220,29 @@ public class ThreadPoolExecutorUtils {
                 poolSize,
                 0L,
                 threadNameFormat,
+                new LinkedBlockingQueue<Runnable>(),
+                new ThreadPoolExecutor.AbortPolicy(),
+                null);
+    }
+
+    /**
+     * <p>固定线程数的线程池, 核心线程数poolSize, 最大线程数poolSize, 队列长度Integer.MAX_VALUE</p>
+     *
+     * <p>
+     * 5.使用LinkedBlockingQueue工作队列时, 在填满核心线程后, 后续任务会加入队列, 队列满之前都不会尝试增加非核心线程.<br>
+     * --5.1.如果队列满了, 会尝试增加非核心线程. 如果增加失败, 拒绝任务并由RejectedExecutionHandler处理.<br>
+     * --5.2.因此, 一般corePoolSize == maximumPoolSize, 或者corePoolSize = 0 maximumPoolSize = 1(会超时的单线程池).<br>
+     * </p>
+     *
+     * @param poolSize 线程数
+     * @param threadFactory 线程工厂 (可以设置线程名称, 是否daemon等)
+     */
+    public static ExecutorService createFixed(int poolSize, ThreadFactory threadFactory){
+        return create(
+                poolSize,
+                poolSize,
+                0L,
+                threadFactory,
                 new LinkedBlockingQueue<Runnable>(),
                 new ThreadPoolExecutor.AbortPolicy(),
                 null);
@@ -173,6 +271,34 @@ public class ThreadPoolExecutorUtils {
                 maximumPoolSize,
                 keepAliveSeconds,
                 threadNameFormat,
+                new SynchronousQueue<Runnable>(),
+                new ThreadPoolExecutor.AbortPolicy(),
+                null);
+    }
+
+    /**
+     * <p>动态线程数的线程池, 核心线程数corePoolSize, 最大线程数maximumPoolSize, 队列长度0</p>
+     *
+     * <p>
+     * 6.使用SynchronousQueue工作队列时, 并发任务会直接增加线程(包括核心线程和非核心线程).<br>
+     * --6.1.当并发量超过maximumPoolSize时, 拒绝任务并由RejectedExecutionHandler处理.<br>
+     * --6.2.因此, 一般maximumPoolSize >= corePoolSize.<br>
+     * </p>
+     *
+     * @param corePoolSize 核心线程数
+     * @param maximumPoolSize 最大线程数
+     * @param keepAliveSeconds 线程保活时间(秒)
+     * @param threadFactory 线程工厂 (可以设置线程名称, 是否daemon等)
+     */
+    public static ExecutorService createCached(int corePoolSize,
+                                               int maximumPoolSize,
+                                               long keepAliveSeconds,
+                                               ThreadFactory threadFactory){
+        return create(
+                corePoolSize,
+                maximumPoolSize,
+                keepAliveSeconds,
+                threadFactory,
                 new SynchronousQueue<Runnable>(),
                 new ThreadPoolExecutor.AbortPolicy(),
                 null);
@@ -269,7 +395,7 @@ public class ThreadPoolExecutorUtils {
      * 1.定时线程池能够延迟/循环执行任务
      * </p>
      *
-     * @param corePoolSize 核心线程数
+     * @param corePoolSize 核心线程数, >= 1
      * @param threadNameFormat 线程名称格式(rpc-pool-%d)
      */
     public static ScheduledExecutorService createScheduled(int corePoolSize, String threadNameFormat){
@@ -283,7 +409,21 @@ public class ThreadPoolExecutorUtils {
      * 1.定时线程池能够延迟/循环执行任务
      * </p>
      *
-     * @param corePoolSize 核心线程数
+     * @param corePoolSize 核心线程数, >= 1
+     * @param threadFactory 线程工厂 (可以设置线程名称, 是否daemon等)
+     */
+    public static ScheduledExecutorService createScheduled(int corePoolSize, ThreadFactory threadFactory){
+        return createScheduled(corePoolSize, threadFactory, null, null);
+    }
+
+    /**
+     * <p>创建定时线程池</p>
+     *
+     * <p>
+     * 1.定时线程池能够延迟/循环执行任务
+     * </p>
+     *
+     * @param corePoolSize 核心线程数, >= 1
      * @param threadNameFormat 线程名称格式(rpc-pool-%d)
      * @param rejectHandler nullable, 拒绝处理器, 默认: new ThreadPoolExecutor.AbortPolicy()
      * @param executeListener nullable, 监听执行前执行后的事件
@@ -306,7 +446,7 @@ public class ThreadPoolExecutorUtils {
      * 1.定时线程池能够延迟/循环执行任务
      * </p>
      *
-     * @param corePoolSize 核心线程数
+     * @param corePoolSize 核心线程数, >= 1
      * @param threadFactory 线程工厂
      * @param rejectHandler nullable, 拒绝处理器, 默认: new ThreadPoolExecutor.AbortPolicy()
      * @param executeListener nullable, 监听执行前执行后的事件
