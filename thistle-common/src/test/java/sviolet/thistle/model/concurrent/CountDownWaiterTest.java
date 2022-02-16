@@ -21,6 +21,7 @@ package sviolet.thistle.model.concurrent;
 
 import org.junit.Assert;
 import org.junit.Test;
+import sviolet.thistle.compat.concurrent.CompatThreadFactoryBuilder;
 import sviolet.thistle.util.concurrent.ThreadPoolExecutorUtils;
 
 import java.util.Map;
@@ -30,7 +31,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class CountDownWaiterTest {
 
-    private final ExecutorService threadPool = ThreadPoolExecutorUtils.createFixed(4, "test-%d");
+    private final ExecutorService threadPool = ThreadPoolExecutorUtils.createFixed(4,
+            new CompatThreadFactoryBuilder()
+                    .setNameFormat("test-%d")
+                    .setDaemon(true)
+                    .build());
 
     @Test
     public void countDownWaiter() throws InterruptedException {
