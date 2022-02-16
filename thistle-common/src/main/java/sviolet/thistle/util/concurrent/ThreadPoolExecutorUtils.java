@@ -54,6 +54,7 @@ public class ThreadPoolExecutorUtils {
 
     /**
      * <p>会超时的单线程池, 核心线程数0, 最大线程数1, 队列长度Integer.MAX_VALUE</p>
+     * <p>这个线程池不会阻止JVM自然结束(核心线程数为0)</p>
      *
      * <p>
      * 5.使用LinkedBlockingQueue工作队列时, 在填满核心线程后, 后续任务会加入队列, 队列满之前都不会尝试增加非核心线程.<br>
@@ -77,6 +78,7 @@ public class ThreadPoolExecutorUtils {
 
     /**
      * <p>会超时的单线程池, 核心线程数0, 最大线程数1, 队列长度Integer.MAX_VALUE</p>
+     * <p>这个线程池不会阻止JVM自然结束(核心线程数为0)</p>
      *
      * <p>
      * 5.使用LinkedBlockingQueue工作队列时, 在填满核心线程后, 后续任务会加入队列, 队列满之前都不会尝试增加非核心线程.<br>
@@ -100,6 +102,7 @@ public class ThreadPoolExecutorUtils {
 
     /**
      * <p>[特殊用途]惰性单线程池, 核心线程数0, 最大线程数1, 队列长度1, 策略DiscardPolicy</p>
+     * <p>这个线程池不会阻止JVM自然结束(核心线程数为0)</p>
      * <p></p>
      * <p>
      *     警告: 请明确用途后再使用!!!<br>
@@ -152,6 +155,7 @@ public class ThreadPoolExecutorUtils {
 
     /**
      * <p>[特殊用途]惰性单线程池, 核心线程数0, 最大线程数1, 队列长度1, 策略DiscardPolicy</p>
+     * <p>这个线程池不会阻止JVM自然结束(核心线程数为0)</p>
      * <p></p>
      * <p>
      *     警告: 请明确用途后再使用!!!<br>
@@ -204,6 +208,8 @@ public class ThreadPoolExecutorUtils {
 
     /**
      * <p>固定线程数的线程池, 核心线程数poolSize, 最大线程数poolSize, 队列长度Integer.MAX_VALUE</p>
+     * <p>注意!!!这个线程池会阻止JVM自然结束(核心线程数大于0), 可以考虑设置为守护线程(daemon=true), 或者在合适的时候停止线程池(ExecutorService#shutdown)</p>
+     * <p>通过ThreadFactory设置守护线程示例: new CompatThreadFactoryBuilder().setNameFormat("name-%d").setDaemon(true).build()</p>
      *
      * <p>
      * 5.使用LinkedBlockingQueue工作队列时, 在填满核心线程后, 后续任务会加入队列, 队列满之前都不会尝试增加非核心线程.<br>
@@ -227,6 +233,8 @@ public class ThreadPoolExecutorUtils {
 
     /**
      * <p>固定线程数的线程池, 核心线程数poolSize, 最大线程数poolSize, 队列长度Integer.MAX_VALUE</p>
+     * <p>注意!!!这个线程池会阻止JVM自然结束(核心线程数大于0), 可以考虑设置为守护线程(daemon=true), 或者在合适的时候停止线程池(ExecutorService#shutdown)</p>
+     * <p>通过ThreadFactory设置守护线程示例: new CompatThreadFactoryBuilder().setNameFormat("name-%d").setDaemon(true).build()</p>
      *
      * <p>
      * 5.使用LinkedBlockingQueue工作队列时, 在填满核心线程后, 后续任务会加入队列, 队列满之前都不会尝试增加非核心线程.<br>
@@ -250,6 +258,8 @@ public class ThreadPoolExecutorUtils {
 
     /**
      * <p>动态线程数的线程池, 核心线程数corePoolSize, 最大线程数maximumPoolSize, 队列长度0</p>
+     * <p>注意!!!这个线程池可能会阻止JVM自然结束(当核心线程数大于0时), 可以考虑设置为守护线程(daemon=true), 或者在合适的时候停止线程池(ExecutorService#shutdown)</p>
+     * <p>通过ThreadFactory设置守护线程示例: new CompatThreadFactoryBuilder().setNameFormat("name-%d").setDaemon(true).build()</p>
      *
      * <p>
      * 6.使用SynchronousQueue工作队列时, 并发任务会直接增加线程(包括核心线程和非核心线程).<br>
@@ -278,6 +288,8 @@ public class ThreadPoolExecutorUtils {
 
     /**
      * <p>动态线程数的线程池, 核心线程数corePoolSize, 最大线程数maximumPoolSize, 队列长度0</p>
+     * <p>注意!!!这个线程池可能会阻止JVM自然结束(当核心线程数大于0时), 可以考虑设置为守护线程(daemon=true), 或者在合适的时候停止线程池(ExecutorService#shutdown)</p>
+     * <p>通过ThreadFactory设置守护线程示例: new CompatThreadFactoryBuilder().setNameFormat("name-%d").setDaemon(true).build()</p>
      *
      * <p>
      * 6.使用SynchronousQueue工作队列时, 并发任务会直接增加线程(包括核心线程和非核心线程).<br>
@@ -306,6 +318,8 @@ public class ThreadPoolExecutorUtils {
 
     /**
      * <p>创建线程池</p>
+     * <p>注意!!!这个线程池可能会阻止JVM自然结束(当核心线程数大于0时), 可以考虑设置为守护线程(daemon=true), 或者在合适的时候停止线程池(ExecutorService#shutdown)</p>
+     * <p>通过ThreadFactory设置守护线程示例: new CompatThreadFactoryBuilder().setNameFormat("name-%d").setDaemon(true).build()</p>
      *
      * <p>
      * 5.使用LinkedBlockingQueue工作队列时, 在填满核心线程后, 后续任务会加入队列, 队列满之前都不会尝试增加非核心线程.<br>
@@ -344,6 +358,8 @@ public class ThreadPoolExecutorUtils {
 
     /**
      * <p>创建线程池</p>
+     * <p>注意!!!这个线程池可能会阻止JVM自然结束(当核心线程数大于0时), 可以考虑设置为守护线程(daemon=true), 或者在合适的时候停止线程池(ExecutorService#shutdown)</p>
+     * <p>通过ThreadFactory设置守护线程示例: new CompatThreadFactoryBuilder().setNameFormat("name-%d").setDaemon(true).build()</p>
      *
      * <p>
      * 5.使用LinkedBlockingQueue工作队列时, 在填满核心线程后, 后续任务会加入队列, 队列满之前都不会尝试增加非核心线程.<br>
@@ -390,6 +406,8 @@ public class ThreadPoolExecutorUtils {
 
     /**
      * <p>创建定时线程池</p>
+     * <p>注意!!!这个线程池会阻止JVM自然结束(核心线程数大于0), 可以考虑设置为守护线程(daemon=true), 或者在合适的时候停止线程池(ExecutorService#shutdown)</p>
+     * <p>通过ThreadFactory设置守护线程示例: new CompatThreadFactoryBuilder().setNameFormat("name-%d").setDaemon(true).build()</p>
      *
      * <p>
      * 1.定时线程池能够延迟/循环执行任务
@@ -404,6 +422,8 @@ public class ThreadPoolExecutorUtils {
 
     /**
      * <p>创建定时线程池</p>
+     * <p>注意!!!这个线程池会阻止JVM自然结束(核心线程数大于0), 可以考虑设置为守护线程(daemon=true), 或者在合适的时候停止线程池(ExecutorService#shutdown)</p>
+     * <p>通过ThreadFactory设置守护线程示例: new CompatThreadFactoryBuilder().setNameFormat("name-%d").setDaemon(true).build()</p>
      *
      * <p>
      * 1.定时线程池能够延迟/循环执行任务
@@ -418,6 +438,8 @@ public class ThreadPoolExecutorUtils {
 
     /**
      * <p>创建定时线程池</p>
+     * <p>注意!!!这个线程池会阻止JVM自然结束(核心线程数大于0), 可以考虑设置为守护线程(daemon=true), 或者在合适的时候停止线程池(ExecutorService#shutdown)</p>
+     * <p>通过ThreadFactory设置守护线程示例: new CompatThreadFactoryBuilder().setNameFormat("name-%d").setDaemon(true).build()</p>
      *
      * <p>
      * 1.定时线程池能够延迟/循环执行任务
@@ -441,6 +463,8 @@ public class ThreadPoolExecutorUtils {
 
     /**
      * <p>创建定时线程池</p>
+     * <p>注意!!!这个线程池会阻止JVM自然结束(核心线程数大于0), 可以考虑设置为守护线程(daemon=true), 或者在合适的时候停止线程池(ExecutorService#shutdown)</p>
+     * <p>通过ThreadFactory设置守护线程示例: new CompatThreadFactoryBuilder().setNameFormat("name-%d").setDaemon(true).build()</p>
      *
      * <p>
      * 1.定时线程池能够延迟/循环执行任务
