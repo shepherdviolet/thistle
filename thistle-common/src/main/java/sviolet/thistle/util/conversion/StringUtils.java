@@ -218,14 +218,14 @@ public class StringUtils {
         if (bytes.length <= toLength) {
             return string;
         }
-        // The char after last one
+        // The byte after last one
         int i = toLength;
         int flag = bytes[i] & 0b11000000;
         if (flag != 0b10000000) {
-            // The char after last one is [0xxxxxxx : One byte char] or [11xxxxxx : Head of multiple byte char]
+            // The byte after last one is [0xxxxxxx : One byte char] or [11xxxxxx : Head of multiple byte char]
             return new String(bytes, 0, toLength, StandardCharsets.UTF_8);
         }
-        // The char after last one is [10xxxxxx : Body of multiple byte char] looking for the head
+        // The byte after last one is [10xxxxxx : Body of multiple byte char] --> looking for the head
         while (--i > 0) {
             if ((bytes[i] & 0b11000000) == 0b11000000) {
                 // Meet [11xxxxxx : Head of multiple byte char] (0xxxxxxx is impossible here)
