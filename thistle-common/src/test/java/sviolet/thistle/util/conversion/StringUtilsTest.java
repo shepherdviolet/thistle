@@ -22,6 +22,8 @@ package sviolet.thistle.util.conversion;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.UnsupportedEncodingException;
+
 public class StringUtilsTest {
 
     @Test
@@ -49,6 +51,35 @@ public class StringUtilsTest {
 
     private void truncateByUtf8ByteLength0(String string, int toLength, String expected) {
         Assert.assertEquals(expected, StringUtils.truncateByUtf8ByteLength(string, toLength));
+    }
+
+    @Test
+    public void truncateByGbkByteLength() throws UnsupportedEncodingException {
+
+        String s = "11喵吱aa汪吱";
+//        System.out.println(ByteUtils.bytesToHex(s.getBytes("GBK")));
+
+        truncateByGbkByteLength0(s, 13, "11喵吱aa汪吱");
+        truncateByGbkByteLength0(s, 12, "11喵吱aa汪吱");
+        truncateByGbkByteLength0(s, 11, "11喵吱aa汪");
+        truncateByGbkByteLength0(s, 10, "11喵吱aa汪");
+        truncateByGbkByteLength0(s, 9, "11喵吱aa");
+        truncateByGbkByteLength0(s, 8, "11喵吱aa");
+        truncateByGbkByteLength0(s, 7, "11喵吱a");
+        truncateByGbkByteLength0(s, 6, "11喵吱");
+        truncateByGbkByteLength0(s, 5, "11喵");
+        truncateByGbkByteLength0(s, 4, "11喵");
+        truncateByGbkByteLength0(s, 3, "11");
+        truncateByGbkByteLength0(s, 2, "11");
+        truncateByGbkByteLength0(s, 1, "1");
+        truncateByGbkByteLength0(s, 0, "");
+        truncateByGbkByteLength0(s, -1, "");
+        truncateByGbkByteLength0(null, 1, null);
+
+    }
+
+    private void truncateByGbkByteLength0(String string, int toLength, String expected) {
+        Assert.assertEquals(expected, StringUtils.truncateByGbkByteLength(string, toLength));
     }
 
     @Test

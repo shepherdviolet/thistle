@@ -21,6 +21,7 @@ package sviolet.thistle.util.conversion;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -192,6 +193,73 @@ public class StringUtils {
             result.add(trimmed);
         }
         return result;
+    }
+
+    /**
+     * 裁切字符串, 使得它的GBK编码字节长度小于等于指定值 (尾部裁切),
+     * 不会把中文字节切成两半.
+     * 支持: GB2312 GBK GB18030
+     *
+     * @param string 字符串
+     * @param toLength 指定字节长度
+     * @return GBK编码字节长度不大于toLength的字符串 (尾部裁切)
+     */
+    public static String truncateByGbkByteLength(String string, int toLength) {
+        try {
+            if (string == null) {
+                return null;
+            }
+            if (toLength <= 0) {
+                return "";
+            }
+            // Assume 2 bytes per char
+            if ((string.length() << 1) <= toLength) {
+                return string;
+            }
+            // To GBK byte array
+            byte[] bytes = string.getBytes("GBK");
+            if (bytes.length <= toLength) {
+                return string;
+            }
+
+            /*
+             * Check the last byte
+             *
+             * When the last byte is 0???????, there are the following situations:
+             * 1.The last byte is a 'one byte char'.
+             * 2.The last byte is the end of a 'two byte char'.
+             */
+            int flag = bytes[toLength - 1] & 0b10000000;
+            if (flag == 0b00000000) {
+                return new String(bytes, 0, toLength, "GBK");
+            }
+
+            /*
+             * Traverse the byte array from the beginning according to GBK encoding rules:
+             * 1.If 0??????? is encountered, it means this is a one byte char
+             * 2.If 1??????? is encountered, it means this is a two byte char, skip next byte (It's the second byte of 'two byte char')
+             */
+            int i = 0;
+            for (; i < toLength ; i++) {
+                flag = bytes[i] & 0b10000000;
+                // Two byte char if the byte is 1???????
+                if (flag == 0b10000000) {
+                    // Skip the second byte of 'two byte char'
+                    i++;
+                }
+            }
+
+            if (i == toLength) {
+                // The last byte is 'one byte char' or the second byte of 'two byte char'
+                return new String(bytes, 0, toLength, "GBK");
+            } else {
+                // The last byte is the first byte of 'two byte char'
+                return new String(bytes, 0, toLength - 1, "GBK");
+            }
+
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
     }
 
     /**
