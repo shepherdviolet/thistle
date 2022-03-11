@@ -195,13 +195,14 @@ public class StringUtils {
     }
 
     /**
-     * 裁切字符串, 使得它的UTF-8编码字节长度小于指定值 (尾部裁切)
+     * 裁切字符串, 使得它的UTF-8编码字节长度小于等于指定值 (尾部裁切)
+     * 不会把中文字节切成两半.
      *
      * @param string 字符串
      * @param toLength 指定字节长度
      * @return UTF-8编码字节长度不大于toLength的字符串 (尾部裁切)
      */
-    public static String truncateByUtf8ByteLength(String string, int toLength){
+    public static String truncateByUtf8ByteLength(String string, int toLength) {
         if (string == null) {
             return null;
         }
