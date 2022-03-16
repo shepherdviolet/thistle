@@ -22,14 +22,11 @@ package sviolet.thistle.util.crypto.base;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.security.Security;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BouncyCastleProviderUtils {
 
-    private static final AtomicBoolean INSTALLED = new AtomicBoolean(false);
-
-    public static void installProvider(){
-        if (INSTALLED.compareAndSet(false, true)) {
+    public synchronized static void installProvider(){
+        if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
             Security.addProvider(new BouncyCastleProvider());
         }
     }
