@@ -19,6 +19,8 @@
 
 package sviolet.thistle.util.crypto.base;
 
+import sviolet.thistle.util.conversion.ByteUtils;
+
 /**
  * 基本逻辑<p>
  *
@@ -47,6 +49,11 @@ public class BaseCryptoUtils {
         if (yBytes == null) {
             throw new NullPointerException("yBytes == null");
         }
+
+        // 去掉前面的0x00
+        xBytes = ByteUtils.trimHeader(xBytes);
+        yBytes = ByteUtils.trimHeader(yBytes);
+
         byte[] asn1Encoding = new byte[1 + xBytes.length + yBytes.length];
         asn1Encoding[0] = SM2_CIPHER_TEXT_PREFIX_UNCOMPRESSED;
         System.arraycopy(xBytes, 0, asn1Encoding, 1, xBytes.length);
