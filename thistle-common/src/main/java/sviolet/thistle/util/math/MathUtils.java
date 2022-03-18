@@ -26,7 +26,7 @@ package sviolet.thistle.util.math;
  */
 public class MathUtils {
 
-    /*********************************************************************
+    /* ********************************************************************
      * trigonometric
      */
 
@@ -82,7 +82,7 @@ public class MathUtils {
         return Math.atan(tan) / (Math.PI / 180);
     }
 
-    /************************************************************************************
+    /* ***********************************************************************************
      * other
      */
 
@@ -110,6 +110,42 @@ public class MathUtils {
      */
     public static boolean isPowerOfTwo(int value){
         return value > 0 && (value & value - 1) == 0;
+    }
+
+    /**
+     * <p>用atan实现atan2.</p>
+     * <p></p>
+     * <p>注意!!! 请使用Math.atan2(x, y), 本方法用于给其他不支持atan2的语言提供参考.</p>
+     * <p></p>
+     * <p><pre>
+     *      结果转换为角度: <br>
+     *      角度 = atan2(x, y) * 180d / Math.PI
+     *      取值范围: (-180, 180]
+     *      说明: "原点到指定点(x, y)的连线"与"X轴正方向"的夹角
+     * </pre></p>
+     *
+     * @param x X
+     * @param y Y
+     * @param undefinedValue 当x=0,y=0时, 返回该值
+     * @return 取值范围: (-PI, PI]
+     * @deprecated 请使用Math.atan2(x, y), 本方法用于给其他不支持atan2的语言提供参考
+     */
+    @Deprecated
+    public static double atan2(double x, double y, double undefinedValue) {
+        if (x > 0d) {
+            return Math.atan(y / x);
+        } else if (x < 0d && y >= 0d) {
+            return Math.atan(y / x) + Math.PI;
+        } else if (x < 0d && y < 0d) {
+            return Math.atan(y / x) - Math.PI;
+        } else if (x == 0d && y > 0d) {
+            return Math.PI / 2;
+        } else if (x == 0d && y < 0d) {
+            return - Math.PI / 2;
+        } else {
+            // x = 0, y = 0, undefined
+            return undefinedValue;
+        }
     }
 
 }
