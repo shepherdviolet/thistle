@@ -26,6 +26,7 @@ import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
 import org.bouncycastle.crypto.engines.DESedeEngine;
 import org.bouncycastle.crypto.engines.RC2Engine;
 import org.bouncycastle.crypto.modes.CBCBlockCipher;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.pkcs.*;
 import org.bouncycastle.pkcs.bc.BcPKCS12MacCalculatorBuilder;
 import org.bouncycastle.pkcs.bc.BcPKCS12PBEOutputEncryptorBuilder;
@@ -202,7 +203,7 @@ public class AdvancedPKCS12KeyStoreUtils extends PKCS12KeyStoreUtils {
      */
     public static Enumeration<String> loadAliasesAdvanced(InputStream inputStream, String keystorePassword) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, UnrecoverableKeyException, NoSuchProviderException {
         try {
-            KeyStore keyStore = KeyStore.getInstance(ALGORITHM, "BC");
+            KeyStore keyStore = KeyStore.getInstance(ALGORITHM, BouncyCastleProvider.PROVIDER_NAME);
             keyStore.load(inputStream, keystorePassword != null ? keystorePassword.toCharArray() : null);
             return keyStore.aliases();
         } finally {
@@ -250,7 +251,7 @@ public class AdvancedPKCS12KeyStoreUtils extends PKCS12KeyStoreUtils {
      */
     public static CertificateChainAndKey loadCertificateAndKeyAdvanced(InputStream inputStream, String keystorePassword, String alias) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, UnrecoverableKeyException, NoSuchProviderException {
         try {
-            KeyStore keyStore = KeyStore.getInstance(ALGORITHM, "BC");
+            KeyStore keyStore = KeyStore.getInstance(ALGORITHM, BouncyCastleProvider.PROVIDER_NAME);
             keyStore.load(inputStream, keystorePassword != null ? keystorePassword.toCharArray() : null);
             java.security.cert.Certificate[] certificateChain = keyStore.getCertificateChain(alias);
             if (certificateChain == null){
@@ -301,7 +302,7 @@ public class AdvancedPKCS12KeyStoreUtils extends PKCS12KeyStoreUtils {
      */
     public static List<CertificateChainAndKey> loadAllCertificateAndKeyAdvanced(InputStream inputStream, String keystorePassword) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, UnrecoverableKeyException, NoSuchProviderException {
         try {
-            KeyStore keyStore = KeyStore.getInstance(ALGORITHM, "BC");
+            KeyStore keyStore = KeyStore.getInstance(ALGORITHM, BouncyCastleProvider.PROVIDER_NAME);
             keyStore.load(inputStream, keystorePassword != null ? keystorePassword.toCharArray() : null);
             List<CertificateChainAndKey> list = new ArrayList<>(1);
             Enumeration<String> aliases = keyStore.aliases();
