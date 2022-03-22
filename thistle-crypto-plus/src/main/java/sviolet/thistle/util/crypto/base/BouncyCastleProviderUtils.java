@@ -21,14 +21,40 @@ package sviolet.thistle.util.crypto.base;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
+import java.lang.reflect.Field;
+import java.security.Provider;
 import java.security.Security;
 
 public class BouncyCastleProviderUtils {
 
+    /**
+     * Allow modification of BC's name under special circumstances, e.g. sm-crypto-allinone
+     */
+    @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal"})
+    private static String PROVIDER_NAME = BouncyCastleProvider.PROVIDER_NAME;
+
     public synchronized static void installProvider(){
-        if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
-            Security.addProvider(new BouncyCastleProvider());
+        if (Security.getProvider(PROVIDER_NAME) == null) {
+            if (PROVIDER_NAME.equals(BouncyCastleProvider.PROVIDER_NAME)) {
+                // add provider normally
+                Security.addProvider(new BouncyCastleProvider());
+            } else {
+                // add provider with custom name
+                try {
+                    Provider provider = new BouncyCastleProvider();
+                    Field nameField = Provider.class.getDeclaredField("name");
+                    nameField.setAccessible(true);
+                    nameField.set(provider, PROVIDER_NAME);
+                    Security.addProvider(provider);
+                } catch (Throwable t) {
+                    throw new RuntimeException("BouncyCastleProviderUtils | Install BouncyCastleProvider failed with custom provider name " + PROVIDER_NAME, t);
+                }
+            }
         }
+    }
+
+    public static String getProviderName() {
+        return PROVIDER_NAME;
     }
 
 }

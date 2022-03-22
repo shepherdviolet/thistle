@@ -54,7 +54,7 @@ public class BaseBCKeyGenerator {
     public static byte[] generateKey(SecureRandom secureRandom, int bits, String keyAlgorithm) {
         KeyGenerator keyGenerator;
         try {
-            keyGenerator = KeyGenerator.getInstance(keyAlgorithm, BouncyCastleProvider.PROVIDER_NAME);
+            keyGenerator = KeyGenerator.getInstance(keyAlgorithm, BouncyCastleProviderUtils.getProviderName());
         } catch (NoSuchProviderException e) {
             throw new RuntimeException(e.getMessage(), e);
         } catch (NoSuchAlgorithmException e) {

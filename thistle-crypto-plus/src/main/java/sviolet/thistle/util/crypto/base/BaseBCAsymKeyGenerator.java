@@ -178,7 +178,7 @@ public class BaseBCAsymKeyGenerator {
         }
         try {
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(pkcs8);
-            KeyFactory keyFactory = KeyFactory.getInstance(keyAlgorithm, BouncyCastleProvider.PROVIDER_NAME);
+            KeyFactory keyFactory = KeyFactory.getInstance(keyAlgorithm, BouncyCastleProviderUtils.getProviderName());
             return (BCECPrivateKey) keyFactory.generatePrivate(keySpec);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e.getMessage(), e);
@@ -200,7 +200,7 @@ public class BaseBCAsymKeyGenerator {
         }
         try {
             X509EncodedKeySpec keySpec = new X509EncodedKeySpec(x509);
-            KeyFactory keyFactory = KeyFactory.getInstance(keyAlgorithm, BouncyCastleProvider.PROVIDER_NAME);
+            KeyFactory keyFactory = KeyFactory.getInstance(keyAlgorithm, BouncyCastleProviderUtils.getProviderName());
             return (BCECPublicKey) keyFactory.generatePublic(keySpec);
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e.getMessage(), e);

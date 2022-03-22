@@ -203,7 +203,7 @@ public class AdvancedPKCS12KeyStoreUtils extends PKCS12KeyStoreUtils {
      */
     public static Enumeration<String> loadAliasesAdvanced(InputStream inputStream, String keystorePassword) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, UnrecoverableKeyException, NoSuchProviderException {
         try {
-            KeyStore keyStore = KeyStore.getInstance(ALGORITHM, BouncyCastleProvider.PROVIDER_NAME);
+            KeyStore keyStore = KeyStore.getInstance(ALGORITHM, BouncyCastleProviderUtils.getProviderName());
             keyStore.load(inputStream, keystorePassword != null ? keystorePassword.toCharArray() : null);
             return keyStore.aliases();
         } finally {
@@ -251,7 +251,7 @@ public class AdvancedPKCS12KeyStoreUtils extends PKCS12KeyStoreUtils {
      */
     public static CertificateChainAndKey loadCertificateAndKeyAdvanced(InputStream inputStream, String keystorePassword, String alias) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, UnrecoverableKeyException, NoSuchProviderException {
         try {
-            KeyStore keyStore = KeyStore.getInstance(ALGORITHM, BouncyCastleProvider.PROVIDER_NAME);
+            KeyStore keyStore = KeyStore.getInstance(ALGORITHM, BouncyCastleProviderUtils.getProviderName());
             keyStore.load(inputStream, keystorePassword != null ? keystorePassword.toCharArray() : null);
             java.security.cert.Certificate[] certificateChain = keyStore.getCertificateChain(alias);
             if (certificateChain == null){
@@ -302,7 +302,7 @@ public class AdvancedPKCS12KeyStoreUtils extends PKCS12KeyStoreUtils {
      */
     public static List<CertificateChainAndKey> loadAllCertificateAndKeyAdvanced(InputStream inputStream, String keystorePassword) throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException, UnrecoverableKeyException, NoSuchProviderException {
         try {
-            KeyStore keyStore = KeyStore.getInstance(ALGORITHM, BouncyCastleProvider.PROVIDER_NAME);
+            KeyStore keyStore = KeyStore.getInstance(ALGORITHM, BouncyCastleProviderUtils.getProviderName());
             keyStore.load(inputStream, keystorePassword != null ? keystorePassword.toCharArray() : null);
             List<CertificateChainAndKey> list = new ArrayList<>(1);
             Enumeration<String> aliases = keyStore.aliases();

@@ -95,7 +95,7 @@ public class BaseBCCertificateUtils {
      */
     public static Certificate parseCertificateByBouncyCastle(InputStream inputStream, String type) throws CertificateException, NoSuchProviderException {
         try {
-            return CertificateFactory.getInstance(type, BouncyCastleProvider.PROVIDER_NAME).generateCertificate(inputStream);
+            return CertificateFactory.getInstance(type, BouncyCastleProviderUtils.getProviderName()).generateCertificate(inputStream);
         } finally {
             CloseableUtils.closeQuiet(inputStream);
         }
@@ -107,7 +107,7 @@ public class BaseBCCertificateUtils {
      * @param type 证书数据格式, 例如X.509
      */
     public static CertPath generateCertPath(List<? extends Certificate> certificateList, String type) throws CertificateException, NoSuchProviderException {
-        CertificateFactory factory = CertificateFactory.getInstance(type, BouncyCastleProvider.PROVIDER_NAME);
+        CertificateFactory factory = CertificateFactory.getInstance(type, BouncyCastleProviderUtils.getProviderName());
         return factory.generateCertPath(certificateList);
     }
 
@@ -119,7 +119,7 @@ public class BaseBCCertificateUtils {
      */
     public static CertPath parseCertPathByBouncyCastle(InputStream inputStream, String type, String encoding) throws CertificateException, NoSuchProviderException {
         try {
-            return CertificateFactory.getInstance(type, BouncyCastleProvider.PROVIDER_NAME).generateCertPath(inputStream, encoding);
+            return CertificateFactory.getInstance(type, BouncyCastleProviderUtils.getProviderName()).generateCertPath(inputStream, encoding);
         } finally {
             CloseableUtils.closeQuiet(inputStream);
         }
@@ -133,7 +133,7 @@ public class BaseBCCertificateUtils {
      */
     public static void verifyCertificate(X509Certificate certificate, PublicKey issuerPublicKey, Date currentTime)
             throws NoSuchProviderException, CertificateException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
-        certificate.verify(issuerPublicKey, BouncyCastleProvider.PROVIDER_NAME);
+        certificate.verify(issuerPublicKey, BouncyCastleProviderUtils.getProviderName());
         certificate.checkValidity(currentTime);
     }
 
@@ -146,7 +146,7 @@ public class BaseBCCertificateUtils {
     public static void verifyCertificate(X509Certificate certificate, ECPublicKeyParameters issuerPublicKeyParams, Date currentTime)
             throws NoSuchProviderException, CertificateException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         certificate.verify(BaseBCAsymKeyGenerator.ecPublicKeyParamsToEcPublicKey(issuerPublicKeyParams, "EC"),
-                BouncyCastleProvider.PROVIDER_NAME);
+                BouncyCastleProviderUtils.getProviderName());
         certificate.checkValidity(currentTime);
     }
 
@@ -358,7 +358,7 @@ public class BaseBCCertificateUtils {
 //        certReqBuilder.addAttribute(PKCSObjectIdentifiers.pkcs_9_at_extensionRequest, extensionsGenerator.generate());
 
         ContentSigner signer = new JcaContentSignerBuilder("SM3withSM2")
-                .setProvider(BouncyCastleProvider.PROVIDER_NAME)
+                .setProvider(BouncyCastleProviderUtils.getProviderName())
                 .build(privateKey);
         return certReqBuilder
                 .build(signer)
@@ -452,10 +452,10 @@ public class BaseBCCertificateUtils {
         }
         //签名器
         JcaContentSignerBuilder contentSignerBuilder = new JcaContentSignerBuilder("SM3withSM2");
-        contentSignerBuilder.setProvider(BouncyCastleProvider.PROVIDER_NAME);
+        contentSignerBuilder.setProvider(BouncyCastleProviderUtils.getProviderName());
         //生成证书
         return new JcaX509CertificateConverter()
-                .setProvider(BouncyCastleProvider.PROVIDER_NAME)
+                .setProvider(BouncyCastleProviderUtils.getProviderName())
                 .getCertificate(certificateBuilder.build(contentSignerBuilder.build(issuerPrivateKey)));
     }
 

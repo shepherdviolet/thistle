@@ -75,7 +75,7 @@ public class BaseBCCipher {
         if (data == null){
             return null;
         }
-        Cipher cipher = Cipher.getInstance(cryptoAlgorithm, BouncyCastleProvider.PROVIDER_NAME);
+        Cipher cipher = Cipher.getInstance(cryptoAlgorithm, BouncyCastleProviderUtils.getProviderName());
         SecretKeySpec keySpec = new SecretKeySpec(key, keyAlgorithm);
         cipher.init(Cipher.ENCRYPT_MODE, keySpec);
         return cipher.doFinal(data);
@@ -94,7 +94,7 @@ public class BaseBCCipher {
         if (data == null){
             return null;
         }
-        Cipher cipher = Cipher.getInstance(cryptoAlgorithm, BouncyCastleProvider.PROVIDER_NAME);
+        Cipher cipher = Cipher.getInstance(cryptoAlgorithm, BouncyCastleProviderUtils.getProviderName());
         SecretKeySpec keySpec = new SecretKeySpec(key, keyAlgorithm);
         IvParameterSpec ivParameterSpec = new IvParameterSpec(ivSeed != null ? ivSeed : new byte[cipher.getBlockSize()]);
         cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivParameterSpec);
@@ -119,7 +119,7 @@ public class BaseBCCipher {
         }
 
         try {
-            Cipher cipher = Cipher.getInstance(cryptoAlgorithm, BouncyCastleProvider.PROVIDER_NAME);
+            Cipher cipher = Cipher.getInstance(cryptoAlgorithm, BouncyCastleProviderUtils.getProviderName());
             SecretKeySpec keySpec = new SecretKeySpec(key, keyAlgorithm);
             cipher.init(Cipher.ENCRYPT_MODE, keySpec);
 
@@ -154,7 +154,7 @@ public class BaseBCCipher {
         }
 
         try {
-            Cipher cipher = Cipher.getInstance(cryptoAlgorithm, BouncyCastleProvider.PROVIDER_NAME);
+            Cipher cipher = Cipher.getInstance(cryptoAlgorithm, BouncyCastleProviderUtils.getProviderName());
             SecretKeySpec keySpec = new SecretKeySpec(key, keyAlgorithm);
             IvParameterSpec ivParameterSpec = new IvParameterSpec(ivSeed != null ? ivSeed : new byte[cipher.getBlockSize()]);
             cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivParameterSpec);
@@ -183,7 +183,7 @@ public class BaseBCCipher {
         if (data == null){
             return null;
         }
-        Cipher cipher = Cipher.getInstance(cryptoAlgorithm, BouncyCastleProvider.PROVIDER_NAME);
+        Cipher cipher = Cipher.getInstance(cryptoAlgorithm, BouncyCastleProviderUtils.getProviderName());
         SecretKeySpec keySpec = new SecretKeySpec(key, keyAlgorithm);
         cipher.init(Cipher.DECRYPT_MODE, keySpec);
         return cipher.doFinal(data);
@@ -202,7 +202,7 @@ public class BaseBCCipher {
         if (data == null){
             return null;
         }
-        Cipher cipher = Cipher.getInstance(cryptoAlgorithm, BouncyCastleProvider.PROVIDER_NAME);
+        Cipher cipher = Cipher.getInstance(cryptoAlgorithm, BouncyCastleProviderUtils.getProviderName());
         SecretKeySpec keySpec = new SecretKeySpec(key, keyAlgorithm);
         IvParameterSpec ivParameterSpec = new IvParameterSpec(ivSeed != null ? ivSeed : new byte[cipher.getBlockSize()]);
         cipher.init(Cipher.DECRYPT_MODE, keySpec, ivParameterSpec);
@@ -227,7 +227,7 @@ public class BaseBCCipher {
         }
 
         try {
-            Cipher cipher = Cipher.getInstance(cryptoAlgorithm, BouncyCastleProvider.PROVIDER_NAME);
+            Cipher cipher = Cipher.getInstance(cryptoAlgorithm, BouncyCastleProviderUtils.getProviderName());
             SecretKeySpec keySpec = new SecretKeySpec(key, keyAlgorithm);
             cipher.init(Cipher.DECRYPT_MODE, keySpec);
 
@@ -262,7 +262,7 @@ public class BaseBCCipher {
         }
 
         try {
-            Cipher cipher = Cipher.getInstance(cryptoAlgorithm, BouncyCastleProvider.PROVIDER_NAME);
+            Cipher cipher = Cipher.getInstance(cryptoAlgorithm, BouncyCastleProviderUtils.getProviderName());
             SecretKeySpec keySpec = new SecretKeySpec(key, keyAlgorithm);
             IvParameterSpec ivParameterSpec = new IvParameterSpec(ivSeed != null ? ivSeed : new byte[cipher.getBlockSize()]);
             cipher.init(Cipher.DECRYPT_MODE, keySpec, ivParameterSpec);
