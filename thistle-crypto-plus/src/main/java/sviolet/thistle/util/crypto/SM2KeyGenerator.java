@@ -50,7 +50,7 @@ import java.security.spec.InvalidKeySpecException;
  * <p>BigInteger转HexString: bigInteger.toString(16) </p>
  * <p>BigInteger转byte[]: ByteUtils.trimHeader(bigInteger.toByteArray())), 注意!!!要去掉头部的0x00!!!</p>
  * <p>HexString转BigInteger: new BigInteger(string, 16)</p>
- * <p>byte[]转BigInteger: new BigInteger(bytes), 有时头部没0x00变负数, 试试new BigInteger(ByteUtils.bytesToHex(bytes), 16)</p>
+ * <p>byte[]转BigInteger: new BigInteger(ByteUtils.bytesToHex(bytes), 16). 不要new BigInteger(bytes), 因为如果bytes第一个字节大于等于0x80会变负数!!!</p>
  *
  * @author S.Violet
  */
@@ -96,7 +96,27 @@ public class SM2KeyGenerator {
 
     /**
      * <p>根据已知的D值生成SM2私钥实例(sm2p256v1).</p>
-     * <p>如果D值是Base64/Hex字符串, 尝试转成byte[]然后new BigInteger(bytes).</p><br>
+     * <p>如果D值是Base64字符串, 转成byte[], 然后new BigInteger(ByteUtils.bytesToHex(bytes), 16). 不要new BigInteger(bytes), 因为如果bytes第一个字节大于等于0x80会变负数!!!</p>
+     * <p>如果D值是Hex字符串, 直接new BigInteger(string, 16)</p>
+     * <br>
+     * <p>D值 / Q值(X/Y) 获取方法 + 各种格式转换: </p>
+     * <p>获取D值: ecPrivateKeyParameters.getD() </p>
+     * <p>获取Q(X)值: ecPublicKeyParameters.getQ().getAffineXCoord().toBigInteger() </p>
+     * <p>获取Q(Y)值: ecPublicKeyParameters.getQ().getAffineYCoord().toBigInteger() </p>
+     * <p>BigInteger转HexString: bigInteger.toString(16) </p>
+     * <p>BigInteger转byte[]: ByteUtils.trimHeader(bigInteger.toByteArray())), 注意!!!要去掉头部的0x00!!!</p>
+     * <p>HexString转BigInteger: new BigInteger(string, 16)</p>
+     * <p>byte[]转BigInteger: new BigInteger(ByteUtils.bytesToHex(bytes), 16). 不要new BigInteger(bytes), 因为如果bytes第一个字节大于等于0x80会变负数!!!</p>
+     *
+     * @param d D值
+     * @return 私钥实例(与JDK的密钥实例不同)
+     */
+    public static ECPrivateKeyParameters generatePrivateKeyParams(BigInteger d) throws CommonCryptoException {
+        return BaseBCAsymKeyGenerator.parseEcPrivateKeyParams(SM2DefaultCurve.DOMAIN_PARAMS, d);
+    }
+
+    /**
+     * <p>根据已知的D值生成SM2私钥实例(sm2p256v1).</p>
      *
      * <p>D值 / Q值(X/Y) 获取方法 + 各种格式转换: </p>
      * <p>获取D值: ecPrivateKeyParameters.getD() </p>
@@ -105,13 +125,32 @@ public class SM2KeyGenerator {
      * <p>BigInteger转HexString: bigInteger.toString(16) </p>
      * <p>BigInteger转byte[]: ByteUtils.trimHeader(bigInteger.toByteArray())), 注意!!!要去掉头部的0x00!!!</p>
      * <p>HexString转BigInteger: new BigInteger(string, 16)</p>
-     * <p>byte[]转BigInteger: new BigInteger(bytes), 有时头部没0x00变负数, 试试new BigInteger(ByteUtils.bytesToHex(bytes), 16)</p>
+     * <p>byte[]转BigInteger: new BigInteger(ByteUtils.bytesToHex(bytes), 16). 不要new BigInteger(bytes), 因为如果bytes第一个字节大于等于0x80会变负数!!!</p>
      *
-     * @param d D值
+     * @param dBytes D值, 二进制
      * @return 私钥实例(与JDK的密钥实例不同)
      */
-    public static ECPrivateKeyParameters generatePrivateKeyParams(BigInteger d) throws CommonCryptoException {
-        return BaseBCAsymKeyGenerator.parseEcPrivateKeyParams(SM2DefaultCurve.DOMAIN_PARAMS, d);
+    public static ECPrivateKeyParameters generatePrivateKeyParams(byte[] dBytes) throws CommonCryptoException {
+        return BaseBCAsymKeyGenerator.parseEcPrivateKeyParams(SM2DefaultCurve.DOMAIN_PARAMS, new BigInteger(ByteUtils.bytesToHex(dBytes), 16));
+    }
+
+    /**
+     * <p>根据已知的D值生成SM2私钥实例(sm2p256v1).</p>
+     *
+     * <p>D值 / Q值(X/Y) 获取方法 + 各种格式转换: </p>
+     * <p>获取D值: ecPrivateKeyParameters.getD() </p>
+     * <p>获取Q(X)值: ecPublicKeyParameters.getQ().getAffineXCoord().toBigInteger() </p>
+     * <p>获取Q(Y)值: ecPublicKeyParameters.getQ().getAffineYCoord().toBigInteger() </p>
+     * <p>BigInteger转HexString: bigInteger.toString(16) </p>
+     * <p>BigInteger转byte[]: ByteUtils.trimHeader(bigInteger.toByteArray())), 注意!!!要去掉头部的0x00!!!</p>
+     * <p>HexString转BigInteger: new BigInteger(string, 16)</p>
+     * <p>byte[]转BigInteger: new BigInteger(ByteUtils.bytesToHex(bytes), 16). 不要new BigInteger(bytes), 因为如果bytes第一个字节大于等于0x80会变负数!!!</p>
+     *
+     * @param dHex D值, 十六进制字符串(HEX)
+     * @return 私钥实例(与JDK的密钥实例不同)
+     */
+    public static ECPrivateKeyParameters generatePrivateKeyParams(String dHex) throws CommonCryptoException {
+        return BaseBCAsymKeyGenerator.parseEcPrivateKeyParams(SM2DefaultCurve.DOMAIN_PARAMS, new BigInteger(dHex, 16));
     }
 
     /**
@@ -134,7 +173,7 @@ public class SM2KeyGenerator {
      * <p>BigInteger转HexString: bigInteger.toString(16) </p>
      * <p>BigInteger转byte[]: ByteUtils.trimHeader(bigInteger.toByteArray())), 注意!!!要去掉头部的0x00!!!</p>
      * <p>HexString转BigInteger: new BigInteger(string, 16)</p>
-     * <p>byte[]转BigInteger: new BigInteger(bytes), 有时头部没0x00变负数, 试试new BigInteger(ByteUtils.bytesToHex(bytes), 16)</p>
+     * <p>byte[]转BigInteger: new BigInteger(ByteUtils.bytesToHex(bytes), 16). 不要new BigInteger(bytes), 因为如果bytes第一个字节大于等于0x80会变负数!!!</p>
      *
      * @param xBytes 坐标X, 如果给的是Base64/Hex字符串, 尝试转成byte[]
      * @param yBytes 坐标Y, 如果给的是Base64/Hex字符串, 尝试转成byte[]
@@ -154,7 +193,7 @@ public class SM2KeyGenerator {
      * <p>BigInteger转HexString: bigInteger.toString(16) </p>
      * <p>BigInteger转byte[]: ByteUtils.trimHeader(bigInteger.toByteArray())), 注意!!!要去掉头部的0x00!!!</p>
      * <p>HexString转BigInteger: new BigInteger(string, 16)</p>
-     * <p>byte[]转BigInteger: new BigInteger(bytes), 有时头部没0x00变负数, 试试new BigInteger(ByteUtils.bytesToHex(bytes), 16)</p>
+     * <p>byte[]转BigInteger: new BigInteger(ByteUtils.bytesToHex(bytes), 16). 不要new BigInteger(bytes), 因为如果bytes第一个字节大于等于0x80会变负数!!!</p>
      *
      * @param x 坐标X, 如果给的是Base64/Hex字符串, 尝试转成byte[]然后new BigInteger(bytes)
      * @param y 坐标Y, 如果给的是Base64/Hex字符串, 尝试转成byte[]然后new BigInteger(bytes)
