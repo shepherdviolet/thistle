@@ -5,7 +5,7 @@
 * Comprehensive Java common library (Java7+)
 * [Github Home](https://github.com/shepherdviolet/thistle)
 * [Search in Maven Central](https://search.maven.org/search?q=g:com.github.shepherdviolet)
-* [PGP Key](http://pool.sks-keyservers.net/pks/lookup?op=vindex&fingerprint=on&search=0x90998B78AABD6E96)
+* [PGP Key](https://keyserver.ubuntu.com/pks/lookup?search=0x90998B78AABD6E96&fingerprint=on&op=index)
 
 <br>
 <br>
