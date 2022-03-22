@@ -66,9 +66,9 @@ public class URLStreamHandlerFactoryInstaller {
                 }
                 factoryField.set(null, factory);
             } catch (IllegalArgumentException e) {
-                throw new Exception("Unable to set url stream handler factory " + factory);
+                throw new Exception("Unable to set url stream handler factory " + factory, e);
             } catch (IllegalAccessException e) {
-                throw new Exception("Unable to set url stream handler factory " + factory);
+                throw new Exception("Unable to set url stream handler factory " + factory, e);
             }
         }
     }
