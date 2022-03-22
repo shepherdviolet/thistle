@@ -1,4 +1,4 @@
-# Thistle 22.0.2
+# Thistle 22.1.0
 
 [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/shepherdviolet/thistle.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/shepherdviolet/thistle/context:java)
 
