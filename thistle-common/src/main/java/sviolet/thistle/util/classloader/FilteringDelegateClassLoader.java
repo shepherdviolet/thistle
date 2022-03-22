@@ -78,6 +78,8 @@ public abstract class FilteringDelegateClassLoader extends URLClassLoader {
                     return c;
                 } catch (ClassNotFoundException ignore) {
                     // load from parent if not found
+                } catch (Throwable t) {
+                    throw new RuntimeException("Error while loading class: " + name, t);
                 }
             }
         }
