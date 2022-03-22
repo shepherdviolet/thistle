@@ -175,8 +175,31 @@ public class SM2KeyGenerator {
      * <p>HexString转BigInteger: new BigInteger(string, 16)</p>
      * <p>byte[]转BigInteger: new BigInteger(ByteUtils.bytesToHex(bytes), 16). 不要new BigInteger(bytes), 因为如果bytes第一个字节大于等于0x80会变负数!!!</p>
      *
-     * @param xBytes 坐标X, 如果给的是Base64/Hex字符串, 尝试转成byte[]
-     * @param yBytes 坐标Y, 如果给的是Base64/Hex字符串, 尝试转成byte[]
+     * @param x 坐标X
+     * @param y 坐标Y
+     * @return 公钥实例(与JDK的密钥实例不同)
+     */
+    public static ECPublicKeyParameters generatePublicKeyParams(BigInteger x, BigInteger y) throws CommonCryptoException {
+        if (x == null || y == null) {
+            throw new NullPointerException("x or y is null");
+        }
+        return BaseBCAsymKeyGenerator.parseEcPublicKeyParams(SM2DefaultCurve.DOMAIN_PARAMS, x.toByteArray(), y.toByteArray());
+    }
+
+    /**
+     * <p>根据已知的坐标(X/Y)生成SM2公钥实例(sm2p256v1)</p><br>
+     *
+     * <p>D值 / Q值(X/Y) 获取方法 + 各种格式转换: </p>
+     * <p>获取D值: ecPrivateKeyParameters.getD() </p>
+     * <p>获取Q(X)值: ecPublicKeyParameters.getQ().getAffineXCoord().toBigInteger() </p>
+     * <p>获取Q(Y)值: ecPublicKeyParameters.getQ().getAffineYCoord().toBigInteger() </p>
+     * <p>BigInteger转HexString: bigInteger.toString(16) </p>
+     * <p>BigInteger转byte[]: ByteUtils.trimHeader(bigInteger.toByteArray())), 注意!!!要去掉头部的0x00!!!</p>
+     * <p>HexString转BigInteger: new BigInteger(string, 16)</p>
+     * <p>byte[]转BigInteger: new BigInteger(ByteUtils.bytesToHex(bytes), 16). 不要new BigInteger(bytes), 因为如果bytes第一个字节大于等于0x80会变负数!!!</p>
+     *
+     * @param xBytes 坐标X, 二进制数据
+     * @param yBytes 坐标Y, 二进制数据
      * @return 公钥实例(与JDK的密钥实例不同)
      */
     public static ECPublicKeyParameters generatePublicKeyParams(byte[] xBytes, byte[] yBytes) throws CommonCryptoException {
@@ -195,16 +218,14 @@ public class SM2KeyGenerator {
      * <p>HexString转BigInteger: new BigInteger(string, 16)</p>
      * <p>byte[]转BigInteger: new BigInteger(ByteUtils.bytesToHex(bytes), 16). 不要new BigInteger(bytes), 因为如果bytes第一个字节大于等于0x80会变负数!!!</p>
      *
-     * @param x 坐标X, 如果给的是Base64/Hex字符串, 尝试转成byte[]然后new BigInteger(bytes)
-     * @param y 坐标Y, 如果给的是Base64/Hex字符串, 尝试转成byte[]然后new BigInteger(bytes)
+     * @param xHex 坐标X, 十六进制字符串(hex)
+     * @param yHex 坐标Y, 十六进制字符串(hex)
      * @return 公钥实例(与JDK的密钥实例不同)
      */
-    public static ECPublicKeyParameters generatePublicKeyParams(BigInteger x, BigInteger y) throws CommonCryptoException {
-        if (x == null || y == null) {
-            throw new NullPointerException("x or y is null");
-        }
-        return BaseBCAsymKeyGenerator.parseEcPublicKeyParams(SM2DefaultCurve.DOMAIN_PARAMS, x.toByteArray(), y.toByteArray());
+    public static ECPublicKeyParameters generatePublicKeyParams(String xHex, String yHex) throws CommonCryptoException {
+        return BaseBCAsymKeyGenerator.parseEcPublicKeyParams(SM2DefaultCurve.DOMAIN_PARAMS, ByteUtils.hexToBytes(xHex), ByteUtils.hexToBytes(yHex));
     }
+
 
     // Encode //////////////////////////////////////////////////////////////////////////////////////////////////////
 
