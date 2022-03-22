@@ -38,7 +38,10 @@ import java.util.Map;
  */
 public class MultipleURLStreamHandlerFactory implements URLStreamHandlerFactory {
 
-    public static void installHandlers(Map<String, URLStreamHandler> urlStreamHandlerMap) throws Exception {
+    public static void installHandlers(Map<String, URLStreamHandler> urlStreamHandlerMap) {
+        if (urlStreamHandlerMap == null || urlStreamHandlerMap.size() == 0) {
+            return;
+        }
         URLStreamHandlerFactoryInstaller.setURLStreamHandlerFactory(new URLStreamHandlerFactoryWrapper(
                 new MultipleURLStreamHandlerFactory(urlStreamHandlerMap)));
     }

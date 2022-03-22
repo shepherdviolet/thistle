@@ -37,8 +37,7 @@ public class URLStreamHandlerFactoryInstaller {
      * @param factory factory
      */
     @SuppressWarnings("TryWithIdenticalCatches")
-    public static void setURLStreamHandlerFactory(URLStreamHandlerFactory factory)
-            throws Exception {
+    public static void setURLStreamHandlerFactory(URLStreamHandlerFactory factory) {
         try {
             // if we can set the factory, its the first!
             URL.setURLStreamHandlerFactory(factory);
@@ -57,7 +56,7 @@ public class URLStreamHandlerFactoryInstaller {
                 }
             }
             if ( factoryField == null ) {
-                throw new Exception("Unable to detect static field in the URL class for the URLStreamHandlerFactory. Please report this error together with your exact environment to the Apache Excalibur project.");
+                throw new RuntimeException("Unable to detect static field in the URL class for the URLStreamHandlerFactory. Please report this error together with your exact environment to the Apache Excalibur project.");
             }
             try {
                 URLStreamHandlerFactory oldFactory = (URLStreamHandlerFactory)factoryField.get(null);
@@ -66,9 +65,9 @@ public class URLStreamHandlerFactoryInstaller {
                 }
                 factoryField.set(null, factory);
             } catch (IllegalArgumentException e) {
-                throw new Exception("Unable to set url stream handler factory " + factory, e);
+                throw new RuntimeException("Unable to set url stream handler factory " + factory, e);
             } catch (IllegalAccessException e) {
-                throw new Exception("Unable to set url stream handler factory " + factory, e);
+                throw new RuntimeException("Unable to set url stream handler factory " + factory, e);
             }
         }
     }
