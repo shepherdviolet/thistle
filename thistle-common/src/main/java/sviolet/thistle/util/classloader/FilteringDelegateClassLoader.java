@@ -28,21 +28,51 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * <p>过滤部分类加载不走双亲委派模型</p>
+ * <p>ClassLoader: 过滤部分类加载不走双亲委派模型</p>
  *
- * <p>示例:</p>
+ * <p>可以用来实现jar包隔离, 用ClassLoader加载不同版本的类, 避免冲突. </p>
+ *
+ * <p> ============================================================================================================ </p>
+ * <p>示例: Classloader加载jar包中的jar包</p>
+ * <p></p>
+ *
+ * <p>Q: 为什么不直接从jar包加载类呢?</p>
+ * <p>A: 如果jar包是独立的文件, 确实可以直接加载. 但如果想要加载jar包中的jar包, 就只能用这个办法了, 因为ClassLoader不支持加载jar包中的jar包.
+ * (直接用getClassLoader().getResource(path)获取的URL, 交给ClassLoader加载会报错)</p>
+ * <p></p>
+ *
+ * <p>安装URL协议</p>
  *
  * <pre>
- *         // 加载classpath下的jar包, 当类名是org.bouncycastle开头时, 不走双亲委派模型, 直接由本ClassLoader加载类
- *         ClassLoader classLoader = new FilteringDelegateClassLoader(new URL[]{
- *                 getClass().getClassLoader().getResource("bcpkix-jdk15on-1.60.jar"),
- *                 getClass().getClassLoader().getResource("bcprov-jdk15on-1.60.jar")
- *         }, Main.class.getClassLoader()) {
- *             protected boolean isClassDelegatedByParent(String name) {
- *                 return !name.startsWith("org.bouncycastle");
- *             }
- *         };
- *</pre>
+ *      static {
+ *          // 安装URL协议: resinjar
+ *          ResInJarURLStreamHandlerFactory.install();
+ *      }
+ * </pre>
+ *
+ * <p>使用URL协议</p>
+ *
+ * <pre>
+ *      List<URL> jarUrls = new ArrayList<>();
+ *
+ *      // 加载classpath下的Jar包: META-INF/libs/name.jar
+ *      jarUrls.add(new URL("resinjar:META-INF/libs/name.jar"));
+ *
+ *      URL[] jarUrlArray = new URL[jarUrls.size()];
+ *      jarUrls.toArray(jarUrlArray);
+ *
+ *      // 创建普通ClassLoader
+ *      ClassLoader classLoader = new URLClassLoader(jarUrlArray, getClass().getClassLoader());
+ *
+ *      // 创建特殊的ClassLoader (过滤部分类加载不走双亲委派模型)
+ *      ClassLoader classLoader = new FilteringDelegateClassLoader(jarUrlArray, getClass().getClassLoader()) {
+ *          protected boolean isClassDelegatedByParent(String name) {
+ *              return false;
+ *          }
+ *      };
+ * </pre>
+ *
+ * @author shepherdviolet
  */
 public abstract class FilteringDelegateClassLoader extends URLClassLoader {
 
