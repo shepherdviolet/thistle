@@ -48,6 +48,12 @@ public abstract class FilteringDelegateClassLoader extends URLClassLoader {
 
     private final Set<String> filteredClasses = new HashSet<>();
 
+    /**
+     * @deprecated Use {@link FilteringDelegateClassLoader#FilteringDelegateClassLoader(URL[], ClassLoader)}
+     *             or {@link FilteringDelegateClassLoader#FilteringDelegateClassLoader(URL[], ClassLoader, URLStreamHandlerFactory)}
+     *             instead. Set current classloader as parent.
+     */
+    @Deprecated
     public FilteringDelegateClassLoader(URL[] urls) {
         super(urls);
     }

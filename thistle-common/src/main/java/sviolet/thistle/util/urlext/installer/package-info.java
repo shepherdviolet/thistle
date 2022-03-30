@@ -23,7 +23,12 @@
  * <p>本安装器利用反射, 将URLStreamHandlerFactory强制替换为我们自定义的工厂, 同时利用ParentAwareURLStreamHandlerFactory保持原有工厂不受影响.</p>
  * <p></p>
  * <p>使用方法:</p>
- * <p>URLStreamHandlerFactoryInstaller.setURLStreamHandlerFactory(new URLStreamHandlerFactoryWrapper(yourFactory));</p>
+ * <p>URLStreamHandlerFactoryInstaller.setURLStreamHandlerFactory(new URLStreamHandlerFactoryWrapper(yourURLStreamHandlerFactory));</p>
+ * <p></p>
+ * <p>注意事项:</p>
+ * <p>1.URLStreamHandlerFactory和URLStreamHandler禁止带状态(禁止用成员变量储存数据), 因为它们会被长期持有, 特别是TOMCAT等容器, 即使WEB应用下了也还在. </p>
+ * <p>2.URLStreamHandlerFactory中禁止持有URLStreamHandler实例, 应当每次创建新的实例返回. </p>
+ * <p>3.每次安装URLStreamHandlerFactory时, URL中的URLStreamHandler缓存会被全部清除. </p>
  *
  * @author http://svn.apache.org/repos/asf/commons/sandbox/jnet/trunk/src/main/java/org/apache/commons/jnet
  */
