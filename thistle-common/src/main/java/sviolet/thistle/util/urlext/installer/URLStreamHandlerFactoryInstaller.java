@@ -21,14 +21,23 @@ package sviolet.thistle.util.urlext.installer;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
+import java.util.Hashtable;
 
 /**
  * The installer is a general purpose class to install an own
  * {@link URLStreamHandlerFactory} in any environment.
  *
  * @author  http://svn.apache.org/repos/asf/commons/sandbox/jnet/trunk/src/main/java/org/apache/commons/jnet
+ *
+ * Enhanced:
+ * 1.Set synchronized
+ * 2.Clear handlers when install
+ *
+ * @author shepherdviolet
  */
 public class URLStreamHandlerFactoryInstaller {
 
@@ -36,51 +45,98 @@ public class URLStreamHandlerFactoryInstaller {
      * Set the url stream handler factory.
      * @param factory factory
      */
-    @SuppressWarnings("TryWithIdenticalCatches")
+    @SuppressWarnings({"unchecked", "SynchronizationOnLocalVariableOrMethodParameter"})
     public static void setURLStreamHandlerFactory(URLStreamHandlerFactory factory) {
+
         try {
+
             // if we can set the factory, its the first!
+
             URL.setURLStreamHandlerFactory(factory);
+
         } catch (Error err) {
+
             // let's use reflection to get the field holding the factory
+
             final Field[] fields = URL.class.getDeclaredFields();
-            int index = 0;
             Field factoryField = null;
-            while ( factoryField == null && index < fields.length ) {
-                final Field current = fields[index];
-                if ( Modifier.isStatic( current.getModifiers() ) && current.getType().equals( URLStreamHandlerFactory.class ) ) {
+            Field handlersField = null;
+            Field streamHandlerLockField = null;
+
+            // get required fields
+            for (final Field current : fields) {
+                if (Modifier.isStatic(current.getModifiers()) && current.getType().equals(URLStreamHandlerFactory.class)) {
                     factoryField = current;
                     factoryField.setAccessible(true);
-                } else {
-                    index++;
+                } else if (Modifier.isStatic(current.getModifiers()) && current.getType().equals(Hashtable.class)) {
+                    handlersField = current;
+                    handlersField.setAccessible(true);
+                } else if (Modifier.isStatic(current.getModifiers()) && current.getType().equals(Object.class)) {
+                    streamHandlerLockField = current;
+                    streamHandlerLockField.setAccessible(true);
                 }
             }
+
+            // check
             if ( factoryField == null ) {
-                throw new RuntimeException("Unable to detect static field in the URL class for the URLStreamHandlerFactory. Please report this error together with your exact environment to the Apache Excalibur project.");
+                throw new RuntimeException("Unable to detect static field in the URL class for the URLStreamHandlerFactory (factory). Please report this error together with your exact environment to the Apache Excalibur project.");
             }
+            if ( handlersField == null ) {
+                throw new RuntimeException("Unable to detect static field in the URL class for the Hashtable<String,URLStreamHandler> (handlers). Please report this error together with your exact environment to the Apache Excalibur project.");
+            }
+            if ( streamHandlerLockField == null ) {
+                throw new RuntimeException("Unable to detect static field in the URL class for the Object (streamHandlerLock). Please report this error together with your exact environment to the Apache Excalibur project.");
+            }
+
+            // get synchronized lock
+            Object streamHandlerLock;
             try {
-                URLStreamHandlerFactory oldFactory = (URLStreamHandlerFactory)factoryField.get(null);
-                if ( factory instanceof ParentAwareURLStreamHandlerFactory ) {
-                    ((ParentAwareURLStreamHandlerFactory)factory).setParentFactory(oldFactory);
+                streamHandlerLock = streamHandlerLockField.get(null);
+            } catch (Throwable e) {
+                throw new RuntimeException("Unable to set url stream handler factory " + factory + ", get streamHandlerLockField failed", e);
+            }
+            if (streamHandlerLock == null) {
+                throw new RuntimeException("Unable to set url stream handler factory " + factory + ", get streamHandlerLockField returns null");
+            }
+
+            synchronized (streamHandlerLock) {
+
+                try {
+                    URLStreamHandlerFactory oldFactory = (URLStreamHandlerFactory) factoryField.get(null);
+                    if (factory instanceof ParentAwareURLStreamHandlerFactory) {
+                        ((ParentAwareURLStreamHandlerFactory) factory).setParentFactory(oldFactory);
+                    }
+                    factoryField.set(null, factory);
+                } catch (Throwable e) {
+                    throw new RuntimeException("Unable to set url stream handler factory " + factory + ", replace factory failed", e);
                 }
-                factoryField.set(null, factory);
-            } catch (IllegalArgumentException e) {
-                throw new RuntimeException("Unable to set url stream handler factory " + factory, e);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException("Unable to set url stream handler factory " + factory, e);
+
+                try {
+                    Hashtable<String,URLStreamHandler> handlers = (Hashtable<String, URLStreamHandler>) handlersField.get(null);
+                    handlers.clear();
+                } catch (Throwable e) {
+                    throw new RuntimeException("Unable to set url stream handler factory " + factory + ", clear handlers (cache) failed", e);
+                }
+
             }
         }
+
     }
 
-    @SuppressWarnings("ForLoopReplaceableByForEach")
-    protected static Field getStaticURLStreamHandlerFactoryField() {
-        Field[] fields = URL.class.getDeclaredFields();
-        for ( int i = 0; i < fields.length; i++ ) {
-            if ( Modifier.isStatic( fields[i].getModifiers() ) && fields[i].getType().equals( URLStreamHandlerFactory.class ) ) {
-                fields[i].setAccessible( true );
-                return fields[i];
+    /**
+     * Determine if the protocol is installed
+     * @param protocol protocol name
+     * @return true: installed false: not installed
+     */
+    public static boolean isProtocolInstalled(String protocol) {
+        try {
+            new URL(protocol + ":test");
+        } catch (MalformedURLException e) {
+            if (e.getMessage().startsWith("unknown protocol")) {
+                return false;
             }
         }
-        return null;
+        return true;
     }
+
 }
