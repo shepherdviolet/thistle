@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLStreamHandlerFactory;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
@@ -137,8 +138,9 @@ public abstract class FilteringDelegateClassLoader extends URLClassLoader {
     @Override
     public String toString() {
         return "FilteringDelegateClassLoader{" +
-                "filteredClasses=" + filteredClasses +
-                '}';
+                "\nurls=" + Arrays.toString(getURLs()) +
+                ", \nfilteredClasses=" + filteredClasses +
+                "\n}";
     }
 
 }
